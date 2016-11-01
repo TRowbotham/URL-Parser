@@ -206,10 +206,14 @@ class URL
                 }
 
                 $this->mUrl = $parsedURL;
+                $this->mSearchParams->_mutateList(null);
                 $query = $this->mUrl->getQuery();
-                $query = $query === null ? '' : '?' . $query;
-                $this->mSearchParams = new URLSearchParams($query);
-                $this->mSearchParams->_setUrl($parsedURL);
+
+                if ($query !== null) {
+                    $this->mSearchParams->_mutateList(
+                        URLUtils::urlencodedStringParser($query)
+                    );
+                }
 
                 break;
 
