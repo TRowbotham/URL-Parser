@@ -260,6 +260,11 @@ class URL
                     return;
                 }
 
+                if ($value === '') {
+                    $this->mUrl->setPort(null);
+                    return;
+                }
+
                 URLInternal::basicURLParser(
                     $value,
                     null,
