@@ -954,22 +954,6 @@ class URLInternal
         return $url;
     }
 
-    public static function domainToASCII($aDomain) {
-        //$asciiDomain = HostFactory::parse($aDomain);
-
-        // TODO: Return the empty string if asciiDomain is not a domain, and
-        // asciiDomain otherwise.
-        return $aDomain;
-    }
-
-    public static function domainToUnicode($aDomain) {
-        //$unicodeDomain = HostFactory::parse($aDomain);
-
-        // TODO: Return the empty string if unicodeDomain is not a domain, and
-        // unicodeDomain otherwise.
-        return $aDomain;
-    }
-
     public function getFragment() {
         return $this->mFragment;
     }
