@@ -15,7 +15,7 @@ class URL
     private $mSearchParams;
     private $mUrl;
 
-	public function __construct($aUrl, $aBase = null)
+    public function __construct($aUrl, $aBase = null)
     {
         $this->mSearchParams = null;
         $this->mUrl = null;
@@ -40,7 +40,7 @@ class URL
         $query = $query === null ? '' : '?' . $query;
         $this->mSearchParams = new URLSearchParams($query);
         $this->mSearchParams->_setUrl($parsedURL);
-	}
+    }
 
     public function __destruct()
     {
