@@ -148,21 +148,6 @@ abstract class URLUtils
     }
 
     /**
-     * Encodes a byte into a uppercase hexadecimal number prefixed by a %
-     * character.
-     *
-     * @see https://url.spec.whatwg.org/#percent-encode
-     *
-     * @param  string $aByte A byte to be percent encoded.
-     *
-     * @return string
-     */
-    public static function percentEncode($aByte)
-    {
-        return '%' . strtoupper(bin2hex($aByte));
-    }
-
-    /**
      * Serializes the individual bytes of the given byte sequence to be
      * compatible with application/x-www-form-encoded URLs.
      *
@@ -197,7 +182,7 @@ abstract class URLUtils
                     break;
 
                 default:
-                    $output .= self::percentEncode($aInput[$i]);
+                    $output .= rawurlencode($aInput[$i]);
             }
         }
 
@@ -391,7 +376,7 @@ abstract class URLUtils
         $result = '';
 
         for ($i = 0, $len = strlen($bytes); $i < $len; $i++) {
-            $result .= self::percentEncode($bytes[$i]);
+            $result .= rawurlencode($bytes[$i]);
         }
 
         return $result;

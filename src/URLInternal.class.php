@@ -886,9 +886,7 @@ class URLInternal
                                 $byteOrd == 0x3C ||
                                 $byteOrd == 0x3E
                             ) {
-                                $url->mQuery .= URLUtils::percentEncode(
-                                    $buffer[$i]
-                                );
+                                $url->mQuery .= rawurlencode($buffer[$i]);
                             } else {
                                 $url->mQuery .= $buffer[$i];
                             }
