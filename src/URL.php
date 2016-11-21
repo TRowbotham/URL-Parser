@@ -22,14 +22,14 @@ class URL
         $parsedBase = null;
 
         if ($aBase) {
-            $parsedBase = URLInternal::basicURLParser($aBase);
+            $parsedBase = URLRecord::basicURLParser($aBase);
 
             if ($parsedBase === false) {
                 throw new TypeError($aBase . ' is not a valid URL.');
             }
         }
 
-        $parsedURL = URLInternal::basicURLParser($aUrl, $parsedBase);
+        $parsedURL = URLRecord::basicURLParser($aUrl, $parsedBase);
 
         if ($parsedURL === false) {
             throw new TypeError($aUrl . ' is not a valid URL.');
@@ -88,7 +88,7 @@ class URL
 
             case 'pathname':
                 if ($this->mUrl->isFlagSet(
-                        URLInternal::FLAG_CANNOT_BE_A_BASE_URL
+                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                 )) {
                     return $this->mUrl->getPath()[0];
                 }
@@ -152,54 +152,54 @@ class URL
 
                 $input = $value[0] == '#' ? substr($value, 1) : $value;
                 $this->mUrl->setFragment('');
-                URLInternal::basicURLParser(
+                URLRecord::basicURLParser(
                     $input,
                     null,
                     null,
                     $this->mUrl,
-                    URLInternal::FRAGMENT_STATE
+                    URLRecord::FRAGMENT_STATE
                 );
 
                 break;
 
             case 'host':
                 if ($this->mUrl->isFlagSet(
-                        URLInternal::FLAG_CANNOT_BE_A_BASE_URL
+                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                 )) {
                     // Terminate these steps
                     return;
                 }
 
-                URLInternal::basicURLParser(
+                URLRecord::basicURLParser(
                     $value,
                     null,
                     null,
                     $this->mUrl,
-                    URLInternal::HOST_STATE
+                    URLRecord::HOST_STATE
                 );
 
                 break;
 
             case 'hostname':
                 if ($this->mUrl->isFlagSet(
-                        URLInternal::FLAG_CANNOT_BE_A_BASE_URL
+                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                 )) {
                     // Terminate these steps
                     return;
                 }
 
-                URLInternal::basicURLParser(
+                URLRecord::basicURLParser(
                     $value,
                     null,
                     null,
                     $this->mUrl,
-                    URLInternal::HOSTNAME_STATE
+                    URLRecord::HOSTNAME_STATE
                 );
 
                 break;
 
             case 'href':
-                $parsedURL = URLInternal::basicURLParser($value);
+                $parsedURL = URLRecord::basicURLParser($value);
 
                 if ($parsedURL === false) {
                     throw new TypeError($value . ' is not a valid URL.');
@@ -220,7 +220,7 @@ class URL
             case 'password':
                 if ($this->mUrl->getHost() === null ||
                     $this->mUrl->isFlagSet(
-                        URLInternal::FLAG_CANNOT_BE_A_BASE_URL
+                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                     )
                 ) {
                     // Terminate these steps
@@ -233,7 +233,7 @@ class URL
 
             case 'pathname':
                 if ($this->mUrl->isFlagSet(
-                        URLInternal::FLAG_CANNOT_BE_A_BASE_URL
+                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                 )) {
                     // Terminate these steps
                     return;
@@ -243,12 +243,12 @@ class URL
                     $this->mUrl->getPath()->pop();
                 }
 
-                URLInternal::basicURLParser(
+                URLRecord::basicURLParser(
                     $value,
                     null,
                     null,
                     $this->mUrl,
-                    URLInternal::PATH_START_STATE
+                    URLRecord::PATH_START_STATE
                 );
 
                 break;
@@ -256,7 +256,7 @@ class URL
             case 'port':
                 if ($this->mUrl->getHost() === null ||
                     $this->mUrl->isFlagSet(
-                        URLInternal::FLAG_CANNOT_BE_A_BASE_URL
+                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                     ) ||
                     $this->mUrl->getScheme() == 'file'
                 ) {
@@ -269,23 +269,23 @@ class URL
                     return;
                 }
 
-                URLInternal::basicURLParser(
+                URLRecord::basicURLParser(
                     $value,
                     null,
                     null,
                     $this->mUrl,
-                    URLInternal::PORT_STATE
+                    URLRecord::PORT_STATE
                 );
 
                 break;
 
             case 'protocol':
-                URLInternal::basicURLParser(
+                URLRecord::basicURLParser(
                     $value . ':',
                     null,
                     null,
                     $this->mUrl,
-                    URLInternal::SCHEME_START_STATE
+                    URLRecord::SCHEME_START_STATE
                 );
 
                 break;
@@ -302,12 +302,12 @@ class URL
 
                 $input = $value[0] == '?' ? substr($value, 1) : $value;
                 $this->mUrl->setQuery('');
-                URLInternal::basicURLParser(
+                URLRecord::basicURLParser(
                     $input,
                     null,
                     null,
                     $this->mUrl,
-                    URLInternal::QUERY_STATE
+                    URLRecord::QUERY_STATE
                 );
                 $this->mSearchParams->_mutateList(
                     URLUtils::urlencodedStringParser($input)
@@ -318,7 +318,7 @@ class URL
             case 'username':
                 if ($this->mUrl->getHost() === null ||
                     $this->mUrl->isFlagSet(
-                        URLInternal::FLAG_CANNOT_BE_A_BASE_URL
+                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                 )) {
                     // Terminate these steps
                     return;

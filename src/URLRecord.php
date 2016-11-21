@@ -1,7 +1,7 @@
 <?php
 namespace phpjs\urls;
 
-class URLInternal
+class URLRecord
 {
     const SCHEME_START_STATE = 1;
     const SCHEME_STATE = 2;
@@ -76,7 +76,7 @@ class URLInternal
      *
      * @param string $aInput The URL string that is to be parsed.
      *
-     * @param URLInternal|null $aBase Optional argument that is only needed
+     * @param URLRecord|null $aBase Optional argument that is only needed
      *     if the input is a relative URL.  This represents the base URL, which
      *     in most cases, is the document's URL, it may also be a node's base
      *     URI or whatever base URL you wish to resolve relative URLs against.
@@ -85,7 +85,7 @@ class URLInternal
      * @param string $aEncodingOverride Optional argument that overrides the
      *     default encoding. Default is UTF-8.
      *
-     * @param URLInternal|null $aUrl Optional argument. This represents an
+     * @param URLRecord|null $aUrl Optional argument. This represents an
      *     existing URL object that should be modified based on the input URL
      *     and optional base URL.  Default is null.
      *
@@ -94,21 +94,21 @@ class URLInternal
      *     URL from. Suppling a value for this parameter will override the
      *     default state of SCHEME_START_STATE. Default is null.
      *
-     * @return URLInternal|bool Returns a URL object upon successfully parsing
+     * @return URLRecord|bool Returns a URL object upon successfully parsing
      *     the input or false if parsing input failed.
      */
     public static function basicURLParser(
         $aInput,
-        URLInternal $aBase = null,
+        URLRecord $aBase = null,
         $aEncodingOverride = null,
-        URLInternal $aUrl = null,
+        URLRecord $aUrl = null,
         $aStateOverride = null
     ) {
         $url = $aUrl;
         $input = $aInput;
 
         if (!$aUrl) {
-            $url = new URLInternal();
+            $url = new URLRecord();
 
             // Remove any leading or trailing C0 control and space characters.
             $input = preg_replace(
@@ -230,7 +230,7 @@ class URLInternal
                             $pointer++;
                         } else {
                             $url->mFlags |=
-                                URLInternal::FLAG_CANNOT_BE_A_BASE_URL;
+                                URLRecord::FLAG_CANNOT_BE_A_BASE_URL;
                             $url->mPath->push('');
                             $state = self::CANNOT_BE_A_BASE_URL_PATH_STATE;
                         }
@@ -251,7 +251,7 @@ class URLInternal
 
                 case self::NO_SCHEME_STATE:
                     $cannotBeBase = $base &&
-                        $base->mFlags & URLInternal::FLAG_CANNOT_BE_A_BASE_URL;
+                        $base->mFlags & URLRecord::FLAG_CANNOT_BE_A_BASE_URL;
 
                     if (!$base || ($cannotBeBase && $c !== '#')) {
                         // Syntax violation. Return failure
@@ -261,7 +261,7 @@ class URLInternal
                         $url->mPath = clone $base->mPath;
                         $url->mQuery = $base->mQuery;
                         $url->mFragment = '';
-                        $url->mFlags |= URLInternal::FLAG_CANNOT_BE_A_BASE_URL;
+                        $url->mFlags |= URLRecord::FLAG_CANNOT_BE_A_BASE_URL;
                         $state = self::FRAGMENT_STATE;
                     } elseif ($base->mScheme !== 'file') {
                         $state = self::RELATIVE_STATE;
@@ -1055,14 +1055,14 @@ class URLInternal
      *
      * @see https://url.spec.whatwg.org/#concept-url-equals
      *
-     * @param URLInternal $aOtherUrl A URL to compare equality against.
+     * @param URLRecord $aOtherUrl A URL to compare equality against.
      *
      * @param bool|null $aExcludeFragment Optional argument that determines
      *     whether a URL's fragment should be factored into equality.
      *
      * @return bool
      */
-    public function isEqual(URLInternal $aOtherUrl, $aExcludeFragment = null)
+    public function isEqual(URLRecord $aOtherUrl, $aExcludeFragment = null)
     {
         return $this->serializeURL($aExcludeFragment) ===
             $aOtherUrl->serializeURL($aExcludeFragment);
@@ -1121,7 +1121,7 @@ class URLInternal
             $output .= '//';
         }
 
-        if ($this->mFlags & URLInternal::FLAG_CANNOT_BE_A_BASE_URL) {
+        if ($this->mFlags & URLRecord::FLAG_CANNOT_BE_A_BASE_URL) {
             $output .= $this->mPath[0];
         } else {
             $output .= '/';
@@ -1235,16 +1235,16 @@ class URLInternal
      *
      * @param string $aInput The URL string to be parsed.
      *
-     * @param URLInternal|null $aBase A base URL to resolve relative URLs
+     * @param URLRecord|null $aBase A base URL to resolve relative URLs
      *     against.
      *
      * @param string $aEncodingOverride The character encoding of the URL.
      *
-     * @return URLInternal|bool
+     * @return URLRecord|bool
      */
     public static function URLParser(
         $aInput,
-        URLInternal $aBase = null,
+        URLRecord $aBase = null,
         $aEncodingOverride = null
     ) {
         $url = self::basicURLParser($aInput, $aBase, $aEncodingOverride);
@@ -1272,9 +1272,9 @@ class URLInternal
      *
      * @see https://url.spec.whatwg.org/#pop-a-urls-path
      *
-     * @param  URLInternal $aUrl The URL of the path that is to be popped.
+     * @param  URLRecord $aUrl The URL of the path that is to be popped.
      */
-    protected static function popURLPath(URLInternal $aUrl) {
+    protected static function popURLPath(URLRecord $aUrl) {
         if (!$aUrl->mPath->isEmpty()) {
             $containsDriveLetter = false;
 

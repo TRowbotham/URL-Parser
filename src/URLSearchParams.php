@@ -291,9 +291,9 @@ class URLSearchParams implements \Iterator {
      *
      * @internal
      *
-     * @param URLInternal|null $aUrl The associated URL object.
+     * @param URLRecord|null $aUrl The associated URL object.
      */
-    public function _setUrl(URLInternal $aUrl = null)
+    public function _setUrl(URLRecord $aUrl = null)
     {
         $this->mUrl = $aUrl;
     }
