@@ -1,10 +1,12 @@
 <?php
 namespace phpjs\urls;
 
-abstract class Host {
+abstract class Host
+{
     protected $mHost;
 
-    protected function __construct($aHost) {
+    protected function __construct($aHost)
+    {
         $this->mHost = $aHost;
     }
 

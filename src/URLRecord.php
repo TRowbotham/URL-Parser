@@ -167,8 +167,7 @@ class URLRecord
                     break;
 
                 case self::SCHEME_STATE:
-                    if (
-                        preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c) ||
+                    if (preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c) ||
                         preg_match('/[+\-.]/', $c)
                     ) {
                         $buffer .= strtolower($c);
@@ -179,8 +178,7 @@ class URLRecord
                             );
                             $urlIsSpecial = $url->isSpecial();
 
-                            if (
-                                ($urlIsSpecial && !$bufferIsSpecialScheme) ||
+                            if (($urlIsSpecial && !$bufferIsSpecialScheme) ||
                                 (!$urlIsSpecial && $bufferIsSpecialScheme)
                             ) {
                                 // Terminate this algorithm.
@@ -200,20 +198,17 @@ class URLRecord
                         $urlIsSpecial = $url->isSpecial();
 
                         if ($url->mScheme === 'file') {
-                            if (
-                                mb_strpos(
-                                    $input,
-                                    '//',
-                                    $offset,
-                                    $encoding
-                                ) !== $offset
-                            ) {
+                            if (mb_strpos(
+                                $input,
+                                '//',
+                                $offset,
+                                $encoding
+                            ) !== $offset) {
                                 // Syntax violation
                             }
 
                             $state = self::FILE_STATE;
-                        } elseif (
-                            $urlIsSpecial &&
+                        } elseif ($urlIsSpecial &&
                             $base &&
                             $base->mScheme === $url->mScheme
                         ) {
@@ -222,14 +217,12 @@ class URLRecord
                             $state = self::SPECIAL_RELATIVE_OR_AUTHORITY_STATE;
                         } elseif ($urlIsSpecial) {
                             $state = self::SPECIAL_AUTHORITY_SLASHES_STATE;
-                        } elseif (
-                            mb_strpos(
-                                $input,
-                                '/',
-                                $offset,
-                                $encoding
-                            ) === $offset
-                        ) {
+                        } elseif (mb_strpos(
+                            $input,
+                            '/',
+                            $offset,
+                            $encoding
+                        ) === $offset) {
                             $state = self::PATH_OR_AUTHORITY_STATE;
                             $pointer++;
                         } else {
@@ -280,8 +273,7 @@ class URLRecord
                 case self::SPECIAL_RELATIVE_OR_AUTHORITY_STATE:
                     $offset = $pointer + 1;
 
-                    if (
-                        $c === '/' &&
+                    if ($c === '/' &&
                         mb_strpos($input, '/', $offset, $encoding) === $offset
                     ) {
                         $state = self::SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE;
@@ -376,8 +368,7 @@ class URLRecord
                 case self::SPECIAL_AUTHORITY_SLASHES_STATE:
                     $offset = $pointer + 1;
 
-                    if (
-                        $c === '/' &&
+                    if ($c === '/' &&
                         mb_strpos($input, '/', $offset, $encoding) === $offset
                     ) {
                         $state = self::SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE;
@@ -414,8 +405,7 @@ class URLRecord
                         for ($i = 0; $i < $length; $i++) {
                             $codePoint = mb_substr($buffer, $i, 1, $encoding);
 
-                            if (
-                                $codePoint === ':' &&
+                            if ($codePoint === ':' &&
                                 $url->mPassword === null
                             ) {
                                 $url->mPassword = '';
@@ -435,11 +425,10 @@ class URLRecord
                         }
 
                         $buffer = '';
-                    } elseif (
-                        ($c === ''/* EOF */ ||
-                            $c === '/' ||
-                            $c === '?' ||
-                            $c === '#') ||
+                    } elseif (($c === ''/* EOF */ ||
+                        $c === '/' ||
+                        $c === '?' ||
+                        $c === '#') ||
                         ($url->isSpecial() && $c === '\\')
                     ) {
                         $pointer -= mb_strlen($buffer, $encoding) + 1;
@@ -474,11 +463,10 @@ class URLRecord
                             // Terminate this algorithm
                             break 2;
                         }
-                    } elseif (
-                        ($c === ''/* EOF */ ||
-                            $c === '/' ||
-                            $c === '?' ||
-                            $c === '#') ||
+                    } elseif (($c === ''/* EOF */ ||
+                        $c === '/' ||
+                        $c === '?' ||
+                        $c === '#') ||
                         ($url->isSpecial() && $c === '\\')
                     ) {
                         $pointer--;
@@ -518,11 +506,10 @@ class URLRecord
                 case self::PORT_STATE:
                     if (ctype_digit($c)) {
                         $buffer .= $c;
-                    } elseif (
-                        ($c === ''/* EOF */ ||
-                            $c === '/' ||
-                            $c === '?' ||
-                            $c === '#') ||
+                    } elseif (($c === ''/* EOF */ ||
+                        $c === '/' ||
+                        $c === '?' ||
+                        $c === '#') ||
                         ($url->isSpecial() && $c === '\\') ||
                         $aStateOverride
                     ) {
@@ -625,7 +612,8 @@ class URLRecord
                                     1,
                                     $encoding
                                 )
-                            ));
+                            )
+                        );
 
                         if ($shouldPopPath) {
                             $url->mHost = $base->mHost;
@@ -649,12 +637,12 @@ class URLRecord
 
                         $state = self::FILE_HOST_STATE;
                     } else {
-                        if (
-                            $base &&
+                        if ($base &&
                             $base->mScheme === 'file' &&
                             preg_match(
                                 URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
-                                $base->mPath[0])
+                                $base->mPath[0]
+                            )
                         ) {
                             // This is a (platform-independent) Windows drive
                             // letter quirk. Both url’s and base’s host are null
@@ -669,8 +657,7 @@ class URLRecord
                     break;
 
                 case self::FILE_HOST_STATE:
-                    if (
-                        $c === ''/* EOF */ ||
+                    if ($c === ''/* EOF */ ||
                         $c === '/' ||
                         $c === '\\' ||
                         $c === '?' ||
@@ -678,12 +665,10 @@ class URLRecord
                     ) {
                         $pointer--;
 
-                        if (
-                            preg_match(
-                                URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
-                                $buffer
-                            )
-                        ) {
+                        if (preg_match(
+                            URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
+                            $buffer
+                        )) {
                             // This is a (platform-independent) Windows drive
                             // letter quirk. buffer is not reset here and
                             // instead used in the path state.
@@ -728,8 +713,7 @@ class URLRecord
                     break;
 
                 case self::PATH_STATE:
-                    if (
-                        $c === ''/* EOF */ ||
+                    if ($c === ''/* EOF */ ||
                         $c === '/' ||
                         ($url->isSpecial() && $c === '\\') ||
                         (!$aStateOverride && ($c === '?' || $c === '#'))
@@ -746,21 +730,20 @@ class URLRecord
                             if ($c !== '/' && !($urlIsSpecial && $c === '\\')) {
                                 $url->mPath->push('');
                             }
-                        } elseif (
-                            isset(self::$singleDotPathSegment[$buffer]) &&
+                        } elseif (isset(self::$singleDotPathSegment[$buffer]) &&
                             $c !== '/' &&
                             !($url->isSpecial() && $c === '\\')
                         ) {
                             $url->mPath->push('');
-                        } elseif (
-                            !isset(self::$singleDotPathSegment[$buffer])
-                        ) {
-                            if (
-                                $url->mScheme === 'file' &&
+                        } elseif (!isset(
+                            self::$singleDotPathSegment[$buffer]
+                        )) {
+                            if ($url->mScheme === 'file' &&
                                 $url->mPath->isEmpty() &&
                                 preg_match(
                                     URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
-                                    $buffer)
+                                    $buffer
+                                )
                             ) {
                                 if ($url->mHost !== null) {
                                     // Syntax violation
@@ -787,8 +770,7 @@ class URLRecord
                             $state = self::FRAGMENT_STATE;
                         }
                     } else {
-                        if (
-                            !preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
+                        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
                             $c !== '%'
                         ) {
                             // Syntax violation
@@ -826,16 +808,14 @@ class URLRecord
                         $url->mFragment = '';
                         $state = self::FRAGMENT_STATE;
                     } else {
-                        if (
-                            $c !== ''/* EOF */ &&
+                        if ($c !== ''/* EOF */ &&
                             !preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
                             $c !== '%'
                         ) {
                             // Syntax violation
                         }
 
-                        if (
-                            $c === '%' &&
+                        if ($c === '%' &&
                             !ctype_xdigit(
                                 mb_substr($input, $pointer + 1, 2, $encoding)
                             )
@@ -855,14 +835,12 @@ class URLRecord
                     break;
 
                 case self::QUERY_STATE:
-                    if (
-                        $c === ''/* EOF */ ||
+                    if ($c === ''/* EOF */ ||
                         (!$aStateOverride && $c === '#')
                     ) {
                         $oldEncoding = $encoding;
 
-                        if (
-                            !$url->isSpecial() ||
+                        if (!$url->isSpecial() ||
                             $url->mScheme === 'ws' ||
                             $url->mScheme === 'wss'
                         ) {
@@ -900,15 +878,13 @@ class URLRecord
                             $state = self::FRAGMENT_STATE;
                         }
                     } else {
-                        if (
-                            !preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
+                        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
                             $c !== '%'
                         ) {
                             // Syntax violation
                         }
 
-                        if (
-                            $c === '%' &&
+                        if ($c === '%' &&
                             !ctype_xdigit(
                                 mb_substr($input, $pointer + 1, 2, $encoding)
                             )
@@ -927,15 +903,13 @@ class URLRecord
                     } elseif ($c === "\0") {
                         // Syntax violation
                     } else {
-                        if (
-                            !preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
+                        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
                             $c !== '%'
                         ) {
                             // Syntax violation
                         }
 
-                        if (
-                            $c === '%' &&
+                        if ($c === '%' &&
                             !ctype_xdigit(
                                 mb_substr($input, $pointer + 1, 2, $encoding)
                             )
@@ -953,11 +927,13 @@ class URLRecord
         return $url;
     }
 
-    public function getFragment() {
+    public function getFragment()
+    {
         return $this->mFragment;
     }
 
-    public function getHost() {
+    public function getHost()
+    {
         return $this->mHost;
     }
 
@@ -968,7 +944,8 @@ class URLRecord
      *
      * @return Origin
      */
-    public function getOrigin() {
+    public function getOrigin()
+    {
         switch ($this->mScheme) {
             case 'blob':
                 $url = self::basicURLParser($this->mPath[0]);
@@ -1176,15 +1153,16 @@ class URLRecord
     {
         if ($aPassword === '') {
             $this->mPassword = null;
-        } else {
-            $this->mPassword = '';
+            return;
+        }
 
-            for ($i = 0, $len = mb_strlen($aPassword); $i < $len; $i++) {
-                $this->mPassword .= URLUtils::utf8PercentEncode(
-                    mb_substr($aPassword, $i, 1),
-                    URLUtils::ENCODE_SET_USERINFO
-                );
-            }
+        $this->mPassword = '';
+
+        for ($i = 0, $len = mb_strlen($aPassword); $i < $len; $i++) {
+            $this->mPassword .= URLUtils::utf8PercentEncode(
+                mb_substr($aPassword, $i, 1),
+                URLUtils::ENCODE_SET_USERINFO
+            );
         }
     }
 
@@ -1278,16 +1256,16 @@ class URLRecord
      *
      * @param  URLRecord $aUrl The URL of the path that is to be popped.
      */
-    protected static function popURLPath(URLRecord $aUrl) {
+    protected static function popURLPath(URLRecord $aUrl)
+    {
         if (!$aUrl->mPath->isEmpty()) {
             $containsDriveLetter = false;
 
             foreach ($aUrl->mPath as $path) {
-                if (
-                    preg_match(
-                        URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
-                        $path)
-                ) {
+                if (preg_match(
+                    URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
+                    $path
+                )) {
                     $containsDriveLetter = true;
                     break;
                 }

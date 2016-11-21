@@ -10,7 +10,8 @@ use phpjs\Utils;
  * @see https://url.spec.whatwg.org/#urlsearchparams
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
  */
-class URLSearchParams implements \Iterator {
+class URLSearchParams implements \Iterator
+{
     private $mIndex;
     private $mParams;
     private $mPosition;
@@ -61,7 +62,6 @@ class URLSearchParams implements \Iterator {
     public function __toString()
     {
         $list = array();
-        $output = '';
 
         foreach ($this->mIndex as $sequenceId => $name) {
             $list[] = [
@@ -191,7 +191,8 @@ class URLSearchParams implements \Iterator {
      *
      * @return int
      */
-    public function key() {
+    public function key()
+    {
         return $this->mPosition;
     }
 
@@ -306,7 +307,8 @@ class URLSearchParams implements \Iterator {
      *
      * @internal
      */
-    protected function update() {
+    protected function update()
+    {
         if ($this->mUrl) {
             $this->mUrl->setQuery($this->__toString());
         }

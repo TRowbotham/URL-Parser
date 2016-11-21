@@ -88,7 +88,7 @@ class URL
 
             case 'pathname':
                 if ($this->mUrl->isFlagSet(
-                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
+                    URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                 )) {
                     return $this->mUrl->getPath()[0];
                 }
@@ -123,7 +123,6 @@ class URL
 
             case 'username':
                 return $this->mUrl->getUsername();
-
         }
     }
 
@@ -164,7 +163,7 @@ class URL
 
             case 'host':
                 if ($this->mUrl->isFlagSet(
-                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
+                    URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                 )) {
                     // Terminate these steps
                     return;
@@ -182,7 +181,7 @@ class URL
 
             case 'hostname':
                 if ($this->mUrl->isFlagSet(
-                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
+                    URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                 )) {
                     // Terminate these steps
                     return;
@@ -233,7 +232,7 @@ class URL
 
             case 'pathname':
                 if ($this->mUrl->isFlagSet(
-                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
+                    URLRecord::FLAG_CANNOT_BE_A_BASE_URL
                 )) {
                     // Terminate these steps
                     return;
@@ -319,7 +318,8 @@ class URL
                 if ($this->mUrl->getHost() === null ||
                     $this->mUrl->isFlagSet(
                         URLRecord::FLAG_CANNOT_BE_A_BASE_URL
-                )) {
+                    )
+                ) {
                     // Terminate these steps
                     return;
                 }

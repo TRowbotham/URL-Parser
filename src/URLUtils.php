@@ -129,10 +129,9 @@ abstract class URLUtils
         $output = '';
 
         for ($i = 0, $len = strlen($aByteSequence); $i < $len; $i++) {
-            if ($aByteSequence[$i] != '%') {
+            if ($aByteSequence[$i] !== '%') {
                 $output .= $aByteSequence[$i];
-            } elseif (
-                $aByteSequence[$i] == '%' &&
+            } elseif ($aByteSequence[$i] === '%' &&
                 !ctype_xdigit(substr($aByteSequence, $i + 1, 2))
             ) {
                 $output .= $aByteSequence[$i];

@@ -106,14 +106,12 @@ class Origin
             // identical and non-null, then return true. Otherwise, if A and B
             // are same origin and their domains are identical and null, then
             // return true.
-            if (
-                $this->mScheme === $aOther->mScheme &&
+            if ($this->mScheme === $aOther->mScheme &&
                 $this->mDomain !== null &&
                 $this->mDomain === $aOther->mDomain
             ) {
                 return true;
-            } elseif (
-                $this->isSameOrigin($aOther) &&
+            } elseif ($this->isSameOrigin($aOther) &&
                 $this->mDomain === $aOther->mDomain &&
                 $this->mDomain === null
             ) {
