@@ -18,34 +18,27 @@ class URLSearchParams implements \Iterator
     private $mSequenceId;
     private $mUrl;
 
-    public function __construct($aInit = '')
+    /**
+     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
+     *
+     * @param URLSearchParams|string $init
+     */
+    public function __construct($init = '')
     {
-        $init = Utils::DOMString($aInit);
+        $this->mIndex = [];
+        $this->mParams = [];
+        $this->mSequenceId = 0;
         $this->mPosition = 0;
         $this->mUrl = null;
 
-        if (is_string($init)) {
-            $this->mIndex = [];
-            $this->mParams = [];
-            $this->mSequenceId = 0;
-
-            // If init is given, is a string, and starts with "?", remove the
-            // first code point from init.
-            if ($init !== '' && mb_substr($init, 0, 1) === '?') {
+        // If $init is given, is a string, and starts with "?", remove the
+        // first code point from $init.
+        if (func_num_args() > 0) {
+            if (is_string($init) && mb_substr($init, 0, 1) === '?') {
                 $init = mb_substr($init, 1);
             }
 
-            $pairs = URLUtils::urlencodedStringParser($init);
-
-            foreach ($pairs as $pair) {
-                $this->mIndex[$this->mSequenceId] = $pair['name'];
-                $this->mParams[$pair['name']][$this->mSequenceId++] =
-                    $pair['value'];
-            }
-        } elseif ($init instanceof self) {
-            $this->mIndex = $init->mIndex;
-            $this->mParams = $init->mParams;
-            $this->mSequenceId = $init->mSequenceId;
+            $this->init($init);
         }
     }
 
@@ -71,6 +64,50 @@ class URLSearchParams implements \Iterator
         }
 
         return URLUtils::urlencodedSerializer($list);
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#concept-urlsearchparams-new
+     *
+     * @internal
+     *
+     * @param  URLSearchParams|string $init The query string or another
+     *                                      URLSearchParams object.
+     *
+     * @param  URLRecord|null         $url  The associated URLRecord object.
+     *
+     * @return URLSearchParams
+     */
+    public static function create($init, URLRecord $url = null)
+    {
+        $query = new self();
+        $query->mUrl = $url;
+        $query->init($init);
+
+        return $query;
+    }
+
+    /**
+     * @internal
+     *
+     * @param  URLSearchParams|string $init
+     */
+    private function init($init)
+    {
+        if (is_string($init)) {
+            $pairs = URLUtils::urlencodedStringParser($init);
+
+            foreach ($pairs as $pair) {
+                $this->mIndex[$this->mSequenceId] = $pair['name'];
+                $this->mParams[$pair['name']][
+                    $this->mSequenceId++
+                ] = $pair['value'];
+            }
+        } elseif ($init instanceof self) {
+            $this->mIndex = $init->mIndex;
+            $this->mParams = $init->mParams;
+            $this->mSequenceId = $init->mSequenceId;
+        }
     }
 
     /**
@@ -285,18 +322,6 @@ class URLSearchParams implements \Iterator
                     $pair['value'];
             }
         }
-    }
-
-    /**
-     * Set's the URLSearchParam's associated URL object.
-     *
-     * @internal
-     *
-     * @param URLRecord|null $aUrl The associated URL object.
-     */
-    public function _setUrl(URLRecord $aUrl = null)
-    {
-        $this->mUrl = $aUrl;
     }
 
     /**

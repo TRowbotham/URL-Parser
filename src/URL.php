@@ -36,10 +36,8 @@ class URL
         }
 
         $this->mUrl = $parsedURL;
-        $query = $this->mUrl->getQuery();
-        $query = $query === null ? '' : '?' . $query;
-        $this->mSearchParams = new URLSearchParams($query);
-        $this->mSearchParams->_setUrl($parsedURL);
+        $query = $this->mUrl->getQuery() ?: '';
+        $this->mSearchParams = URLSearchParams::create($query, $parsedURL);
     }
 
     public function __destruct()
