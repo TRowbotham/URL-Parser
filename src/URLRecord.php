@@ -28,14 +28,18 @@ class URLRecord
     const FLAG_CANNOT_BE_A_BASE_URL = 1;
 
     private static $singleDotPathSegment = array(
-        '.' => '',
-        '%2e' => ''
+        '.'   => '',
+        '%2e' => '',
+        '%2E' => ''
     );
     private static $doubleDotPathSegment = array(
-        '..' => '',
-        '.%2e' => '',
-        '%2e.' => '',
-        '%2e%2e' => ''
+        '..'     => '',
+        '.%2e'   => '',
+        '.%2E'   => '',
+        '%2e.'   => '',
+        '%2E.'   => '',
+        '%2e%2e' => '',
+        '%2E%2E' => ''
     );
 
     private $mFlags;
