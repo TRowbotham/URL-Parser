@@ -69,10 +69,30 @@ abstract class URLUtils
         $result = idn_to_ascii(
             $aDomain,
             0,
-            INTL_IDNA_VARIANT_UTS46
+            INTL_IDNA_VARIANT_UTS46,
+            $info
         );
 
-        if (!$result) {
+        // PHP's idn_to_ascii function does not offer a way to disable the
+        // check on the domain's DNS length, so we work around it here by
+        // returning $aDomain if it is the empty string or, if the conversion
+        // failed due to the length of the labels or domain name, we return
+        // the result of the idn_to_ascii operation. PHP seems to be really
+        // inconsistent here with the result of idn_to_ascii vs giving
+        // meaningful errors as it often returns false without populating the
+        // $info array.
+        if ($aDomain === '') {
+            return $aDomain;
+        }
+
+        if ($info !== null && !empty($info) &&
+            ($info['errors'] & IDNA_ERROR_LABEL_TOO_LONG ||
+            $info['errors'] & IDNA_ERROR_DOMAIN_NAME_TOO_LONG)
+        ) {
+            return $info['result'];
+        }
+
+        if ($result === false) {
             // Syntax violation
             return false;
         }
@@ -97,10 +117,30 @@ abstract class URLUtils
         $result = idn_to_utf8(
             $aDomain,
             0,
-            INTL_IDNA_VARIANT_UTS46
+            INTL_IDNA_VARIANT_UTS46,
+            $info
         );
 
-        if (!$result) {
+        // PHP's idn_to_ascii function does not offer a way to disable the
+        // check on the domain's DNS length, so we work around it here by
+        // returning $aDomain if it is the empty string or, if the conversion
+        // failed due to the length of the labels or domain name, we return
+        // the result of the idn_to_ascii operation. PHP seems to be really
+        // inconsistent here with the result of idn_to_ascii vs giving
+        // meaningful errors as it often returns false without populating the
+        // $info array.
+        if ($aDomain === '') {
+            return $aDomain;
+        }
+
+        if ($info !== null && !empty($info) &&
+            ($info['errors'] & IDNA_ERROR_LABEL_TOO_LONG ||
+            $info['errors'] & IDNA_ERROR_DOMAIN_NAME_TOO_LONG)
+        ) {
+            return $info['result'];
+        }
+
+        if ($result === false) {
             // Syntax violation
             return false;
         }

@@ -44,7 +44,7 @@ abstract class HostFactory
             return false;
         }
 
-        $ipv4Host = IPv4Address::parse($asciiDomain);
+        $ipv4Host = $asciiDomain === '' ? '' : IPv4Address::parse($asciiDomain);
 
         if ($ipv4Host instanceof IPv4Address || $ipv4Host === false) {
             return $ipv4Host;
