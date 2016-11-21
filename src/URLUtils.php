@@ -162,27 +162,19 @@ abstract class URLUtils
         $output = '';
 
         for ($i = 0, $len = strlen($aInput); $i < $len; $i++) {
-            $byte = ord($aInput[$i]);
-
-            switch (true) {
-                case ($byte == 0x20):
-                    $output .= chr(0x2B);
-
-                    break;
-
-                case ($byte == 0x2A):
-                case ($byte == 0x2D):
-                case ($byte == 0x2E):
-                case !($byte < 0x30 || $byte > 0x39):
-                case !($byte < 0x41 || $byte > 0x5A):
-                case ($byte == 0x5F):
-                case !($byte < 0x61 || $byte > 0x7A):
-                    $output .= $aInput[$i];
-
-                    break;
-
-                default:
-                    $output .= rawurlencode($aInput[$i]);
+            if ($aInput[$i] == "\x20") {
+                $output .= "\x2B";
+            } elseif ($aInput[$i] === "\x2A" ||
+                $aInput[$i] === "\x2D" ||
+                $aInput[$i] === "\x2E" ||
+                ($aInput[$i] >= "\x30" && $aInput[$i] <= "\x39") ||
+                ($aInput[$i] >= "\x41" && $aInput[$i] <= "\x5A") ||
+                $aInput[$i] === "\x5F" ||
+                ($aInput[$i] >= "\x61" && $aInput[$i] <= "\x7A")
+            ) {
+                $output .= $aInput[$i];
+            } else {
+                $output .= rawurlencode($aInput[$i]);
             }
         }
 
@@ -352,7 +344,7 @@ abstract class URLUtils
     ) {
         // The Simple Encode Set
         $inCodeSet = preg_match(self::REGEX_C0_CONTROLS, $aCodePoint) ||
-            ord($aCodePoint) > 0x7E;
+            $aCodePoint > "\x7E";
 
         if (!$inCodeSet && $aEncodeSet >= self::ENCODE_SET_DEFAULT) {
             $inCodeSet = $inCodeSet || preg_match(

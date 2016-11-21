@@ -876,15 +876,12 @@ class URLInternal
                         $length = strlen($buffer);
 
                         for ($i = 0; $i < $length; $i++) {
-                            $byteOrd = ord($buffer[$i]);
-
-                            if (
-                                $byteOrd < 0x21 ||
-                                $byteOrd > 0x7E ||
-                                $byteOrd == 0x22 ||
-                                $byteOrd == 0x23 ||
-                                $byteOrd == 0x3C ||
-                                $byteOrd == 0x3E
+                            if ($buffer[$i] < "\x21" ||
+                                $buffer[$i] > "\x7E" ||
+                                $buffer[$i] === "\x22" ||
+                                $buffer[$i] === "\x23" ||
+                                $buffer[$i] === "\x3C" ||
+                                $buffer[$i] === "\x3E"
                             ) {
                                 $url->mQuery .= rawurlencode($buffer[$i]);
                             } else {
