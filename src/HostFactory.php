@@ -19,15 +19,13 @@ abstract class HostFactory
      */
     public static function parse($aInput, $aUnicodeFlag = null)
     {
-        if ($aInput !== '' && $aInput[0] === '[') {
-            $len = strlen($aInput);
-
-            if ($aInput[$len - 1] !== ']') {
+        if (mb_substr($aInput, 0, 1) === '[') {
+            if (mb_substr($aInput, -1) !== ']') {
                 // Syntax violation
                 return false;
             }
 
-            return IPv6Address::parse(substr($aInput, 1, $len - 2));
+            return IPv6Address::parse(mb_substr($aInput, 1, -1));
         }
 
         // TODO: Let domain be the result of utf-8 decode without BOM on the
