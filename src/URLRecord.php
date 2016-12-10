@@ -917,7 +917,7 @@ class URLRecord
                             // Syntax violation
                         }
 
-                        $url->mFragment .= $c;
+                        $url->mFragment .= URLUtils::utf8PercentEncode($c);
                     }
 
                     break;
