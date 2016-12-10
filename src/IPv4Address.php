@@ -145,12 +145,14 @@ class IPv4Address extends Host
             $input = substr($input, 2);
             $R = 16;
             $len -= 2;
-        } elseif ($input === '') {
-            return 0;
         } elseif ($len > 1 && $input[0] === '0') {
             $syntaxViolationFlag = true;
             $input = substr($input, 1);
             $R = 8;
+        }
+
+        if ($input === '') {
+            return 0;
         }
 
         if (($R == 10 && !ctype_digit($input)) ||
