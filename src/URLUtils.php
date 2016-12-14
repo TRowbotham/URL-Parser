@@ -67,9 +67,12 @@ abstract class URLUtils
      */
     public static function domainTo($aType, $aDomain)
     {
+        $options = 0;
+
         // PHP's function uses the word utf8 instead of unicode.
         if ($aType === 'unicode') {
             $aType = 'utf8';
+            $options = IDNA_NONTRANSITIONAL_TO_UNICODE;
         }
 
         $func = 'idn_to_' . $aType;
@@ -79,7 +82,7 @@ abstract class URLUtils
         // to Transitional_Processing, and VerifyDnsLength set to false.
         $result = $func(
             $aDomain,
-            0,
+            $options,
             INTL_IDNA_VARIANT_UTS46,
             $info
         );
