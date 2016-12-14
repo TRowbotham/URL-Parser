@@ -37,9 +37,9 @@ abstract class URLUtils
     const REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER = '/[\x{0041}-\x{005A}' .
         '\x{0061}-\x{007A}]:/';
 
-    const ENCODE_SET_SIMPLE = 1;
-    const ENCODE_SET_DEFAULT = 2;
-    const ENCODE_SET_USERINFO = 3;
+    const ENCODE_SET_SIMPLE   = '\x00-\x1F\x7E-\x{10FFFF}';
+    const ENCODE_SET_DEFAULT  = self::ENCODE_SET_SIMPLE . '\x20"#<>?`{}';
+    const ENCODE_SET_USERINFO = self::ENCODE_SET_DEFAULT . '\/:;=@[\\\\\]^|';
 
     public static $specialSchemes = [
         'ftp'    => 21,
@@ -381,35 +381,10 @@ abstract class URLUtils
         $aCodePoint,
         $aEncodeSet = self::ENCODE_SET_SIMPLE
     ) {
-        // The Simple Encode Set
-        $inCodeSet = preg_match(self::REGEX_C0_CONTROLS, $aCodePoint) ||
-            $aCodePoint > "\x7E";
-
-        if (!$inCodeSet && $aEncodeSet >= self::ENCODE_SET_DEFAULT) {
-            $inCodeSet = $inCodeSet || preg_match(
-                '/[\x{0020}"#<>?`{}]/',
-                $aCodePoint
-            );
-        }
-
-        if (!$inCodeSet && $aEncodeSet == self::ENCODE_SET_USERINFO) {
-            $inCodeSet = $inCodeSet || preg_match(
-                '/[\/:;=@[\\\\\]^|]/',
-                $aCodePoint
-            );
-        }
-
-        if (!$inCodeSet) {
+        if (!preg_match('/[' . $aEncodeSet . ']/u', $aCodePoint)) {
             return $aCodePoint;
         }
 
-        $bytes = self::encode($aCodePoint);
-        $result = '';
-
-        for ($i = 0, $len = strlen($bytes); $i < $len; $i++) {
-            $result .= rawurlencode($bytes[$i]);
-        }
-
-        return $result;
+        return rawurlencode($aCodePoint);
     }
 }
