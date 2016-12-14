@@ -31,7 +31,7 @@ abstract class HostFactory
         // TODO: Let domain be the result of utf-8 decode without BOM on the
         // percent decoding of utf-8 encode on input
         $domain = URLUtils::percentDecode(URLUtils::encode($aInput));
-        $asciiDomain = URLUtils::domainToASCII($domain);
+        $asciiDomain = URLUtils::domainTo('ascii', $domain);
 
         if ($asciiDomain === false) {
             return false;
@@ -49,7 +49,7 @@ abstract class HostFactory
         }
 
         return $aUnicodeFlag ?
-            URLUtils::domainToUnicode($asciiDomain) : $asciiDomain;
+            URLUtils::domainTo('unicode', $asciiDomain) : $asciiDomain;
     }
 
     /**

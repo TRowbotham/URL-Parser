@@ -157,7 +157,7 @@ class Origin
 
         $host = $this->mHost;
         $unicodeHost = $host instanceof Host ?
-            $host : URLUtils::domainToUnicode($host);
+            $host : URLUtils::domainTo('unicode', $host);
         $unicodeOrigin = new Origin(
             $this->mScheme,
             $unicodeHost,

@@ -55,78 +55,41 @@ abstract class URLUtils
      * Converts a domain name to ASCII.
      *
      * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
+     * @see https://url.spec.whatwg.org/#concept-domain-to-unicode
+     *
+     * @param string $aType   Either the "unicode" or "ascii" case-sensitive
+     *     string.
      *
      * @param string $aDomain The domain name to be converted.
      *
      * @return string|bool Returns the domain name upon success or false on
      *     failure.
      */
-    public static function domainToASCII($aDomain)
+    public static function domainTo($aType, $aDomain)
     {
+        // PHP's function uses the word utf8 instead of unicode.
+        if ($aType === 'unicode') {
+            $aType = 'utf8';
+        }
+
+        $func = 'idn_to_' . $aType;
+
         // Let result be the result of running Unicode ToASCII with domain_name
         // set to domain, UseSTD3ASCIIRules set to false, processing_option set
         // to Transitional_Processing, and VerifyDnsLength set to false.
-        $result = idn_to_ascii(
+        $result = $func(
             $aDomain,
             0,
             INTL_IDNA_VARIANT_UTS46,
             $info
         );
 
-        // PHP's idn_to_ascii function does not offer a way to disable the
+        // PHP's idn_to_* functions do not offer a way to disable the
         // check on the domain's DNS length, so we work around it here by
         // returning $aDomain if it is the empty string or, if the conversion
         // failed due to the length of the labels or domain name, we return
-        // the result of the idn_to_ascii operation. PHP seems to be really
-        // inconsistent here with the result of idn_to_ascii vs giving
-        // meaningful errors as it often returns false without populating the
-        // $info array.
-        if ($aDomain === '') {
-            return $aDomain;
-        }
-
-        if ($info !== null && !empty($info) &&
-            ($info['errors'] & IDNA_ERROR_LABEL_TOO_LONG ||
-            $info['errors'] & IDNA_ERROR_DOMAIN_NAME_TOO_LONG)
-        ) {
-            return $info['result'];
-        }
-
-        if ($result === false) {
-            // Syntax violation
-            return false;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Converts a domain name to Unicode.
-     *
-     * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
-     *
-     * @param string $aDomain The domain name to be converted.
-     *
-     * @return string|bool Returns the domain name upon success or false on
-     *     failure.
-     */
-    public static function domainToUnicode($aDomain)
-    {
-        // Let result be the result of running Unicode ToUnicode with
-        // domain_name set to domain, UseSTD3ASCIIRules set to false.
-        $result = idn_to_utf8(
-            $aDomain,
-            0,
-            INTL_IDNA_VARIANT_UTS46,
-            $info
-        );
-
-        // PHP's idn_to_ascii function does not offer a way to disable the
-        // check on the domain's DNS length, so we work around it here by
-        // returning $aDomain if it is the empty string or, if the conversion
-        // failed due to the length of the labels or domain name, we return
-        // the result of the idn_to_ascii operation. PHP seems to be really
-        // inconsistent here with the result of idn_to_ascii vs giving
+        // the result of the idn_to_* operation. PHP seems to be really
+        // inconsistent here with the result of idn_to_* vs giving
         // meaningful errors as it often returns false without populating the
         // $info array.
         if ($aDomain === '') {
