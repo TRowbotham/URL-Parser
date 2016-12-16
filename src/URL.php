@@ -128,11 +128,6 @@ class URL
     {
         $value = Utils::DOMString($aValue);
 
-        // Treat all non-string values as an empty string.
-        if (!is_string($aValue)) {
-            $value = '';
-        }
-
         switch ($aName) {
             case 'hash':
                 if ($this->mUrl->getScheme() == 'javascript') {
