@@ -106,7 +106,7 @@ class URL
             case 'port':
                 $port = $this->mUrl->getPort();
 
-                return $port === null ? '' : $port;
+                return $port === null ? '' : (string) $port;
 
             case 'protocol':
                 return $this->mUrl->getScheme() . ':';
