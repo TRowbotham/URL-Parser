@@ -131,11 +131,10 @@ class URLRecord
         }
 
         // A URL should not contain any tab or newline characters.
-        if (preg_match('/[\x09\x0A\x0D]+/', $input)) {
-            // Syntax violation
+        $input = preg_replace('/[\x09\x0A\x0D]+/u', '', $input, -1, $count);
 
-            // Remove all tab and newline characters.
-            $input = str_replace(["\t", "\n", "\r"], '', $input);
+        if ($count > 0) {
+            // Syntax violation
         }
 
         $state = $aStateOverride ?: self::SCHEME_START_STATE;
