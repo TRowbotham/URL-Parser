@@ -617,7 +617,7 @@ class URLRecord
                         if ($shouldPopPath) {
                             $url->mHost = $base->mHost;
                             $url->mPath = clone $base->mPath;
-                            self::popURLPath($url);
+                            self::shortenPath($url);
                         } elseif ($base && $base->mScheme === 'file') {
                             // Syntax violation
                         }
@@ -724,7 +724,7 @@ class URLRecord
                         }
 
                         if (isset(self::$doubleDotPathSegment[$buffer])) {
-                            self::popURLPath($url);
+                            self::shortenPath($url);
 
                             if ($c !== '/' && !($urlIsSpecial && $c === '\\')) {
                                 $url->mPath->push('');
@@ -1251,28 +1251,28 @@ class URLRecord
      * Removes the last string from a URL's path if its scheme is not "file"
      * and the path does not contain a normalized Windows drive letter.
      *
-     * @see https://url.spec.whatwg.org/#pop-a-urls-path
+     * @see https://url.spec.whatwg.org/#shorten-a-urls-path
      *
      * @param  URLRecord $aUrl The URL of the path that is to be popped.
      */
-    protected static function popURLPath(URLRecord $aUrl)
+    protected static function shortenPath(URLRecord $aUrl)
     {
-        if (!$aUrl->mPath->isEmpty()) {
-            $containsDriveLetter = false;
+        $count = $aUrl->mPath->count();
 
-            foreach ($aUrl->mPath as $path) {
-                if (preg_match(
-                    URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
-                    $path
-                )) {
-                    $containsDriveLetter = true;
-                    break;
-                }
-            }
-
-            if ($aUrl->mScheme !== 'file' || !$containsDriveLetter) {
-                $aUrl->mPath->pop();
-            }
+        if ($count == 0) {
+            return;
         }
+
+        if ($aUrl->mScheme === 'file' &&
+            $count == 1 &&
+            preg_match(
+                self::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
+                $aUrl->mPath[0]
+            )
+        ) {
+            return;
+        }
+
+        $aUrl->mPath->pop();
     }
 }
