@@ -54,6 +54,11 @@ class URLSearchParams implements \Iterator
      */
     public function __toString()
     {
+        return $this->toString();
+    }
+
+    public function toString()
+    {
         $list = array();
 
         foreach ($this->mIndex as $sequenceId => $name) {
