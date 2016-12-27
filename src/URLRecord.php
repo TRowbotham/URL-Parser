@@ -1266,7 +1266,7 @@ class URLRecord
         if ($aUrl->mScheme === 'file' &&
             $count == 1 &&
             preg_match(
-                self::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
+                URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
                 $aUrl->mPath[0]
             )
         ) {
