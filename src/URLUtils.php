@@ -298,28 +298,28 @@ abstract class URLUtils
         $output = '';
 
         foreach ($aTuples as $key => $tuple) {
-            $outputPair = [];
-            $outputPair['name'] = self::urlencodedByteSerializer(
+            $name = self::urlencodedByteSerializer(
                 mb_convert_encoding($tuple['name'], $encoding)
             );
+            $value = $tuple['value'];
 
-            if (isset($tuple['type']) && $tuple['type'] === 'hidden' &&
-                $tuple['name'] === '_charset_'
-            ) {
-                $outputPair['value'] = $encoding;
-            } elseif (isset($tuple['type']) && $tuple['type'] === 'file') {
-                $outputPair['value'] = $tuple['value'];
-            } else {
-                $outputPair['value'] = self::urlencodedByteSerializer(
-                    mb_convert_encoding($tuple['value'], $encoding)
-                );
+            if (isset($tuple['type'])) {
+                if ($tuple['type'] === 'hidden' && $name === '_charset_') {
+                    $value = $encoding;
+                } elseif ($tuple['type'] === 'file') {
+                    // TODO: set $value to value's filename.
+                }
             }
+
+            $value = self::urlencodedByteSerializer(
+                mb_convert_encoding($value, $encoding)
+            );
 
             if ($key > 0) {
                 $output .= '&';
             }
 
-            $output .= $outputPair['name'] . '=' . $outputPair['value'];
+            $output .= $name . '=' . $value;
         }
 
         return $output;
