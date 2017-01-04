@@ -786,15 +786,10 @@ class URLRecord
                             // Syntax violation
                         }
 
-                        if ($c === '%' && strtolower($remaining) === '2e') {
-                            $buffer .= '.';
-                            $pointer += 2;
-                        } else {
-                            $buffer .= URLUtils::utf8PercentEncode(
-                                $c,
-                                URLUtils::ENCODE_SET_DEFAULT
-                            );
-                        }
+                        $buffer .= URLUtils::utf8PercentEncode(
+                            $c,
+                            URLUtils::ENCODE_SET_DEFAULT
+                        );
                     }
 
                     break;
