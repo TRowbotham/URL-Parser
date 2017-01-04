@@ -57,7 +57,7 @@ class URLRecord
         $this->mFlags = 0;
         $this->mFragment = null;
         $this->mHost = null;
-        $this->mPassword = null;
+        $this->mPassword = '';
         $this->mPath = new \SplDoublyLinkedList();
         $this->mPort = null;
         $this->mQuery = null;
@@ -145,6 +145,7 @@ class URLRecord
         $buffer = '';
         $flag_at = false;
         $flag_array = false;
+        $passwordTokenSeenFlag = false;
         $len = mb_strlen($input, $encoding);
 
         for ($pointer = 0; $pointer <= $len; $pointer++) {
@@ -404,10 +405,8 @@ class URLRecord
                         for ($i = 0; $i < $length; $i++) {
                             $codePoint = mb_substr($buffer, $i, 1, $encoding);
 
-                            if ($codePoint === ':' &&
-                                $url->mPassword === null
-                            ) {
-                                $url->mPassword = '';
+                            if ($codePoint === ':' && !$passwordTokenSeenFlag) {
+                                $passwordTokenSeenFlag = true;
                                 continue;
                             }
 
@@ -416,7 +415,7 @@ class URLRecord
                                 URLUtils::ENCODE_SET_USERINFO
                             );
 
-                            if ($url->mPassword !== null) {
+                            if ($passwordTokenSeenFlag) {
                                 $url->mPassword .= $encodedCodePoints;
                             } else {
                                 $url->mUsername .= $encodedCodePoints;
@@ -1077,10 +1076,10 @@ class URLRecord
         if ($this->mHost !== null) {
             $output .= '//';
 
-            if ($this->mUsername !== '' || $this->mPassword !== null) {
+            if ($this->mUsername !== '' || $this->mPassword !== '') {
                 $output .= $this->mUsername;
 
-                if ($this->mPassword !== null) {
+                if ($this->mPassword !== '') {
                     $output .= ':' . $this->mPassword;
                 }
 
@@ -1145,11 +1144,6 @@ class URLRecord
      */
     public function setPasswordSteps($aPassword)
     {
-        if ($aPassword === '') {
-            $this->mPassword = null;
-            return;
-        }
-
         $this->mPassword = '';
 
         for ($i = 0, $len = mb_strlen($aPassword); $i < $len; $i++) {

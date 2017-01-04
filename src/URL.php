@@ -80,9 +80,7 @@ class URL
                 return $this->mUrl->getOrigin()->serializeAsUnicode();
 
             case 'password':
-                $password = $this->mUrl->getPassword();
-
-                return $password === null ? '' : $password;
+                return $this->mUrl->getPassword();
 
             case 'pathname':
                 if ($this->mUrl->isFlagSet(
