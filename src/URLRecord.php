@@ -160,8 +160,10 @@ class URLRecord
                         $state = self::NO_SCHEME_STATE;
                         $pointer--;
                     } else {
-                        // Syntax violation. Terminate this algorithm.
-                        break 2;
+                        // Syntax violation.
+                        // Note: This indication of failture is used exclusively
+                        // by the Location object's protocol attribute.
+                        return false;
                     }
 
                     break;
@@ -240,8 +242,13 @@ class URLRecord
                         // the loop incrementing pointer after this iteration.
                         $pointer = -1;
                     } else {
-                        // Syntax violation. Terminate this algorithm.
-                        break 2;
+                        // Syntax violation.
+                        // Note: This indication of failure is used exclusively
+                        // by the Location object's protocol attribute.
+                        // Furthermore, the non-failure termination earlier in
+                        // this state is an intentional difference for defining
+                        // that attribute.
+                        return false;
                     }
 
                     break;
