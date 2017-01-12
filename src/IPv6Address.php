@@ -109,11 +109,20 @@ class IPv6Address extends Host
         }
 
         // Step 9
-        $dotsSeen = 0;
+        $numbersSeen = 0;
 
         // Step 10
         while ($c !== '') {
             $value = null;
+
+            if ($numbersSeen > 0) {
+                if ($c === '.' && $numbersSeen < 4) {
+                    $c = mb_substr($aInput, ++$pointer, 1);
+                } else {
+                    // Syntax violation
+                    return false;
+                }
+            }
 
             if (!ctype_digit($c)) {
                 // Syntax violation
@@ -140,28 +149,17 @@ class IPv6Address extends Host
                 }
             }
 
-            if ($dotsSeen < 3 && $c !== '.') {
-                // Syntax violation
-                return false;
-            }
-
             $address[$piecePointer] = $address[$piecePointer] * 0x100 + $value;
+            $numbersSeen++;
 
-            if ($dotsSeen == 1 || $dotsSeen == 3) {
+            if ($numbersSeen == 2 || $numbersSeen == 4) {
                 $piecePointer++;
             }
 
-            if ($c !== '') {
-                $pointer++;
-                $c = mb_substr($aInput, $pointer, 1);
-            }
-
-            if ($dotsSeen == 3 && $c !== '') {
+            if ($c === '' && $numbersSeen != 4) {
                 // Syntax violation
                 return false;
             }
-
-            $dotsSeen++;
         }
 
         Finale:
