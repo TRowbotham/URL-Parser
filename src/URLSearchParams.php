@@ -1,7 +1,10 @@
 <?php
 namespace phpjs\urls;
 
+use Iterator;
+use phpjs\exceptions\TypeError;
 use phpjs\Utils;
+use Traversable;
 
 /**
  * An object containing a list of all URL query parameters.  This allows you to
@@ -10,7 +13,7 @@ use phpjs\Utils;
  * @see https://url.spec.whatwg.org/#urlsearchparams
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
  */
-class URLSearchParams implements \Iterator
+class URLSearchParams implements Iterator
 {
     private $mIndex;
     private $mParams;
@@ -21,7 +24,7 @@ class URLSearchParams implements \Iterator
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
-     * @param URLSearchParams|string $init
+     * @param string[][]|object|string $init
      */
     public function __construct($init = '')
     {
@@ -99,19 +102,45 @@ class URLSearchParams implements \Iterator
      */
     private function init($init)
     {
+        if (is_array($init) || $init instanceof Traversable) {
+            foreach ($init as $pair) {
+                if (count($pair) != 2) {
+                    throw new TypeError();
+                    return;
+                }
+            }
+
+            foreach ($init as $pair) {
+                $name = Utils::DOMString($pair[0]);
+                $value = Utils::DOMString($pair[1]);
+
+                $this->mIndex[$this->mSequenceId] = $name;
+                $this->mParams[$name][$this->mSequenceId++] = $value;
+            }
+
+            return;
+        }
+
+        if (is_object($init)) {
+            foreach ($init as $name => $value) {
+                $this->mIndex[$this->mSequenceId] = $name;
+                $this->mParams[$name][$this->mSequenceId++] = Utils::DOMString(
+                    $value
+                );
+            }
+
+            return;
+        }
+
         if (is_string($init)) {
             $pairs = URLUtils::urlencodedStringParser($init);
 
             foreach ($pairs as $pair) {
                 $this->mIndex[$this->mSequenceId] = $pair['name'];
-                $this->mParams[$pair['name']][
-                    $this->mSequenceId++
-                ] = $pair['value'];
+                $this->mParams[$pair['name']][$this->mSequenceId++] = $pair[
+                    'value'
+                ];
             }
-        } elseif ($init instanceof self) {
-            $this->mIndex = $init->mIndex;
-            $this->mParams = $init->mParams;
-            $this->mSequenceId = $init->mSequenceId;
         }
     }
 
