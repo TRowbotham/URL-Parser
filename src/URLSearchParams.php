@@ -325,6 +325,87 @@ class URLSearchParams implements Iterator
     }
 
     /**
+     * Sorts the list of search params by their names by comparing their code
+     * unit values, preserving the relative order between pairs with the same
+     * name.
+     *
+     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-sort
+     */
+    public function sort()
+    {
+        $index = [];
+        $params = [];
+        $sequenceIdx = 0;
+
+        foreach ($this->mIndex as $sequenceId => $name) {
+            if ($sequenceIdx == 0) {
+                $index[] = $name;
+                $params[$name][] = $this->mParams[$name][$sequenceId];
+                $sequenceIdx++;
+                continue;
+            }
+
+            $i = $sequenceIdx - 1;
+
+            if (isset($params[$name])) {
+                while ($i >= 0) {
+                    if ($index[$i] === $name) {
+                        break;
+                    }
+
+                    $i--;
+                }
+            } else {
+                $len1 = strlen(mb_convert_encoding(
+                    $name,
+                    'UTF-16LE',
+                    'UTF-8'
+                )) / 2;
+                $len2 = strlen(mb_convert_encoding(
+                    $index[$i],
+                    'UTF-16LE',
+                    'UTF-8'
+                )) / 2;
+
+                while ($i && $len1 > $len2) {
+                    $i--;
+                    $len2 = strlen(mb_convert_encoding(
+                        $index[$i],
+                        'UTF-16LE',
+                        'UTF-8'
+                    )) / 2;
+                }
+            }
+
+            array_splice($index, $i, 0, [$name]);
+            $params[$name][] = $this->mParams[$name][$sequenceId];
+            $sequenceIdx++;
+        }
+
+        $names = [];
+
+        foreach ($index as $idx => $name) {
+            if (!isset($names[$name])) {
+                $names[$name]['index'] = 0;
+                $names[$name]['values'] = [];
+            }
+
+            $value = $params[$name][$names[$name]['index']];
+            $names[$name]['index']++;
+            $names[$name]['values'][$idx] = $value;
+        }
+
+        foreach ($names as $name => $data) {
+            $params[$name] = $data['values'];
+        }
+
+        $this->mIndex = $index;
+        $this->mParams = $params;
+        $this->mSequenceId = $sequenceIdx;
+        $this->update();
+    }
+
+    /**
      * Returns whether or not the iterator's current postion is a valid one.
      *
      * @return boolean
