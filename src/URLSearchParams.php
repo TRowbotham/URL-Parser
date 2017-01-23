@@ -348,14 +348,17 @@ class URLSearchParams implements Iterator
             $i = $sequenceIdx - 1;
 
             if (isset($params[$name])) {
-                while ($i >= 0) {
-                    if ($index[$i] === $name) {
+                $i = $sequenceIdx;
+
+                while ($i) {
+                    if ($index[$i - 1][0] === $name) {
                         break;
                     }
 
                     $i--;
                 }
             } else {
+                $i = $sequenceIdx - 1;
                 $len1 = strlen(mb_convert_encoding(
                     $name,
                     'UTF-16LE',
