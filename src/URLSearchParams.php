@@ -1,7 +1,8 @@
 <?php
 namespace phpjs\urls;
 
-use Iterator;
+use ArrayIterator;
+use IteratorAggregate;
 use phpjs\exceptions\TypeError;
 use phpjs\Utils;
 use Traversable;
@@ -13,9 +14,9 @@ use Traversable;
  * @see https://url.spec.whatwg.org/#urlsearchparams
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
  */
-class URLSearchParams implements Iterator
+class URLSearchParams implements IteratorAggregate
 {
-    private $mIndex;
+    private $mList;
     private $mParams;
     private $mPosition;
     private $mSequenceId;
@@ -28,7 +29,7 @@ class URLSearchParams implements Iterator
      */
     public function __construct($init = '')
     {
-        $this->mIndex = [];
+        $this->mList = [];
         $this->mParams = [];
         $this->mSequenceId = 0;
         $this->mPosition = 0;
@@ -62,12 +63,12 @@ class URLSearchParams implements Iterator
 
     public function toString()
     {
-        $list = array();
+        $list = [];
 
-        foreach ($this->mIndex as $sequenceId => $name) {
+        foreach ($this->mList as $sequenceId => $pair) {
             $list[] = [
-                'name' => $name,
-                'value' => $this->mParams[$name][$sequenceId]
+                'name'  => $pair[0],
+                'value' => $pair[1]
             ];
         }
 
@@ -114,7 +115,7 @@ class URLSearchParams implements Iterator
                 $name = Utils::DOMString($pair[0]);
                 $value = Utils::DOMString($pair[1]);
 
-                $this->mIndex[$this->mSequenceId] = $name;
+                $this->mList[$this->mSequenceId] = [$name, $value];
                 $this->mParams[$name][$this->mSequenceId++] = $value;
             }
 
@@ -123,7 +124,7 @@ class URLSearchParams implements Iterator
 
         if (is_object($init)) {
             foreach ($init as $name => $value) {
-                $this->mIndex[$this->mSequenceId] = $name;
+                $this->mList[$this->mSequenceId] = [$name, $value];
                 $this->mParams[$name][$this->mSequenceId++] = Utils::DOMString(
                     $value
                 );
@@ -136,7 +137,7 @@ class URLSearchParams implements Iterator
             $pairs = URLUtils::urlencodedStringParser($init);
 
             foreach ($pairs as $pair) {
-                $this->mIndex[$this->mSequenceId] = $pair['name'];
+                $this->mList[$this->mSequenceId] = [$pair['name'], $pair['value']];
                 $this->mParams[$pair['name']][$this->mSequenceId++] = $pair[
                     'value'
                 ];
@@ -162,24 +163,9 @@ class URLSearchParams implements Iterator
             return;
         }
 
-        $this->mIndex[$this->mSequenceId] = $name;
+        $this->mList[$this->mSequenceId] = [$name, $value];
         $this->mParams[$name][$this->mSequenceId++] = $value;
         $this->update();
-    }
-
-    /**
-     * Returns an array containing the query parameters name as the first
-     * index's value and the query parameters value as the second index's value.
-     *
-     * @return string[]
-     */
-    public function current()
-    {
-        $index = array_keys($this->mIndex);
-        $sequenceId = $index[$this->mPosition];
-        $name = $this->mIndex[$sequenceId];
-
-        return array($name, $this->mParams[$name][$sequenceId]);
     }
 
     /**
@@ -198,7 +184,7 @@ class URLSearchParams implements Iterator
         }
 
         foreach ($this->mParams[$name] as $key => $value) {
-            unset($this->mIndex[$key]);
+            unset($this->mList[$key]);
         }
 
         unset($this->mParams[$name]);
@@ -257,34 +243,6 @@ class URLSearchParams implements Iterator
     }
 
     /**
-     * Returns the key of the current name -> value pair of query parameters in
-     * the iterator.
-     *
-     * @return int
-     */
-    public function key()
-    {
-        return $this->mPosition;
-    }
-
-    /**
-     * Moves the the iterator to the next name -> value pair of query
-     * parameters.
-     */
-    public function next()
-    {
-        $this->mPosition++;
-    }
-
-    /**
-     * Rewinds the iterator back to the beginning position.
-     */
-    public function rewind()
-    {
-        $this->mPosition = 0;
-    }
-
-    /**
      * Sets the value of the specified key name.  If multiple pairs exist with
      * the same key name it will set the value for the first occurance of the
      * key in the query string and all other occurances will be removed from the
@@ -309,15 +267,17 @@ class URLSearchParams implements Iterator
         if (isset($this->mParams[$name])) {
             for ($i = count($this->mParams[$name]) - 1; $i > 0; $i--) {
                 end($this->mParams[$name]);
-                unset($this->mIndex[key($this->mParams[$name])]);
+                unset($this->mList[key($this->mParams[$name])]);
                 array_pop($this->mParams[$name]);
             }
 
             reset($this->mParams[$name]);
-            $this->mParams[$name][key($this->mParams[$name])] = $value;
+            $id = key($this->mParams[$name]);
+            $this->mList[$id][1] = $value;
+            $this->mParams[$name][$id] = $value;
         } else {
             // Append the value
-            $this->mIndex[$this->mSequenceId] = $name;
+            $this->mList[$this->mSequenceId] = [$name, $value];
             $this->mParams[$name][$this->mSequenceId++] = $value;
         }
 
@@ -333,25 +293,26 @@ class URLSearchParams implements Iterator
      */
     public function sort()
     {
-        $index = [];
+        $list = [];
         $params = [];
         $sequenceIdx = 0;
 
-        foreach ($this->mIndex as $sequenceId => $name) {
+        foreach ($this->mList as $sequenceId => $pair) {
+            $name = $pair[0];
+            $value = $pair[1];
+
             if ($sequenceIdx == 0) {
-                $index[] = $name;
-                $params[$name][] = $this->mParams[$name][$sequenceId];
+                $list[] = [$name, $value];
+                $params[$name] = [];
                 $sequenceIdx++;
                 continue;
             }
-
-            $i = $sequenceIdx - 1;
 
             if (isset($params[$name])) {
                 $i = $sequenceIdx;
 
                 while ($i) {
-                    if ($index[$i - 1][0] === $name) {
+                    if ($list[$i - 1][0] === $name) {
                         break;
                     }
 
@@ -359,13 +320,14 @@ class URLSearchParams implements Iterator
                 }
             } else {
                 $i = $sequenceIdx - 1;
+                $params[$name] = [];
                 $len1 = strlen(mb_convert_encoding(
                     $name,
                     'UTF-16LE',
                     'UTF-8'
                 )) / 2;
                 $len2 = strlen(mb_convert_encoding(
-                    $index[$i],
+                    $list[$i][0],
                     'UTF-16LE',
                     'UTF-8'
                 )) / 2;
@@ -373,49 +335,33 @@ class URLSearchParams implements Iterator
                 while ($i && $len1 > $len2) {
                     $i--;
                     $len2 = strlen(mb_convert_encoding(
-                        $index[$i],
+                        $list[$i][0],
                         'UTF-16LE',
                         'UTF-8'
                     )) / 2;
                 }
             }
 
-            array_splice($index, $i, 0, [$name]);
-            $params[$name][] = $this->mParams[$name][$sequenceId];
+            array_splice($list, $i, 0, [[$name, $value]]);
             $sequenceIdx++;
         }
 
-        $names = [];
-
-        foreach ($index as $idx => $name) {
-            if (!isset($names[$name])) {
-                $names[$name]['index'] = 0;
-                $names[$name]['values'] = [];
-            }
-
-            $value = $params[$name][$names[$name]['index']];
-            $names[$name]['index']++;
-            $names[$name]['values'][$idx] = $value;
+        foreach ($list as $sequenceId => $pair) {
+            $params[$pair[0]][$sequenceId] = $pair[1];
         }
 
-        foreach ($names as $name => $data) {
-            $params[$name] = $data['values'];
-        }
-
-        $this->mIndex = $index;
+        $this->mList = $list;
         $this->mParams = $params;
         $this->mSequenceId = $sequenceIdx;
         $this->update();
     }
 
     /**
-     * Returns whether or not the iterator's current postion is a valid one.
-     *
-     * @return boolean
+     * Returns an iterator in the form of string[][].
      */
-    public function valid()
+    public function getIterator()
     {
-        return $this->mPosition < count($this->mIndex);
+        return new ArrayIterator(array_values($this->mList));
     }
 
     /**
@@ -429,15 +375,19 @@ class URLSearchParams implements Iterator
      */
     public function _mutateList(array $aList = null)
     {
-        $this->mIndex = array();
+        $this->mList = array();
         $this->mParams = array();
         $this->mSequenceId = 0;
 
         if (is_array($aList)) {
             foreach ($aList as $pair) {
-                $this->mIndex[$this->mSequenceId] = $pair['name'];
-                $this->mParams[$pair['name']][$this->mSequenceId++] =
-                    $pair['value'];
+                $this->mList[$this->mSequenceId] = [
+                    $pair['name'],
+                    $pair['value']
+                ];
+                $this->mParams[$pair['name']][$this->mSequenceId++] = $pair[
+                    'value'
+                ];
             }
         }
     }
