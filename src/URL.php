@@ -196,7 +196,7 @@ class URL
                 }
 
                 $this->mUrl = $parsedURL;
-                $this->mSearchParams->_mutateList(null);
+                $this->mSearchParams->clear();
                 $query = $this->mUrl->getQuery();
 
                 if ($query !== null) {
@@ -285,7 +285,7 @@ class URL
 
                 if ($value === '') {
                     $this->mUrl->setQuery(null);
-                    $this->mSearchParams->_mutateList(null);
+                    $this->mSearchParams->clear();
 
                     return;
                 }

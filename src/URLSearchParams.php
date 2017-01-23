@@ -365,30 +365,40 @@ class URLSearchParams implements IteratorAggregate
     }
 
     /**
+     * Clears the list of search params.
+     *
+     * @internal
+     */
+    public function clear()
+    {
+        $this->mList = [];
+        $this->mParams = [];
+        $this->mSequenceId = 0;
+    }
+
+    /**
      * Mutates the the list of query parameters without going through the
      * public API.
      *
      * @internal
      *
-     * @param  array|null $aList A list of name -> value pairs to be added to
-     *     the list or null to empty the list.
+     * @param array $aList A list of name -> value pairs to be added to
+     *     the list.
      */
-    public function _mutateList(array $aList = null)
+    public function _mutateList(array $aList)
     {
-        $this->mList = array();
-        $this->mParams = array();
+        $this->mList = [];
+        $this->mParams = [];
         $this->mSequenceId = 0;
 
-        if (is_array($aList)) {
-            foreach ($aList as $pair) {
-                $this->mList[$this->mSequenceId] = [
-                    $pair['name'],
-                    $pair['value']
-                ];
-                $this->mParams[$pair['name']][$this->mSequenceId++] = $pair[
-                    'value'
-                ];
-            }
+        foreach ($aList as $pair) {
+            $this->mList[$this->mSequenceId] = [
+                $pair['name'],
+                $pair['value']
+            ];
+            $this->mParams[$pair['name']][$this->mSequenceId++] = $pair[
+                'value'
+            ];
         }
     }
 
