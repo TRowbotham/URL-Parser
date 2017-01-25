@@ -194,34 +194,10 @@ abstract class URLUtils
      *
      * @param string $aInput A byte sequence to be encoded.
      *
-     * @param string $aEncoding Optional argument used to set the character
-     *     encoding. Default is utf-8.
-     *
-     * @param bool $aUseCharset Optional argument that, if set to true,
-     *     indicates if the charset specfied in the byte sequence should be used
-     *     in place of the specified encoding argument. Default is null.
-     *
-     * @return string[]
+     * @return string[][]
      */
-    public static function urlencodedParser(
-        $aInput,
-        $aEncodingOverride = null,
-        $aUseCharset = null
-    ) {
-        $encoding = $aEncodingOverride ?: 'UTF-8';
-        $len = strlen($aInput);
-
-        if ($encoding !== 'UTF-8') {
-            for ($i = 0; $i < $len; $i++) {
-                // This can only happen if input was not generated through the
-                // application/x-www-form-urlencoded serializer or through
-                // URLSearchParams.
-                if ($aInput[$i] > "\x7F") {
-                    return false;
-                }
-            }
-        }
-
+    public static function urlencodedParser($aInput)
+    {
         $sequences = explode('&', $aInput);
         $tuples = [];
 
@@ -242,12 +218,6 @@ abstract class URLUtils
 
             $name = str_replace('+', "\x20", $name);
             $value = str_replace('+', "\x20", $value);
-
-            if ($aUseCharset && $name === '_charset_') {
-                // TODO: Let result be the result of getting an encoding for
-                // value, decoded. If result is not failure, unset use _charset_
-                // flag and set encoding to result.
-            }
 
             $tuples[] = [
                 'name' => $name,
