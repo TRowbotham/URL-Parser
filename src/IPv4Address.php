@@ -30,8 +30,11 @@ class IPv4Address extends Host
         // violation, remove it from parts.
         if ($parts[$len - 1] === '') {
             $syntaxViolation = true;
-            array_pop($parts);
-            $len--;
+
+            if ($len > 1) {
+                array_pop($parts);
+                $len--;
+            }
         }
 
         // If there are more that 4 parts, this clearly isn't an IPv4 address
