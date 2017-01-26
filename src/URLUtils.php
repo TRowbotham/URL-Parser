@@ -137,9 +137,10 @@ abstract class URLUtils
         for ($i = 0, $len = strlen($aByteSequence); $i < $len; $i++) {
             if ($aByteSequence[$i] !== '%') {
                 $output .= $aByteSequence[$i];
-            } elseif ($aByteSequence[$i] === '%' &&
-                !ctype_xdigit(substr($aByteSequence, $i + 1, 2))
-            ) {
+            } elseif (!preg_match(
+                '/%[A-Fa-f0-9]{2}/',
+                substr($aByteSequence, $i, 3)
+            )) {
                 $output .= $aByteSequence[$i];
             } else {
                 // TODO: utf-8 decode without BOM
