@@ -37,7 +37,7 @@ abstract class HostFactory
             return false;
         }
 
-        if (preg_match(URLUtils::REGEX_ASCII_DOMAIN, $asciiDomain)) {
+        if (preg_match(URLUtils::FORBIDDEN_HOST_CODEPOINT, $asciiDomain)) {
             // Syntax violation
             return false;
         }
@@ -48,8 +48,9 @@ abstract class HostFactory
             return $ipv4Host;
         }
 
-        return $aUnicodeFlag ?
-            URLUtils::domainTo('unicode', $asciiDomain) : $asciiDomain;
+        return $aUnicodeFlag
+            ? URLUtils::domainTo('unicode', $asciiDomain)
+            : $asciiDomain;
     }
 
     /**

@@ -30,8 +30,6 @@ abstract class URLUtils
         '\x{F0000}-\x{FFFFD}' .
         '\x{100000}-\x{10FFFD}' .
          ']/u';
-    const REGEX_ASCII_DOMAIN = '/[\x{0000}\x{0009}\x{000A}\x{000D}\x{0020}#%' .
-        '\/:?@[\\\\\]]/';
     const REGEX_WINDOWS_DRIVE_LETTER = '/[\x{0041}-\x{005A}\x{0061}-\x{007A}]' .
         '[:|]/';
     const REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER = '/^[\x{0041}-\x{005A}' .
@@ -40,6 +38,8 @@ abstract class URLUtils
     const ENCODE_SET_SIMPLE   = '\x00-\x1F\x7E-\x{10FFFF}';
     const ENCODE_SET_DEFAULT  = self::ENCODE_SET_SIMPLE . '\x20"#<>?`{}';
     const ENCODE_SET_USERINFO = self::ENCODE_SET_DEFAULT . '\/:;=@[\\\\\]^|';
+
+    const FORBIDDEN_HOST_CODEPOINT = '/[\x00\x09\x0A\x0D\x20#%\/:?@[\\\\\]]/u';
 
     public static $specialSchemes = [
         'ftp'    => 21,
@@ -323,5 +323,33 @@ abstract class URLUtils
         }
 
         return rawurlencode($aCodePoint);
+    }
+
+    /**
+     * @param  string $aInput
+     *
+     * @param  bool   $aIsSpecial
+     *
+     * @return Host|string|bool
+     */
+    public static function parseUrlHost($aInput, $aIsSpecial)
+    {
+        if ($aIsSpecial) {
+            return HostFactory::parse($aInput);
+        }
+
+        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $aInput)) {
+            // Syntax violation
+            return false;
+        }
+
+        $output = '';
+
+        while (($char = mb_substr($aInput, 0, 1, 'UTF-8')) !== '') {
+            $output .= self::utf8PercentEncode($char);
+            $aInput = mb_substr($aInput, 1, null, 'UTF-8');
+        }
+
+        return $output;
     }
 }

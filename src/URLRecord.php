@@ -436,6 +436,11 @@ class URLRecord
                         $c === '#') ||
                         ($url->isSpecial() && $c === '\\')
                     ) {
+                        if ($flag_at && $buffer === '') {
+                            // Syntax violation
+                            return false;
+                        }
+
                         $pointer -= mb_strlen($buffer, $encoding) + 1;
                         $buffer = '';
                         $state = self::HOST_STATE;
@@ -448,12 +453,15 @@ class URLRecord
                 case self::HOST_STATE:
                 case self::HOSTNAME_STATE:
                     if ($c === ':' && !$flag_array) {
-                        if ($url->isSpecial() && $buffer === '') {
-                            // Return failure
+                        if ($buffer === '') {
+                            // Syntax violation. Return failure
                             return false;
                         }
 
-                        $host = HostFactory::parse($buffer);
+                        $host = URLUtils::parseUrlHost(
+                            $buffer,
+                            $url->isSpecial()
+                        );
 
                         if ($host === false) {
                             // Return failure
@@ -477,11 +485,14 @@ class URLRecord
                         $pointer--;
 
                         if ($url->isSpecial() && $buffer === '') {
-                            // Return failure
+                            // Syntax violation. Return failure
                             return false;
                         }
 
-                        $host = HostFactory::parse($buffer);
+                        $host = URLUtils::parseUrlHost(
+                            $buffer,
+                            $url->isSpecial()
+                        );
 
                         if ($host === false) {
                             // Return failure
