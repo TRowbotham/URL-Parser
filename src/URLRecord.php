@@ -355,12 +355,14 @@ class URLRecord
                     break;
 
                 case self::RELATIVE_SLASH_STATE:
-                    if ($c === '/' || ($url->isSpecial() && $c === '\\')) {
+                    if ($url->isSpecial() && $c === '/' || $c === '\\') {
                         if ($c === '\\') {
                             // Syntax violation
                         }
 
                         $state = self::SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE;
+                    } elseif ($c === '/') {
+                        $state = self::AUTHORITY_STATE;
                     } else {
                         $url->mUsername = $base->mUsername;
                         $url->mPassword = $base->mPassword;
@@ -714,16 +716,28 @@ class URLRecord
                     break;
 
                 case self::PATH_START_STATE:
-                    $urlIsSpecial = $url->isSpecial();
+                    if ($url->isSpecial()) {
+                        if ($c === '\\') {
+                            // Syntax violation
+                        }
 
-                    if ($urlIsSpecial && $c === '\\') {
-                        // Syntax violation
-                    }
+                        $state = self::PATH_STATE;
 
-                    $state = self::PATH_STATE;
+                        if ($c !== '/' && $c !== '\\') {
+                            $pointer--;
+                        }
+                    } elseif (!$aStateOverride && $c === '?') {
+                        $url->mQuery = '';
+                        $state = self::QUERY_STATE;
+                    } elseif (!$aStateOverride && $c === '#') {
+                        $url->mFragment = '';
+                        $state = self::FRAGMENT_STATE;
+                    } elseif ($c !== '') {
+                        $state = self::PATH_STATE;
 
-                    if ($c !== '/' && !($urlIsSpecial && $c === '\\')) {
-                        $pointer--;
+                        if ($c !== '/') {
+                            $pointer--;
+                        }
                     }
 
                     break;
@@ -1116,14 +1130,8 @@ class URLRecord
         if ($this->mFlags & URLRecord::FLAG_CANNOT_BE_A_BASE_URL) {
             $output .= $this->mPath[0];
         } else {
-            $output .= '/';
-
-            foreach ($this->mPath as $key => $path) {
-                if ($key > 0) {
-                    $output .= '/';
-                }
-
-                $output .= $path;
+            foreach ($this->mPath as $path) {
+                $output .= '/' . $path;
             }
         }
 
