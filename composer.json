@@ -1,0 +1,26 @@
+{
+    "name": "URL-Parser",
+    "description": "A URL parser and builder for PHP.",
+    "version": "1.0.0-dev",
+    "authors": [
+        {
+            "name": "Trevor Rowbotham",
+            "homepage": "http://trowbotham.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.6",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^2.7",
+        "symfony/var-dumper": "^3.2",
+        "phpunit/phpunit": "^5.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "phpjs\\urls\\": "src/"
+        }
+    }
+}
