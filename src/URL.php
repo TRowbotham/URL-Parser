@@ -22,21 +22,21 @@ class URL
         $parsedBase = null;
 
         if ($aBase) {
-            $parsedBase = URLRecord::basicURLParser($aBase);
+            $parsedBase = URLParser::parseBasicUrl($aBase);
 
             if ($parsedBase === false) {
                 throw new TypeError($aBase . ' is not a valid URL.');
             }
         }
 
-        $parsedURL = URLRecord::basicURLParser($aUrl, $parsedBase);
+        $parsedURL = URLParser::parseBasicUrl($aUrl, $parsedBase);
 
         if ($parsedURL === false) {
             throw new TypeError($aUrl . ' is not a valid URL.');
         }
 
         $this->mUrl = $parsedURL;
-        $query = $this->mUrl->getQuery() ?: '';
+        $query = $this->mUrl->query ?: '';
         $this->mSearchParams = URLSearchParams::create($query, $parsedURL);
     }
 
@@ -50,28 +50,32 @@ class URL
     {
         switch ($aName) {
             case 'hash':
-                $fragment = $this->mUrl->getFragment();
-
-                return !$fragment ? '' : '#' . $fragment;
-
-            case 'host':
-                $host = $this->mUrl->getHost();
-                $port = $this->mUrl->getPort();
-
-                if ($host === null) {
+                if ($this->mUrl->fragment === null ||
+                    $this->mUrl->fragment === ''
+                ) {
                     return '';
                 }
 
-                if ($port === null) {
-                    return HostFactory::serialize($host);
+                return '#' . $this->mUrl->fragment;
+
+            case 'host':
+                if ($this->mUrl->host === null) {
+                    return '';
                 }
 
-                return HostFactory::serialize($host) . ':' . $port;
+                if ($this->mUrl->port === null) {
+                    return HostFactory::serialize($this->mUrl->host);
+                }
+
+                return HostFactory::serialize($this->mUrl->host) . ':' .
+                    $this->mUrl->port;
 
             case 'hostname':
-                $host = $this->mUrl->getHost();
+                if ($this->mUrl->host === null) {
+                    return '';
+                }
 
-                return $host === null ? '' : HostFactory::serialize($host);
+                return HostFactory::serialize($this->mUrl->host);
 
             case 'href':
                 return $this->mUrl->serializeURL();
@@ -80,51 +84,43 @@ class URL
                 return $this->mUrl->getOrigin()->serializeAsUnicode();
 
             case 'password':
-                return $this->mUrl->getPassword();
+                return $this->mUrl->password;
 
             case 'pathname':
-                if ($this->mUrl->isFlagSet(
-                    URLRecord::FLAG_CANNOT_BE_A_BASE_URL
-                )) {
-                    return $this->mUrl->getPath()[0];
+                if ($this->mUrl->cannotBeABaseUrl) {
+                    return $this->mUrl->path[0];
                 }
 
-                $path = $this->mUrl->getPath();
-
-                if ($path->isEmpty()) {
+                if (empty($this->mUrl->path)) {
                     return '';
                 }
 
-                $output = '/';
-
-                foreach ($path as $key => $path) {
-                    if ($key > 0) {
-                        $output .= '/';
-                    }
-
-                    $output .= $path;
-                }
-
-                return $output;
+                return '/' . implode('/', $this->mUrl->path);
 
             case 'port':
-                $port = $this->mUrl->getPort();
+                if ($this->mUrl->port === null) {
+                    return '';
+                }
 
-                return $port === null ? '' : (string) $port;
+                return (string) $this->mUrl->port;
 
             case 'protocol':
-                return $this->mUrl->getScheme() . ':';
+                return $this->mUrl->scheme . ':';
 
             case 'search':
-                $query = $this->mUrl->getQuery();
+                if ($this->mUrl->query === null ||
+                    $this->mUrl->query === ''
+                ) {
+                    return '';
+                }
 
-                return !$query ? '' : '?' . $query;
+                return '?' . $this->mUrl->query;
 
             case 'searchParams':
                 return $this->mSearchParams;
 
             case 'username':
-                return $this->mUrl->getUsername();
+                return $this->mUrl->username;
         }
     }
 
@@ -134,68 +130,64 @@ class URL
 
         switch ($aName) {
             case 'hash':
-                if ($this->mUrl->getScheme() == 'javascript') {
+                if ($this->mUrl->scheme === 'javascript') {
                     // Terminate these steps
                     return;
                 }
 
                 if ($value === '') {
-                    $this->mUrl->setFragment(null);
+                    $this->mUrl->fragment = null;
 
                     // Terminate these steps
                     return;
                 }
 
                 $input = $value[0] == '#' ? substr($value, 1) : $value;
-                $this->mUrl->setFragment('');
-                URLRecord::basicURLParser(
+                $this->mUrl->fragment = '';
+                URLParser::parseBasicUrl(
                     $input,
                     null,
                     null,
                     $this->mUrl,
-                    URLRecord::FRAGMENT_STATE
+                    URLParser::FRAGMENT_STATE
                 );
 
                 break;
 
             case 'host':
-                if ($this->mUrl->isFlagSet(
-                    URLRecord::FLAG_CANNOT_BE_A_BASE_URL
-                )) {
+                if ($this->mUrl->cannotBeABaseUrl) {
                     // Terminate these steps
                     return;
                 }
 
-                URLRecord::basicURLParser(
+                URLParser::parseBasicUrl(
                     $value,
                     null,
                     null,
                     $this->mUrl,
-                    URLRecord::HOST_STATE
+                    URLParser::HOST_STATE
                 );
 
                 break;
 
             case 'hostname':
-                if ($this->mUrl->isFlagSet(
-                    URLRecord::FLAG_CANNOT_BE_A_BASE_URL
-                )) {
+                if ($this->mUrl->cannotBeABaseUrl) {
                     // Terminate these steps
                     return;
                 }
 
-                URLRecord::basicURLParser(
+                URLParser::parseBasicUrl(
                     $value,
                     null,
                     null,
                     $this->mUrl,
-                    URLRecord::HOSTNAME_STATE
+                    URLParser::HOSTNAME_STATE
                 );
 
                 break;
 
             case 'href':
-                $parsedURL = URLRecord::basicURLParser($value);
+                $parsedURL = URLParser::parseBasicUrl($value);
 
                 if ($parsedURL === false) {
                     throw new TypeError($value . ' is not a valid URL.');
@@ -203,107 +195,95 @@ class URL
 
                 $this->mUrl = $parsedURL;
                 $this->mSearchParams->clear();
-                $query = $this->mUrl->getQuery();
 
-                if ($query !== null) {
+                if ($this->mUrl->query !== null) {
                     $this->mSearchParams->_mutateList(
-                        URLUtils::urlencodedStringParser($query)
+                        URLUtils::urlencodedStringParser($this->mUrl->query)
                     );
                 }
 
                 break;
 
             case 'password':
-                if ($this->mUrl->getHost() === null ||
-                    $this->mUrl->isFlagSet(
-                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
-                    )
+                if ($this->mUrl->host === null ||
+                    $this->mUrl->cannotBeABaseUrl
                 ) {
                     // Terminate these steps
                     return;
                 }
 
-                $this->mUrl->setPasswordSteps($value);
+                $this->mUrl->setPassword($value);
 
                 break;
 
             case 'pathname':
-                if ($this->mUrl->isFlagSet(
-                    URLRecord::FLAG_CANNOT_BE_A_BASE_URL
-                )) {
+                if ($this->mUrl->cannotBeABaseUrl) {
                     // Terminate these steps
                     return;
                 }
 
-                while (!$this->mUrl->getPath()->isEmpty()) {
-                    $this->mUrl->getPath()->pop();
-                }
-
-                URLRecord::basicURLParser(
+                $this->mUrl->path = [];
+                URLParser::parseBasicUrl(
                     $value,
                     null,
                     null,
                     $this->mUrl,
-                    URLRecord::PATH_START_STATE
+                    URLParser::PATH_START_STATE
                 );
 
                 break;
 
             case 'port':
-                if ($this->mUrl->getHost() === null ||
-                    $this->mUrl->isFlagSet(
-                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
-                    ) ||
-                    $this->mUrl->getScheme() == 'file'
+                if ($this->mUrl->host === null ||
+                    $this->mUrl->cannotBeABaseUrl ||
+                    $this->mUrl->scheme === 'file'
                 ) {
                     // Terminate these steps
                     return;
                 }
 
                 if ($value === '') {
-                    $this->mUrl->setPort(null);
+                    $this->mUrl->port = null;
                     return;
                 }
 
-                URLRecord::basicURLParser(
+                URLParser::parseBasicUrl(
                     $value,
                     null,
                     null,
                     $this->mUrl,
-                    URLRecord::PORT_STATE
+                    URLParser::PORT_STATE
                 );
 
                 break;
 
             case 'protocol':
-                URLRecord::basicURLParser(
+                URLParser::parseBasicUrl(
                     $value . ':',
                     null,
                     null,
                     $this->mUrl,
-                    URLRecord::SCHEME_START_STATE
+                    URLParser::SCHEME_START_STATE
                 );
 
                 break;
 
             case 'search':
-                $query = $this->mUrl->getQuery();
-
                 if ($value === '') {
-                    $this->mUrl->setQuery(null);
+                    $this->mUrl->query = null;
                     $this->mSearchParams->clear();
 
                     return;
                 }
 
                 $input = $value[0] == '?' ? substr($value, 1) : $value;
-                $this->mUrl->setQuery('');
-                URLRecord::basicURLParser(
+                $this->mUrl->query = '';
+                URLParser::parseBasicUrl(
                     $input,
                     null,
                     null,
                     $this->mUrl,
-                    URLRecord::QUERY_STATE
+                    URLParser::QUERY_STATE
                 );
                 $this->mSearchParams->_mutateList(
                     URLUtils::urlencodedStringParser($input)
@@ -312,16 +292,14 @@ class URL
                 break;
 
             case 'username':
-                if ($this->mUrl->getHost() === null ||
-                    $this->mUrl->isFlagSet(
-                        URLRecord::FLAG_CANNOT_BE_A_BASE_URL
-                    )
+                if ($this->mUrl->host === null ||
+                    $this->mUrl->cannotBeABaseUrl
                 ) {
                     // Terminate these steps
                     return;
                 }
 
-                $this->mUrl->setUsernameSteps($value);
+                $this->mUrl->setUsername($value);
 
                 break;
         }

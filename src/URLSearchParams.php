@@ -413,7 +413,7 @@ class URLSearchParams implements IteratorAggregate
     protected function update()
     {
         if ($this->mUrl) {
-            $this->mUrl->setQuery($this->__toString());
+            $this->mUrl->query = $this->toString();
         }
     }
 }
