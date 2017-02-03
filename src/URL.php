@@ -2,7 +2,6 @@
 namespace phpjs\urls;
 
 use phpjs\urls\exception\TypeError;
-use phpjs\Utils;
 
 /**
  * Represents a URL that can be manipulated.

@@ -4,7 +4,6 @@ namespace phpjs\urls;
 use ArrayIterator;
 use IteratorAggregate;
 use phpjs\urls\exception\TypeError;
-use phpjs\Utils;
 use Traversable;
 
 /**
