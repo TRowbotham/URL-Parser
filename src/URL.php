@@ -1,7 +1,7 @@
 <?php
 namespace phpjs\urls;
 
-use phpjs\exceptions\TypeError;
+use phpjs\urls\exception\TypeError;
 use phpjs\Utils;
 
 /**
@@ -126,7 +126,7 @@ class URL
 
     public function __set($aName, $aValue)
     {
-        $value = Utils::DOMString($aValue);
+        $value = URLUtils::strval($aValue);
 
         switch ($aName) {
             case 'hash':

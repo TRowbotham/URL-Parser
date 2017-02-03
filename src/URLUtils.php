@@ -352,4 +352,43 @@ abstract class URLUtils
 
         return $output;
     }
+
+    /**
+     * This is mostly designed to keep tests happy, however, I'm not so sure
+     * its the right thing to do here. This makes string conversions work more
+     * like they do in JavaScript, which differs from the default conversions in
+     * PHP, which can be unexpected.
+     *
+     * @param  mixed $arg A value to cast to a string.
+     *
+     * @return string
+     */
+    public static function strval($arg)
+    {
+        if (is_string($arg)) {
+            return $arg;
+        }
+
+        if (is_bool($arg)) {
+            return $arg ? 'true' : 'false';
+        }
+
+        if ($arg === null) {
+            return 'null';
+        }
+
+        if (is_scalar($arg)) {
+            return (string) $arg;
+        }
+
+        if (is_object($arg)) {
+            if (method_exists($arg, '__toString')) {
+                return (string) $arg;
+            }
+
+            return get_class($arg);
+        }
+
+        return '';
+    }
 }
