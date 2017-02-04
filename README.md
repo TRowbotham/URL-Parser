@@ -37,25 +37,25 @@ The `username` getter returns the username portion of the URL, or an empty strin
 #### `string URL::password`
 The `password` getter returns the password portion of the URL, or an empty string if the URL does not contain a password. The `password` setter changes the URLs password.
 
-#### string URL::host
+#### `string URL::host`
 The `host` getter returns the combination of `hostname` and `port`. The output would look like `hostname:port`. If the URL does not have a port, then the port is not present in the output. The `host` setter allows you to change both the `hostname` and `port` at the same time.
 
-#### string URL::hostname;
+#### `string URL::hostname`
 The `hostname` getter returns the hostname of the URL. For example, the hostname of `https://example.com:31` would be `example.com`.  The `hostname` setter will change the hostname portion of the URL.
 
-#### string URL::port
+#### `string URL::port`
 The `port` getter returns an integer as a string representing the URLs port. If the URL does not have a port, the empty string will be returned instead.  The `port` setter updates the URLs port.
 
-#### string URL::pathname
+#### `string URL::pathname`
 The `pathname` getter returns the URLs path. The `pathname` setter updates the URLs path.
 
-#### string URL::search
+#### `string URL::search`
 The `search` getter returns the URLs query string. The `search` setter updates the URLs URLSearchParams list.
 
-#### readonly URLSearchParams URL::searchParams
+#### `readonly URLSearchParams URL::searchParams`
 Returns the URLSearchParams object associated with this URL allowing you to modify the query parameters without having to clobber the entire query string. This will always return the same object.
 
-#### string URL::hash
+#### `string URL::hash`
 The `hash` getter, also known as a URLs fragment, returns the portion of the URL that follows the "#" character. The `hash` setter updates the portion of the URL that follows the "#".
 
 ## URLSearchParams
