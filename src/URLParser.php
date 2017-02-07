@@ -534,74 +534,59 @@ abstract class URLParser
                 case self::FILE_STATE:
                     $url->scheme = 'file';
 
-                    if ($c === ''/* EOF */) {
-                        if ($base && $base->scheme === 'file') {
-                            $url->host = $base->host;
-                            $url->path = $base->path;
-                            $url->query = $base->query;
-                        }
-                    } elseif ($c === '/' || $c === '\\') {
+                    if ($c === '/' || $c === '\\') {
                         if ($c === '\\') {
                             // Syntax violation
                         }
 
                         $state = self::FILE_SLASH_STATE;
-                    } elseif ($c === '?') {
-                        if ($base && $base->scheme === 'file') {
+                    } elseif ($base && $base->scheme === 'file') {
+                        if ($c === ''/* EOF */) {
+                            $url->host = $base->host;
+                            $url->path = $base->path;
+                            $url->query = $base->query;
+                        } elseif ($c === '?') {
                             $url->host = $base->host;
                             $url->path = $base->path;
                             $url->query = '';
                             $state = self::QUERY_STATE;
-                        }
-                    } elseif ($c === '#') {
-                        if ($base && $base->scheme === 'file') {
+                        } elseif ($c === '#') {
                             $url->host = $base->host;
                             $url->path = $base->path;
                             $url->query = $base->query;
                             $url->fragment = '';
                             $state = self::FRAGMENT_STATE;
-                        }
-                    } else {
-                        // Platform-independent Windows drive letter quirk
-                        $shouldPopPath = $base &&
-                            $base->scheme === 'file' &&
-                            // If c and the first code point of remaining are
-                            // not a Windows drive letter
-                            (!preg_match(
+                        } else {
+                            // This is a (platform-independent) Windows drive
+                            // letter quirk.
+                            if (!preg_match(
                                 URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
                                 $c . mb_substr($input, $pointer, 1, $encoding)
                             ) ||
-                            // If remaining consists of 1 code point
-                            mb_strlen(
-                                mb_substr(
+                                mb_strlen(mb_substr(
                                     $input,
                                     $pointer,
                                     null,
                                     $encoding
-                                ),
-                                $encoding
-                            ) == 1 ||
-                            // If remaining's second code point is not /, \, ?,
-                            // or #.
-                            !preg_match(
-                                '/[\/\\\\?#]/',
-                                mb_substr(
+                                ), $encoding) == 1 ||
+                                !preg_match('/[\/\\\\?#]/u', mb_substr(
                                     $input,
                                     $pointer + 1,
                                     1,
                                     $encoding
-                                )
-                            )
-                        );
+                                ))
+                            ) {
+                                $url->host = $base->host;
+                                $url->path = $base->path;
+                                $url->shortenPath();
+                            } else {
+                                // Syntax violation
+                            }
 
-                        if ($shouldPopPath) {
-                            $url->host = $base->host;
-                            $url->path = $base->path;
-                            $url->shortenPath();
-                        } elseif ($base && $base->scheme === 'file') {
-                            // Syntax violation
+                            $state = self::PATH_STATE;
+                            $pointer--;
                         }
-
+                    } else {
                         $state = self::PATH_STATE;
                         $pointer--;
                     }
