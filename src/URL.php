@@ -45,6 +45,15 @@ class URL
         $this->mUrl = null;
     }
 
+    public function __clone()
+    {
+        $this->mUrl = clone $this->mUrl;
+        $this->mSearchParams = URLSearchParams::create(
+            $this->mSearchParams,
+            $this->mUrl
+        );
+    }
+
     public function __get($aName)
     {
         switch ($aName) {

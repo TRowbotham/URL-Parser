@@ -50,6 +50,13 @@ class URLSearchParams implements IteratorAggregate
         $this->mUrl = null;
     }
 
+    public function __clone()
+    {
+        // Null out the url incase someone tries cloning the object returned by
+        // the URL::searchParams attribute.
+        $this->mUrl = null;
+    }
+
     /**
      * Returns all name-value pairs stringified in the correct order.
      *
