@@ -1,6 +1,7 @@
 <?php
 namespace phpjs\urls;
 
+use JsonSerializable;
 use phpjs\urls\exception\TypeError;
 
 /**
@@ -9,7 +10,7 @@ use phpjs\urls\exception\TypeError;
  * @see https://url.spec.whatwg.org/#api
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL
  */
-class URL
+class URL implements JsonSerializable
 {
     private $mSearchParams;
     private $mUrl;
@@ -311,5 +312,33 @@ class URL
 
                 break;
         }
+    }
+
+    /**
+     * Returns a JSON encoded string without escaping forward slashes. If you
+     * need forward slashes to be escaped, pass the URL object to json_encode()
+     * instead of calling this method.
+     *
+     * @see https://url.spec.whatwg.org/#dom-url-tojson
+     *
+     * @return string
+     */
+    public function toJSON()
+    {
+        // Use JSON_UNESCAPED_SLASHES here since JavaScript's JSON.stringify()
+        // method does not escape forward slashes by default.
+        return json_encode($this->mUrl->serializeURL(), JSON_UNESCAPED_SLASHES);
+    }
+
+    /**
+     * Returns the serialized URL for consumption by json_encode(). To match
+     * JavaScript's behavior, you should pass the JSON_UNESCAPED_SLASHES option
+     * to json_encode().
+     *
+     * @return string
+     */
+    public function jsonSerialize()
+    {
+        return $this->mUrl->serializeURL();
     }
 }
