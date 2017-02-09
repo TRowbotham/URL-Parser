@@ -39,8 +39,6 @@ abstract class URLUtils
     const ENCODE_SET_DEFAULT  = self::ENCODE_SET_SIMPLE . '\x20"#<>?`{}';
     const ENCODE_SET_USERINFO = self::ENCODE_SET_DEFAULT . '\/:;=@[\\\\\]^|';
 
-    const FORBIDDEN_HOST_CODEPOINT = '/[\x00\x09\x0A\x0D\x20#%\/:?@[\\\\\]]/u';
-
     public static $specialSchemes = [
         'ftp'    => 21,
         'file'   => '',

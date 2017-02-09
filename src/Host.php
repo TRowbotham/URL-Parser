@@ -8,6 +8,8 @@ class Host
     const IPV6        = 3;
     const OPAQUE_HOST = 4;
 
+    const FORBIDDEN_HOST_CODEPOINT = '/[\x00\x09\x0A\x0D\x20#%\/:?@[\\\\\]]/u';
+
     private $host;
     private $type;
 
