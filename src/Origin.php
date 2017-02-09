@@ -135,7 +135,7 @@ class Origin
 
         $result = $this->mScheme;
         $result .= '://';
-        $result .= HostFactory::serialize($this->mHost);
+        $result .= (string) $this->mHost;
 
         if ($this->mPort !== null) {
             $result .= ':' . intval($this->mPort, 10);
@@ -155,9 +155,9 @@ class Origin
             return 'null';
         }
 
-        $host = $this->mHost;
-        $unicodeHost = $host instanceof Host ?
-            $host : URLUtils::domainTo('unicode', $host);
+        $unicodeHost = $this->mHost->isType(Host::DOMAIN)
+            ? $this->mHost->domainToUnicode()
+            : $this->mHost;
         $unicodeOrigin = new Origin(
             $this->mScheme,
             $unicodeHost,

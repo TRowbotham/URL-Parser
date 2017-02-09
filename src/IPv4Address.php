@@ -1,24 +1,21 @@
 <?php
 namespace phpjs\urls;
 
-class IPv4Address extends Host
-{
-    protected function __construct($aHost)
-    {
-        parent::__construct($aHost);
-    }
+use GMP;
 
+class IPv4Address
+{
     /**
      * Takes a string and parses it as an IPv4 address.
      *
      * @see https://url.spec.whatwg.org/#concept-ipv4-parser
      *
-     * @param string $aInput A string representing an IPv4 address.
+     * @param  string $aInput A string representing an IPv4 address.
      *
-     * @return IPv4Address|string|bool Returns a IPv4Address object if the input
-     *     is a valid IPv4 address or a string if the input is determined to be
-     *     a domain. This will return false if the input is neither a domain or
-     *     IPv4 address.
+     * @return GMP|string|bool Returns a GMP object if the input is a valid IPv4
+     *                         address or a string if the input is determined to
+     *                         be a domain. This will return false if the input
+     *                         is neither a domain or IPv4 address.
      */
     public static function parse($aInput)
     {
@@ -95,7 +92,7 @@ class IPv4Address extends Host
             $counter++;
         }
 
-        return new static($ipv4);
+        return $ipv4;
     }
 
     /**
@@ -103,12 +100,15 @@ class IPv4Address extends Host
      *
      * @see https://url.spec.whatwg.org/#concept-ipv4-serializer
      *
+     * @param  GMP $host The GMP object returned from calling
+     *                   IPv4Address::parse().
+     *
      * @return string
      */
-    public function serialize()
+    public static function serialize(GMP $host)
     {
         $output = '';
-        $n = $this->mHost;
+        $n = $host;
 
         for ($i = 0; $i < 4; $i++) {
             $output = intval($n % 256, 10) . $output;

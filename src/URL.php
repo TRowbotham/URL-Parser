@@ -73,10 +73,10 @@ class URL implements JsonSerializable
                 }
 
                 if ($this->mUrl->port === null) {
-                    return HostFactory::serialize($this->mUrl->host);
+                    return (string) $this->mUrl->host;
                 }
 
-                return HostFactory::serialize($this->mUrl->host) . ':' .
+                return (string) $this->mUrl->host . ':' .
                     $this->mUrl->port;
 
             case 'hostname':
@@ -84,7 +84,7 @@ class URL implements JsonSerializable
                     return '';
                 }
 
-                return HostFactory::serialize($this->mUrl->host);
+                return (string) $this->mUrl->host;
 
             case 'href':
                 return $this->mUrl->serializeURL();
