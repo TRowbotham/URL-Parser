@@ -28,6 +28,8 @@ class Host
      *
      * @param  string $input     An IPv4, IPv6 address, domain, or opaque host.
      *
+     * @param  bool   $isSpecial Whether or not the URL has a special scheme.
+     *
      * @param  bool   $unicode   Optional argument, that when set to true,
      *                           causes the domain to be encoded using unicode
      *                           instead of ASCII.
@@ -35,7 +37,7 @@ class Host
      * @return Host|bool Returns a Host if it was successfully parsed or
      *                   false if parsing fails.
      */
-    public static function parse($input, $unicode = false)
+    public static function parse($input, $isSpecial, $unicode = false)
     {
         if (mb_substr($input, 0, 1, 'UTF-8') === '[') {
             if (mb_substr($input, -1, null, 'UTF-8') !== ']') {
@@ -46,6 +48,10 @@ class Host
             $ipv6 = IPv6Address::parse(mb_substr($input, 1, -1, 'UTF-8'));
 
             return $ipv6 === false ? false : new self($ipv6, self::IPV6);
+        }
+
+        if (!$isSpecial) {
+            return self::parseOpaqueHost($input);
         }
 
         // TODO: Let domain be the result of utf-8 decode without BOM on the
@@ -78,20 +84,20 @@ class Host
     }
 
     /**
-     * @param  string $aInput
+     * Parses an opaque host.
      *
-     * @param  bool   $isSpecial
+     * @see https://url.spec.whatwg.org/#concept-opaque-host-parser
+     *
+     * @param  string $input
      *
      * @return Host|bool
      */
-    public static function parseUrlHost($input, $isSpecial)
+    private static function parseOpaqueHost($input)
     {
-        if ($isSpecial) {
-            return self::parse($input);
-        }
-
-        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $input)) {
-            // Syntax violation
+        // Match a forbidden host code point, minus the "%" character.
+        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $input, $matches) &&
+            $matches[0] !== '%'
+        ) {
             return false;
         }
 
