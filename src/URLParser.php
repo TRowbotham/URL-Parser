@@ -421,7 +421,7 @@ abstract class URLParser
                             return false;
                         }
 
-                        $host = URLUtils::parseUrlHost(
+                        $host = Host::parseUrlHost(
                             $buffer,
                             $url->isSpecial()
                         );
@@ -452,7 +452,7 @@ abstract class URLParser
                             return false;
                         }
 
-                        $host = URLUtils::parseUrlHost(
+                        $host = Host::parseUrlHost(
                             $buffer,
                             $url->isSpecial()
                         );
@@ -641,7 +641,7 @@ abstract class URLParser
                         } elseif ($buffer === '') {
                             $state = self::PATH_START_STATE;
                         } else {
-                            $host = HostFactory::parse($buffer);
+                            $host = Host::parse($buffer);
 
                             if ($host === false) {
                                 // Return failure

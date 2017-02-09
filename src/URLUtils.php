@@ -326,34 +326,6 @@ abstract class URLUtils
     }
 
     /**
-     * @param  string $aInput
-     *
-     * @param  bool   $aIsSpecial
-     *
-     * @return Host|string|bool
-     */
-    public static function parseUrlHost($aInput, $aIsSpecial)
-    {
-        if ($aIsSpecial) {
-            return HostFactory::parse($aInput);
-        }
-
-        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $aInput)) {
-            // Syntax violation
-            return false;
-        }
-
-        $output = '';
-
-        while (($char = mb_substr($aInput, 0, 1, 'UTF-8')) !== '') {
-            $output .= self::utf8PercentEncode($char);
-            $aInput = mb_substr($aInput, 1, null, 'UTF-8');
-        }
-
-        return $output;
-    }
-
-    /**
      * This is mostly designed to keep tests happy, however, I'm not so sure
      * its the right thing to do here. This makes string conversions work more
      * like they do in JavaScript, which differs from the default conversions in

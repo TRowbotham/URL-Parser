@@ -25,7 +25,7 @@ class URLRecord
     public $password;
 
     /**
-     * @var Host|string|null
+     * @var Host|null
      */
     public $host;
 
@@ -264,7 +264,7 @@ class URLRecord
                 $output .= '@';
             }
 
-            $output .= HostFactory::serialize($this->host);
+            $output .= (string) $this->host;
 
             if ($this->port !== null) {
                 $output .= ':' . $this->port;
