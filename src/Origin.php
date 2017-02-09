@@ -155,9 +155,9 @@ class Origin
             return 'null';
         }
 
-        $host = $this->mHost;
-        $unicodeHost = $host instanceof Host ?
-            $host : URLUtils::domainTo('unicode', $host);
+        $unicodeHost = $this->mHost->isType(Host::DOMAIN)
+            ? $this->mHost->domainToUnicode()
+            : $this->mHost;
         $unicodeOrigin = new Origin(
             $this->mScheme,
             $unicodeHost,
