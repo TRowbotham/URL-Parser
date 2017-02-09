@@ -1,23 +1,18 @@
 <?php
 namespace phpjs\urls;
 
-class IPv6Address extends Host
+class IPv6Address
 {
-    protected function __construct($aHost)
-    {
-        parent::__construct($aHost);
-    }
-
     /**
      * Parses an IPv6 string.
      *
      * @see https://url.spec.whatwg.org/#concept-ipv6-parser
      *
-     * @param string $aInput An IPv6 address.
+     * @param  string $aInput An IPv6 address.
      *
-     * @return IPv6Address|bool Returns an IPv6Address if the string was
-     *     successfully parsed as an IPv6 address or false if the input is not
-     *     an IPv6 address.
+     * @return array|bool Returns an array if the string was successfully parsed
+     *                    as an IPv6 address or false if the input is not an
+     *                    IPv6 address.
      */
     public static function parse($aInput)
     {
@@ -181,7 +176,7 @@ class IPv6Address extends Host
             return false;
         }
 
-        return new self($address);
+        return $address;
     }
 
     /**
@@ -189,9 +184,11 @@ class IPv6Address extends Host
      *
      * @see https://url.spec.whatwg.org/#concept-ipv6-serializer
      *
+     * @param  array $host The array resulting from IPv6Address::parse().
+     *
      * @return string
      */
-    public function serialize()
+    public static function serialize(array $host)
     {
         $output = '';
         $compressPointer = null;
@@ -202,10 +199,10 @@ class IPv6Address extends Host
         // pieces that are 0 and sets the $compressPointer to the first 16-bit
         // piece in that sequence, otherwise $compressPointer will remain null.
         while ($i < 8) {
-            if ($this->mHost[$i] == 0) {
+            if ($host[$i] == 0) {
                 $sequenceLength = 0;
 
-                while ($i < 8 && $this->mHost[$i] == 0) {
+                while ($i < 8 && $host[$i] == 0) {
                     $sequenceLength++;
                     $i++;
                 }
@@ -219,7 +216,7 @@ class IPv6Address extends Host
             $i++;
         }
 
-        foreach ($this->mHost as $index => $piece) {
+        foreach ($host as $index => $piece) {
             if ($compressPointer === $index) {
                 $output .= $index == 0 ? '::' : ':';
             }
