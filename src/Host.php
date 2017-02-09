@@ -1,14 +1,30 @@
 <?php
 namespace phpjs\urls;
 
-abstract class Host
+class Host
 {
-    protected $mHost;
+    const DOMAIN      = 1;
+    const IPV4        = 2;
+    const IPV6        = 3;
+    const OPAQUE_HOST = 4;
 
-    protected function __construct($aHost)
+    private $host;
+    private $type;
+
+    protected function __construct($host)
     {
-        $this->mHost = $aHost;
+        $this->host = $host;
     }
 
-    abstract public function serialize();
+    /**
+     * Returns whether or not a Host is a particlar type.
+     *
+     * @param  int  $type A Host type.
+     *
+     * @return bool
+     */
+    public function isType($type)
+    {
+        return $this->type == $type;
+    }
 }
