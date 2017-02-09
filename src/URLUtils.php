@@ -30,10 +30,8 @@ abstract class URLUtils
         '\x{F0000}-\x{FFFFD}' .
         '\x{100000}-\x{10FFFD}' .
          ']/u';
-    const REGEX_WINDOWS_DRIVE_LETTER = '/[\x{0041}-\x{005A}\x{0061}-\x{007A}]' .
-        '[:|]/';
-    const REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER = '/^[\x{0041}-\x{005A}' .
-        '\x{0061}-\x{007A}]:$/u';
+    const REGEX_WINDOWS_DRIVE_LETTER = '/^[A-Za-z][:|]$/u';
+    const REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER = '/^[A-Za-z]:$/u';
 
     const ENCODE_SET_SIMPLE   = '\x00-\x1F\x7E-\x{10FFFF}';
     const ENCODE_SET_DEFAULT  = self::ENCODE_SET_SIMPLE . '\x20"#<>?`{}';
