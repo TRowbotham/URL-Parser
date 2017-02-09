@@ -415,7 +415,10 @@ abstract class URLParser
 
                 case self::HOST_STATE:
                 case self::HOSTNAME_STATE:
-                    if ($c === ':' && !$bracketFlag) {
+                    if ($stateOverride && $url->scheme === 'file') {
+                        $pointer--;
+                        $state = self::FILE_HOST_STATE;
+                    } elseif ($c === ':' && !$bracketFlag) {
                         if ($buffer === '') {
                             // Syntax violation. Return failure
                             return false;
@@ -450,6 +453,13 @@ abstract class URLParser
                         if ($url->isSpecial() && $buffer === '') {
                             // Syntax violation. Return failure
                             return false;
+                        } elseif ($stateOverride &&
+                            $buffer === '' &&
+                            ($url->includesCredentials() ||
+                                $url->port !== null)
+                        ) {
+                            // Syntax violation
+                            break 2;
                         }
 
                         $host = Host::parseUrlHost(
@@ -629,16 +639,30 @@ abstract class URLParser
                     ) {
                         $pointer--;
 
-                        if (preg_match(
-                            URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
-                            $buffer
-                        )) {
-                            // This is a (platform-independent) Windows drive
-                            // letter quirk. buffer is not reset here and
-                            // instead used in the path state.
+                        if (!$stateOverride &&
+                            preg_match(
+                                URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
+                                $buffer
+                            )
+                        ) {
                             // Syntax violation
                             $state = self::PATH_STATE;
+
+                            // This is a (platform-independent) Windows drive
+                            // letter quirk. $buffer is not reset here and
+                            // instead used in the path state.
                         } elseif ($buffer === '') {
+                            if ($stateOverride && $url->includesCredentials()) {
+                                // Syntax violation
+                                break 2;
+                            }
+
+                            $url->host = Host::createEmptyDomain();
+
+                            if ($stateOverride) {
+                                break 2;
+                            }
+
                             $state = self::PATH_START_STATE;
                         } else {
                             $host = Host::parse($buffer);
@@ -648,8 +672,14 @@ abstract class URLParser
                                 return false;
                             }
 
-                            if ((string) $host !== 'localhost') {
-                                $url->host = $host;
+                            if ($host->getHost() === 'localhost') {
+                                $host->setHost('');
+                            }
+
+                            $url->host = $host;
+
+                            if ($stateOverride) {
+                                break 2;
                             }
 
                             $buffer = '';

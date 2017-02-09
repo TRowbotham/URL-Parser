@@ -129,6 +129,31 @@ class URLRecord
     }
 
     /**
+     * Whether or not a URL can have a username, password, or port set.
+     *
+     * @see https://url.spec.whatwg.org/#cannot-have-a-username-password-port
+     *
+     * @return bool
+     */
+    public function cannotHaveUsernamePasswordPort()
+    {
+        return $this->host === null || $this->host->getHost() === '' ||
+            $this->cannotBeABaseUrl || $this->scheme === 'file';
+    }
+
+    /**
+     * Whether or not the URL has a username or password.
+     *
+     * @see https://url.spec.whatwg.org/#include-credentials
+     *
+     * @return bool
+     */
+    public function includesCredentials()
+    {
+        return $this->username !== '' || $this->password !== '';
+    }
+
+    /**
      * Removes the last string from a URL's path if its scheme is not "file"
      * and the path does not contain a normalized Windows drive letter.
      *

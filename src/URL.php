@@ -216,10 +216,7 @@ class URL implements JsonSerializable
                 break;
 
             case 'password':
-                if ($this->mUrl->host === null ||
-                    $this->mUrl->cannotBeABaseUrl
-                ) {
-                    // Terminate these steps
+                if ($this->mUrl->cannotHaveUsernamePasswordPort()) {
                     return;
                 }
 
@@ -245,11 +242,7 @@ class URL implements JsonSerializable
                 break;
 
             case 'port':
-                if ($this->mUrl->host === null ||
-                    $this->mUrl->cannotBeABaseUrl ||
-                    $this->mUrl->scheme === 'file'
-                ) {
-                    // Terminate these steps
+                if ($this->mUrl->cannotHaveUsernamePasswordPort()) {
                     return;
                 }
 
@@ -303,10 +296,7 @@ class URL implements JsonSerializable
                 break;
 
             case 'username':
-                if ($this->mUrl->host === null ||
-                    $this->mUrl->cannotBeABaseUrl
-                ) {
-                    // Terminate these steps
+                if ($this->mUrl->cannotHaveUsernamePasswordPort()) {
                     return;
                 }
 

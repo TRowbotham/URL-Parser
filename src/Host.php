@@ -106,6 +106,16 @@ class Host
     }
 
     /**
+     * Creates a new domain that is the empty string.
+     *
+     * @return Host
+     */
+    public static function createEmptyDomain()
+    {
+        return new self('', self::DOMAIN);
+    }
+
+    /**
      * Returns whether or not a Host is a particlar type.
      *
      * @param  int  $type A Host type.
@@ -115,6 +125,30 @@ class Host
     public function isType($type)
     {
         return $this->type == $type;
+    }
+
+    /**
+     * Gets the underlying host value.
+     *
+     * @return GMP|array|string
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
+     * Sets the host to a new value for domains and opaque hosts.
+     *
+     * @param  string A new host value.
+     */
+    public function setHost($host)
+    {
+        if (!is_string($host)) {
+            return;
+        }
+
+        $this->host = $host;
     }
 
     /**
