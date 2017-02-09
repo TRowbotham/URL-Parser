@@ -108,7 +108,7 @@ class IPv4Address
     public static function serialize(GMP $host)
     {
         $output = '';
-        $n = $this->mHost;
+        $n = $host;
 
         for ($i = 0; $i < 4; $i++) {
             $output = intval($n % 256, 10) . $output;

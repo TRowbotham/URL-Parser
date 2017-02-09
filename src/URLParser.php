@@ -648,7 +648,7 @@ abstract class URLParser
                                 return false;
                             }
 
-                            if ($host !== 'localhost') {
+                            if ((string) $host !== 'localhost') {
                                 $url->host = $host;
                             }
 

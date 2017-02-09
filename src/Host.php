@@ -1,6 +1,8 @@
 <?php
 namespace phpjs\urls;
 
+use GMP;
+
 class Host
 {
     const DOMAIN      = 1;
@@ -55,7 +57,7 @@ class Host
             return false;
         }
 
-        if (preg_match(URLUtils::FORBIDDEN_HOST_CODEPOINT, $asciiDomain)) {
+        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $asciiDomain)) {
             // Syntax violation
             return false;
         }
@@ -96,7 +98,7 @@ class Host
         $output = '';
 
         while (($char = mb_substr($input, 0, 1, 'UTF-8')) !== '') {
-            $output .= self::utf8PercentEncode($char);
+            $output .= URLUtils::utf8PercentEncode($char);
             $input = mb_substr($input, 1, null, 'UTF-8');
         }
 
