@@ -1,8 +1,6 @@
 <?php
 namespace phpjs\urls;
 
-use GMP;
-
 class Host
 {
     const DOMAIN      = 1;
@@ -70,7 +68,7 @@ class Host
 
         $ipv4Host = IPv4Address::parse($asciiDomain);
 
-        if ($ipv4Host instanceof GMP) {
+        if ($ipv4Host instanceof IPv4Address) {
             return new self($ipv4Host, self::IPV4);
         }
 
@@ -167,11 +165,11 @@ class Host
     public function __toString()
     {
         if ($this->type == self::IPV4) {
-            return IPv4Address::serialize($this->host);
+            return (string) $this->host;
         }
 
         if ($this->type == self::IPV6) {
-            return '[' . IPv6Address::serialize($this->host) . ']';
+            return '[' . $this->host . ']';
         }
 
         return $this->host;

@@ -4,6 +4,16 @@ namespace phpjs\urls;
 class IPv6Address
 {
     /**
+     * @var array
+     */
+    private $address;
+
+    protected function __construct($address)
+    {
+        $this->address = $address;
+    }
+
+    /**
      * Parses an IPv6 string.
      *
      * @see https://url.spec.whatwg.org/#concept-ipv6-parser
@@ -176,7 +186,7 @@ class IPv6Address
             return false;
         }
 
-        return $address;
+        return new self($address);
     }
 
     /**
@@ -184,11 +194,9 @@ class IPv6Address
      *
      * @see https://url.spec.whatwg.org/#concept-ipv6-serializer
      *
-     * @param  array $host The array resulting from IPv6Address::parse().
-     *
      * @return string
      */
-    public static function serialize(array $host)
+    public function __toString()
     {
         $output = '';
         $compressPointer = null;
@@ -199,10 +207,10 @@ class IPv6Address
         // pieces that are 0 and sets the $compressPointer to the first 16-bit
         // piece in that sequence, otherwise $compressPointer will remain null.
         while ($i < 8) {
-            if ($host[$i] == 0) {
+            if ($this->address[$i] == 0) {
                 $sequenceLength = 0;
 
-                while ($i < 8 && $host[$i] == 0) {
+                while ($i < 8 && $this->address[$i] == 0) {
                     $sequenceLength++;
                     $i++;
                 }
@@ -216,7 +224,7 @@ class IPv6Address
             $i++;
         }
 
-        foreach ($host as $index => $piece) {
+        foreach ($this->address as $index => $piece) {
             if ($compressPointer === $index) {
                 $output .= $index == 0 ? '::' : ':';
             }
