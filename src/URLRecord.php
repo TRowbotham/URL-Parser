@@ -76,6 +76,13 @@ class URLRecord
         $this->cannotBeABaseUrl = false;
     }
 
+    public function __clone()
+    {
+        if ($this->host !== null) {
+            $this->host = clone $this->host;
+        }
+    }
+
     /**
      * Used to set the URL's username anywhere outside of the URL parser.
      *
