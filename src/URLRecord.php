@@ -76,6 +76,13 @@ class URLRecord
         $this->cannotBeABaseUrl = false;
     }
 
+    public function __clone()
+    {
+        if ($this->host !== null) {
+            $this->host = clone $this->host;
+        }
+    }
+
     /**
      * Used to set the URL's username anywhere outside of the URL parser.
      *
@@ -137,7 +144,7 @@ class URLRecord
      */
     public function cannotHaveUsernamePasswordPort()
     {
-        return $this->host === null || $this->host->getHost() === '' ||
+        return $this->host === null || $this->host->equals('') ||
             $this->cannotBeABaseUrl || $this->scheme === 'file';
     }
 

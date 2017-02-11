@@ -1,10 +1,24 @@
 <?php
 namespace phpjs\urls;
 
-use GMP;
-
 class IPv4Address
 {
+    /**
+     * @var GMP
+     */
+    private $address;
+
+    protected function __construct($address)
+    {
+        $this->address = $address;
+    }
+
+    public function __clone()
+    {
+        // Since GMP is an object and not an int, we need to clone that object.
+        $this->address = clone $this->address;
+    }
+
     /**
      * Takes a string and parses it as an IPv4 address.
      *
@@ -12,10 +26,11 @@ class IPv4Address
      *
      * @param  string $aInput A string representing an IPv4 address.
      *
-     * @return GMP|string|bool Returns a GMP object if the input is a valid IPv4
-     *                         address or a string if the input is determined to
-     *                         be a domain. This will return false if the input
-     *                         is neither a domain or IPv4 address.
+     * @return IPv4Address|string|bool Returns a IPv4Address object if the input
+     *                                 is a valid IPv4 address or a string if
+     *                                 the input is determined to be a domain.
+     *                                 This will return false if the input is
+     *                                 neither a domain or IPv4 address.
      */
     public static function parse($aInput)
     {
@@ -92,7 +107,7 @@ class IPv4Address
             $counter++;
         }
 
-        return $ipv4;
+        return new self($ipv4);
     }
 
     /**
@@ -100,15 +115,12 @@ class IPv4Address
      *
      * @see https://url.spec.whatwg.org/#concept-ipv4-serializer
      *
-     * @param  GMP $host The GMP object returned from calling
-     *                   IPv4Address::parse().
-     *
      * @return string
      */
-    public static function serialize(GMP $host)
+    public function __toString()
     {
         $output = '';
-        $n = $host;
+        $n = $this->address;
 
         for ($i = 0; $i < 4; $i++) {
             $output = intval($n % 256, 10) . $output;
@@ -121,6 +133,30 @@ class IPv4Address
         }
 
         return $output;
+    }
+
+    /**
+     * Checks to see if two IPv4 addresses are equal.
+     *
+     * @param  IPv4Address|string $address Another IPv4Address or a valid IPv4
+     *                                     address string.
+     *
+     * @return bool
+     */
+    public function equals($address)
+    {
+        if ($address instanceof self) {
+            return $this->address == $address->address;
+        }
+
+        if (is_string($address)) {
+            $parsed = self::parse($address);
+
+            return $parsed instanceof self &&
+                $this->address == $parsed->address;
+        }
+
+        return false;
     }
 
     /**
