@@ -144,7 +144,7 @@ class URLRecord
      */
     public function cannotHaveUsernamePasswordPort()
     {
-        return $this->host === null || $this->host->getHost() === '' ||
+        return $this->host === null || $this->host->equals('') ||
             $this->cannotBeABaseUrl || $this->scheme === 'file';
     }
 

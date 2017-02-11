@@ -136,6 +136,30 @@ class IPv4Address
     }
 
     /**
+     * Checks to see if two IPv4 addresses are equal.
+     *
+     * @param  IPv4Address|string $address Another IPv4Address or a valid IPv4
+     *                                     address string.
+     *
+     * @return bool
+     */
+    public function equals($address)
+    {
+        if ($address instanceof self) {
+            return $this->address == $address->address;
+        }
+
+        if (is_string($address)) {
+            $parsed = self::parse($address);
+
+            return $parsed instanceof self &&
+                $this->address == $parsed->address;
+        }
+
+        return false;
+    }
+
+    /**
      * Takes a string and parses it as a valid IPv4 number.
      *
      * @see https://url.spec.whatwg.org/#ipv4-number-parser

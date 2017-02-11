@@ -246,4 +246,28 @@ class IPv6Address
 
         return $output;
     }
+
+    /**
+     * Checks to see if two IPv6 addresses are equal.
+     *
+     * @param  IPv6Address|string $address Another IPv6Address or a valid IPv6
+     *                                     address string.
+     *
+     * @return bool
+     */
+    public function equals($address)
+    {
+        if ($address instanceof self) {
+            return $this->address === $address->address;
+        }
+
+        if (is_string($address)) {
+            $parsed = self::parse($address);
+
+            return $parsed instanceof self &&
+                $this->address === $parsed->address;
+        }
+
+        return false;
+    }
 }

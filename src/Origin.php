@@ -77,7 +77,7 @@ class Origin
         // are identical, then return true.
         if (!$this->mIsOpaque && !$aOther->mIsOpaque) {
             return $this->mScheme === $aOther->mScheme &&
-                $this->mHost === $aOther->mHost &&
+                $this->mHost->equals($aOther->mHost) &&
                 $this->mPort === $aOther->mPort;
         }
 

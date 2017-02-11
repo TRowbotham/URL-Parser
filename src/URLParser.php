@@ -666,7 +666,7 @@ abstract class URLParser
                                 return false;
                             }
 
-                            if ($host->getHost() === 'localhost') {
+                            if ($host->equals('localhost')) {
                                 $host->setHost('');
                             }
 

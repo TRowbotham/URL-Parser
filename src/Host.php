@@ -19,6 +19,13 @@ class Host
         $this->type = $type;
     }
 
+    public function __clone()
+    {
+        if ($this->type == self::IPV4 || $this->type == self::IPV6) {
+            $this->host = clone $this->host;
+        }
+    }
+
     /**
      * Parses a host.
      *
@@ -132,13 +139,35 @@ class Host
     }
 
     /**
-     * Gets the underlying host value.
+     * Checks to see if two hosts are equal.
      *
-     * @return GMP|array|string
+     * @param  Host|string $host Another Host object or a string.
+     *
+     * @return bool
      */
-    public function getHost()
+    public function equals($host)
     {
-        return $this->host;
+        $value = $host;
+        $typeCheck = true;
+
+        if ($host instanceof self) {
+            $value = $host->host;
+            $typeCheck = $this->type == $host->type;
+        }
+
+        switch ($this->type) {
+            case self::DOMAIN:
+            case self::OPAQUE_HOST:
+                return $typeCheck &&
+                    is_string($value) &&
+                    $this->host === $value;
+
+            case self::IPV4:
+            case self::IPV6:
+                return $typeCheck && $this->host->equals($value);
+        }
+
+        return false;
     }
 
     /**
