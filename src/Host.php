@@ -246,6 +246,13 @@ class Host
             $info
         );
 
+        // PHP's idn_to_* functions do not offer a way to disable the
+        // check on the domain's DNS length, so we work around it here by
+        // returning the empty string if $domain is the empty string.
+        if ($domain === '') {
+            return new self('', self::DOMAIN);
+        }
+
         return self::domainToIDN($domain, $result, $info);
     }
 
@@ -265,13 +272,6 @@ class Host
      */
     private static function domainToIDN($domain, $result, $info)
     {
-        // PHP's idn_to_* functions do not offer a way to disable the
-        // check on the domain's DNS length, so we work around it here by
-        // returning $domain if it is the empty string.
-        if ($domain === '') {
-            return new self('', self::DOMAIN);
-        }
-
         // If the conversion failed due to the length of the labels or domain
         // name, we return the result of the idn_to_* operation. There is
         // currently a bug in PHP where an overly long domain name will cause
