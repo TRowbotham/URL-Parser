@@ -35,14 +35,10 @@ class Host
      *
      * @param  bool   $isSpecial Whether or not the URL has a special scheme.
      *
-     * @param  bool   $unicode   Optional argument, that when set to true,
-     *                           causes the domain to be encoded using unicode
-     *                           instead of ASCII.
-     *
      * @return Host|bool Returns a Host if it was successfully parsed or
      *                   false if parsing fails.
      */
-    public static function parse($input, $isSpecial, $unicode = false)
+    public static function parse($input, $isSpecial)
     {
         if (mb_substr($input, 0, 1, 'UTF-8') === '[') {
             if (mb_substr($input, -1, null, 'UTF-8') !== ']') {
@@ -83,9 +79,7 @@ class Host
             return $ipv4Host;
         }
 
-        return $unicode
-            ? $asciiDomain->domainToUnicode()
-            : $asciiDomain;
+        return $asciiDomain;
     }
 
     /**
