@@ -79,7 +79,7 @@ class Host
             return $ipv4Host;
         }
 
-        return $asciiDomain;
+        return new self($asciiDomain, self::DOMAIN);
     }
 
     /**
@@ -232,14 +232,14 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
      *
-     * @param  string $domain The domain name to be converted.
+     * @param  string       $domain The domain name to be converted.
      *
-     * @return Host|bool      Returns the domain name upon success or false on
-     *                        failure.
+     * @return string|bool           Returns the domain name upon success or
+     *                               false on failure.
      */
-    public static function domainToASCII($domain)
+    private static function domainToASCII($domain)
     {
-        $domain = (string) $domain;
+        $domain = $domain;
 
         // Let result be the result of running Unicode ToASCII with domain_name
         // set to domain, UseSTD3ASCIIRules set to false, processing_option set
@@ -255,7 +255,7 @@ class Host
         // check on the domain's DNS length, so we work around it here by
         // returning the empty string if $domain is the empty string.
         if ($domain === '') {
-            return new self('', self::DOMAIN);
+            return '';
         }
 
         // If the conversion failed due to the length of the labels or domain
@@ -266,7 +266,7 @@ class Host
             ($info['errors'] & IDNA_ERROR_LABEL_TOO_LONG ||
             $info['errors'] & IDNA_ERROR_DOMAIN_NAME_TOO_LONG)
         ) {
-            return new self($info['result'], self::DOMAIN);
+            return $info['result'];
         }
 
         if ($result === false) {
@@ -274,6 +274,6 @@ class Host
             return false;
         }
 
-        return new self($result, self::DOMAIN);
+        return $result;
     }
 }
