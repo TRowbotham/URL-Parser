@@ -219,7 +219,12 @@ class Host
             $info
         );
 
-        return self::domainToIDN($this->host, $result, $info);
+        if ($result === false) {
+            // Syntax violation
+            return false;
+        }
+
+        return new self($result, self::DOMAIN);
     }
 
     /**
@@ -253,25 +258,6 @@ class Host
             return new self('', self::DOMAIN);
         }
 
-        return self::domainToIDN($domain, $result, $info);
-    }
-
-    /**
-     * Processes the result of a call to an idn_to_ascii or idn_to_unicode
-     * function.
-     *
-     * @param  string      $domain The domain that was processed.
-     *
-     * @param  string|bool $result The resulting string of the conversion or
-     *                             false if the conversion failed.
-     *
-     * @param  array $info         An array containing information about the
-     *                             conversion process.
-     *
-     * @return Host|bool
-     */
-    private static function domainToIDN($domain, $result, $info)
-    {
         // If the conversion failed due to the length of the labels or domain
         // name, we return the result of the idn_to_* operation. There is
         // currently a bug in PHP where an overly long domain name will cause
