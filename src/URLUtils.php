@@ -33,9 +33,11 @@ abstract class URLUtils
     const REGEX_WINDOWS_DRIVE_LETTER = '/^[A-Za-z][:|]$/u';
     const REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER = '/^[A-Za-z]:$/u';
 
-    const ENCODE_SET_SIMPLE   = '\x00-\x1F\x7E-\x{10FFFF}';
-    const ENCODE_SET_DEFAULT  = self::ENCODE_SET_SIMPLE . '\x20"#<>?`{}';
-    const ENCODE_SET_USERINFO = self::ENCODE_SET_DEFAULT . '\/:;=@[\\\\\]^|';
+    const C0_CONTROL_PERCENT_ENCODE_SET = '\x00-\x1F\x7E-\x{10FFFF}';
+    const PATH_PERCENT_ENCODE_SET       = self::C0_CONTROL_PERCENT_ENCODE_SET .
+        '\x20"#<>?`{}';
+    const USERINFO_PERCENT_ENCODE_SET   = self::PATH_PERCENT_ENCODE_SET .
+        '\/:;=@[\\\\\]^|';
 
     public static $specialSchemes = [
         'ftp'    => 21,
@@ -240,18 +242,19 @@ abstract class URLUtils
      *
      * @see https://url.spec.whatwg.org/#utf-8-percent-encode
      *
-     * @param string $aCodePoint A code point stream to be encoded.
+     * @param string $aCodePoint        A code point stream to be encoded.
      *
-     * @param int $aEncodeSet The encode set used to decide whether or not the
-     *     code point should be encoded.
+     * @param string $aPercentEncodeSet The encode set used to decide whether or
+     *                                  not the code point should be percent
+     *                                  encoded.
      *
      * @return string
      */
     public static function utf8PercentEncode(
         $aCodePoint,
-        $aEncodeSet = self::ENCODE_SET_SIMPLE
+        $aPercentEncodeSet = self::C0_CONTROL_PERCENT_ENCODE_SET
     ) {
-        if (!preg_match('/[' . $aEncodeSet . ']/u', $aCodePoint)) {
+        if (!preg_match('/[' . $aPercentEncodeSet . ']/u', $aCodePoint)) {
             return $aCodePoint;
         }
 

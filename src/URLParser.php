@@ -382,7 +382,7 @@ abstract class URLParser
 
                             $encodedCodePoints = URLUtils::utf8PercentEncode(
                                 $codePoint,
-                                URLUtils::ENCODE_SET_USERINFO
+                                URLUtils::USERINFO_PERCENT_ENCODE_SET
                             );
 
                             if ($passwordTokenSeenFlag) {
@@ -789,7 +789,7 @@ abstract class URLParser
 
                         $buffer .= URLUtils::utf8PercentEncode(
                             $c,
-                            URLUtils::ENCODE_SET_DEFAULT
+                            URLUtils::PATH_PERCENT_ENCODE_SET
                         );
                     }
 

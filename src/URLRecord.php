@@ -97,7 +97,7 @@ class URLRecord
         while (($codePoint = mb_substr($username, 0, 1)) !== '') {
             $this->username .= URLUtils::utf8PercentEncode(
                 $codePoint,
-                URLUtils::ENCODE_SET_USERINFO
+                URLUtils::USERINFO_PERCENT_ENCODE_SET
             );
             $username = mb_substr($username, 1);
         }
@@ -117,7 +117,7 @@ class URLRecord
         while (($codePoint = mb_substr($password, 0, 1)) !== '') {
             $this->password .= URLUtils::utf8PercentEncode(
                 $codePoint,
-                URLUtils::ENCODE_SET_USERINFO
+                URLUtils::USERINFO_PERCENT_ENCODE_SET
             );
             $password = mb_substr($password, 1);
         }
