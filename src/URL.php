@@ -202,6 +202,7 @@ class URL implements JsonSerializable
 
                 if ($parsedURL === false) {
                     throw new TypeError($value . ' is not a valid URL.');
+                    return;
                 }
 
                 $this->mUrl = $parsedURL;
