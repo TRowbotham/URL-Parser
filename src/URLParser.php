@@ -646,11 +646,6 @@ abstract class URLParser
                             // letter quirk. $buffer is not reset here and
                             // instead used in the path state.
                         } elseif ($buffer === '') {
-                            if ($stateOverride && $url->includesCredentials()) {
-                                // Syntax violation
-                                break 2;
-                            }
-
                             $url->host = Host::createEmptyDomain();
 
                             if ($stateOverride) {
