@@ -243,10 +243,10 @@ class Host
 
         // Let result be the result of running Unicode ToASCII with domain_name
         // set to domain, UseSTD3ASCIIRules set to false, processing_option set
-        // to Transitional_Processing, and VerifyDnsLength set to false.
+        // to Nontransitional_Processing, and VerifyDnsLength set to false.
         $result = idn_to_ascii(
             $domain,
-            0,
+            IDNA_NONTRANSITIONAL_TO_ASCII,
             INTL_IDNA_VARIANT_UTS46,
             $info
         );
