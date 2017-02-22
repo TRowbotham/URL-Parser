@@ -141,11 +141,6 @@ class URL implements JsonSerializable
 
         switch ($aName) {
             case 'hash':
-                if ($this->mUrl->scheme === 'javascript') {
-                    // Terminate these steps
-                    return;
-                }
-
                 if ($value === '') {
                     $this->mUrl->fragment = null;
 
