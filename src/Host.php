@@ -120,6 +120,16 @@ class Host
     }
 
     /**
+     * Determines if the host is an empty host.
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return $this->host === '';
+    }
+
+    /**
      * Returns whether or not the host has a null value.
      *
      * @return bool

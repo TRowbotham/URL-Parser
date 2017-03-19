@@ -740,11 +740,12 @@ abstract class URLParser
                                     $buffer
                                 )
                             ) {
-                                if (!$url->host->isNull()) {
+                                if (!$url->host->isEmpty() &&
+                                    !$url->host->isNull()
+                                ) {
                                     // Syntax violation
+                                    $url->host->setHost('');
                                 }
-
-                                $this->host = Host::createNullHost();
 
                                 // This is a (platform-independent) Windows
                                 // drive letter quirk.
