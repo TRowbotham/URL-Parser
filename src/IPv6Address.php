@@ -1,7 +1,7 @@
 <?php
 namespace phpjs\urls;
 
-class IPv6Address
+class IPv6Address implements NetworkAddress
 {
     /**
      * @var array
