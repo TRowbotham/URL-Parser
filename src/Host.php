@@ -20,6 +20,17 @@ class Host
     }
 
     /**
+     * Creates a new Host whose host is null. This will serialize to the empty
+     * string and is not a valid host string.
+     *
+     * @return Host
+     */
+    public static function createNullHost()
+    {
+        return new self(null);
+    }
+
+    /**
      * Parses a host.
      *
      * @see https://url.spec.whatwg.org/#concept-host-parser
@@ -29,7 +40,8 @@ class Host
      * @param  bool   $isSpecial Whether or not the URL has a special scheme.
      *
      * @return Host|bool Returns a Host if it was successfully parsed or
-     *                   false if parsing fails.
+     *                   false if parsing fails. The returned Host can never be
+     *                   null.
      */
     public static function parse($input, $isSpecial)
     {
@@ -105,6 +117,16 @@ class Host
         }
 
         return new self($output);
+    }
+
+    /**
+     * Returns whether or not the host has a null value.
+     *
+     * @return bool
+     */
+    public function isNull()
+    {
+        return $this->host === null;
     }
 
     /**
@@ -215,7 +237,8 @@ class Host
             return '[' . $this->host . ']';
         }
 
-        return $this->host;
+        // Since host can be null, make sure we cast this to a string.
+        return (string) $this->host;
     }
 
     /**
@@ -223,20 +246,24 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-domain-to-unicode
      *
-     * @param  string $domain The domain name to be converted.
-     *
      * @return Host|bool      Returns the domain name upon success or false on
      *                        failure.
      */
     public function domainToUnicode()
     {
+        // Only strings can be valid domains. Make sure that the host is not
+        // null or a network address before trying to run it through the IDNA
+        // algorithm.
+        if (!is_string($this->host)) {
+            return false;
+        }
+
         // Let result be the result of running Unicode ToUnicode with
         // domain_name set to domain, UseSTD3ASCIIRules set to false.
         $result = idn_to_utf8(
             $this->host,
             IDNA_NONTRANSITIONAL_TO_UNICODE,
-            INTL_IDNA_VARIANT_UTS46,
-            $info
+            INTL_IDNA_VARIANT_UTS46
         );
 
         if ($result === false) {
@@ -259,8 +286,6 @@ class Host
      */
     private static function domainToASCII($domain)
     {
-        $domain = $domain;
-
         // Let result be the result of running Unicode ToASCII with domain_name
         // set to domain, UseSTD3ASCIIRules set to false, processing_option set
         // to Nontransitional_Processing, and VerifyDnsLength set to false.

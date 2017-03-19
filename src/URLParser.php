@@ -272,7 +272,7 @@ abstract class URLParser
                     if ($c === ''/* EOF */) {
                         $url->username = $base->username;
                         $url->password = $base->password;
-                        $url->host = $base->host;
+                        $url->host = clone $base->host;
                         $url->port = $base->port;
                         $url->path = $base->path;
                         $url->query = $base->query;
@@ -281,7 +281,7 @@ abstract class URLParser
                     } elseif ($c === '?') {
                         $url->username = $base->username;
                         $url->password = $base->password;
-                        $url->host = $base->host;
+                        $url->host = clone $base->host;
                         $url->port = $base->port;
                         $url->path = $base->path;
                         $url->query = '';
@@ -289,7 +289,7 @@ abstract class URLParser
                     } elseif ($c === '#') {
                         $url->username = $base->username;
                         $url->password = $base->password;
-                        $url->host = $base->host;
+                        $url->host = clone $base->host;
                         $url->port = $base->port;
                         $url->path = $base->path;
                         $url->query = $base->query;
@@ -302,7 +302,7 @@ abstract class URLParser
                         } else {
                             $url->username = $base->username;
                             $url->password = $base->password;
-                            $url->host = $base->host;
+                            $url->host = clone $base->host;
                             $url->port = $base->port;
                             $url->path = $base->path;
 
@@ -329,7 +329,7 @@ abstract class URLParser
                     } else {
                         $url->username = $base->username;
                         $url->password = $base->password;
-                        $url->host = $base->host;
+                        $url->host = clone $base->host;
                         $url->port = $base->port;
                         $state = self::PATH_STATE;
                         $pointer--;
@@ -546,16 +546,16 @@ abstract class URLParser
                         $state = self::FILE_SLASH_STATE;
                     } elseif ($base && $base->scheme === 'file') {
                         if ($c === ''/* EOF */) {
-                            $url->host = $base->host;
+                            $url->host = clone $base->host;
                             $url->path = $base->path;
                             $url->query = $base->query;
                         } elseif ($c === '?') {
-                            $url->host = $base->host;
+                            $url->host = clone $base->host;
                             $url->path = $base->path;
                             $url->query = '';
                             $state = self::QUERY_STATE;
                         } elseif ($c === '#') {
-                            $url->host = $base->host;
+                            $url->host = clone $base->host;
                             $url->path = $base->path;
                             $url->query = $base->query;
                             $url->fragment = '';
@@ -580,7 +580,7 @@ abstract class URLParser
                                     $encoding
                                 ))
                             ) {
-                                $url->host = $base->host;
+                                $url->host = clone $base->host;
                                 $url->path = $base->path;
                                 $url->shortenPath();
                             } else {
@@ -740,11 +740,12 @@ abstract class URLParser
                                     $buffer
                                 )
                             ) {
-                                if ($url->host !== null) {
+                                if (!$url->host->isNull()) {
                                     // Syntax violation
                                 }
 
-                                $url->host = null;
+                                $this->host = Host::createNullHost();
+
                                 // This is a (platform-independent) Windows
                                 // drive letter quirk.
                                 $buffer = mb_substr($buffer, 0, 1, $encoding) .

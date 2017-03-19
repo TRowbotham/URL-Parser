@@ -25,7 +25,7 @@ class URLRecord
     public $password;
 
     /**
-     * @var Host|null
+     * @var Host
      */
     public $host;
 
@@ -69,6 +69,7 @@ class URLRecord
         $this->scheme = '';
         $this->username = '';
         $this->password = '';
+        $this->host = Host::createNullHost();
         $this->port = null;
         $this->path = [];
         $this->query = null;
@@ -78,9 +79,7 @@ class URLRecord
 
     public function __clone()
     {
-        if ($this->host !== null) {
-            $this->host = clone $this->host;
-        }
+        $this->host = clone $this->host;
     }
 
     /**
@@ -144,7 +143,7 @@ class URLRecord
      */
     public function cannotHaveUsernamePasswordPort()
     {
-        return $this->host === null || $this->host->equals('') ||
+        return $this->host->isNull() || $this->host->equals('') ||
             $this->cannotBeABaseUrl || $this->scheme === 'file';
     }
 
@@ -283,7 +282,7 @@ class URLRecord
     {
         $output = $this->scheme . ':';
 
-        if ($this->host !== null) {
+        if (!$this->host->isNull()) {
             $output .= '//';
 
             if ($this->username !== '' || $this->password !== '') {
@@ -301,7 +300,7 @@ class URLRecord
             if ($this->port !== null) {
                 $output .= ':' . $this->port;
             }
-        } elseif ($this->host === null && $this->scheme === 'file') {
+        } elseif ($this->host->isNull() && $this->scheme === 'file') {
             $output .= '//';
         }
 
