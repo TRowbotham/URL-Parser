@@ -158,6 +158,18 @@ abstract class URLParser
                                 // Terminate this algorithm.
                                 break 2;
                             }
+
+                            if ($url->includesCredentials() ||
+                                ($url->port !== null && $buffer === 'file')
+                            ) {
+                                break 2;
+                            }
+
+                            if ($url->scheme === 'file' &&
+                                ($url->host->isEmpty() || $url->host->isNull())
+                            ) {
+                                break 2;
+                            }
                         }
 
                         $url->scheme = $buffer;
