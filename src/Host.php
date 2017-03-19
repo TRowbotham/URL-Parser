@@ -3,25 +3,18 @@ namespace phpjs\urls;
 
 class Host
 {
-    const DOMAIN      = 1;
-    const IPV4        = 2;
-    const IPV6        = 3;
-    const OPAQUE_HOST = 4;
-
     const FORBIDDEN_HOST_CODEPOINT = '/[\x00\x09\x0A\x0D\x20#%\/:?@[\\\\\]]/u';
 
     private $host;
-    private $type;
 
-    protected function __construct($host, $type)
+    protected function __construct($host)
     {
         $this->host = $host;
-        $this->type = $type;
     }
 
     public function __clone()
     {
-        if ($this->type == self::IPV4 || $this->type == self::IPV6) {
+        if ($this->host instanceof NetworkAddress) {
             $this->host = clone $this->host;
         }
     }
@@ -48,7 +41,11 @@ class Host
 
             $ipv6 = IPv6Address::parse(mb_substr($input, 1, -1, 'UTF-8'));
 
-            return $ipv6 === false ? false : new self($ipv6, self::IPV6);
+            if ($ipv6 === false) {
+                return false;
+            }
+
+            return new self($ipv6);
         }
 
         if (!$isSpecial) {
@@ -72,14 +69,14 @@ class Host
         $ipv4Host = IPv4Address::parse($asciiDomain);
 
         if ($ipv4Host instanceof IPv4Address) {
-            return new self($ipv4Host, self::IPV4);
+            return new self($ipv4Host);
         }
 
         if ($ipv4Host === false) {
             return $ipv4Host;
         }
 
-        return new self($asciiDomain, self::DOMAIN);
+        return new self($asciiDomain);
     }
 
     /**
@@ -107,29 +104,61 @@ class Host
             $input = mb_substr($input, 1, null, 'UTF-8');
         }
 
-        return new self($output, self::OPAQUE_HOST);
+        return new self($output);
     }
 
     /**
-     * Creates a new domain that is the empty string.
-     *
-     * @return Host
-     */
-    public static function createEmptyDomain()
-    {
-        return new self('', self::DOMAIN);
-    }
-
-    /**
-     * Returns whether or not a Host is a particlar type.
-     *
-     * @param  int  $type A Host type.
+     * Returns whether or not the host is a domain.
      *
      * @return bool
      */
-    public function isType($type)
+    public function isDomain()
     {
-        return $this->type == $type;
+        return $this->isValidDomain();
+    }
+
+    /**
+     * Returns whether or not the host is a valid domain.
+     *
+     * @see https://url.spec.whatwg.org/#valid-domain
+     *
+     * @return bool
+     */
+    private function isValidDomain()
+    {
+        if (!is_string($this->host)) {
+            return false;
+        }
+
+        // Let result be the result of running Unicode ToASCII with domain_name
+        // set to domain, UseSTD3ASCIIRules set to true, processing_option set
+        // to Nontransitional_Processing, and VerifyDnsLength set to true.
+        $result = idn_to_ascii(
+            $this->host,
+            IDNA_USE_STD3_RULES | IDNA_NONTRANSITIONAL_TO_ASCII,
+            INTL_IDNA_VARIANT_UTS46
+        );
+
+        if ($result === false) {
+            return false;
+        }
+
+        // Set result to the result of running Unicode ToUnicode with
+        // domain_name set to result, UseSTD3ASCIIRules set to true.
+        $result = idn_to_utf8(
+            $result,
+            IDNA_USE_STD3_RULES,
+            INTL_IDNA_VARIANT_UTS46,
+            $info
+        );
+
+        if ($result === false ||
+            (!empty($info) && $info['errors'] !== 0)
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -141,37 +170,28 @@ class Host
      */
     public function equals($host)
     {
-        $value = $host;
-        $typeCheck = true;
-
         if ($host instanceof self) {
-            $value = $host->host;
-            $typeCheck = $this->type == $host->type;
+            $host = $host->host;
         }
 
-        switch ($this->type) {
-            case self::DOMAIN:
-            case self::OPAQUE_HOST:
-                return $typeCheck &&
-                    is_string($value) &&
-                    $this->host === $value;
-
-            case self::IPV4:
-            case self::IPV6:
-                return $typeCheck && $this->host->equals($value);
+        if ($this->host instanceof NetworkAddress) {
+            return $this->host->equals($host);
         }
 
-        return false;
+        return $this->host === $host;
     }
 
     /**
-     * Sets the host to a new value for domains and opaque hosts.
+     * Sets the host to a new value.
      *
-     * @param  string A new host value.
+     * @param  string|NetworkAddress|null A new host value.
      */
     public function setHost($host)
     {
-        if (!is_string($host)) {
+        if (!is_string($host) &&
+            !$host instanceof NetworkAddress &&
+            $host !== null
+        ) {
             return;
         }
 
@@ -187,11 +207,11 @@ class Host
      */
     public function __toString()
     {
-        if ($this->type == self::IPV4) {
+        if ($this->host instanceof IPv4Address) {
             return (string) $this->host;
         }
 
-        if ($this->type == self::IPV6) {
+        if ($this->host instanceof IPv6Address) {
             return '[' . $this->host . ']';
         }
 
@@ -224,7 +244,7 @@ class Host
             return false;
         }
 
-        return new self($result, self::DOMAIN);
+        return new self($result);
     }
 
     /**

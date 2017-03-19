@@ -646,7 +646,7 @@ abstract class URLParser
                             // letter quirk. $buffer is not reset here and
                             // instead used in the path state.
                         } elseif ($buffer === '') {
-                            $url->host = Host::createEmptyDomain();
+                            $url->host->setHost('');
 
                             if ($stateOverride) {
                                 break 2;
