@@ -155,7 +155,7 @@ class Origin
             return 'null';
         }
 
-        $unicodeHost = $this->mHost->isType(Host::DOMAIN)
+        $unicodeHost = $this->mHost->isDomain()
             ? $this->mHost->domainToUnicode()
             : $this->mHost;
         $unicodeOrigin = new Origin(

@@ -70,7 +70,7 @@ class URL implements JsonSerializable
                 return '#' . $this->mUrl->fragment;
 
             case 'host':
-                if ($this->mUrl->host === null) {
+                if ($this->mUrl->host->isNull()) {
                     return '';
                 }
 
@@ -82,7 +82,7 @@ class URL implements JsonSerializable
                     $this->mUrl->port;
 
             case 'hostname':
-                if ($this->mUrl->host === null) {
+                if ($this->mUrl->host->isNull()) {
                     return '';
                 }
 

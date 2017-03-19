@@ -1,7 +1,7 @@
 <?php
 namespace phpjs\urls;
 
-class IPv4Address
+class IPv4Address implements NetworkAddress
 {
     /**
      * @var GMP
