@@ -617,17 +617,19 @@ abstract class URLParser
 
                         $state = self::FILE_HOST_STATE;
                     } else {
-                        if ($base &&
-                            $base->scheme === 'file' &&
-                            preg_match(
+                        if ($base !== null && $base->scheme === 'file') {
+                            if (preg_match(
                                 URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
                                 $base->path[0]
-                            )
-                        ) {
-                            // This is a (platform-independent) Windows drive
-                            // letter quirk. Both url’s and base’s host are null
-                            // under these conditions and therefore not copied.
-                            $url->path[] = $base->path[0];
+                            )) {
+                                // This is a (platform-independent) Windows
+                                // drive letter quirk. Both url’s and base’s
+                                // host are null under these conditions and
+                                // therefore not copied.
+                                $url->path[] = $base->path[0];
+                            } else {
+                                $url->host = clone $base->host;
+                            }
                         }
 
                         $state = self::PATH_STATE;
@@ -770,6 +772,19 @@ abstract class URLParser
                         }
 
                         $buffer = '';
+
+                        if ($url->scheme === 'file' &&
+                            ($c === '' ||
+                            $c === '?' ||
+                            $c === '#')
+                        ) {
+                            $size = count($url->path);
+
+                            while ($size-- > 1 && $url->path[0] === '') {
+                                // validation error
+                                array_shift($url->path);
+                            }
+                        }
 
                         if ($c === '?') {
                             $url->query = '';
