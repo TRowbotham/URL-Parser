@@ -34,7 +34,7 @@ class IPv6Address implements NetworkAddress
 
         if ($c === ':') {
             if (mb_substr($aInput, $pointer + 1, 1) !== ':') {
-                // Syntax violation
+                // Validation error.
                 return false;
             }
 
@@ -44,24 +44,21 @@ class IPv6Address implements NetworkAddress
             $c = mb_substr($aInput, $pointer, 1);
         }
 
-        // Main
         while ($c !== '') {
             if ($piecePointer == 8) {
-                // Syntax violation
+                // Validation error.
                 return false;
             }
 
             if ($c === ':') {
                 if ($compressPointer !== null) {
-                    // Syntax violation
+                    // Validation error.
                     return false;
                 }
 
-                $pointer++;
-                $c = mb_substr($aInput, $pointer, 1);
+                $c = mb_substr($aInput, ++$pointer, 1);
                 $piecePointer++;
                 $compressPointer = $piecePointer;
-                // Jump to main
                 continue;
             }
 
@@ -70,31 +67,90 @@ class IPv6Address implements NetworkAddress
 
             while ($length < 4 && ctype_xdigit($c)) {
                 $value = $value * 0x10 + intval($c, 16);
-                $pointer++;
                 $length++;
-                $c = mb_substr($aInput, $pointer, 1);
+                $c = mb_substr($aInput, ++$pointer, 1);
             }
 
             if ($c === '.') {
                 if ($length == 0) {
-                    // Syntax violation
+                    // Validation error.
                     return false;
                 }
 
                 $pointer -= $length;
                 $c = mb_substr($aInput, $pointer, 1);
 
-                goto IPv4;
-            } elseif ($c === ':') {
-                $pointer++;
-                $c = mb_substr($aInput, $pointer, 1);
+                if ($piecePointer > 6) {
+                    // Validation error.
+                    return false;
+                }
+
+                $numbersSeen = 0;
+
+                while ($c !== '') {
+                    $ipv4Piece = null;
+
+                    if ($numbersSeen > 0) {
+                        if ($c === '.' && $numbersSeen < 4) {
+                            $c = mb_substr($aInput, ++$pointer, 1);
+                        } else {
+                            // Validation error.
+                            return false;
+                        }
+                    }
+
+                    if (!ctype_digit($c)) {
+                        // Validation error.
+                        return false;
+                    }
+
+                    while (ctype_digit($c)) {
+                        $number = (int) base_convert(intval($c, 16), 16, 10);
+
+                        if ($ipv4Piece === null) {
+                            $ipv4Piece = $number;
+                        } elseif ($ipv4Piece === 0) {
+                            // Validation error.
+                            return false;
+                        } else {
+                            $ipv4Piece = $ipv4Piece * 10 + $number;
+                        }
+
+                        $c = mb_substr($aInput, ++$pointer, 1);
+
+                        if ($ipv4Piece > 255) {
+                            // Validation error.
+                            return false;
+                        }
+                    }
+
+                    $address[$piecePointer] = $address[
+                        $piecePointer
+                    ] * 0x100 + $ipv4Piece;
+                    $numbersSeen++;
+
+                    if ($numbersSeen == 2 || $numbersSeen == 4) {
+                        $piecePointer++;
+                    }
+
+                    if ($c === '' && $numbersSeen != 4) {
+                        // Validation error.
+                        return false;
+                    }
+                }
+
+                break;
+            }
+
+            if ($c === ':') {
+                $c = mb_substr($aInput, ++$pointer, 1);
 
                 if ($c === '') {
-                    // Syntax violation
+                    // Validation error.
                     return false;
                 }
             } elseif ($c !== '') {
-                // Syntax violation
+                // Validation error.
                 return false;
             }
 
@@ -102,72 +158,6 @@ class IPv6Address implements NetworkAddress
             $piecePointer++;
         }
 
-        if ($c === '') {
-            goto Finale;
-        }
-
-        // Step 8
-        IPv4:
-        if ($piecePointer > 6) {
-            // Syntax violation
-            return false;
-        }
-
-        // Step 9
-        $numbersSeen = 0;
-
-        // Step 10
-        while ($c !== '') {
-            $value = null;
-
-            if ($numbersSeen > 0) {
-                if ($c === '.' && $numbersSeen < 4) {
-                    $c = mb_substr($aInput, ++$pointer, 1);
-                } else {
-                    // Syntax violation
-                    return false;
-                }
-            }
-
-            if (!ctype_digit($c)) {
-                // Syntax violation
-                return false;
-            }
-
-            while (ctype_digit($c)) {
-                $number = base_convert(intval($c, 16), 16, 10);
-
-                if ($value === null) {
-                    $value = $number;
-                } elseif ($value === 0) {
-                    // Syntax violation
-                } else {
-                    $value = $value * 10 + $number;
-                }
-
-                $pointer++;
-                $c = mb_substr($aInput, $pointer, 1);
-
-                if ($value > 255) {
-                    // Syntax violation
-                    return false;
-                }
-            }
-
-            $address[$piecePointer] = $address[$piecePointer] * 0x100 + $value;
-            $numbersSeen++;
-
-            if ($numbersSeen == 2 || $numbersSeen == 4) {
-                $piecePointer++;
-            }
-
-            if ($c === '' && $numbersSeen != 4) {
-                // Syntax violation
-                return false;
-            }
-        }
-
-        Finale:
         if ($compressPointer !== null) {
             $swaps = $piecePointer - $compressPointer;
             $piecePointer = 7;
@@ -182,7 +172,7 @@ class IPv6Address implements NetworkAddress
                 $swaps--;
             }
         } elseif ($compressPointer === null && $piecePointer != 8) {
-            // Syntax violation
+            // Validation error.
             return false;
         }
 
