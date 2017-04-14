@@ -116,12 +116,12 @@ class IPv6Address implements NetworkAddress
                             $ipv4Piece = $ipv4Piece * 10 + $number;
                         }
 
-                        $c = mb_substr($aInput, ++$pointer, 1);
-
                         if ($ipv4Piece > 255) {
                             // Validation error.
                             return false;
                         }
+
+                        $c = mb_substr($aInput, ++$pointer, 1);
                     }
 
                     $address[$piecePointer] = $address[
@@ -132,11 +132,11 @@ class IPv6Address implements NetworkAddress
                     if ($numbersSeen == 2 || $numbersSeen == 4) {
                         $piecePointer++;
                     }
+                }
 
-                    if ($c === '' && $numbersSeen != 4) {
-                        // Validation error.
-                        return false;
-                    }
+                if ($numbersSeen != 4) {
+                    // Validation error.
+                    return false;
                 }
 
                 break;
