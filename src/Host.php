@@ -319,7 +319,8 @@ class Host
         // the info array to be null instead of an array.
         if (!empty($info) &&
             ($info['errors'] & IDNA_ERROR_LABEL_TOO_LONG ||
-            $info['errors'] & IDNA_ERROR_DOMAIN_NAME_TOO_LONG)
+            $info['errors'] & IDNA_ERROR_DOMAIN_NAME_TOO_LONG ||
+            $info['errors'] & IDNA_ERROR_EMPTY_LABEL)
         ) {
             return $info['result'];
         }
