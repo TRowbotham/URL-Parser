@@ -575,21 +575,23 @@ abstract class URLParser
                         } else {
                             // This is a (platform-independent) Windows drive
                             // letter quirk.
-                            if (!preg_match(
-                                URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
-                                $c . mb_substr($input, $pointer, 1, $encoding)
-                            ) ||
-                                mb_strlen(mb_substr(
-                                    $input,
-                                    $pointer,
-                                    null,
-                                    $encoding
-                                ), $encoding) == 1 ||
-                                !preg_match('/[\/\\\\?#]/u', mb_substr(
-                                    $input,
-                                    $pointer + 1,
-                                    1,
-                                    $encoding
+                            $remaining = mb_substr(
+                                $input,
+                                $pointer,
+                                null,
+                                $encoding
+                            );
+                            $rCount = mb_strlen($remaining, $encoding);
+
+                            if ($rCount == 0 ||
+                                !preg_match(
+                                    URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
+                                    $c . mb_substr($remaining, 0, 1, $encoding)
+                                ) ||
+                                ($rCount >= 2 &&
+                                !preg_match(
+                                    '/[\/\\\\?#]/u',
+                                    mb_substr($remaining, 1, 1, $encoding)
                                 ))
                             ) {
                                 $url->host = clone $base->host;
