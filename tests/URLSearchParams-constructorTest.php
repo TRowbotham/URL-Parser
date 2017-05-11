@@ -180,6 +180,11 @@ class URLSearchParamsConstructorTest extends PHPUnit_Framework_TestCase
         $obj2->c = 'x';
         $obj2->a = '?';
 
+        $obj3 = new \stdClass();
+        $obj3->{"a\0b"} = "42";
+        $obj3->{"c\u{D83D}"} = "23";
+        $obj3->{"d\u{1234}"} = "foo";
+
         return [
             ['input' => $obj, 'output' => [['+', "%C2"]]],
             [
@@ -197,6 +202,14 @@ class URLSearchParamsConstructorTest extends PHPUnit_Framework_TestCase
                 'output' => [
                     ['c', 'x'],
                     ['a', '?']
+                ]
+            ],
+            [
+                'input' => $obj3,
+                'output' => [
+                    ["a\0b", "42"],
+                    ["c\u{FFFD}", "23"],
+                    ["d\u{1234}", "foo"]
                 ]
             ]
         ];
