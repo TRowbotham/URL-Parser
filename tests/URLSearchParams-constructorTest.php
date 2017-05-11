@@ -173,15 +173,15 @@ class URLSearchParamsConstructorTest extends PHPUnit_Framework_TestCase
 
     public function getTestData()
     {
-        /*$obj = new \stdClass();
-        $obj->+ = '%C2';*/
+        $obj = new \stdClass();
+        $obj->{"+"} = '%C2';
 
         $obj2 = new \stdClass();
         $obj2->c = 'x';
         $obj2->a = '?';
 
         return [
-            //['input' => $obj, 'output' => [['+', "%C2"]]],
+            ['input' => $obj, 'output' => [['+', "%C2"]]],
             [
                 'input' => $obj2,
                 'output' => [
