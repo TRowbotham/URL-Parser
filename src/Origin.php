@@ -26,11 +26,6 @@ class Origin
         $this->mScheme = $aScheme;
     }
 
-    public function __destruct()
-    {
-        $this->mHost = null;
-    }
-
     /**
      * @see https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-effective-domain
      *
