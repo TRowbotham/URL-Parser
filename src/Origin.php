@@ -12,18 +12,47 @@ class Origin
     private $mPort;
     private $mScheme;
 
-    public function __construct(
-        $aScheme,
-        $aHost,
-        $aPort,
-        $aDomain = null,
-        $aIsOpaque = false
+    private function __construct()
+    {
+        $this->mIsOpaque = true;
+    }
+
+    /**
+     * Creates a tuple origin, which consists of a scheme, host, port, and
+     * optionally a domain.
+     *
+     * @param  string       $scheme
+     * @param  Host         $host
+     * @param  int|null     $port
+     * @param  string|null  $domain
+     *
+     * @return self
+     */
+    public static function createTupleOrigin(
+        $scheme,
+        Host $host,
+        $port,
+        $domain = null
     ) {
-        $this->mDomain = $aDomain ?: null;
-        $this->mHost = $aHost;
-        $this->mIsOpaque = $aIsOpaque;
-        $this->mPort = $aPort;
-        $this->mScheme = $aScheme;
+        $origin = new self();
+        $origin->mDomain = $domain;
+        $origin->mHost = $host;
+        $origin->mIsOpaque = false;
+        $origin->mPort = $port;
+        $origin->mScheme = $scheme;
+
+        return $origin;
+    }
+
+    /**
+     * Creates an opaque origin. An opaque origin serializes to the string
+     * 'null' and is only useful for testing equality.
+     *
+     * @return self
+     */
+    public static function createOpaqueOrigin()
+    {
+        return new self();
     }
 
     /**

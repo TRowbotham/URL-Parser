@@ -201,13 +201,7 @@ class URLRecord
 
                 if ($url === false) {
                     // Return a new opaque origin
-                    return new Origin(
-                        $this->scheme,
-                        $this->host,
-                        $this->port,
-                        null,
-                        true
-                    );
+                    return Origin::createOpaqueOrigin();
                 }
 
                 return $url->getOrigin();
@@ -220,7 +214,7 @@ class URLRecord
             case 'wss':
                 // Return a tuple consiting of URL's scheme, host, port, and
                 // null
-                return new Origin(
+                return Origin::createTupleOrigin(
                     $this->scheme,
                     $this->host,
                     $this->port,
@@ -230,23 +224,11 @@ class URLRecord
             case 'file':
                 // Unfortunate as it is, this is left as an exercise to the
                 // reader. When in doubt, return a new opaque origin.
-                return new Origin(
-                    $this->scheme,
-                    $this->host,
-                    $this->port,
-                    null,
-                    true
-                );
+                return Origin::createOpaqueOrigin();
 
             default:
                 // Return a new opaque origin.
-                return new Origin(
-                    $this->scheme,
-                    $this->host,
-                    $this->port,
-                    null,
-                    true
-                );
+                return Origin::createOpaqueOrigin();
         }
     }
 
