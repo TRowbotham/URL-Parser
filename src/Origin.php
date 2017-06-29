@@ -147,11 +147,11 @@ class Origin
     }
 
     /**
-     * @see https://html.spec.whatwg.org/multipage/browsers.html#ascii-serialisation-of-an-origin
+     * @see https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
      *
      * @return string
      */
-    public function serializeAsASCII()
+    public function __toString()
     {
         if ($this->mIsOpaque) {
             return 'null';
@@ -166,28 +166,5 @@ class Origin
         }
 
         return $result;
-    }
-
-    /**
-     * @see https://html.spec.whatwg.org/multipage/browsers.html#unicode-serialisation-of-an-origin
-     *
-     * @return string
-     */
-    public function serializeAsUnicode()
-    {
-        if ($this->mIsOpaque) {
-            return 'null';
-        }
-
-        $unicodeHost = $this->mHost->isDomain()
-            ? $this->mHost->domainToUnicode()
-            : $this->mHost;
-        $unicodeOrigin = new Origin(
-            $this->mScheme,
-            $unicodeHost,
-            $this->mPort
-        );
-
-        return $unicodeOrigin->serializeAsASCII();
     }
 }

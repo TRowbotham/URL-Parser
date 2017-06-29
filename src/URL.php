@@ -92,7 +92,7 @@ class URL implements JsonSerializable
                 return $this->mUrl->serializeURL();
 
             case 'origin':
-                return $this->mUrl->getOrigin()->serializeAsUnicode();
+                return (string) $this->mUrl->getOrigin();
 
             case 'password':
                 return $this->mUrl->password;
