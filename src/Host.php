@@ -162,35 +162,16 @@ class Host
             return false;
         }
 
-        // Let result be the result of running Unicode ToASCII with domain_name
-        // set to domain, UseSTD3ASCIIRules set to true, processing_option set
-        // to Nontransitional_Processing, and VerifyDnsLength set to true.
-        $result = idn_to_ascii(
-            $this->host,
-            IDNA_USE_STD3_RULES | IDNA_NONTRANSITIONAL_TO_ASCII,
-            INTL_IDNA_VARIANT_UTS46
-        );
+        $result = self::domainToASCII($this->host, true);
 
         if ($result === false) {
             return false;
         }
 
-        // Set result to the result of running Unicode ToUnicode with
-        // domain_name set to result, UseSTD3ASCIIRules set to true.
-        $result = idn_to_utf8(
+        return IDN::getInstance()->toUnicode(
             $result,
-            IDNA_USE_STD3_RULES,
-            INTL_IDNA_VARIANT_UTS46,
-            $info
-        );
-
-        if ($result === false ||
-            (!empty($info) && $info['errors'] !== 0)
-        ) {
-            return false;
-        }
-
-        return true;
+            IDN::CHECK_BIDI | IDN::CHECK_JOINERS | IDN::USE_STD3_ASCII_RULES
+        ) !== false;
     }
 
     /**
@@ -268,16 +249,10 @@ class Host
             return false;
         }
 
-        // Let result be the result of running Unicode ToUnicode with
-        // domain_name set to domain, UseSTD3ASCIIRules set to false.
-        $result = idn_to_utf8(
-            $this->host,
-            IDNA_NONTRANSITIONAL_TO_UNICODE,
-            INTL_IDNA_VARIANT_UTS46
-        );
+        $options = IDN::CHECK_BIDI | IDN::CHECK_JOINERS;
+        $result = IDN::getInstance()->toUnicode($this->host, $options);
 
         if ($result === false) {
-            // Syntax violation
             return false;
         }
 
@@ -289,47 +264,22 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
      *
-     * @param  string       $domain The domain name to be converted.
+     * @param  string       $domain   The domain name to be converted.
+     *
+     * @param  bool         $beStrict
      *
      * @return string|bool           Returns the domain name upon success or
      *                               false on failure.
      */
-    private static function domainToASCII($domain)
+    private static function domainToASCII($domain, $beStrict = false)
     {
-        // Let result be the result of running Unicode ToASCII with domain_name
-        // set to domain, UseSTD3ASCIIRules set to false, processing_option set
-        // to Nontransitional_Processing, and VerifyDnsLength set to false.
-        $result = idn_to_ascii(
-            $domain,
-            IDNA_NONTRANSITIONAL_TO_ASCII,
-            INTL_IDNA_VARIANT_UTS46,
-            $info
-        );
+        $options = IDN::CHECK_BIDI | IDN::CHECK_JOINERS |
+            IDN::NONTRANSITIONAL_PROCESSING;
 
-        // PHP's idn_to_* functions do not offer a way to disable the
-        // check on the domain's DNS length, so we work around it here by
-        // returning the empty string if $domain is the empty string.
-        if ($domain === '') {
-            return '';
+        if ($beStrict) {
+            $options |= IDN::USE_STD3_ASCII_RULES | IDN::VERIFY_DNS_LENGTH;
         }
 
-        // If the conversion failed due to the length of the labels or domain
-        // name, we return the result of the idn_to_* operation. There is
-        // currently a bug in PHP where an overly long domain name will cause
-        // the info array to be null instead of an array.
-        if (!empty($info) &&
-            ($info['errors'] & IDNA_ERROR_LABEL_TOO_LONG ||
-            $info['errors'] & IDNA_ERROR_DOMAIN_NAME_TOO_LONG ||
-            $info['errors'] & IDNA_ERROR_EMPTY_LABEL)
-        ) {
-            return $info['result'];
-        }
-
-        if ($result === false) {
-            // Syntax violation
-            return false;
-        }
-
-        return $result;
+        return IDN::getInstance()->toASCII($domain, $options);
     }
 }
