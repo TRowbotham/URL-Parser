@@ -173,13 +173,21 @@ abstract class URLParser
                         }
 
                         $url->scheme = $buffer;
-                        $buffer = '';
 
                         if ($stateOverride) {
+                            if ($bufferIsSpecialScheme &&
+                                URLUtils::$specialSchemes[
+                                    $url->scheme
+                                ] === $url->port
+                            ) {
+                                $url->port = null;
+                            }
+
                             // Terminate this algoritm
                             break 2;
                         }
 
+                        $buffer = '';
                         $urlIsSpecial = $url->isSpecial();
 
                         if ($url->scheme === 'file') {
