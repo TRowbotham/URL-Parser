@@ -1,0 +1,213 @@
+<?php
+namespace phpjs\urls;
+
+final class IDN
+{
+    const CHECK_HYPHENS              = 1;
+    const CHECK_BIDI                 = 2;
+    const CHECK_JOINERS              = 4;
+    const USE_STD3_ASCII_RULES       = 8;
+    const VERIFY_DNS_LENGTH          = 16;
+    const NONTRANSITIONAL_PROCESSING = 32;
+
+    private static $instance;
+    private static $errors = [
+        IDNA_ERROR_EMPTY_LABEL,
+        IDNA_ERROR_LABEL_TOO_LONG,
+        IDNA_ERROR_DOMAIN_NAME_TOO_LONG,
+        IDNA_ERROR_LEADING_HYPHEN,
+        IDNA_ERROR_TRAILING_HYPHEN,
+        IDNA_ERROR_HYPHEN_3_4,
+        IDNA_ERROR_LEADING_COMBINING_MARK,
+        IDNA_ERROR_DISALLOWED,
+        IDNA_ERROR_PUNYCODE,
+        IDNA_ERROR_LABEL_HAS_DOT,
+        IDNA_ERROR_INVALID_ACE_LABEL,
+        IDNA_ERROR_BIDI,
+        IDNA_ERROR_CONTEXTJ
+    ];
+
+    private function __construct()
+    {
+    }
+
+    public static function getInstance()
+    {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    /**
+     * The domain name to be converted to ASCII.
+     *
+     * @param  string  $domainName A UTF-8 string.
+     *
+     * @param  int     $flags      A bitmask of flags.
+     *
+     * @return bool|string
+     */
+    public function toASCII($domainName, $flags = 0)
+    {
+        $options = $this->options($flags);
+
+        if ($flags & self::NONTRANSITIONAL_PROCESSING) {
+            $options |= IDNA_NONTRANSITIONAL_TO_ASCII;
+        }
+
+        $result = idn_to_ascii(
+            $domainName,
+            $options,
+            INTL_IDNA_VARIANT_UTS46,
+            $info
+        );
+
+        // We died a horrible death and can't recover. There is currently a bug
+        // in PHP's idn_to_* functions where this can occur when the given
+        // domain exceeds 254 bytes.
+        if (empty($info)) {
+            return false;
+        }
+
+        $whitelistedErrors = [];
+        $this->maybeCheckHyphens($flags, $whitelistedErrors);
+
+        // There is currently no way to disable the check on the domain's
+        // length. So, whitelist some errors to check against. Normally, a
+        // domain name is restricted to betwen 1 and 253 bytes. This excludes
+        // the root domain and its '.' delimiter.
+        if (!($flags & self::VERIFY_DNS_LENGTH)) {
+            // If the domain name is the empty string, simply return the empty
+            // string as no other rules can possibly apply to it.
+            if ($domainName === '') {
+                return $domainName;
+            }
+
+            $whitelistedErrors[] = IDNA_ERROR_LABEL_TOO_LONG;
+            $whitelistedErrors[] = IDNA_ERROR_DOMAIN_NAME_TOO_LONG;
+            $whitelistedErrors[] = IDNA_ERROR_EMPTY_LABEL;
+        }
+
+        if ($result === false && $this->hasNonWhitelistedErrors(
+            $info['errors'],
+            $whitelistedErrors
+        )) {
+            return false;
+        }
+
+        return $info['result'];
+    }
+
+    /**
+     * The domain name to be converted to UTF-8.
+     *
+     * @param  string  $domainName An ASCII string.
+     *
+     * @param  int     $flags      A bitmask of flags.
+     *
+     * @return bool|string
+     */
+    public function toUnicode($domainName, $flags = 0)
+    {
+        $options = $this->options($flags) | IDNA_NONTRANSITIONAL_TO_UNICODE;
+        $result = idn_to_utf8(
+            $domainName,
+            $options,
+            INTL_IDNA_VARIANT_UTS46,
+            $info
+        );
+
+        // We died a horrible death and can't recover. There is currently a bug
+        // in PHP's idn_to_* functions where this can occur when the given
+        // domain exceeds 254 bytes.
+        if (empty($info)) {
+            return false;
+        }
+
+        $whitelistedErrors = [];
+        $this->maybeCheckHyphens($flags, $whitelistedErrors);
+
+        if ($result === false && $this->hasNonWhitelistedErrors(
+            $info['errors'],
+            $whitelistedErrors
+        )) {
+            return false;
+        }
+
+        return $info['result'];
+    }
+
+    /**
+     * Translates the wrapper object option flags to the equivilant IDNA_*
+     * option flags.
+     *
+     * @param  int $flags A bitmask of flags.
+     *
+     * @return int
+     */
+    private function options($flags)
+    {
+        $options = 0;
+
+        if ($flags & self::CHECK_BIDI) {
+            $options |= IDNA_CHECK_BIDI;
+        }
+
+        if ($flags & self::CHECK_JOINERS) {
+            $options |= IDNA_CHECK_CONTEXTJ;
+        }
+
+        if ($flags & self::USE_STD3_ASCII_RULES) {
+            $options |= IDNA_USE_STD3_RULES;
+        }
+
+        return $options;
+    }
+
+    /**
+     * Checks to see if the user wants to validate hyphens and if not, adds the
+     * appropriate errors to a whitelist.
+     *
+     * @param  int   $flags
+     *
+     * @param  int[] &$whitelistedErrors
+     */
+    private function maybeCheckHyphens($flags, &$whitelistedErrors)
+    {
+        // There is currently no way to disable the check for hyphens in the
+        // 3rd and 4th spots in a domain, however, we can look for the
+        // error and add it to a whitelist of errors to check against.
+        if (!($flags & self::CHECK_HYPHENS)) {
+            $whitelistedErrors[] = IDNA_ERROR_HYPHEN_3_4;
+            $whitelistedErrors[] = IDNA_ERROR_LEADING_HYPHEN;
+            $whitelistedErrors[] = IDNA_ERROR_TRAILING_HYPHEN;
+        }
+    }
+
+    /**
+     * Checks to see if any errors other than the whitelisted errors has
+     * occured.
+     *
+     * @param  int    $errors            A bitmask of errors.
+     *
+     * @param  int[]  $whitelistedErrors An array of error bits.
+     *
+     * @return bool
+     */
+    private function hasNonWhitelistedErrors($errors, $whitelistedErrors)
+    {
+        if (empty($whitelistedErrors)) {
+            return true;
+        }
+
+        foreach (array_diff(self::$errors, $whitelistedErrors) as $error) {
+            if ($errors & $error) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
