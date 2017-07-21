@@ -12,150 +12,150 @@ use phpjs\urls\exception\TypeError;
  */
 class URL implements JsonSerializable
 {
-    private $mSearchParams;
-    private $mUrl;
+    private $queryObject;
+    private $url;
 
-    public function __construct($aUrl, $aBase = null)
+    public function __construct($url, $base = null)
     {
-        $this->mSearchParams = null;
-        $this->mUrl = null;
+        $this->queryObject = null;
+        $this->url = null;
         $parsedBase = null;
 
-        if ($aBase) {
-            $parsedBase = URLParser::parseBasicUrl($aBase);
+        if ($base) {
+            $parsedBase = URLParser::parseBasicUrl($base);
 
             if ($parsedBase === false) {
-                throw new TypeError($aBase . ' is not a valid URL.');
+                throw new TypeError($base . ' is not a valid URL.');
                 return;
             }
         }
 
-        $parsedURL = URLParser::parseBasicUrl($aUrl, $parsedBase);
+        $parsedURL = URLParser::parseBasicUrl($url, $parsedBase);
 
         if ($parsedURL === false) {
-            throw new TypeError($aUrl . ' is not a valid URL.');
+            throw new TypeError($url . ' is not a valid URL.');
             return;
         }
 
-        $this->mUrl = $parsedURL;
-        $query = $this->mUrl->query ?: '';
-        $this->mSearchParams = URLSearchParams::create($query, $parsedURL);
+        $this->url = $parsedURL;
+        $query = $this->url->query ?: '';
+        $this->queryObject = URLSearchParams::create($query, $parsedURL);
     }
 
     public function __clone()
     {
-        $this->mUrl = clone $this->mUrl;
-        $this->mSearchParams = URLSearchParams::create(
-            $this->mSearchParams,
-            $this->mUrl
+        $this->url = clone $this->url;
+        $this->queryObject = URLSearchParams::create(
+            $this->queryObject,
+            $this->url
         );
     }
 
-    public function __get($aName)
+    public function __get($name)
     {
-        switch ($aName) {
+        switch ($name) {
             case 'hash':
-                if ($this->mUrl->fragment === null ||
-                    $this->mUrl->fragment === ''
+                if ($this->url->fragment === null ||
+                    $this->url->fragment === ''
                 ) {
                     return '';
                 }
 
-                return '#' . $this->mUrl->fragment;
+                return '#' . $this->url->fragment;
 
             case 'host':
-                if ($this->mUrl->host->isNull()) {
+                if ($this->url->host->isNull()) {
                     return '';
                 }
 
-                if ($this->mUrl->port === null) {
-                    return (string) $this->mUrl->host;
+                if ($this->url->port === null) {
+                    return (string) $this->url->host;
                 }
 
-                return (string) $this->mUrl->host . ':' .
-                    $this->mUrl->port;
+                return (string) $this->url->host . ':' .
+                    $this->url->port;
 
             case 'hostname':
-                if ($this->mUrl->host->isNull()) {
+                if ($this->url->host->isNull()) {
                     return '';
                 }
 
-                return (string) $this->mUrl->host;
+                return (string) $this->url->host;
 
             case 'href':
-                return $this->mUrl->serializeURL();
+                return $this->url->serializeURL();
 
             case 'origin':
-                return (string) $this->mUrl->getOrigin();
+                return (string) $this->url->getOrigin();
 
             case 'password':
-                return $this->mUrl->password;
+                return $this->url->password;
 
             case 'pathname':
-                if ($this->mUrl->cannotBeABaseUrl) {
-                    return $this->mUrl->path[0];
+                if ($this->url->cannotBeABaseUrl) {
+                    return $this->url->path[0];
                 }
 
-                if (empty($this->mUrl->path)) {
+                if (empty($this->url->path)) {
                     return '';
                 }
 
-                return '/' . implode('/', $this->mUrl->path);
+                return '/' . implode('/', $this->url->path);
 
             case 'port':
-                if ($this->mUrl->port === null) {
+                if ($this->url->port === null) {
                     return '';
                 }
 
-                return (string) $this->mUrl->port;
+                return (string) $this->url->port;
 
             case 'protocol':
-                return $this->mUrl->scheme . ':';
+                return $this->url->scheme . ':';
 
             case 'search':
-                if ($this->mUrl->query === null ||
-                    $this->mUrl->query === ''
+                if ($this->url->query === null ||
+                    $this->url->query === ''
                 ) {
                     return '';
                 }
 
-                return '?' . $this->mUrl->query;
+                return '?' . $this->url->query;
 
             case 'searchParams':
-                return $this->mSearchParams;
+                return $this->queryObject;
 
             case 'username':
-                return $this->mUrl->username;
+                return $this->url->username;
         }
     }
 
-    public function __set($aName, $aValue)
+    public function __set($name, $value)
     {
-        $value = URLUtils::strval($aValue);
+        $value = URLUtils::strval($value);
 
-        switch ($aName) {
+        switch ($name) {
             case 'hash':
                 if ($value === '') {
-                    $this->mUrl->fragment = null;
+                    $this->url->fragment = null;
 
                     // Terminate these steps
                     return;
                 }
 
                 $input = $value[0] == '#' ? substr($value, 1) : $value;
-                $this->mUrl->fragment = '';
+                $this->url->fragment = '';
                 URLParser::parseBasicUrl(
                     $input,
                     null,
                     null,
-                    $this->mUrl,
+                    $this->url,
                     URLParser::FRAGMENT_STATE
                 );
 
                 break;
 
             case 'host':
-                if ($this->mUrl->cannotBeABaseUrl) {
+                if ($this->url->cannotBeABaseUrl) {
                     // Terminate these steps
                     return;
                 }
@@ -164,14 +164,14 @@ class URL implements JsonSerializable
                     $value,
                     null,
                     null,
-                    $this->mUrl,
+                    $this->url,
                     URLParser::HOST_STATE
                 );
 
                 break;
 
             case 'hostname':
-                if ($this->mUrl->cannotBeABaseUrl) {
+                if ($this->url->cannotBeABaseUrl) {
                     // Terminate these steps
                     return;
                 }
@@ -180,7 +180,7 @@ class URL implements JsonSerializable
                     $value,
                     null,
                     null,
-                    $this->mUrl,
+                    $this->url,
                     URLParser::HOSTNAME_STATE
                 );
 
@@ -194,50 +194,50 @@ class URL implements JsonSerializable
                     return;
                 }
 
-                $this->mUrl = $parsedURL;
-                $this->mSearchParams->clear();
+                $this->url = $parsedURL;
+                $this->queryObject->clear();
 
-                if ($this->mUrl->query !== null) {
-                    $this->mSearchParams->_mutateList(
-                        URLUtils::urlencodedStringParser($this->mUrl->query)
+                if ($this->url->query !== null) {
+                    $this->queryObject->_mutateList(
+                        URLUtils::urlencodedStringParser($this->url->query)
                     );
                 }
 
                 break;
 
             case 'password':
-                if ($this->mUrl->cannotHaveUsernamePasswordPort()) {
+                if ($this->url->cannotHaveUsernamePasswordPort()) {
                     return;
                 }
 
-                $this->mUrl->setPassword($value);
+                $this->url->setPassword($value);
 
                 break;
 
             case 'pathname':
-                if ($this->mUrl->cannotBeABaseUrl) {
+                if ($this->url->cannotBeABaseUrl) {
                     // Terminate these steps
                     return;
                 }
 
-                $this->mUrl->path = [];
+                $this->url->path = [];
                 URLParser::parseBasicUrl(
                     $value,
                     null,
                     null,
-                    $this->mUrl,
+                    $this->url,
                     URLParser::PATH_START_STATE
                 );
 
                 break;
 
             case 'port':
-                if ($this->mUrl->cannotHaveUsernamePasswordPort()) {
+                if ($this->url->cannotHaveUsernamePasswordPort()) {
                     return;
                 }
 
                 if ($value === '') {
-                    $this->mUrl->port = null;
+                    $this->url->port = null;
                     return;
                 }
 
@@ -245,7 +245,7 @@ class URL implements JsonSerializable
                     $value,
                     null,
                     null,
-                    $this->mUrl,
+                    $this->url,
                     URLParser::PORT_STATE
                 );
 
@@ -256,7 +256,7 @@ class URL implements JsonSerializable
                     $value . ':',
                     null,
                     null,
-                    $this->mUrl,
+                    $this->url,
                     URLParser::SCHEME_START_STATE
                 );
 
@@ -264,33 +264,33 @@ class URL implements JsonSerializable
 
             case 'search':
                 if ($value === '') {
-                    $this->mUrl->query = null;
-                    $this->mSearchParams->clear();
+                    $this->url->query = null;
+                    $this->queryObject->clear();
 
                     return;
                 }
 
                 $input = $value[0] == '?' ? substr($value, 1) : $value;
-                $this->mUrl->query = '';
+                $this->url->query = '';
                 URLParser::parseBasicUrl(
                     $input,
                     null,
                     null,
-                    $this->mUrl,
+                    $this->url,
                     URLParser::QUERY_STATE
                 );
-                $this->mSearchParams->_mutateList(
+                $this->queryObject->_mutateList(
                     URLUtils::urlencodedStringParser($input)
                 );
 
                 break;
 
             case 'username':
-                if ($this->mUrl->cannotHaveUsernamePasswordPort()) {
+                if ($this->url->cannotHaveUsernamePasswordPort()) {
                     return;
                 }
 
-                $this->mUrl->setUsername($value);
+                $this->url->setUsername($value);
 
                 break;
         }
@@ -309,7 +309,7 @@ class URL implements JsonSerializable
     {
         // Use JSON_UNESCAPED_SLASHES here since JavaScript's JSON.stringify()
         // method does not escape forward slashes by default.
-        return json_encode($this->mUrl->serializeURL(), JSON_UNESCAPED_SLASHES);
+        return json_encode($this->url->serializeURL(), JSON_UNESCAPED_SLASHES);
     }
 
     /**
@@ -321,6 +321,6 @@ class URL implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->mUrl->serializeURL();
+        return $this->url->serializeURL();
     }
 }

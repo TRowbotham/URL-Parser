@@ -49,11 +49,11 @@ abstract class URLUtils
         'wss'    => 443
     ];
 
-    public static function encode($aStream, $aEncoding = 'UTF-8')
+    public static function encode($stream, $encoding = 'UTF-8')
     {
-        $inputEncoding = mb_detect_encoding($aStream);
+        $inputEncoding = mb_detect_encoding($stream);
 
-        return mb_convert_encoding($aStream, $aEncoding, $inputEncoding);
+        return mb_convert_encoding($stream, $encoding, $inputEncoding);
     }
 
     /**
@@ -61,25 +61,25 @@ abstract class URLUtils
      *
      * @see https://url.spec.whatwg.org/#percent-decode
      *
-     * @param  string $aByteSequence A byte sequence to be decoded.
+     * @param  string $byteSequence A byte sequence to be decoded.
      *
      * @return string
      */
-    public static function percentDecode($aByteSequence)
+    public static function percentDecode($byteSequence)
     {
         $output = '';
 
-        for ($i = 0, $len = strlen($aByteSequence); $i < $len; $i++) {
-            if ($aByteSequence[$i] !== '%') {
-                $output .= $aByteSequence[$i];
+        for ($i = 0, $len = strlen($byteSequence); $i < $len; $i++) {
+            if ($byteSequence[$i] !== '%') {
+                $output .= $byteSequence[$i];
             } elseif (!preg_match(
                 '/%[A-Fa-f0-9]{2}/',
-                substr($aByteSequence, $i, 3)
+                substr($byteSequence, $i, 3)
             )) {
-                $output .= $aByteSequence[$i];
+                $output .= $byteSequence[$i];
             } else {
                 // TODO: utf-8 decode without BOM
-                $bytePoint = pack('H*', substr($aByteSequence, $i + 1, 2));
+                $bytePoint = pack('H*', substr($byteSequence, $i + 1, 2));
                 $output .= $bytePoint;
                 $i += 2;
             }
@@ -94,28 +94,28 @@ abstract class URLUtils
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-byte-serializer
      *
-     * @param  string $aInput A byte sequence to be serialized.
+     * @param  string $input A byte sequence to be serialized.
      *
      * @return string
      */
-    public static function urlencodedByteSerializer($aInput)
+    public static function urlencodedByteSerializer($input)
     {
         $output = '';
 
-        for ($i = 0, $len = strlen($aInput); $i < $len; $i++) {
-            if ($aInput[$i] == "\x20") {
+        for ($i = 0, $len = strlen($input); $i < $len; $i++) {
+            if ($input[$i] == "\x20") {
                 $output .= "\x2B";
-            } elseif ($aInput[$i] === "\x2A" ||
-                $aInput[$i] === "\x2D" ||
-                $aInput[$i] === "\x2E" ||
-                ($aInput[$i] >= "\x30" && $aInput[$i] <= "\x39") ||
-                ($aInput[$i] >= "\x41" && $aInput[$i] <= "\x5A") ||
-                $aInput[$i] === "\x5F" ||
-                ($aInput[$i] >= "\x61" && $aInput[$i] <= "\x7A")
+            } elseif ($input[$i] === "\x2A" ||
+                $input[$i] === "\x2D" ||
+                $input[$i] === "\x2E" ||
+                ($input[$i] >= "\x30" && $input[$i] <= "\x39") ||
+                ($input[$i] >= "\x41" && $input[$i] <= "\x5A") ||
+                $input[$i] === "\x5F" ||
+                ($input[$i] >= "\x61" && $input[$i] <= "\x7A")
             ) {
-                $output .= $aInput[$i];
+                $output .= $input[$i];
             } else {
-                $output .= rawurlencode($aInput[$i]);
+                $output .= rawurlencode($input[$i]);
             }
         }
 
@@ -128,13 +128,13 @@ abstract class URLUtils
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-parser
      *
-     * @param string $aInput A byte sequence to be encoded.
+     * @param string $input A byte sequence to be encoded.
      *
      * @return string[][]
      */
-    public static function urlencodedParser($aInput)
+    public static function urlencodedParser($input)
     {
-        $sequences = explode('&', $aInput);
+        $sequences = explode('&', $input);
         $tuples = [];
 
         foreach ($sequences as $bytes) {
@@ -186,24 +186,24 @@ abstract class URLUtils
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-serializer
      *
-     * @param string[] $aTuples A list of name-value-type tuples to be
-     *     serialized.
+     * @param string[]    $tuples           A list of name-value-type tuples to
+     *     be serialized.
      *
-     * @param string|null $aEncodingOverride The encoding to use for the data.
+     * @param string|null $encodingOverride The encoding to use for the data.
      *     By default, it will use UTF-8.
      *
      * @return string
      */
     public static function urlencodedSerializer(
-        array $aTuples,
-        $aEncodingOverride = null
+        array $tuples,
+        $encodingOverride = null
     ) {
         // TODO: If encoding override is given, set encoding to the result of
         // getting an output encoding from encoding override.
-        $encoding = $aEncodingOverride ?: 'UTF-8';
+        $encoding = $encodingOverride ?: 'UTF-8';
         $output = '';
 
-        foreach ($aTuples as $key => $tuple) {
+        foreach ($tuples as $key => $tuple) {
             $name = self::urlencodedByteSerializer(
                 mb_convert_encoding($tuple['name'], $encoding)
             );
@@ -231,9 +231,9 @@ abstract class URLUtils
         return $output;
     }
 
-    public static function urlencodedStringParser($aInput)
+    public static function urlencodedStringParser($input)
     {
-        return self::urlencodedParser(self::encode($aInput));
+        return self::urlencodedParser(self::encode($input));
     }
 
     /**
@@ -242,23 +242,23 @@ abstract class URLUtils
      *
      * @see https://url.spec.whatwg.org/#utf-8-percent-encode
      *
-     * @param string $aCodePoint        A code point stream to be encoded.
+     * @param string $codePoint         A code point stream to be encoded.
      *
-     * @param string $aPercentEncodeSet The encode set used to decide whether or
+     * @param string $percentEncodedSet The encode set used to decide whether or
      *                                  not the code point should be percent
      *                                  encoded.
      *
      * @return string
      */
     public static function utf8PercentEncode(
-        $aCodePoint,
-        $aPercentEncodeSet = self::C0_CONTROL_PERCENT_ENCODE_SET
+        $codePoint,
+        $percentEncodedSet = self::C0_CONTROL_PERCENT_ENCODE_SET
     ) {
-        if (!preg_match('/[' . $aPercentEncodeSet . ']/u', $aCodePoint)) {
-            return $aCodePoint;
+        if (!preg_match('/[' . $percentEncodedSet . ']/u', $codePoint)) {
+            return $codePoint;
         }
 
-        return rawurlencode($aCodePoint);
+        return rawurlencode($codePoint);
     }
 
     /**

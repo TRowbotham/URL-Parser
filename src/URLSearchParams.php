@@ -15,11 +15,11 @@ use Traversable;
  */
 class URLSearchParams implements IteratorAggregate
 {
-    private $mList;
-    private $mParams;
-    private $mPosition;
-    private $mSequenceId;
-    private $mUrl;
+    private $list;
+    private $params;
+    private $position;
+    private $sequenceId;
+    private $url;
 
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
@@ -28,11 +28,11 @@ class URLSearchParams implements IteratorAggregate
      */
     public function __construct($init = '')
     {
-        $this->mList = [];
-        $this->mParams = [];
-        $this->mSequenceId = 0;
-        $this->mPosition = 0;
-        $this->mUrl = null;
+        $this->list = [];
+        $this->params = [];
+        $this->sequenceId = 0;
+        $this->position = 0;
+        $this->url = null;
 
         // If $init is given, is a string, and starts with "?", remove the
         // first code point from $init.
@@ -49,7 +49,7 @@ class URLSearchParams implements IteratorAggregate
     {
         // Null out the url incase someone tries cloning the object returned by
         // the URL::searchParams attribute.
-        $this->mUrl = null;
+        $this->url = null;
     }
 
     /**
@@ -66,7 +66,7 @@ class URLSearchParams implements IteratorAggregate
     {
         $list = [];
 
-        foreach ($this->mList as $sequenceId => $pair) {
+        foreach ($this->list as $sequenceId => $pair) {
             $list[] = [
                 'name'  => $pair[0],
                 'value' => $pair[1]
@@ -91,7 +91,7 @@ class URLSearchParams implements IteratorAggregate
     public static function create($init, URLRecord $url = null)
     {
         $query = new self();
-        $query->mUrl = $url;
+        $query->url = $url;
         $query->init($init);
 
         return $query;
@@ -116,8 +116,8 @@ class URLSearchParams implements IteratorAggregate
                 $name = URLUtils::strval($pair[0]);
                 $value = URLUtils::strval($pair[1]);
 
-                $this->mList[$this->mSequenceId] = [$name, $value];
-                $this->mParams[$name][$this->mSequenceId++] = $value;
+                $this->list[$this->sequenceId] = [$name, $value];
+                $this->params[$name][$this->sequenceId++] = $value;
             }
 
             return;
@@ -125,8 +125,8 @@ class URLSearchParams implements IteratorAggregate
 
         if (is_object($init)) {
             foreach ($init as $name => $value) {
-                $this->mList[$this->mSequenceId] = [$name, $value];
-                $this->mParams[$name][$this->mSequenceId++] = URLUtils::strval(
+                $this->list[$this->sequenceId] = [$name, $value];
+                $this->params[$name][$this->sequenceId++] = URLUtils::strval(
                     $value
                 );
             }
@@ -138,8 +138,8 @@ class URLSearchParams implements IteratorAggregate
             $pairs = URLUtils::urlencodedStringParser($init);
 
             foreach ($pairs as $pair) {
-                $this->mList[$this->mSequenceId] = [$pair['name'], $pair['value']];
-                $this->mParams[$pair['name']][$this->mSequenceId++] = $pair[
+                $this->list[$this->sequenceId] = [$pair['name'], $pair['value']];
+                $this->params[$pair['name']][$this->sequenceId++] = $pair[
                     'value'
                 ];
             }
@@ -147,25 +147,25 @@ class URLSearchParams implements IteratorAggregate
     }
 
     /**
-     * Appends a new key -> value pair to the end of the query string.
+     * Appends a new name-value pair to the end of the query string.
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-append
      *
-     * @param string $aName  The name of the key in the pair.
+     * @param string $name  The name of the key in the pair.
      *
-     * @param string $aValue The value assigned to the key.
+     * @param string $value The value assigned to the key.
      */
-    public function append($aName, $aValue)
+    public function append($name, $value)
     {
-        $name = URLUtils::strval($aName);
-        $value = URLUtils::strval($aValue);
+        $name = URLUtils::strval($name);
+        $value = URLUtils::strval($value);
 
         if (!is_string($name) || !is_string($value)) {
             return;
         }
 
-        $this->mList[$this->mSequenceId] = [$name, $value];
-        $this->mParams[$name][$this->mSequenceId++] = $value;
+        $this->list[$this->sequenceId] = [$name, $value];
+        $this->params[$name][$this->sequenceId++] = $value;
         $this->update();
     }
 
@@ -174,56 +174,57 @@ class URLSearchParams implements IteratorAggregate
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-delete
      *
-     * @param  string $aName The name of the key to delete.
+     * @param  string $name The name of the key to delete.
      */
-    public function delete($aName)
+    public function delete($name)
     {
-        $name = URLUtils::strval($aName);
+        $name = URLUtils::strval($name);
 
-        if (!is_string($name) || !isset($this->mParams[$name])) {
+        if (!is_string($name) || !isset($this->params[$name])) {
             return;
         }
 
-        foreach ($this->mParams[$name] as $key => $value) {
-            unset($this->mList[$key]);
+        foreach ($this->params[$name] as $key => $value) {
+            unset($this->list[$key]);
         }
 
-        unset($this->mParams[$name]);
+        unset($this->params[$name]);
         $this->update();
     }
 
     /**
-     * Get the value of the first key -> value pair with the specified key name.
+     * Get the value of the first name-value pair with the specified key name.
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-get
      *
-     * @param string $aName The name of the key whose value you want to retrive.
+     * @param string $name The name of the key whose value you want to retrive.
      *
      * @return string The value of the specified key.
      */
-    public function get($aName)
+    public function get($name)
     {
-        $name = URLUtils::strval($aName);
+        $name = URLUtils::strval($name);
 
-        return is_string($name) && isset($this->mParams[$name]) ?
-            reset($this->mParams[$name]) : null;
+        return is_string($name) && isset($this->params[$name]) ?
+            reset($this->params[$name]) : null;
     }
 
     /**
-     * Gets all key -> value pairs that has the specified key name.
+     * Gets all name-value pairs that has the specified key name.
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-getall
      *
-     * @param string $aName The name of the key whose values you want to retrieve.
+     * @param string $name The name of the key whose values you want to
+     *     retrieve.
      *
      * @return string[] An array containing all the values of the specified key.
      */
-    public function getAll($aName)
+    public function getAll($name)
     {
-        $name = URLUtils::strval($aName);
+        $name = URLUtils::strval($name);
 
-        return is_string($name) && isset($this->mParams[$name]) ?
-            array_values($this->mParams[$name]) : [];
+        return is_string($name) && isset($this->params[$name]) ?
+            array_values($this->params[$name]) : [];
     }
 
     /**
@@ -232,15 +233,15 @@ class URLSearchParams implements IteratorAggregate
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-has
      *
-     * @param boolean $aName The key name you want to test if it exists.
+     * @param boolean $name The key name you want to test if it exists.
      *
      * @return boolean         Returns true if the key exits, otherwise false.
      */
-    public function has($aName)
+    public function has($name)
     {
-        $name = URLUtils::strval($aName);
+        $name = URLUtils::strval($name);
 
-        return is_string($name) && isset($this->mParams[$name]);
+        return is_string($name) && isset($this->params[$name]);
     }
 
     /**
@@ -252,34 +253,34 @@ class URLSearchParams implements IteratorAggregate
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-set
      *
-     * @param string $aName The name of the key you want to modify the value of.
+     * @param string $name  The name of the key you want to modify the value of.
      *
-     * @param string $aValue The value you want to associate with the key name.
+     * @param string $value The value you want to associate with the key name.
      */
-    public function set($aName, $aValue)
+    public function set($name, $value)
     {
-        $name = URLUtils::strval($aName);
-        $value = URLUtils::strval($aValue);
+        $name = URLUtils::strval($name);
+        $value = URLUtils::strval($value);
 
         if (!is_string($name) || !is_string($value)) {
             return;
         }
 
-        if (isset($this->mParams[$name])) {
-            for ($i = count($this->mParams[$name]) - 1; $i > 0; $i--) {
-                end($this->mParams[$name]);
-                unset($this->mList[key($this->mParams[$name])]);
-                array_pop($this->mParams[$name]);
+        if (isset($this->params[$name])) {
+            for ($i = count($this->params[$name]) - 1; $i > 0; $i--) {
+                end($this->params[$name]);
+                unset($this->list[key($this->params[$name])]);
+                array_pop($this->params[$name]);
             }
 
-            reset($this->mParams[$name]);
-            $id = key($this->mParams[$name]);
-            $this->mList[$id][1] = $value;
-            $this->mParams[$name][$id] = $value;
+            reset($this->params[$name]);
+            $id = key($this->params[$name]);
+            $this->list[$id][1] = $value;
+            $this->params[$name][$id] = $value;
         } else {
             // Append the value
-            $this->mList[$this->mSequenceId] = [$name, $value];
-            $this->mParams[$name][$this->mSequenceId++] = $value;
+            $this->list[$this->sequenceId] = [$name, $value];
+            $this->params[$name][$this->sequenceId++] = $value;
         }
 
         $this->update();
@@ -298,7 +299,7 @@ class URLSearchParams implements IteratorAggregate
         $params = [];
         $sequenceIdx = 0;
 
-        foreach ($this->mList as $sequenceId => $pair) {
+        foreach ($this->list as $sequenceId => $pair) {
             $name = $pair[0];
             $value = $pair[1];
 
@@ -351,9 +352,9 @@ class URLSearchParams implements IteratorAggregate
             $params[$pair[0]][$sequenceId] = $pair[1];
         }
 
-        $this->mList = $list;
-        $this->mParams = $params;
-        $this->mSequenceId = $sequenceIdx;
+        $this->list = $list;
+        $this->params = $params;
+        $this->sequenceId = $sequenceIdx;
         $this->update();
     }
 
@@ -362,7 +363,7 @@ class URLSearchParams implements IteratorAggregate
      */
     public function getIterator()
     {
-        return new ArrayIterator(array_values($this->mList));
+        return new ArrayIterator(array_values($this->list));
     }
 
     /**
@@ -372,9 +373,9 @@ class URLSearchParams implements IteratorAggregate
      */
     public function clear()
     {
-        $this->mList = [];
-        $this->mParams = [];
-        $this->mSequenceId = 0;
+        $this->list = [];
+        $this->params = [];
+        $this->sequenceId = 0;
     }
 
     /**
@@ -383,21 +384,21 @@ class URLSearchParams implements IteratorAggregate
      *
      * @internal
      *
-     * @param array $aList A list of name -> value pairs to be added to
+     * @param array $list A list of name -> value pairs to be added to
      *     the list.
      */
-    public function _mutateList(array $aList)
+    public function _mutateList(array $list)
     {
-        $this->mList = [];
-        $this->mParams = [];
-        $this->mSequenceId = 0;
+        $this->list = [];
+        $this->params = [];
+        $this->sequenceId = 0;
 
-        foreach ($aList as $pair) {
-            $this->mList[$this->mSequenceId] = [
+        foreach ($list as $pair) {
+            $this->list[$this->sequenceId] = [
                 $pair['name'],
                 $pair['value']
             ];
-            $this->mParams[$pair['name']][$this->mSequenceId++] = $pair[
+            $this->params[$pair['name']][$this->sequenceId++] = $pair[
                 'value'
             ];
         }
@@ -413,8 +414,8 @@ class URLSearchParams implements IteratorAggregate
      */
     protected function update()
     {
-        if ($this->mUrl) {
-            $this->mUrl->query = $this->toString();
+        if ($this->url) {
+            $this->url->query = $this->toString();
         }
     }
 }

@@ -6,15 +6,15 @@ namespace phpjs\urls;
  */
 class Origin
 {
-    private $mDomain;
-    private $mHost;
-    private $mIsOpaque;
-    private $mPort;
-    private $mScheme;
+    private $domain;
+    private $host;
+    private $isOpaque;
+    private $port;
+    private $scheme;
 
     private function __construct()
     {
-        $this->mIsOpaque = true;
+        $this->isOpaque = true;
     }
 
     /**
@@ -35,11 +35,11 @@ class Origin
         $domain = null
     ) {
         $origin = new self();
-        $origin->mDomain = $domain;
-        $origin->mHost = $host;
-        $origin->mIsOpaque = false;
-        $origin->mPort = $port;
-        $origin->mScheme = $scheme;
+        $origin->domain = $domain;
+        $origin->host = $host;
+        $origin->isOpaque = false;
+        $origin->port = $port;
+        $origin->scheme = $scheme;
 
         return $origin;
     }
@@ -62,12 +62,12 @@ class Origin
      */
     public function getEffectiveDomain()
     {
-        if ($this->mIsOpaque) {
+        if ($this->isOpaque) {
             return $this;
-        } elseif ($this->mDomain) {
-            return $this->mDomain;
+        } elseif ($this->domain) {
+            return $this->domain;
         } else {
-            return $this->mHost;
+            return $this->host;
         }
     }
 
@@ -78,7 +78,7 @@ class Origin
      */
     public function isOpaque()
     {
-        return $this->mIsOpaque;
+        return $this->isOpaque;
     }
 
     /**
@@ -86,23 +86,23 @@ class Origin
      *
      * @see https://html.spec.whatwg.org/multipage/browsers.html#same-origin
      *
-     * @param Origin $aOther The origin being compared.
+     * @param Origin $other The origin being compared.
      *
      * @return bool
      */
-    public function isSameOrigin(Origin $aOther)
+    public function isSameOrigin(Origin $other)
     {
         // If A and B are the same opaque origin, then return true.
-        if ($this->mIsOpaque && $aOther->mIsOpaque && $this === $aOther) {
+        if ($this->isOpaque && $other->isOpaque && $this === $other) {
             return true;
         }
 
         // If A and B are both tuple origins and their schemes, hosts, and port
         // are identical, then return true.
-        if (!$this->mIsOpaque && !$aOther->mIsOpaque) {
-            return $this->mScheme === $aOther->mScheme &&
-                $this->mHost->equals($aOther->mHost) &&
-                $this->mPort === $aOther->mPort;
+        if (!$this->isOpaque && !$other->isOpaque) {
+            return $this->scheme === $other->scheme &&
+                $this->host->equals($other->host) &&
+                $this->port === $other->port;
         }
 
         return false;
@@ -113,31 +113,31 @@ class Origin
      *
      * @see https://html.spec.whatwg.org/multipage/browsers.html#same-origin-domain
      *
-     * @param Origin $aOther The origin being compared.
+     * @param Origin $other The origin being compared.
      *
      * @return bool
      */
-    public function isSameOriginDomain(Origin $aOther)
+    public function isSameOriginDomain(Origin $other)
     {
         // If A and B are the same opaque origin, then return true.
-        if ($this->mIsOpaque && $aOther->mIsOpaque && $this === $aOther) {
+        if ($this->isOpaque && $other->isOpaque && $this === $other) {
             return true;
         }
 
         // If A and B are both tuple origins...
-        if (!$this->mIsOpaque && !$aOther->mIsOpaque) {
+        if (!$this->isOpaque && !$other->isOpaque) {
             // If A and B's schemes are identical, and their domains are
             // identical and non-null, then return true. Otherwise, if A and B
             // are same origin and their domains are identical and null, then
             // return true.
-            if ($this->mScheme === $aOther->mScheme &&
-                $this->mDomain !== null &&
-                $this->mDomain === $aOther->mDomain
+            if ($this->scheme === $other->scheme &&
+                $this->domain !== null &&
+                $this->domain === $other->domain
             ) {
                 return true;
-            } elseif ($this->isSameOrigin($aOther) &&
-                $this->mDomain === $aOther->mDomain &&
-                $this->mDomain === null
+            } elseif ($this->isSameOrigin($other) &&
+                $this->domain === $other->domain &&
+                $this->domain === null
             ) {
                 return true;
             }
@@ -153,16 +153,16 @@ class Origin
      */
     public function __toString()
     {
-        if ($this->mIsOpaque) {
+        if ($this->isOpaque) {
             return 'null';
         }
 
-        $result = $this->mScheme;
+        $result = $this->scheme;
         $result .= '://';
-        $result .= (string) $this->mHost;
+        $result .= (string) $this->host;
 
-        if ($this->mPort !== null) {
-            $result .= ':' . intval($this->mPort, 10);
+        if ($this->port !== null) {
+            $result .= ':' . intval($this->port, 10);
         }
 
         return $result;
