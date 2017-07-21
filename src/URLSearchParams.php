@@ -45,11 +45,6 @@ class URLSearchParams implements IteratorAggregate
         }
     }
 
-    public function __destruct()
-    {
-        $this->mUrl = null;
-    }
-
     public function __clone()
     {
         // Null out the url incase someone tries cloning the object returned by

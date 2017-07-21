@@ -42,12 +42,6 @@ class URL implements JsonSerializable
         $this->mSearchParams = URLSearchParams::create($query, $parsedURL);
     }
 
-    public function __destruct()
-    {
-        $this->mSearchParams = null;
-        $this->mUrl = null;
-    }
-
     public function __clone()
     {
         $this->mUrl = clone $this->mUrl;
