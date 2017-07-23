@@ -45,10 +45,8 @@ class URL implements JsonSerializable
     public function __clone()
     {
         $this->url = clone $this->url;
-        $this->queryObject = URLSearchParams::create(
-            $this->queryObject,
-            $this->url
-        );
+        $this->queryObject = clone $this->queryObject;
+        $this->queryObject->setUrl($this->url);
     }
 
     public function __get($name)
