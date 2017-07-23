@@ -193,6 +193,7 @@ class URL implements JsonSerializable
                 }
 
                 $this->url = $parsedURL;
+                $this->queryObject->setUrl($this->url);
                 $this->queryObject->clear();
 
                 if ($this->url->query !== null) {
