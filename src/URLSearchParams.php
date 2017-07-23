@@ -71,11 +71,11 @@ class URLSearchParams implements IteratorAggregate
      * @param  URLSearchParams|string $init The query string or another
      *                                      URLSearchParams object.
      *
-     * @param  URLRecord|null         $url  The associated URLRecord object.
+     * @param  URLRecord              $url  The associated URLRecord object.
      *
      * @return URLSearchParams
      */
-    public static function create($init, URLRecord $url = null)
+    public static function create($init, URLRecord $url)
     {
         $query = new self();
         $query->url = $url;
