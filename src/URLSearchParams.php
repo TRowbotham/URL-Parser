@@ -290,4 +290,16 @@ class URLSearchParams implements IteratorAggregate
             $this->url->query = (string) $this->list;
         }
     }
+
+    /**
+     * Sets the url.
+     *
+     * @internal
+     *
+     * @param URLRecord $url
+     */
+    public function setUrl(URLRecord $url)
+    {
+        $this->url = $url;
+    }
 }
