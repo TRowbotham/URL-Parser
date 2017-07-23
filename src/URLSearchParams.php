@@ -16,9 +16,6 @@ use Traversable;
 class URLSearchParams implements IteratorAggregate
 {
     private $list;
-    private $params;
-    private $position;
-    private $sequenceId;
     private $url;
 
     /**
@@ -28,10 +25,7 @@ class URLSearchParams implements IteratorAggregate
      */
     public function __construct($init = '')
     {
-        $this->list = [];
-        $this->params = [];
-        $this->sequenceId = 0;
-        $this->position = 0;
+        $this->list = new QueryList();
         $this->url = null;
 
         // If $init is given, is a string, and starts with "?", remove the
@@ -47,6 +41,8 @@ class URLSearchParams implements IteratorAggregate
 
     public function __clone()
     {
+        $this->list = clone $this->list;
+
         // Null out the url incase someone tries cloning the object returned by
         // the URL::searchParams attribute.
         $this->url = null;
@@ -59,21 +55,12 @@ class URLSearchParams implements IteratorAggregate
      */
     public function __toString()
     {
-        return $this->toString();
+        return (string) $this->list;
     }
 
     public function toString()
     {
-        $list = [];
-
-        foreach ($this->list as $sequenceId => $pair) {
-            $list[] = [
-                'name'  => $pair[0],
-                'value' => $pair[1]
-            ];
-        }
-
-        return URLUtils::urlencodedSerializer($list);
+        return (string) $this->list;
     }
 
     /**
@@ -113,11 +100,10 @@ class URLSearchParams implements IteratorAggregate
             }
 
             foreach ($init as $pair) {
-                $name = URLUtils::strval($pair[0]);
-                $value = URLUtils::strval($pair[1]);
-
-                $this->list[$this->sequenceId] = [$name, $value];
-                $this->params[$name][$this->sequenceId++] = $value;
+                $this->list->append(
+                    URLUtils::strval($pair[0]),
+                    URLUtils::strval($pair[1])
+                );
             }
 
             return;
@@ -125,10 +111,7 @@ class URLSearchParams implements IteratorAggregate
 
         if (is_object($init)) {
             foreach ($init as $name => $value) {
-                $this->list[$this->sequenceId] = [$name, $value];
-                $this->params[$name][$this->sequenceId++] = URLUtils::strval(
-                    $value
-                );
+                $this->append($name, URLUtils::strval($value));
             }
 
             return;
@@ -138,10 +121,7 @@ class URLSearchParams implements IteratorAggregate
             $pairs = URLUtils::urlencodedStringParser($init);
 
             foreach ($pairs as $pair) {
-                $this->list[$this->sequenceId] = [$pair['name'], $pair['value']];
-                $this->params[$pair['name']][$this->sequenceId++] = $pair[
-                    'value'
-                ];
+                $this->list->append($pair['name'], $pair['value']);
             }
         }
     }
@@ -157,15 +137,7 @@ class URLSearchParams implements IteratorAggregate
      */
     public function append($name, $value)
     {
-        $name = URLUtils::strval($name);
-        $value = URLUtils::strval($value);
-
-        if (!is_string($name) || !is_string($value)) {
-            return;
-        }
-
-        $this->list[$this->sequenceId] = [$name, $value];
-        $this->params[$name][$this->sequenceId++] = $value;
+        $this->list->append(URLUtils::strval($name), URLUtils::strval($value));
         $this->update();
     }
 
@@ -178,17 +150,7 @@ class URLSearchParams implements IteratorAggregate
      */
     public function delete($name)
     {
-        $name = URLUtils::strval($name);
-
-        if (!is_string($name) || !isset($this->params[$name])) {
-            return;
-        }
-
-        foreach ($this->params[$name] as $key => $value) {
-            unset($this->list[$key]);
-        }
-
-        unset($this->params[$name]);
+        $this->list->remove(URLUtils::strval($name));
         $this->update();
     }
 
@@ -203,10 +165,7 @@ class URLSearchParams implements IteratorAggregate
      */
     public function get($name)
     {
-        $name = URLUtils::strval($name);
-
-        return is_string($name) && isset($this->params[$name]) ?
-            reset($this->params[$name]) : null;
+        return $this->list->first(URLUtils::strval($name));
     }
 
     /**
@@ -223,8 +182,9 @@ class URLSearchParams implements IteratorAggregate
     {
         $name = URLUtils::strval($name);
 
-        return is_string($name) && isset($this->params[$name]) ?
-            array_values($this->params[$name]) : [];
+        return array_column($this->list->filter(function ($pair) use ($name) {
+            return $pair[0] === $name;
+        }), 1);
     }
 
     /**
@@ -239,9 +199,7 @@ class URLSearchParams implements IteratorAggregate
      */
     public function has($name)
     {
-        $name = URLUtils::strval($name);
-
-        return is_string($name) && isset($this->params[$name]);
+        return $this->list->contains(URLUtils::strval($name));
     }
 
     /**
@@ -262,25 +220,10 @@ class URLSearchParams implements IteratorAggregate
         $name = URLUtils::strval($name);
         $value = URLUtils::strval($value);
 
-        if (!is_string($name) || !is_string($value)) {
-            return;
-        }
-
-        if (isset($this->params[$name])) {
-            for ($i = count($this->params[$name]) - 1; $i > 0; $i--) {
-                end($this->params[$name]);
-                unset($this->list[key($this->params[$name])]);
-                array_pop($this->params[$name]);
-            }
-
-            reset($this->params[$name]);
-            $id = key($this->params[$name]);
-            $this->list[$id][1] = $value;
-            $this->params[$name][$id] = $value;
+        if ($this->list->contains($name)) {
+            $this->list->set($name, $value);
         } else {
-            // Append the value
-            $this->list[$this->sequenceId] = [$name, $value];
-            $this->params[$name][$this->sequenceId++] = $value;
+            $this->list->append($name, $value);
         }
 
         $this->update();
@@ -295,66 +238,7 @@ class URLSearchParams implements IteratorAggregate
      */
     public function sort()
     {
-        $list = [];
-        $params = [];
-        $sequenceIdx = 0;
-
-        foreach ($this->list as $sequenceId => $pair) {
-            $name = $pair[0];
-            $value = $pair[1];
-
-            if ($sequenceIdx == 0) {
-                $list[] = [$name, $value];
-                $params[$name] = [];
-                $sequenceIdx++;
-                continue;
-            }
-
-            if (isset($params[$name])) {
-                $i = $sequenceIdx;
-
-                while ($i) {
-                    if ($list[$i - 1][0] === $name) {
-                        break;
-                    }
-
-                    $i--;
-                }
-            } else {
-                $i = $sequenceIdx - 1;
-                $params[$name] = [];
-                $len1 = strlen(mb_convert_encoding(
-                    $name,
-                    'UTF-16LE',
-                    'UTF-8'
-                )) / 2;
-                $len2 = strlen(mb_convert_encoding(
-                    $list[$i][0],
-                    'UTF-16LE',
-                    'UTF-8'
-                )) / 2;
-
-                while ($i && $len1 > $len2) {
-                    $i--;
-                    $len2 = strlen(mb_convert_encoding(
-                        $list[$i][0],
-                        'UTF-16LE',
-                        'UTF-8'
-                    )) / 2;
-                }
-            }
-
-            array_splice($list, $i, 0, [[$name, $value]]);
-            $sequenceIdx++;
-        }
-
-        foreach ($list as $sequenceId => $pair) {
-            $params[$pair[0]][$sequenceId] = $pair[1];
-        }
-
-        $this->list = $list;
-        $this->params = $params;
-        $this->sequenceId = $sequenceIdx;
+        $this->list->sort();
         $this->update();
     }
 
@@ -363,7 +247,7 @@ class URLSearchParams implements IteratorAggregate
      */
     public function getIterator()
     {
-        return new ArrayIterator(array_values($this->list));
+        return $this->list->getIterator();
     }
 
     /**
@@ -373,9 +257,7 @@ class URLSearchParams implements IteratorAggregate
      */
     public function clear()
     {
-        $this->list = [];
-        $this->params = [];
-        $this->sequenceId = 0;
+        $this->list->clear();
     }
 
     /**
@@ -384,24 +266,14 @@ class URLSearchParams implements IteratorAggregate
      *
      * @internal
      *
-     * @param array $list A list of name -> value pairs to be added to
+     * @param array $list A list of name-value pairs to be added to
      *     the list.
      */
-    public function _mutateList(array $list)
+    public function modify(array $list)
     {
-        $this->list = [];
-        $this->params = [];
-        $this->sequenceId = 0;
-
-        foreach ($list as $pair) {
-            $this->list[$this->sequenceId] = [
-                $pair['name'],
-                $pair['value']
-            ];
-            $this->params[$pair['name']][$this->sequenceId++] = $pair[
-                'value'
-            ];
-        }
+        $this->list->update(array_map(function ($pair) {
+            return [$pair['name'], $pair['value']];
+        }, $list));
     }
 
     /**
@@ -415,7 +287,7 @@ class URLSearchParams implements IteratorAggregate
     protected function update()
     {
         if ($this->url) {
-            $this->url->query = $this->toString();
+            $this->url->query = (string) $this->list;
         }
     }
 }

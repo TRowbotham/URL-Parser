@@ -198,7 +198,7 @@ class URL implements JsonSerializable
                 $this->queryObject->clear();
 
                 if ($this->url->query !== null) {
-                    $this->queryObject->_mutateList(
+                    $this->queryObject->modify(
                         URLUtils::urlencodedStringParser($this->url->query)
                     );
                 }
@@ -279,7 +279,7 @@ class URL implements JsonSerializable
                     $this->url,
                     URLParser::QUERY_STATE
                 );
-                $this->queryObject->_mutateList(
+                $this->queryObject->modify(
                     URLUtils::urlencodedStringParser($input)
                 );
 
