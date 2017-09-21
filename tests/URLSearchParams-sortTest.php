@@ -1,8 +1,8 @@
 <?php
 namespace phpjs\tests\url;
 
-use phpjs\urls\URL;
-use phpjs\urls\URLSearchParams;
+use Rowbot\URL\URL;
+use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -79,5 +79,13 @@ class URLSearchParamsSortTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($output[$i], $param);
             $i++;
         }
+    }
+
+    public function testSortingNonExistentParamsRemovesQuestionMark()
+    {
+        $url = new URL('http://example.com/?');
+        $url->searchParams->sort();
+        $this->assertEquals('http://example.com/', $url->href);
+        $this->assertEquals('', $url->search);
     }
 }

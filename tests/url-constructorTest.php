@@ -1,9 +1,9 @@
 <?php
 namespace phpjs\tests\url;
 
-use phpjs\urls\exception\TypeError;
-use phpjs\urls\URL;
-use phpjs\urls\URLSearchParams;
+use Rowbot\URL\Exception\TypeError;
+use Rowbot\URL\URL;
+use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -102,7 +102,7 @@ class URLConstructorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException phpjs\urls\exception\TypeError
+     * @expectedException Rowbot\URL\Exception\TypeError
      */
     public function test3()
     {
@@ -115,7 +115,7 @@ class URLConstructorTest extends PHPUnit_Framework_TestCase
     {
         $url = new URL('http://example.org/file?a=b&c=d');
         $this->assertInstanceOf(
-            'phpjs\urls\URLSearchParams',
+            'Rowbot\URL\URLSearchParams',
             $url->searchParams
         );
         $searchParams = $url->searchParams;

@@ -1,5 +1,5 @@
 <?php
-namespace phpjs\urls;
+namespace Rowbot\URL;
 
 class IPv4Address implements NetworkAddress
 {

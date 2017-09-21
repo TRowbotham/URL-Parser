@@ -1,8 +1,8 @@
 <?php
 namespace phpjs\tests\url;
 
-use phpjs\urls\exception\TypeError;
-use phpjs\urls\URLSearchParams;
+use Rowbot\URL\Exception\TypeError;
+use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
 
 /**

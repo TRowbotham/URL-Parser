@@ -1,7 +1,7 @@
 <?php
 namespace phpjs\tests\urls;
 
-use phpjs\urls\URLSearchParams;
+use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
 
 /**
