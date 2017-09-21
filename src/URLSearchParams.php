@@ -286,9 +286,17 @@ class URLSearchParams implements IteratorAggregate
      */
     protected function update()
     {
-        if ($this->url) {
-            $this->url->query = (string) $this->list;
+        if (!$this->url) {
+            return;
         }
+
+        $query = (string) $this->list;
+
+        if ($query === '') {
+            $query = null;
+        }
+
+        $this->url->query = $query;
     }
 
     /**

@@ -80,4 +80,12 @@ class URLSearchParamsSortTest extends PHPUnit_Framework_TestCase
             $i++;
         }
     }
+
+    public function testSortingNonExistentParamsRemovesQuestionMark()
+    {
+        $url = new URL('http://example.com/?');
+        $url->searchParams->sort();
+        $this->assertEquals('http://example.com/', $url->href);
+        $this->assertEquals('', $url->search);
+    }
 }

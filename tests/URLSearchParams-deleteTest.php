@@ -3,6 +3,7 @@ namespace phpjs\tests\url;
 
 use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
+use Rowbot\URL\URL;
 
 /**
  * @see https://github.com/w3c/web-platform-tests/blob/master/url/urlsearchparams-delete.html
@@ -37,5 +38,22 @@ class URLSearchParamsDeleteTest extends PHPUnit_Framework_TestCase
         $params->append('first', 10);
         $params->delete('first');
         $this->assertFalse($params->has('first'));
+    }
+
+    public function testDeleteAllRemovesQuestionMark()
+    {
+        $url = new URL('http://example.com/?param1&param2');
+        $url->searchParams->delete('param1');
+        $url->searchParams->delete('param2');
+        $this->assertEquals('http://example.com/', $url->href);
+        $this->assertEquals('', $url->search);
+    }
+
+    public function testDeleteNonExistentParamRemovesQuestionMark()
+    {
+        $url = new URL('http://example.com/?');
+        $url->searchParams->delete('param1');
+        $this->assertEquals('http://example.com/', $url->href);
+        $this->assertEquals('', $url->search);
     }
 }
