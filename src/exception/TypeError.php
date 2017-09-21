@@ -1,5 +1,5 @@
 <?php
-namespace phpjs\urls\exception;
+namespace Rowbot\URL\Exception;
 
 class TypeError extends \Exception
 {
