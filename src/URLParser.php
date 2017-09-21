@@ -583,30 +583,20 @@ abstract class URLParser
                         } else {
                             // This is a (platform-independent) Windows drive
                             // letter quirk.
-                            $remaining = mb_substr(
-                                $input,
-                                $pointer,
-                                null,
-                                $encoding
-                            );
-                            $rCount = mb_strlen($remaining, $encoding);
-
-                            if ($rCount == 0 ||
-                                !preg_match(
-                                    URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
-                                    $c . mb_substr($remaining, 0, 1, $encoding)
-                                ) ||
-                                ($rCount >= 2 &&
-                                !preg_match(
-                                    '/[\/\\\\?#]/u',
-                                    mb_substr($remaining, 1, 1, $encoding)
-                                ))
-                            ) {
+                            if (!preg_match(
+                                URLUtils::STARTS_WITH_WINDOWS_DRIVE_LETTER,
+                                mb_substr(
+                                    $input,
+                                    $pointer - 1,
+                                    null,
+                                    $encoding
+                                )
+                            )) {
                                 $url->host = clone $base->host;
                                 $url->path = $base->path;
                                 $url->shortenPath();
                             } else {
-                                // Syntax violation
+                                // validation error
                             }
 
                             $state = self::PATH_STATE;
@@ -627,7 +617,18 @@ abstract class URLParser
 
                         $state = self::FILE_HOST_STATE;
                     } else {
-                        if ($base !== null && $base->scheme === 'file') {
+                        if ($base !== null
+                            && $base->scheme === 'file'
+                            && !preg_match(
+                                URLUtils::STARTS_WITH_WINDOWS_DRIVE_LETTER,
+                                mb_substr(
+                                    $input,
+                                    $pointer - 1,
+                                    null,
+                                    $encoding
+                                )
+                            )
+                        ) {
                             if (preg_match(
                                 URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
                                 $base->path[0]

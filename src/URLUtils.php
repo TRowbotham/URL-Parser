@@ -32,6 +32,7 @@ abstract class URLUtils
          ']/u';
     const REGEX_WINDOWS_DRIVE_LETTER = '/^[A-Za-z][:|]$/u';
     const REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER = '/^[A-Za-z]:$/u';
+    const STARTS_WITH_WINDOWS_DRIVE_LETTER = '/^[A-Za-z][:|](?:$|[\/\\\?#])/u';
 
     const C0_CONTROL_PERCENT_ENCODE_SET = '\x00-\x1F\x7E-\x{10FFFF}';
     const PATH_PERCENT_ENCODE_SET       = self::C0_CONTROL_PERCENT_ENCODE_SET .
