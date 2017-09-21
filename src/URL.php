@@ -1,8 +1,8 @@
 <?php
-namespace phpjs\urls;
+namespace Rowbot\URL;
 
 use JsonSerializable;
-use phpjs\urls\exception\TypeError;
+use Rowbot\URL\Exception\TypeError;
 
 /**
  * Represents a URL that can be manipulated.

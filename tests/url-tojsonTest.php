@@ -1,7 +1,7 @@
 <?php
 namespace phpjs\tests\url;
 
-use phpjs\urls\URL;
+use Rowbot\URL\URL;
 use PHPUnit_Framework_TestCase;
 
 /**

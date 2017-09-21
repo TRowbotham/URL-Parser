@@ -1,9 +1,9 @@
 <?php
-namespace phpjs\urls;
+namespace Rowbot\URL;
 
 use ArrayIterator;
 use IteratorAggregate;
-use phpjs\urls\exception\TypeError;
+use Rowbot\URL\Exception\TypeError;
 use Traversable;
 
 /**

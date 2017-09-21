@@ -1,5 +1,5 @@
 {
-    "name": "URL-Parser",
+    "name": "rowbot/url",
     "description": "A URL parser and builder for PHP.",
     "version": "1.0.0-dev",
     "authors": [
@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "phpjs\\urls\\": "src/"
+            "Rowbot\\URL\\": "src/"
         }
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace phpjs\urls;
+namespace Rowbot\URL;
 
 abstract class URLUtils
 {
@@ -298,5 +298,29 @@ abstract class URLUtils
         }
 
         return '';
+    }
+
+    public static function USVString($string)
+    {
+        $string = self::strval($string);
+
+        if ($string === '') {
+            return $string;
+        }
+
+        //$string = preg_replace('/\p{Cs}+/u', "\u{FFFD}", $string);
+        // Replace surrogates
+        $string = preg_replace(
+            '/(\xED[\xA0-\xBF][\x80-\xBF])+/',
+            "\u{FFFD}",
+            $string
+        );
+
+        $char = mb_substitute_character();
+        mb_substitute_character(0xFFFD);
+        $string = mb_convert_encoding($string, 'UTF-8');
+        mb_substitute_character($char);
+
+        return $string;
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace phpjs\urls;
+namespace Rowbot\URL;
 
 use ArrayIterator;
 use Countable;

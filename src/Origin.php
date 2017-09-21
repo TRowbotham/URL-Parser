@@ -1,5 +1,5 @@
 <?php
-namespace phpjs\urls;
+namespace Rowbot\URL;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/browsers.html#origin

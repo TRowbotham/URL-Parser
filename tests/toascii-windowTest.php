@@ -1,8 +1,8 @@
 <?php
 namespace phpjs\tests\urls;
 
-use phpjs\urls\exception\TypeError;
-use phpjs\urls\URL;
+use Rowbot\URL\Exception\TypeError;
+use Rowbot\URL\URL;
 use PHPUnit_Framework_TestCase;
 
 class toAsciiTest extends PHPUnit_Framework_TestCase
