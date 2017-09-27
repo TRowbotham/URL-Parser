@@ -11,21 +11,19 @@ final class IDN
     const NONTRANSITIONAL_PROCESSING = 32;
 
     private static $instance;
-    private static $errors = [
-        IDNA_ERROR_EMPTY_LABEL,
-        IDNA_ERROR_LABEL_TOO_LONG,
-        IDNA_ERROR_DOMAIN_NAME_TOO_LONG,
-        IDNA_ERROR_LEADING_HYPHEN,
-        IDNA_ERROR_TRAILING_HYPHEN,
-        IDNA_ERROR_HYPHEN_3_4,
-        IDNA_ERROR_LEADING_COMBINING_MARK,
-        IDNA_ERROR_DISALLOWED,
-        IDNA_ERROR_PUNYCODE,
-        IDNA_ERROR_LABEL_HAS_DOT,
-        IDNA_ERROR_INVALID_ACE_LABEL,
-        IDNA_ERROR_BIDI,
-        IDNA_ERROR_CONTEXTJ
-    ];
+    private static $errors = IDNA_ERROR_EMPTY_LABEL
+        | IDNA_ERROR_LABEL_TOO_LONG
+        | IDNA_ERROR_DOMAIN_NAME_TOO_LONG
+        | IDNA_ERROR_LEADING_HYPHEN
+        | IDNA_ERROR_TRAILING_HYPHEN
+        | IDNA_ERROR_HYPHEN_3_4
+        | IDNA_ERROR_LEADING_COMBINING_MARK
+        | IDNA_ERROR_DISALLOWED
+        | IDNA_ERROR_PUNYCODE
+        | IDNA_ERROR_LABEL_HAS_DOT
+        | IDNA_ERROR_INVALID_ACE_LABEL
+        | IDNA_ERROR_BIDI
+        | IDNA_ERROR_CONTEXTJ;
 
     private function __construct()
     {
@@ -63,6 +61,7 @@ final class IDN
             INTL_IDNA_VARIANT_UTS46,
             $info
         );
+        $whitelistedErrors = 0;
 
         // We died a horrible death and can't recover. There is currently a bug
         // in PHP's idn_to_* functions where this can occur when the given
@@ -70,9 +69,6 @@ final class IDN
         if (empty($info)) {
             return false;
         }
-
-        $whitelistedErrors = [];
-        $this->maybeCheckHyphens($flags, $whitelistedErrors);
 
         // There is currently no way to disable the check on the domain's
         // length. So, whitelist some errors to check against. Normally, a
@@ -85,15 +81,16 @@ final class IDN
                 return $domainName;
             }
 
-            $whitelistedErrors[] = IDNA_ERROR_LABEL_TOO_LONG;
-            $whitelistedErrors[] = IDNA_ERROR_DOMAIN_NAME_TOO_LONG;
-            $whitelistedErrors[] = IDNA_ERROR_EMPTY_LABEL;
+            $whitelistedErrors |= IDNA_ERROR_LABEL_TOO_LONG
+                | IDNA_ERROR_DOMAIN_NAME_TOO_LONG
+                | IDNA_ERROR_EMPTY_LABEL;
         }
 
-        if ($result === false && $this->hasNonWhitelistedErrors(
-            $info['errors'],
-            $whitelistedErrors
-        )) {
+        $whitelistedErrors |= $this->maybeWhitelistHyphenErrors($flags);
+
+        if ($result === false
+            && ((self::$errors & ~$whitelistedErrors) & $info['errors'])
+        ) {
             return false;
         }
 
@@ -126,13 +123,11 @@ final class IDN
             return false;
         }
 
-        $whitelistedErrors = [];
-        $this->maybeCheckHyphens($flags, $whitelistedErrors);
+        $whitelistedErrors = $this->maybeWhitelistHyphenErrors($flags);
 
-        if ($result === false && $this->hasNonWhitelistedErrors(
-            $info['errors'],
-            $whitelistedErrors
-        )) {
+        if ($result === false
+            && ((self::$errors & ~$whitelistedErrors) & $info['errors'])
+        ) {
             return false;
         }
 
@@ -170,44 +165,21 @@ final class IDN
      * Checks to see if the user wants to validate hyphens and if not, adds the
      * appropriate errors to a whitelist.
      *
-     * @param  int   $flags
+     * @param  int $flags
      *
-     * @param  int[] &$whitelistedErrors
+     * @return int
      */
-    private function maybeCheckHyphens($flags, &$whitelistedErrors)
+    private function maybeWhitelistHyphenErrors($flags)
     {
         // There is currently no way to disable the check for hyphens in the
         // 3rd and 4th spots in a domain, however, we can look for the
         // error and add it to a whitelist of errors to check against.
-        if (!($flags & self::CHECK_HYPHENS)) {
-            $whitelistedErrors[] = IDNA_ERROR_HYPHEN_3_4;
-            $whitelistedErrors[] = IDNA_ERROR_LEADING_HYPHEN;
-            $whitelistedErrors[] = IDNA_ERROR_TRAILING_HYPHEN;
-        }
-    }
-
-    /**
-     * Checks to see if any errors other than the whitelisted errors has
-     * occured.
-     *
-     * @param  int    $errors            A bitmask of errors.
-     *
-     * @param  int[]  $whitelistedErrors An array of error bits.
-     *
-     * @return bool
-     */
-    private function hasNonWhitelistedErrors($errors, $whitelistedErrors)
-    {
-        if (empty($whitelistedErrors)) {
-            return true;
+        if ($flags & self::CHECK_HYPHENS) {
+            return 0;
         }
 
-        foreach (array_diff(self::$errors, $whitelistedErrors) as $error) {
-            if ($errors & $error) {
-                return true;
-            }
-        }
-
-        return false;
+        return IDNA_ERROR_HYPHEN_3_4
+            | IDNA_ERROR_LEADING_HYPHEN
+            | IDNA_ERROR_TRAILING_HYPHEN;
     }
 }
