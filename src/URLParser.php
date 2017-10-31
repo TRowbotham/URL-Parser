@@ -947,7 +947,10 @@ abstract class URLParser
                             // Syntax violation
                         }
 
-                        $url->fragment .= URLUtils::utf8PercentEncode($c);
+                        $url->fragment .= URLUtils::utf8PercentEncode(
+                            $c,
+                            URLUtils::FRAGMENT_PERCENT_ENCODE_SET
+                        );
                     }
 
                     break;
