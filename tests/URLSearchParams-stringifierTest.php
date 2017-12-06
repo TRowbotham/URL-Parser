@@ -1,6 +1,7 @@
 <?php
 namespace phpjs\tests\url;
 
+use Rowbot\URL\URL;
 use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
 
@@ -132,5 +133,22 @@ class URLSearchParamsStringifierTest extends PHPUnit_Framework_TestCase
         // The lone '=' _does_ survive the roundtrip.
         $params = new URLSearchParams('a=&a=b');
         $this->assertEquals('a=&a=b', $params->toString());
+    }
+
+    public function testURLSearchParamsConnectedToURL()
+    {
+        $url = new URL('http://www.example.com/?a=b,c');
+        $params = $url->searchParams;
+
+        $this->assertEquals('http://www.example.com/?a=b,c', $url->toString());
+        $this->assertEquals('a=b%2Cc', $params->toString());
+
+        $params->append('x', 'y');
+
+        $this->assertEquals(
+            'http://www.example.com/?a=b%2Cc&x=y',
+            $url->toString()
+        );
+        $this->assertEquals('a=b%2Cc&x=y', $params->toString());
     }
 }

@@ -295,6 +295,16 @@ class URL implements JsonSerializable
         }
     }
 
+    public function __toString()
+    {
+        return $this->url->serializeURL();
+    }
+
+    public function toString()
+    {
+        return $this->url->serializeURL();
+    }
+
     /**
      * Returns a JSON encoded string without escaping forward slashes. If you
      * need forward slashes to be escaped, pass the URL object to json_encode()
