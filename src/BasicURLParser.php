@@ -1,7 +1,7 @@
 <?php
 namespace Rowbot\URL;
 
-abstract class URLParser
+abstract class BasicURLParser
 {
     const SCHEME_START_STATE                     = 1;
     const SCHEME_STATE                           = 2;

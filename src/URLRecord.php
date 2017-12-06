@@ -199,7 +199,7 @@ class URLRecord
     {
         switch ($this->scheme) {
             case 'blob':
-                $url = URLParser::parseBasicUrl($this->path[0]);
+                $url = BasicURLParser::parseBasicUrl($this->path[0]);
 
                 if ($url === false) {
                     // Return a new opaque origin

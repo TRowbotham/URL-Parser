@@ -22,7 +22,7 @@ class URL implements JsonSerializable
         $parsedBase = null;
 
         if ($base) {
-            $parsedBase = URLParser::parseBasicUrl($base);
+            $parsedBase = BasicURLParser::parseBasicUrl($base);
 
             if ($parsedBase === false) {
                 throw new TypeError($base . ' is not a valid URL.');
@@ -30,7 +30,7 @@ class URL implements JsonSerializable
             }
         }
 
-        $parsedURL = URLParser::parseBasicUrl($url, $parsedBase);
+        $parsedURL = BasicURLParser::parseBasicUrl($url, $parsedBase);
 
         if ($parsedURL === false) {
             throw new TypeError($url . ' is not a valid URL.');
@@ -144,12 +144,12 @@ class URL implements JsonSerializable
                 }
 
                 $this->url->fragment = '';
-                URLParser::parseBasicUrl(
+                BasicURLParser::parseBasicUrl(
                     $input,
                     null,
                     null,
                     $this->url,
-                    URLParser::FRAGMENT_STATE
+                    BasicURLParser::FRAGMENT_STATE
                 );
 
                 break;
@@ -160,12 +160,12 @@ class URL implements JsonSerializable
                     return;
                 }
 
-                URLParser::parseBasicUrl(
+                BasicURLParser::parseBasicUrl(
                     $value,
                     null,
                     null,
                     $this->url,
-                    URLParser::HOST_STATE
+                    BasicURLParser::HOST_STATE
                 );
 
                 break;
@@ -176,18 +176,18 @@ class URL implements JsonSerializable
                     return;
                 }
 
-                URLParser::parseBasicUrl(
+                BasicURLParser::parseBasicUrl(
                     $value,
                     null,
                     null,
                     $this->url,
-                    URLParser::HOSTNAME_STATE
+                    BasicURLParser::HOSTNAME_STATE
                 );
 
                 break;
 
             case 'href':
-                $parsedURL = URLParser::parseBasicUrl($value);
+                $parsedURL = BasicURLParser::parseBasicUrl($value);
 
                 if ($parsedURL === false) {
                     throw new TypeError($value . ' is not a valid URL.');
@@ -222,12 +222,12 @@ class URL implements JsonSerializable
                 }
 
                 $this->url->path = [];
-                URLParser::parseBasicUrl(
+                BasicURLParser::parseBasicUrl(
                     $value,
                     null,
                     null,
                     $this->url,
-                    URLParser::PATH_START_STATE
+                    BasicURLParser::PATH_START_STATE
                 );
 
                 break;
@@ -242,23 +242,23 @@ class URL implements JsonSerializable
                     return;
                 }
 
-                URLParser::parseBasicUrl(
+                BasicURLParser::parseBasicUrl(
                     $value,
                     null,
                     null,
                     $this->url,
-                    URLParser::PORT_STATE
+                    BasicURLParser::PORT_STATE
                 );
 
                 break;
 
             case 'protocol':
-                URLParser::parseBasicUrl(
+                BasicURLParser::parseBasicUrl(
                     $value . ':',
                     null,
                     null,
                     $this->url,
-                    URLParser::SCHEME_START_STATE
+                    BasicURLParser::SCHEME_START_STATE
                 );
 
                 break;
@@ -278,12 +278,12 @@ class URL implements JsonSerializable
                 }
 
                 $this->url->query = '';
-                URLParser::parseBasicUrl(
+                BasicURLParser::parseBasicUrl(
                     $input,
                     null,
                     null,
                     $this->url,
-                    URLParser::QUERY_STATE
+                    BasicURLParser::QUERY_STATE
                 );
                 $this->queryObject->modify(
                     URLUtils::urlencodedStringParser($input)
