@@ -41,9 +41,8 @@ final class IDN
     /**
      * The domain name to be converted to ASCII.
      *
-     * @param  string  $domainName A UTF-8 string.
-     *
-     * @param  int     $flags      A bitmask of flags.
+     * @param string $domainName A UTF-8 string.
+     * @param int    $flags      A bitmask of flags.
      *
      * @return bool|string
      */
@@ -100,9 +99,8 @@ final class IDN
     /**
      * The domain name to be converted to UTF-8.
      *
-     * @param  string  $domainName An ASCII string.
-     *
-     * @param  int     $flags      A bitmask of flags.
+     * @param string $domainName An ASCII string.
+     * @param int    $flags      A bitmask of flags.
      *
      * @return bool|string
      */
@@ -138,7 +136,7 @@ final class IDN
      * Translates the wrapper object option flags to the equivilant IDNA_*
      * option flags.
      *
-     * @param  int $flags A bitmask of flags.
+     * @param int $flags A bitmask of flags.
      *
      * @return int
      */
@@ -165,7 +163,7 @@ final class IDN
      * Checks to see if the user wants to validate hyphens and if not, adds the
      * appropriate errors to a whitelist.
      *
-     * @param  int $flags
+     * @param int $flags
      *
      * @return int
      */

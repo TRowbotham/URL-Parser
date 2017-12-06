@@ -4,7 +4,7 @@ namespace Rowbot\URL;
 class IPv6Address implements NetworkAddress
 {
     /**
-     * @var array
+     * @var int[]
      */
     private $address;
 
@@ -18,22 +18,21 @@ class IPv6Address implements NetworkAddress
      *
      * @see https://url.spec.whatwg.org/#concept-ipv6-parser
      *
-     * @param  string $aInput An IPv6 address.
+     * @param string $input An IPv6 address.
      *
-     * @return array|bool Returns an array if the string was successfully parsed
-     *                    as an IPv6 address or false if the input is not an
-     *                    IPv6 address.
+     * @return \Rowbot\URL\IPv6Address|bool Returns an array if the string was successfully parsed as an IPv6 address or
+     *                                      false if the input is not an IPv6 address.
      */
-    public static function parse($aInput)
+    public static function parse($input)
     {
         $address = [0, 0, 0, 0, 0, 0, 0, 0];
         $piecePointer = 0;
         $compressPointer = null;
         $pointer = 0;
-        $c = mb_substr($aInput, $pointer, 1);
+        $c = mb_substr($input, $pointer, 1);
 
         if ($c === ':') {
-            if (mb_substr($aInput, $pointer + 1, 1) !== ':') {
+            if (mb_substr($input, $pointer + 1, 1) !== ':') {
                 // Validation error.
                 return false;
             }
@@ -41,7 +40,7 @@ class IPv6Address implements NetworkAddress
             $pointer += 2;
             $piecePointer++;
             $compressPointer = $piecePointer;
-            $c = mb_substr($aInput, $pointer, 1);
+            $c = mb_substr($input, $pointer, 1);
         }
 
         while ($c !== '') {
@@ -56,7 +55,7 @@ class IPv6Address implements NetworkAddress
                     return false;
                 }
 
-                $c = mb_substr($aInput, ++$pointer, 1);
+                $c = mb_substr($input, ++$pointer, 1);
                 $piecePointer++;
                 $compressPointer = $piecePointer;
                 continue;
@@ -68,7 +67,7 @@ class IPv6Address implements NetworkAddress
             while ($length < 4 && ctype_xdigit($c)) {
                 $value = $value * 0x10 + intval($c, 16);
                 $length++;
-                $c = mb_substr($aInput, ++$pointer, 1);
+                $c = mb_substr($input, ++$pointer, 1);
             }
 
             if ($c === '.') {
@@ -78,7 +77,7 @@ class IPv6Address implements NetworkAddress
                 }
 
                 $pointer -= $length;
-                $c = mb_substr($aInput, $pointer, 1);
+                $c = mb_substr($input, $pointer, 1);
 
                 if ($piecePointer > 6) {
                     // Validation error.
@@ -92,7 +91,7 @@ class IPv6Address implements NetworkAddress
 
                     if ($numbersSeen > 0) {
                         if ($c === '.' && $numbersSeen < 4) {
-                            $c = mb_substr($aInput, ++$pointer, 1);
+                            $c = mb_substr($input, ++$pointer, 1);
                         } else {
                             // Validation error.
                             return false;
@@ -121,7 +120,7 @@ class IPv6Address implements NetworkAddress
                             return false;
                         }
 
-                        $c = mb_substr($aInput, ++$pointer, 1);
+                        $c = mb_substr($input, ++$pointer, 1);
                     }
 
                     $address[$piecePointer] = $address[
@@ -143,7 +142,7 @@ class IPv6Address implements NetworkAddress
             }
 
             if ($c === ':') {
-                $c = mb_substr($aInput, ++$pointer, 1);
+                $c = mb_substr($input, ++$pointer, 1);
 
                 if ($c === '') {
                     // Validation error.
@@ -221,8 +220,8 @@ class IPv6Address implements NetworkAddress
 
             // Ignore all subsequent 16-bit pieces that are 0 that fall within
             // the compressed range.
-            if ($compressPointer !== null && $index >= $compressPointer &&
-                $index < $compressPointer + $longestSequence
+            if ($compressPointer !== null && $index >= $compressPointer
+                && $index < $compressPointer + $longestSequence
             ) {
                 continue;
             }
@@ -254,8 +253,8 @@ class IPv6Address implements NetworkAddress
         if (is_string($address)) {
             $parsed = self::parse($address);
 
-            return $parsed instanceof self &&
-                $this->address === $parsed->address;
+            return $parsed instanceof self
+                && $this->address === $parsed->address;
         }
 
         return false;

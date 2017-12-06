@@ -4,7 +4,7 @@ namespace Rowbot\URL;
 class IPv4Address implements NetworkAddress
 {
     /**
-     * @var GMP
+     * @var \GMP
      */
     private $address;
 
@@ -24,18 +24,16 @@ class IPv4Address implements NetworkAddress
      *
      * @see https://url.spec.whatwg.org/#concept-ipv4-parser
      *
-     * @param  string $aInput A string representing an IPv4 address.
+     * @param string $input A string representing an IPv4 address.
      *
-     * @return IPv4Address|string|bool Returns a IPv4Address object if the input
-     *                                 is a valid IPv4 address or a string if
-     *                                 the input is determined to be a domain.
-     *                                 This will return false if the input is
-     *                                 neither a domain or IPv4 address.
+     * @return \Rowbot\URL\IPv4Address|string|bool Returns a IPv4Address object if the input is a valid IPv4 address or
+     *                                             a string if the input is determined to be a domain. This will return
+     *                                             false if the input is neither a domain or IPv4 address.
      */
-    public static function parse($aInput)
+    public static function parse($input)
     {
         $syntaxViolation = false;
-        $parts = explode('.', $aInput);
+        $parts = explode('.', $input);
         $len = count($parts);
 
         // If the last item in parts is an empty string, that is a syntax
@@ -52,7 +50,7 @@ class IPv4Address implements NetworkAddress
         // If there are more that 4 parts, this clearly isn't an IPv4 address
         // return the input given to us as this is probably a domain name.
         if ($len > 4) {
-            return $aInput;
+            return $input;
         }
 
         $numbers = [];
@@ -61,7 +59,7 @@ class IPv4Address implements NetworkAddress
             // If any of the parts are an empty string, then this probably a
             // domain, so return the original input.
             if ($part === '') {
-                return $aInput;
+                return $input;
             }
 
             $n = self::parseIPv4Number($part, $syntaxViolation);
@@ -69,7 +67,7 @@ class IPv4Address implements NetworkAddress
             // If the part is not a number, then this is probably a domain, so
             // return the original input.
             if ($n === false) {
-                return $aInput;
+                return $input;
             }
 
             $numbers[] = $n;
@@ -138,8 +136,7 @@ class IPv4Address implements NetworkAddress
     /**
      * Checks to see if two IPv4 addresses are equal.
      *
-     * @param  IPv4Address|string $address Another IPv4Address or a valid IPv4
-     *                                     address string.
+     * @param \Rowbot\URL\IPv4Address|string $address Another IPv4Address or a valid IPv4 address string.
      *
      * @return bool
      */
@@ -152,8 +149,8 @@ class IPv4Address implements NetworkAddress
         if (is_string($address)) {
             $parsed = self::parse($address);
 
-            return $parsed instanceof self &&
-                $this->address == $parsed->address;
+            return $parsed instanceof self
+                && $this->address == $parsed->address;
         }
 
         return false;
@@ -164,23 +161,20 @@ class IPv4Address implements NetworkAddress
      *
      * @see https://url.spec.whatwg.org/#ipv4-number-parser
      *
-     * @param string $aInput A string of numbers to be parsed.
-     *
-     * @param bool|null &$aSyntaxViolationFlag  A flag that represents if there
-     *     was a syntax violation while parsing.
+     * @param string    $input                A string of numbers to be parsed.
+     * @param bool|null $syntaxViolationFlag  A flag that represents if there was a syntax violation while parsing.
      *
      * @return int|bool Returns a bool on failure and an int otherwise.
      */
-    protected static function parseIPv4Number($aInput, &$aSyntaxViolationFlag)
+    protected static function parseIPv4Number($input, &$syntaxViolationFlag)
     {
-        $input = $aInput;
         $R = 10;
         $len = strlen($input);
 
-        if ($len > 1 &&
-            (substr($input, 0, 2) === '0x' || substr($input, 0, 2) === '0X')
+        if ($len > 1
+            && (substr($input, 0, 2) === '0x' || substr($input, 0, 2) === '0X')
         ) {
-            $aSyntaxViolationFlag = true;
+            $syntaxViolationFlag = true;
             $input = substr($input, 2);
             $R = 16;
             $len -= 2;
@@ -200,7 +194,7 @@ class IPv4Address implements NetworkAddress
             return false;
         }
 
-        // TODO: Return the mathematical integer value that is represented by
+        // Return the mathematical integer value that is represented by
         // input in radix-R notation, using ASCII hex digits for digits with
         // values 0 through 15.
         return intval($input, $R);

@@ -21,10 +21,10 @@ class Origin
      * Creates a tuple origin, which consists of a scheme, host, port, and
      * optionally a domain.
      *
-     * @param  string       $scheme
-     * @param  Host         $host
-     * @param  int|null     $port
-     * @param  string|null  $domain
+     * @param string      $scheme
+     * @param Host        $host
+     * @param int|null    $port
+     * @param string|null $domain
      *
      * @return self
      */
@@ -100,9 +100,9 @@ class Origin
         // If A and B are both tuple origins and their schemes, hosts, and port
         // are identical, then return true.
         if (!$this->isOpaque && !$other->isOpaque) {
-            return $this->scheme === $other->scheme &&
-                $this->host->equals($other->host) &&
-                $this->port === $other->port;
+            return $this->scheme === $other->scheme
+                && $this->host->equals($other->host)
+                && $this->port === $other->port;
         }
 
         return false;
@@ -130,14 +130,14 @@ class Origin
             // identical and non-null, then return true. Otherwise, if A and B
             // are same origin and their domains are identical and null, then
             // return true.
-            if ($this->scheme === $other->scheme &&
-                $this->domain !== null &&
-                $this->domain === $other->domain
+            if ($this->scheme === $other->scheme
+                && $this->domain !== null
+                && $this->domain === $other->domain
             ) {
                 return true;
-            } elseif ($this->isSameOrigin($other) &&
-                $this->domain === $other->domain &&
-                $this->domain === null
+            } elseif ($this->isSameOrigin($other)
+                && $this->domain === $other->domain
+                && $this->domain === null
             ) {
                 return true;
             }

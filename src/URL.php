@@ -53,8 +53,8 @@ class URL implements JsonSerializable
     {
         switch ($name) {
             case 'hash':
-                if ($this->url->fragment === null ||
-                    $this->url->fragment === ''
+                if ($this->url->fragment === null
+                    || $this->url->fragment === ''
                 ) {
                     return '';
                 }
@@ -70,8 +70,7 @@ class URL implements JsonSerializable
                     return (string) $this->url->host;
                 }
 
-                return (string) $this->url->host . ':' .
-                    $this->url->port;
+                return (string) $this->url->host . ':' . $this->url->port;
 
             case 'hostname':
                 if ($this->url->host->isNull()) {
@@ -111,9 +110,7 @@ class URL implements JsonSerializable
                 return $this->url->scheme . ':';
 
             case 'search':
-                if ($this->url->query === null ||
-                    $this->url->query === ''
-                ) {
+                if ($this->url->query === null || $this->url->query === '') {
                     return '';
                 }
 
@@ -140,7 +137,12 @@ class URL implements JsonSerializable
                     return;
                 }
 
-                $input = $value[0] == '#' ? substr($value, 1) : $value;
+                $input = $value;
+
+                if (mb_substr($input, 0, 1, 'UTF-8') === '#') {
+                    $input = mb_substr($input, 1, null, 'UTF-8');
+                }
+
                 $this->url->fragment = '';
                 URLParser::parseBasicUrl(
                     $input,
@@ -269,7 +271,12 @@ class URL implements JsonSerializable
                     return;
                 }
 
-                $input = $value[0] == '?' ? substr($value, 1) : $value;
+                $input = $value;
+
+                if (mb_substr($input, 0, 1, 'UTF-8') === '?') {
+                    $input = mb_substr($input, 1, null, 'UTF-8');
+                }
+
                 $this->url->query = '';
                 URLParser::parseBasicUrl(
                     $input,

@@ -38,7 +38,7 @@ abstract class URLUtils
     const FRAGMENT_PERCENT_ENCODE_SET   = self::C0_CONTROL_PERCENT_ENCODE_SET
         . '\x20"<>`';
     const PATH_PERCENT_ENCODE_SET       = self::FRAGMENT_PERCENT_ENCODE_SET
-         . '#?{}';
+        . '#?{}';
     const USERINFO_PERCENT_ENCODE_SET   = self::PATH_PERCENT_ENCODE_SET .
         '\/:;=@[\\\\\]^|';
 

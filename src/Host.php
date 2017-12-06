@@ -23,7 +23,7 @@ class Host
      * Creates a new Host whose host is null. This will serialize to the empty
      * string and is not a valid host string.
      *
-     * @return Host
+     * @return \Rowbot\URL\Host
      */
     public static function createNullHost()
     {
@@ -35,13 +35,12 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-host-parser
      *
-     * @param  string $input     An IPv4, IPv6 address, domain, or opaque host.
+     * @param string $input     An IPv4, IPv6 address, domain, or opaque host.
      *
-     * @param  bool   $isSpecial Whether or not the URL has a special scheme.
+     * @param bool   $isSpecial Whether or not the URL has a special scheme.
      *
-     * @return Host|bool Returns a Host if it was successfully parsed or
-     *                   false if parsing fails. The returned Host can never be
-     *                   null.
+     * @return \Rowbot\URL\Host|bool Returns a Host if it was successfully parsed or false if parsing fails. The
+     *                               returned Host can never be null.
      */
     public static function parse($input, $isSpecial)
     {
@@ -98,13 +97,13 @@ class Host
      *
      * @param  string $input
      *
-     * @return Host|bool
+     * @return \Rowbot\URL\Host|bool
      */
     private static function parseOpaqueHost($input)
     {
         // Match a forbidden host code point, minus the "%" character.
-        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $input, $matches) &&
-            $matches[0] !== '%'
+        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $input, $matches)
+            && $matches[0] !== '%'
         ) {
             return false;
         }
@@ -177,7 +176,7 @@ class Host
     /**
      * Checks to see if two hosts are equal.
      *
-     * @param  Host|string $host Another Host object or a string.
+     * @param \Rowbot\URL\Host|string $host Another Host object or a string.
      *
      * @return bool
      */
@@ -197,13 +196,15 @@ class Host
     /**
      * Sets the host to a new value.
      *
-     * @param  string|NetworkAddress|null A new host value.
+     * @param \Rowbot\URL\NetworkAddress|string|null $host A new host value.
+     *
+     * @return void
      */
     public function setHost($host)
     {
-        if (!is_string($host) &&
-            !$host instanceof NetworkAddress &&
-            $host !== null
+        if (!is_string($host)
+            && !$host instanceof NetworkAddress
+            && $host !== null
         ) {
             return;
         }
@@ -237,8 +238,7 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-domain-to-unicode
      *
-     * @return Host|bool      Returns the domain name upon success or false on
-     *                        failure.
+     * @return Host|bool Returns the domain name upon success or false on failure.
      */
     public function domainToUnicode()
     {
@@ -264,12 +264,10 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
      *
-     * @param  string       $domain   The domain name to be converted.
+     * @param string $domain   The domain name to be converted.
+     * @param bool   $beStrict
      *
-     * @param  bool         $beStrict
-     *
-     * @return string|bool           Returns the domain name upon success or
-     *                               false on failure.
+     * @return string|bool Returns the domain name upon success or false on failure.
      */
     private static function domainToASCII($domain, $beStrict = false)
     {

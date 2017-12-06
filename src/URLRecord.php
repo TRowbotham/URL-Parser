@@ -143,8 +143,10 @@ class URLRecord
      */
     public function cannotHaveUsernamePasswordPort()
     {
-        return $this->host->isNull() || $this->host->equals('') ||
-            $this->cannotBeABaseUrl || $this->scheme === 'file';
+        return $this->host->isNull()
+            || $this->host->equals('')
+            || $this->cannotBeABaseUrl
+            || $this->scheme === 'file';
     }
 
     /**
@@ -173,9 +175,9 @@ class URLRecord
             return;
         }
 
-        if ($this->scheme === 'file' &&
-            $size == 1 &&
-            preg_match(
+        if ($this->scheme === 'file'
+            && $size == 1
+            && preg_match(
                 URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
                 $this->path[0]
             )
@@ -246,8 +248,8 @@ class URLRecord
      */
     public function isEqual(URLRecord $otherUrl, $excludeFragment = false)
     {
-        return $this->serializeURL($excludeFragment) ===
-            $otherUrl->serializeURL($excludeFragment);
+        return $this->serializeURL($excludeFragment)
+            === $otherUrl->serializeURL($excludeFragment);
     }
 
     /**

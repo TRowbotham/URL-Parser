@@ -21,7 +21,7 @@ class URLSearchParams implements IteratorAggregate
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
-     * @param string[][]|object|string $init
+     * @param array<array<string>>|object|string $init
      */
     public function __construct($init = '')
     {
@@ -68,12 +68,10 @@ class URLSearchParams implements IteratorAggregate
      *
      * @internal
      *
-     * @param  URLSearchParams|string $init The query string or another
-     *                                      URLSearchParams object.
+     * @param \Rowbot\URL\URLSearchParams|string $init The query string or another URLSearchParams object.
+     * @param \Rowbot\URL\URLRecord              $url  The associated URLRecord object.
      *
-     * @param  URLRecord              $url  The associated URLRecord object.
-     *
-     * @return URLSearchParams
+     * @return \Rowbot\URL\URLSearchParams
      */
     public static function create($init, URLRecord $url)
     {
@@ -87,7 +85,9 @@ class URLSearchParams implements IteratorAggregate
     /**
      * @internal
      *
-     * @param  URLSearchParams|string $init
+     * @param \Rowbot\URL\URLSearchParams|string $init
+     *
+     * @return void
      */
     private function init($init)
     {
@@ -132,8 +132,9 @@ class URLSearchParams implements IteratorAggregate
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-append
      *
      * @param string $name  The name of the key in the pair.
-     *
      * @param string $value The value assigned to the key.
+     *
+     * @return void
      */
     public function append($name, $value)
     {
@@ -146,7 +147,9 @@ class URLSearchParams implements IteratorAggregate
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-delete
      *
-     * @param  string $name The name of the key to delete.
+     * @param string $name The name of the key to delete.
+     *
+     * @return void
      */
     public function delete($name)
     {
@@ -212,8 +215,9 @@ class URLSearchParams implements IteratorAggregate
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-set
      *
      * @param string $name  The name of the key you want to modify the value of.
-     *
      * @param string $value The value you want to associate with the key name.
+     *
+     * @return void
      */
     public function set($name, $value)
     {
@@ -235,6 +239,8 @@ class URLSearchParams implements IteratorAggregate
      * name.
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-sort
+     *
+     * @return void
      */
     public function sort()
     {
@@ -244,6 +250,8 @@ class URLSearchParams implements IteratorAggregate
 
     /**
      * Returns an iterator in the form of string[][].
+     *
+     * @return \ArrayIterator
      */
     public function getIterator()
     {
@@ -254,6 +262,8 @@ class URLSearchParams implements IteratorAggregate
      * Clears the list of search params.
      *
      * @internal
+     *
+     * @return void
      */
     public function clear()
     {
@@ -266,8 +276,9 @@ class URLSearchParams implements IteratorAggregate
      *
      * @internal
      *
-     * @param array $list A list of name-value pairs to be added to
-     *     the list.
+     * @param array<array<string>> $list A list of name-value pairs to be added to the list.
+     *
+     * @return void
      */
     public function modify(array $list)
     {
@@ -283,6 +294,8 @@ class URLSearchParams implements IteratorAggregate
      * @see https://url.spec.whatwg.org/#concept-urlsearchparams-update
      *
      * @internal
+     *
+     * @return void
      */
     protected function update()
     {
@@ -305,6 +318,8 @@ class URLSearchParams implements IteratorAggregate
      * @internal
      *
      * @param URLRecord $url
+     *
+     * @return void
      */
     public function setUrl(URLRecord $url)
     {

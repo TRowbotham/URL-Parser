@@ -3,27 +3,27 @@ namespace Rowbot\URL;
 
 abstract class URLParser
 {
-    const SCHEME_START_STATE = 1;
-    const SCHEME_STATE = 2;
-    const NO_SCHEME_STATE = 3;
-    const SPECIAL_RELATIVE_OR_AUTHORITY_STATE = 4;
-    const PATH_OR_AUTHORITY_STATE = 5;
-    const RELATIVE_STATE = 6;
-    const RELATIVE_SLASH_STATE = 7;
-    const SPECIAL_AUTHORITY_SLASHES_STATE = 8;
+    const SCHEME_START_STATE                     = 1;
+    const SCHEME_STATE                           = 2;
+    const NO_SCHEME_STATE                        = 3;
+    const SPECIAL_RELATIVE_OR_AUTHORITY_STATE    = 4;
+    const PATH_OR_AUTHORITY_STATE                = 5;
+    const RELATIVE_STATE                         = 6;
+    const RELATIVE_SLASH_STATE                   = 7;
+    const SPECIAL_AUTHORITY_SLASHES_STATE        = 8;
     const SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE = 9;
-    const AUTHORITY_STATE = 10;
-    const HOST_STATE = 11;
-    const HOSTNAME_STATE = 12;
-    const PORT_STATE = 13;
-    const FILE_STATE = 14;
-    const FILE_SLASH_STATE = 15;
-    const FILE_HOST_STATE = 16;
-    const PATH_START_STATE = 17;
-    const PATH_STATE = 18;
-    const CANNOT_BE_A_BASE_URL_PATH_STATE = 19;
-    const QUERY_STATE = 20;
-    const FRAGMENT_STATE = 21;
+    const AUTHORITY_STATE                        = 10;
+    const HOST_STATE                             = 11;
+    const HOSTNAME_STATE                         = 12;
+    const PORT_STATE                             = 13;
+    const FILE_STATE                             = 14;
+    const FILE_SLASH_STATE                       = 15;
+    const FILE_HOST_STATE                        = 16;
+    const PATH_START_STATE                       = 17;
+    const PATH_STATE                             = 18;
+    const CANNOT_BE_A_BASE_URL_PATH_STATE        = 19;
+    const QUERY_STATE                            = 20;
+    const FRAGMENT_STATE                         = 21;
 
     private static $singleDotPathSegment = [
         '.'   => '',
@@ -128,7 +128,7 @@ abstract class URLParser
                     if (preg_match(URLUtils::REGEX_ASCII_ALPHA, $c)) {
                         $buffer .= strtolower($c);
                         $state = self::SCHEME_STATE;
-                    } elseif (!$stateOverride) {
+                    } elseif ($stateOverride === null) {
                         $state = self::NO_SCHEME_STATE;
                         $pointer--;
                     } else {
@@ -141,32 +141,32 @@ abstract class URLParser
                     break;
 
                 case self::SCHEME_STATE:
-                    if (preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c) ||
-                        preg_match('/[+\-.]/u', $c)
+                    if (preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c)
+                        || preg_match('/[+\-.]/u', $c)
                     ) {
                         $buffer .= strtolower($c);
                     } elseif ($c === ':') {
-                        if ($stateOverride) {
+                        if ($stateOverride !== null) {
                             $bufferIsSpecialScheme = isset(
                                 URLUtils::$specialSchemes[$buffer]
                             );
                             $urlIsSpecial = $url->isSpecial();
 
-                            if (($urlIsSpecial && !$bufferIsSpecialScheme) ||
-                                (!$urlIsSpecial && $bufferIsSpecialScheme)
+                            if (($urlIsSpecial && !$bufferIsSpecialScheme)
+                                || (!$urlIsSpecial && $bufferIsSpecialScheme)
                             ) {
                                 // Terminate this algorithm.
                                 break 2;
                             }
 
-                            if ($url->includesCredentials() ||
-                                ($url->port !== null && $buffer === 'file')
+                            if ($url->includesCredentials()
+                                || ($url->port !== null && $buffer === 'file')
                             ) {
                                 break 2;
                             }
 
-                            if ($url->scheme === 'file' &&
-                                ($url->host->isEmpty() || $url->host->isNull())
+                            if ($url->scheme === 'file'
+                                && ($url->host->isEmpty() || $url->host->isNull())
                             ) {
                                 break 2;
                             }
@@ -174,9 +174,9 @@ abstract class URLParser
 
                         $url->scheme = $buffer;
 
-                        if ($stateOverride) {
-                            if ($bufferIsSpecialScheme &&
-                                URLUtils::$specialSchemes[
+                        if ($stateOverride !== null) {
+                            if ($bufferIsSpecialScheme
+                                && URLUtils::$specialSchemes[
                                     $url->scheme
                                 ] === $url->port
                             ) {
@@ -201,9 +201,9 @@ abstract class URLParser
                             }
 
                             $state = self::FILE_STATE;
-                        } elseif ($urlIsSpecial &&
-                            $base &&
-                            $base->scheme === $url->scheme
+                        } elseif ($urlIsSpecial
+                            && $base !== null
+                            && $base->scheme === $url->scheme
                         ) {
                             // This means that base's cannot-be-a-base-URL flag
                             // is unset.
@@ -223,7 +223,7 @@ abstract class URLParser
                             $url->path[] = '';
                             $state = self::CANNOT_BE_A_BASE_URL_PATH_STATE;
                         }
-                    } elseif (!$stateOverride) {
+                    } elseif ($stateOverride === null) {
                         $buffer = '';
                         $state = self::NO_SCHEME_STATE;
 
@@ -242,7 +242,7 @@ abstract class URLParser
                     break;
 
                 case self::NO_SCHEME_STATE:
-                    if (!$base || ($base->cannotBeABaseUrl && $c !== '#')) {
+                    if ($base === null || ($base->cannotBeABaseUrl && $c !== '#')) {
                         // Syntax violation. Return failure
                         return false;
                     } elseif ($base->cannotBeABaseUrl && $c === '#') {
@@ -263,8 +263,8 @@ abstract class URLParser
                     break;
 
                 case self::SPECIAL_RELATIVE_OR_AUTHORITY_STATE:
-                    if ($c === '/' &&
-                        mb_strpos($input, '/', $pointer, $encoding) === $pointer
+                    if ($c === '/'
+                        && mb_strpos($input, '/', $pointer, $encoding) === $pointer
                     ) {
                         $state = self::SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE;
                         $pointer++;
@@ -358,8 +358,8 @@ abstract class URLParser
                     break;
 
                 case self::SPECIAL_AUTHORITY_SLASHES_STATE:
-                    if ($c === '/' &&
-                        mb_strpos($input, '/', $pointer, $encoding) === $pointer
+                    if ($c === '/'
+                        && mb_strpos($input, '/', $pointer, $encoding) === $pointer
                     ) {
                         $state = self::SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE;
                         $pointer++;
@@ -413,11 +413,11 @@ abstract class URLParser
                         }
 
                         $buffer = '';
-                    } elseif (($c === ''/* EOF */ ||
-                        $c === '/' ||
-                        $c === '?' ||
-                        $c === '#') ||
-                        ($url->isSpecial() && $c === '\\')
+                    } elseif (($c === ''/* EOF */
+                        || $c === '/'
+                        || $c === '?'
+                        || $c === '#')
+                        || ($url->isSpecial() && $c === '\\')
                     ) {
                         if ($atFlag && $buffer === '') {
                             // Syntax violation
@@ -435,7 +435,7 @@ abstract class URLParser
 
                 case self::HOST_STATE:
                 case self::HOSTNAME_STATE:
-                    if ($stateOverride && $url->scheme === 'file') {
+                    if ($stateOverride !== null && $url->scheme === 'file') {
                         $pointer--;
                         $state = self::FILE_HOST_STATE;
                     } elseif ($c === ':' && !$bracketFlag) {
@@ -459,21 +459,20 @@ abstract class URLParser
                             // Terminate this algorithm
                             break 2;
                         }
-                    } elseif (($c === ''/* EOF */ ||
-                        $c === '/' ||
-                        $c === '?' ||
-                        $c === '#') ||
-                        ($url->isSpecial() && $c === '\\')
+                    } elseif (($c === ''/* EOF */
+                        || $c === '/'
+                        || $c === '?'
+                        || $c === '#')
+                        || ($url->isSpecial() && $c === '\\')
                     ) {
                         $pointer--;
 
                         if ($url->isSpecial() && $buffer === '') {
                             // Syntax violation. Return failure
                             return false;
-                        } elseif ($stateOverride &&
-                            $buffer === '' &&
-                            ($url->includesCredentials() ||
-                                $url->port !== null)
+                        } elseif ($stateOverride !== null
+                            && $buffer === ''
+                            && ($url->includesCredentials() || $url->port !== null)
                         ) {
                             // Syntax violation
                             break 2;
@@ -490,7 +489,7 @@ abstract class URLParser
                         $buffer = '';
                         $state = self::PATH_START_STATE;
 
-                        if ($stateOverride) {
+                        if ($stateOverride !== null) {
                             // Terminate this algorithm
                             break 2;
                         }
@@ -509,12 +508,12 @@ abstract class URLParser
                 case self::PORT_STATE:
                     if (ctype_digit($c)) {
                         $buffer .= $c;
-                    } elseif (($c === ''/* EOF */ ||
-                        $c === '/' ||
-                        $c === '?' ||
-                        $c === '#') ||
-                        ($url->isSpecial() && $c === '\\') ||
-                        $stateOverride
+                    } elseif (($c === ''/* EOF */
+                        || $c === '/'
+                        || $c === '?'
+                        || $c === '#')
+                        || ($url->isSpecial() && $c === '\\')
+                        || $stateOverride
                     ) {
                         if ($buffer !== '') {
                             $port = intval($buffer, 10);
@@ -541,7 +540,7 @@ abstract class URLParser
                             $buffer = '';
                         }
 
-                        if ($stateOverride) {
+                        if ($stateOverride !== null) {
                             // Terminate this algorithm
                             break 2;
                         }
@@ -564,7 +563,7 @@ abstract class URLParser
                         }
 
                         $state = self::FILE_SLASH_STATE;
-                    } elseif ($base && $base->scheme === 'file') {
+                    } elseif ($base !== null && $base->scheme === 'file') {
                         if ($c === ''/* EOF */) {
                             $url->host = clone $base->host;
                             $url->path = $base->path;
@@ -650,11 +649,11 @@ abstract class URLParser
                     break;
 
                 case self::FILE_HOST_STATE:
-                    if ($c === ''/* EOF */ ||
-                        $c === '/' ||
-                        $c === '\\' ||
-                        $c === '?' ||
-                        $c === '#'
+                    if ($c === ''/* EOF */
+                        || $c === '/'
+                        || $c === '\\'
+                        || $c === '?'
+                        || $c === '#'
                     ) {
                         $pointer--;
 
@@ -716,10 +715,10 @@ abstract class URLParser
                         if ($c !== '/' && $c !== '\\') {
                             $pointer--;
                         }
-                    } elseif (!$stateOverride && $c === '?') {
+                    } elseif ($stateOverride === null && $c === '?') {
                         $url->query = '';
                         $state = self::QUERY_STATE;
-                    } elseif (!$stateOverride && $c === '#') {
+                    } elseif ($stateOverride === null && $c === '#') {
                         $url->fragment = '';
                         $state = self::FRAGMENT_STATE;
                     } elseif ($c !== '') {
@@ -733,10 +732,10 @@ abstract class URLParser
                     break;
 
                 case self::PATH_STATE:
-                    if ($c === ''/* EOF */ ||
-                        $c === '/' ||
-                        ($url->isSpecial() && $c === '\\') ||
-                        (!$stateOverride && ($c === '?' || $c === '#'))
+                    if ($c === ''/* EOF */
+                        || $c === '/'
+                        || ($url->isSpecial() && $c === '\\')
+                        || (!$stateOverride && ($c === '?' || $c === '#'))
                     ) {
                         $urlIsSpecial = $url->isSpecial();
 
@@ -750,23 +749,23 @@ abstract class URLParser
                             if ($c !== '/' && !($urlIsSpecial && $c === '\\')) {
                                 $url->path[] = '';
                             }
-                        } elseif (isset(self::$singleDotPathSegment[$buffer]) &&
-                            $c !== '/' &&
-                            !($url->isSpecial() && $c === '\\')
+                        } elseif (isset(self::$singleDotPathSegment[$buffer])
+                            && $c !== '/'
+                            && !($url->isSpecial() && $c === '\\')
                         ) {
                             $url->path[] = '';
                         } elseif (!isset(
                             self::$singleDotPathSegment[$buffer]
                         )) {
-                            if ($url->scheme === 'file' &&
-                                empty($url->path) &&
-                                preg_match(
+                            if ($url->scheme === 'file'
+                                && empty($url->path)
+                                && preg_match(
                                     URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
                                     $buffer
                                 )
                             ) {
-                                if (!$url->host->isEmpty() &&
-                                    !$url->host->isNull()
+                                if (!$url->host->isEmpty()
+                                    && !$url->host->isNull()
                                 ) {
                                     // Syntax violation
                                     $url->host->setHost('');
@@ -774,9 +773,9 @@ abstract class URLParser
 
                                 // This is a (platform-independent) Windows
                                 // drive letter quirk.
-                                $buffer = mb_substr($buffer, 0, 1, $encoding) .
-                                    ':' .
-                                    mb_substr($buffer, 2, null, $encoding);
+                                $buffer = mb_substr($buffer, 0, 1, $encoding)
+                                    . ':'
+                                    . mb_substr($buffer, 2, null, $encoding);
                             }
 
                             $url->path[] = $buffer;
@@ -784,10 +783,8 @@ abstract class URLParser
 
                         $buffer = '';
 
-                        if ($url->scheme === 'file' &&
-                            ($c === '' ||
-                            $c === '?' ||
-                            $c === '#')
+                        if ($url->scheme === 'file'
+                            && ($c === '' || $c === '?' || $c === '#')
                         ) {
                             $size = count($url->path);
 
@@ -805,8 +802,8 @@ abstract class URLParser
                             $state = self::FRAGMENT_STATE;
                         }
                     } else {
-                        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
-                            $c !== '%'
+                        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c)
+                            && $c !== '%'
                         ) {
                             // Syntax violation
                         }
@@ -839,14 +836,14 @@ abstract class URLParser
                         $state = self::FRAGMENT_STATE;
                     } else {
                         if ($c !== ''/* EOF */ &&
-                            !preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
-                            $c !== '%'
+                            !preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c)
+                            && $c !== '%'
                         ) {
                             // Syntax violation
                         }
 
-                        if ($c === '%' &&
-                            !ctype_xdigit(
+                        if ($c === '%'
+                            && !ctype_xdigit(
                                 mb_substr($input, $pointer, 2, $encoding)
                             )
                         ) {
@@ -865,16 +862,16 @@ abstract class URLParser
                     break;
 
                 case self::QUERY_STATE:
-                    if ($c === ''/* EOF */ ||
-                        (!$stateOverride && $c === '#')
+                    if ($c === ''/* EOF */
+                        || ($stateOverride === null && $c === '#')
                     ) {
                         $oldEncoding = $encoding;
 
-                        if (!$url->isSpecial() ||
-                            $url->scheme === 'ws' ||
-                            $url->scheme === 'wss'
+                        if (!$url->isSpecial()
+                            || $url->scheme === 'ws'
+                            || $url->scheme === 'wss'
                         ) {
-                            $encoding = 'utf-8';
+                            $encoding = 'UTF-8';
                         }
 
                         if ($encoding !== $oldEncoding) {
@@ -888,12 +885,12 @@ abstract class URLParser
                         $length = strlen($buffer);
 
                         for ($i = 0; $i < $length; $i++) {
-                            if ($buffer[$i] < "\x21" ||
-                                $buffer[$i] > "\x7E" ||
-                                $buffer[$i] === "\x22" ||
-                                $buffer[$i] === "\x23" ||
-                                $buffer[$i] === "\x3C" ||
-                                $buffer[$i] === "\x3E"
+                            if ($buffer[$i] < "\x21"
+                                || $buffer[$i] > "\x7E"
+                                || $buffer[$i] === "\x22"
+                                || $buffer[$i] === "\x23"
+                                || $buffer[$i] === "\x3C"
+                                || $buffer[$i] === "\x3E"
                             ) {
                                 $url->query .= rawurlencode($buffer[$i]);
                             } else {
@@ -908,17 +905,15 @@ abstract class URLParser
                             $state = self::FRAGMENT_STATE;
                         }
                     } else {
-                        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
-                            $c !== '%'
+                        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c)
+                            && $c !== '%'
                         ) {
                             // Syntax violation
                         }
 
-                        if ($c === '%' &&
-                            !ctype_xdigit(
-                                mb_substr($input, $pointer, 2, $encoding)
-                            )
-                        ) {
+                        if ($c === '%' && !ctype_xdigit(
+                            mb_substr($input, $pointer, 2, $encoding)
+                        )) {
                             // Syntax violation
                         }
 
@@ -933,17 +928,15 @@ abstract class URLParser
                     } elseif ($c === "\0") {
                         // Syntax violation
                     } else {
-                        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) &&
-                            $c !== '%'
+                        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c)
+                            && $c !== '%'
                         ) {
                             // Syntax violation
                         }
 
-                        if ($c === '%' &&
-                            !ctype_xdigit(
-                                mb_substr($input, $pointer, 2, $encoding)
-                            )
-                        ) {
+                        if ($c === '%' && !ctype_xdigit(
+                            mb_substr($input, $pointer, 2, $encoding)
+                        )) {
                             // Syntax violation
                         }
 
