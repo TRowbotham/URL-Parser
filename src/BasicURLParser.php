@@ -1,7 +1,7 @@
 <?php
 namespace Rowbot\URL;
 
-abstract class BasicURLParser
+class BasicURLParser
 {
     const SCHEME_START_STATE                     = 1;
     const SCHEME_STATE                           = 2;
@@ -39,6 +39,75 @@ abstract class BasicURLParser
         '%2e%2e' => '',
         '%2E%2E' => ''
     ];
+
+    /**
+     * @var bool
+     */
+    private $atFlag;
+
+    /**
+     * @var \Rowbot\URL\URLRecord|null
+     */
+    private $base;
+
+    /**
+     * @var bool
+     */
+    private $bracketFlag;
+
+    /**
+     * @var string
+     */
+    private $buffer;
+
+    /**
+     * @var string
+     */
+    private $encoding;
+
+    /**
+     * @var string|null
+     */
+    private $encodingOverride;
+
+    /**
+     * @var string
+     */
+    private $input;
+
+    /**
+     * @var bool
+     */
+    private $passwordTokenSeenFlag;
+
+    /**
+     * @var int
+     */
+    private $state;
+
+    /**
+     * @var int|null
+     */
+    private $stateOverride;
+
+    /**
+     * @var \Rowbot\URL\URLRecord|null
+     */
+    private $url;
+
+    protected function __construct(
+        $input,
+        URLRecord $base,
+        $encodingOverride,
+        URLRecord $url,
+        $stateOverride
+    ) {
+        $this->input = $input;
+        $this->base = $base;
+        $this->encodingOverride = $encodingOverride;
+        $this->url = $url;
+        $this->stateOverride = $stateOverride;
+    }
 
     /**
      * Parses a string as a URL. The string can be an absolute URL or a relative
