@@ -1,6 +1,23 @@
 <?php
 namespace Rowbot\URL;
 
+use function explode;
+use function get_class;
+use function is_bool;
+use function is_object;
+use function is_scalar;
+use function is_string;
+use function mb_convert_encoding;
+use function mb_detect_encoding;
+use function mb_substitute_character;
+use function method_exists;
+use function pack;
+use function preg_match;
+use function rawurlencode;
+use function str_replace;
+use function strlen;
+use function substr;
+
 abstract class URLUtils
 {
     const REGEX_C0_CONTROLS = '/[\x{0000}-\x{001F}]/';

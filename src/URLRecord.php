@@ -1,6 +1,10 @@
 <?php
 namespace Rowbot\URL;
 
+use function array_pop;
+use function mb_substr;
+use function preg_match;
+
 class URLRecord
 {
     /**

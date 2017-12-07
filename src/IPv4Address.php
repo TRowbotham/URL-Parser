@@ -1,6 +1,20 @@
 <?php
 namespace Rowbot\URL;
 
+use function array_pop;
+use function ctype_digit;
+use function ctype_xdigit;
+use function decoct;
+use function explode;
+use function floor;
+use function gmp_init;
+use function gmp_pow;
+use function intval;
+use function is_string;
+use function octdec;
+use function strlen;
+use function substr;
+
 class IPv4Address implements NetworkAddress
 {
     /**

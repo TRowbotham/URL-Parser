@@ -4,6 +4,10 @@ namespace Rowbot\URL;
 use JsonSerializable;
 use Rowbot\URL\Exception\TypeError;
 
+use function implode;
+use function json_encode;
+use function mb_substr;
+
 /**
  * Represents a URL that can be manipulated.
  *

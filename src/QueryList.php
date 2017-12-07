@@ -5,6 +5,16 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 
+use function array_filter;
+use function array_flip;
+use function array_map;
+use function array_splice;
+use function in_array;
+use function mb_convert_encoding;
+use function strcmp;
+use function strlen;
+use function usort;
+
 class QueryList implements Countable, IteratorAggregate
 {
     private $list;

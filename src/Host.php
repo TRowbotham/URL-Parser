@@ -1,6 +1,9 @@
 <?php
 namespace Rowbot\URL;
 
+use function is_string;
+use function mb_substr;
+
 class Host
 {
     const FORBIDDEN_HOST_CODEPOINT = '/[\x00\x09\x0A\x0D\x20#%\/:?@[\\\\\]]/u';

@@ -6,6 +6,12 @@ use IteratorAggregate;
 use Rowbot\URL\Exception\TypeError;
 use Traversable;
 
+use function array_map;
+use function func_num_args;
+use function is_array;
+use function is_object;
+use function mb_substr;
+
 /**
  * An object containing a list of all URL query parameters.  This allows you to
  * manipulate a URL's query string in a granular manner.

@@ -1,6 +1,14 @@
 <?php
 namespace Rowbot\URL;
 
+use function base_convert;
+use function ctype_digit;
+use function ctype_xdigit;
+use function intval;
+use function is_string;
+use function mb_strtolower;
+use function mb_substr;
+
 class IPv6Address implements NetworkAddress
 {
     /**

@@ -1,6 +1,9 @@
 <?php
 namespace Rowbot\URL;
 
+use function idn_to_ascii;
+use function idn_to_utf8;
+
 final class IDN
 {
     const CHECK_HYPHENS              = 1;

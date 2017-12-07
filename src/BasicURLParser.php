@@ -1,6 +1,21 @@
 <?php
 namespace Rowbot\URL;
 
+use function array_pop;
+use function array_shift;
+use function ctype_digit;
+use function ctype_xdigit;
+use function intval;
+use function mb_strlen;
+use function mb_strpos;
+use function mb_substr;
+use function pow;
+use function preg_match;
+use function preg_replace;
+use function rawurlencode;
+use function strlen;
+use function strtolower;
+
 class BasicURLParser
 {
     const SCHEME_START_STATE                     = 1;
