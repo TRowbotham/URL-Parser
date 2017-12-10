@@ -192,8 +192,8 @@ class URLSearchParams implements IteratorAggregate
         $name = URLUtils::strval($name);
 
         return array_column($this->list->filter(function ($pair) use ($name) {
-            return $pair[0] === $name;
-        }), 1);
+            return $pair['name'] === $name;
+        }), 'value');
     }
 
     /**
@@ -282,15 +282,14 @@ class URLSearchParams implements IteratorAggregate
      *
      * @internal
      *
-     * @param array<array<string>> $list A list of name-value pairs to be added to the list.
+     * @param array<array<string, string>> $list A list of name-value pairs to
+     *                                           be added to the list.
      *
      * @return void
      */
     public function modify(array $list)
     {
-        $this->list->update(array_map(function ($pair) {
-            return [$pair['name'], $pair['value']];
-        }, $list));
+        $this->list->update($list);
     }
 
     /**

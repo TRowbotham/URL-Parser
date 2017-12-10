@@ -22,27 +22,29 @@ class QueryList implements Countable, IteratorAggregate
 
     public function __construct(array $list = [])
     {
-        $this->init($list);
-    }
-
-    private function init($list)
-    {
-        $this->list = $list;
-        $this->cache = array_map(function ($index) {
-            return true;
-        }, array_flip(array_column($list, 0)));
+        $this->list = [];
+        $this->cache = [];
+        $this->appendAll($list);
     }
 
     public function append($name, $value)
     {
-        $this->list[] = [$name, $value];
+        $this->list[] = ['name' => $name, 'value' => $value];
         $this->cache[$name] = true;
+    }
+
+    public function appendAll($pairs)
+    {
+        foreach ($pairs as $pair) {
+            $this->list[] = ['name' => $pair[0], 'value' => $pair[1]];
+            $this->cache[$pair[0]] = true;
+        }
     }
 
     public function remove($name)
     {
         for ($i = count($this->list) - 1; $i >= 0; $i--) {
-            if ($this->list[$i][0] === $name) {
+            if ($this->list[$i]['name'] === $name) {
                 array_splice($this->list, $i, 1);
             }
         }
@@ -65,8 +67,8 @@ class QueryList implements Countable, IteratorAggregate
     public function first($name)
     {
         foreach ($this->list as $pair) {
-            if ($name === $pair[0]) {
-                return $pair[1];
+            if ($pair['name'] === $name) {
+                return $pair['value'];
             }
         }
 
@@ -83,7 +85,7 @@ class QueryList implements Countable, IteratorAggregate
         $prevIndex = null;
 
         for ($i = count($this->list) - 1; $i >= 0; $i--) {
-            if ($this->list[$i][0] === $name) {
+            if ($this->list[$i]['name'] === $name) {
                 if ($prevIndex !== null) {
                     array_splice($this->list, $prevIndex, 1);
                 }
@@ -92,7 +94,7 @@ class QueryList implements Countable, IteratorAggregate
             }
         }
 
-        $this->list[$prevIndex][1] = $value;
+        $this->list[$prevIndex]['value'] = $value;
     }
 
     public function count()
@@ -102,14 +104,16 @@ class QueryList implements Countable, IteratorAggregate
 
     public function getIterator()
     {
-        return new ArrayIterator($this->list);
+        return new ArrayIterator(array_map(function ($pair) {
+            return array_values($pair);
+        }, $this->list));
     }
 
     public function sort()
     {
         usort($this->list, function ($pair1, $pair2) {
-            $len1 = strlen(mb_convert_encoding($pair1[0], 'UTF-16LE')) / 2;
-            $len2 = strlen(mb_convert_encoding($pair2[0], 'UTF-16LE')) / 2;
+            $len1 = strlen(mb_convert_encoding($pair1['name'], 'UTF-16LE')) / 2;
+            $len2 = strlen(mb_convert_encoding($pair2['name'], 'UTF-16LE')) / 2;
 
             if ($len1 > $len2) {
                 return -1;
@@ -117,7 +121,7 @@ class QueryList implements Countable, IteratorAggregate
                 return 1;
             }
 
-            return strcmp($pair1[0], $pair2[0]);
+            return strcmp($pair1['name'], $pair2['name']);
         });
     }
 
@@ -129,13 +133,17 @@ class QueryList implements Countable, IteratorAggregate
 
     public function update(array $list)
     {
-        $this->init($list);
+        $this->list = [];
+        $this->cache = [];
+
+        foreach ($list as $pair) {
+            $this->list[] = $pair;
+            $this->cache[$pair['name']] = true;
+        }
     }
 
     public function __toString()
     {
-        return URLUtils::urlencodedSerializer(array_map(function ($pair) {
-            return ['name' => $pair[0], 'value' => $pair[1]];
-        }, $this->list));
+        return URLUtils::urlencodedSerializer($this->list);
     }
 }
