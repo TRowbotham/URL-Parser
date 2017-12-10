@@ -142,8 +142,8 @@ class QueryList implements Countable, IteratorAggregate
         }
     }
 
-    public function __toString()
+    public function all()
     {
-        return URLUtils::urlencodedSerializer($this->list);
+        return $this->list;
     }
 }

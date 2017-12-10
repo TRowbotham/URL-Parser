@@ -1,7 +1,6 @@
 <?php
 namespace Rowbot\URL;
 
-use function explode;
 use function get_class;
 use function is_bool;
 use function is_object;
@@ -14,7 +13,6 @@ use function method_exists;
 use function pack;
 use function preg_match;
 use function rawurlencode;
-use function str_replace;
 use function strlen;
 use function substr;
 
@@ -106,154 +104,6 @@ abstract class URLUtils
         }
 
         return $output;
-    }
-
-    /**
-     * Serializes the individual bytes of the given byte sequence to be
-     * compatible with application/x-www-form-encoded URLs.
-     *
-     * @see https://url.spec.whatwg.org/#concept-urlencoded-byte-serializer
-     *
-     * @param  string $input A byte sequence to be serialized.
-     *
-     * @return string
-     */
-    public static function urlencodedByteSerializer($input)
-    {
-        $output = '';
-
-        for ($i = 0, $len = strlen($input); $i < $len; $i++) {
-            if ($input[$i] == "\x20") {
-                $output .= "\x2B";
-            } elseif ($input[$i] === "\x2A" ||
-                $input[$i] === "\x2D" ||
-                $input[$i] === "\x2E" ||
-                ($input[$i] >= "\x30" && $input[$i] <= "\x39") ||
-                ($input[$i] >= "\x41" && $input[$i] <= "\x5A") ||
-                $input[$i] === "\x5F" ||
-                ($input[$i] >= "\x61" && $input[$i] <= "\x7A")
-            ) {
-                $output .= $input[$i];
-            } else {
-                $output .= rawurlencode($input[$i]);
-            }
-        }
-
-        return $output;
-    }
-
-    /**
-     * Encodes a byte sequence to be compatible with the
-     * application/x-www-form-urlencoded encoding.
-     *
-     * @see https://url.spec.whatwg.org/#concept-urlencoded-parser
-     *
-     * @param string $input A byte sequence to be encoded.
-     *
-     * @return string[][]
-     */
-    public static function urlencodedParser($input)
-    {
-        $sequences = explode('&', $input);
-        $tuples = [];
-
-        foreach ($sequences as $bytes) {
-            if ($bytes === '') {
-                continue;
-            }
-
-            $pos = strpos($bytes, '=');
-
-            if ($pos !== false) {
-                $name = substr($bytes, 0, $pos);
-                $value = substr($bytes, $pos + 1);
-            } else {
-                $name = $bytes;
-                $value = '';
-            }
-
-            $name = str_replace('+', "\x20", $name);
-            $value = str_replace('+', "\x20", $value);
-
-            $tuples[] = [
-                'name' => $name,
-                'value' => $value
-            ];
-        }
-
-        $output = [];
-
-        foreach ($tuples as $tuple) {
-            // TODO: For each name-value tuple in tuples, append a new
-            // name-value tuple to output where the new name and value appended
-            // to output are the result of running decode on the percent
-            // decoding of the name and value from tuples, respectively, using
-            // encoding.
-            $output[] = [
-                'name' => self::percentDecode($tuple['name']),
-                'value' => self::percentDecode($tuple['value'])
-            ];
-        }
-
-        return $output;
-    }
-
-    /**
-     * Takes a list of name-value or name-value-type tuples and serializes them.
-     * The HTML standard invokes this algorithm with name-value-type tuples.
-     * This is primarily used for data that needs to be
-     * application/x-www-form-urlencoded.
-     *
-     * @see https://url.spec.whatwg.org/#concept-urlencoded-serializer
-     *
-     * @param string[]    $tuples           A list of name-value-type tuples to
-     *     be serialized.
-     *
-     * @param string|null $encodingOverride The encoding to use for the data.
-     *     By default, it will use UTF-8.
-     *
-     * @return string
-     */
-    public static function urlencodedSerializer(
-        array $tuples,
-        $encodingOverride = null
-    ) {
-        // TODO: If encoding override is given, set encoding to the result of
-        // getting an output encoding from encoding override.
-        $encoding = $encodingOverride ?: 'UTF-8';
-        $output = '';
-
-        foreach ($tuples as $key => $tuple) {
-            $name = self::urlencodedByteSerializer(
-                mb_convert_encoding($tuple['name'], $encoding)
-            );
-            $value = $tuple['value'];
-
-            if (isset($tuple['type'])) {
-                if ($tuple['type'] === 'hidden' && $name === '_charset_') {
-                    $value = $encoding;
-                } elseif ($tuple['type'] === 'file') {
-                    // TODO: set $value to value's filename.
-                }
-            }
-
-            $value = self::urlencodedByteSerializer(
-                mb_convert_encoding($value, $encoding)
-            );
-
-            if ($key > 0) {
-                $output .= '&';
-            }
-
-            $output .= $name . '=' . $value;
-        }
-
-        return $output;
-    }
-
-    public static function urlencodedStringParser($input)
-    {
-        return self::urlencodedParser(self::encode($input));
     }
 
     /**

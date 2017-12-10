@@ -6,7 +6,6 @@ use IteratorAggregate;
 use Rowbot\URL\Exception\TypeError;
 use Traversable;
 
-use function array_map;
 use function func_num_args;
 use function is_array;
 use function is_object;
@@ -21,6 +20,8 @@ use function mb_substr;
  */
 class URLSearchParams implements IteratorAggregate
 {
+    use URLFormEncoded;
+
     private $list;
     private $url;
 
@@ -61,12 +62,12 @@ class URLSearchParams implements IteratorAggregate
      */
     public function __toString()
     {
-        return (string) $this->list;
+        return $this->urlencodeList($this->list->all());
     }
 
     public function toString()
     {
-        return (string) $this->list;
+        return $this->urlencodeList($this->list->all());
     }
 
     /**
@@ -124,7 +125,7 @@ class URLSearchParams implements IteratorAggregate
         }
 
         if (is_string($init)) {
-            $pairs = URLUtils::urlencodedStringParser($init);
+            $pairs = $this->urldecodeString($init);
 
             foreach ($pairs as $pair) {
                 $this->list->append($pair['name'], $pair['value']);
@@ -308,7 +309,7 @@ class URLSearchParams implements IteratorAggregate
             return;
         }
 
-        $query = (string) $this->list;
+        $query = $this->urlencodeList($this->list->all());
 
         if ($query === '') {
             $query = null;

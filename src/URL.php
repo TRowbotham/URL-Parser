@@ -16,6 +16,8 @@ use function mb_substr;
  */
 class URL implements JsonSerializable
 {
+    use URLFormEncoded;
+
     private $queryObject;
     private $url;
 
@@ -203,9 +205,9 @@ class URL implements JsonSerializable
                 $this->queryObject->clear();
 
                 if ($this->url->query !== null) {
-                    $this->queryObject->modify(
-                        URLUtils::urlencodedStringParser($this->url->query)
-                    );
+                    $this->queryObject->modify($this->urldecodeString(
+                        $this->url->query
+                    ));
                 }
 
                 break;
@@ -289,9 +291,7 @@ class URL implements JsonSerializable
                     $this->url,
                     BasicURLParser::QUERY_STATE
                 );
-                $this->queryObject->modify(
-                    URLUtils::urlencodedStringParser($input)
-                );
+                $this->queryObject->modify($this->urldecodeString($input));
 
                 break;
 
