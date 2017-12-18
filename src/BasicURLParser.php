@@ -382,7 +382,10 @@ class BasicURLParser
     private function schemeState($c)
     {
         if (preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c)
-            || preg_match('/[+\-.]/u', $c)
+            || $c === '+'
+            || $c === '-'
+            || $c === '.'
+            //|| preg_match('/[+\-.]/u', $c)
         ) {
             $this->buffer .= strtolower($c);
 
