@@ -7,7 +7,6 @@ use function ctype_digit;
 use function ctype_xdigit;
 use function intval;
 use function mb_strlen;
-use function mb_strpos;
 use function mb_substr;
 use function pow;
 use function preg_match;
@@ -435,12 +434,12 @@ class BasicURLParser
             $urlIsSpecial = $this->url->isSpecial();
 
             if ($this->url->scheme === 'file') {
-                if (mb_strpos(
+                if (mb_substr(
                     $this->input,
-                    '//',
                     $this->pointer + 1,
+                    2,
                     $this->encoding
-                ) !== $this->pointer + 1) {
+                ) !== '//') {
                     // Validation error
                 }
 
@@ -454,12 +453,12 @@ class BasicURLParser
                 $this->state = self::SPECIAL_RELATIVE_OR_AUTHORITY_STATE;
             } elseif ($urlIsSpecial) {
                 $this->state = self::SPECIAL_AUTHORITY_SLASHES_STATE;
-            } elseif (mb_strpos(
+            } elseif (mb_substr(
                 $this->input,
-                '/',
                 $this->pointer + 1,
+                1,
                 $this->encoding
-            ) === $this->pointer + 1) {
+            ) === '/') {
                 $this->state = self::PATH_OR_AUTHORITY_STATE;
                 ++$this->pointer;
             } else {
@@ -523,12 +522,12 @@ class BasicURLParser
 
     private function specialRelativeOrAuthorityState($c)
     {
-        if ($c === '/' && mb_strpos(
+        if ($c === '/' && mb_substr(
             $this->input,
-            '/',
             $this->pointer + 1,
+            1,
             $this->encoding
-        ) === $this->pointer + 1) {
+        ) === '/') {
             $this->state = self::SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE;
             ++$this->pointer;
 
@@ -655,12 +654,12 @@ class BasicURLParser
 
     private function specialAuthoritySlashesState($c)
     {
-        if ($c === '/' && mb_strpos(
+        if ($c === '/' && mb_substr(
             $this->input,
-            '/',
             $this->pointer + 1,
+            1,
             $this->encoding
-        ) === $this->pointer + 1) {
+        ) === '/') {
             $this->state = self::SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE;
             ++$this->pointer;
 
