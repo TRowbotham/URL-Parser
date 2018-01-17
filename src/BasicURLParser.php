@@ -356,6 +356,13 @@ class BasicURLParser
         return $parser->url;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#scheme-start-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function schemeStartState($c)
     {
         if (preg_match(URLUtils::REGEX_ASCII_ALPHA, $c)) {
@@ -378,6 +385,13 @@ class BasicURLParser
         return self::RETURN_FAILURE;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#scheme-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function schemeState($c)
     {
         if (preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c)
@@ -486,6 +500,13 @@ class BasicURLParser
         return self::RETURN_FAILURE;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#no-scheme-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function noSchemeState($c)
     {
         if ($this->base === null
@@ -519,6 +540,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#special-relative-or-authority-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function specialRelativeOrAuthorityState($c)
     {
         if ($c === '/' && mb_substr(
@@ -540,6 +568,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#path-or-authority-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function pathOrAuthorityState($c)
     {
         if ($c === '/') {
@@ -554,6 +589,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#relative-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function relativeState($c)
     {
         $this->url->scheme = $this->base->scheme;
@@ -623,6 +665,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#relative-slash-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function relativeSlashState($c)
     {
         if ($this->url->isSpecial() && $c === '/' || $c === '\\') {
@@ -651,6 +700,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#special-authority-slashes-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function specialAuthoritySlashesState($c)
     {
         if ($c === '/' && mb_substr(
@@ -672,6 +728,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#special-authority-ignore-slashes-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function specialAuthorityIgnnoreSlashesState($c)
     {
         if ($c !== '/' && $c !== '\\') {
@@ -685,6 +748,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#authority-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function authorityState($c)
     {
         if ($c === '@') {
@@ -745,6 +815,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#host-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function hostState($c)
     {
         if ($this->stateOverride !== null && $this->url->scheme === 'file') {
@@ -824,6 +901,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#port-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function portState($c)
     {
         if (ctype_digit($c)) {
@@ -873,6 +957,13 @@ class BasicURLParser
         return self::RETURN_FAILURE;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#file-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function fileState($c)
     {
         $this->url->scheme = 'file';
@@ -939,6 +1030,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#file-slash-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function fileSlashState($c)
     {
         if ($c === '/' || $c === '\\') {
@@ -981,6 +1079,13 @@ class BasicURLParser
         --$this->pointer;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#file-host-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function fileHostState($c)
     {
         if ($c === ''/* EOF */
@@ -1045,6 +1150,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#path-start-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function pathStartState($c)
     {
         if ($this->url->isSpecial()) {
@@ -1074,6 +1186,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#path-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function pathState($c)
     {
         if ($c === ''/* EOF */
@@ -1174,6 +1293,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function cannotBeABaseUrlPathState($c)
     {
         if ($c === '?') {
@@ -1212,6 +1338,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#query-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function queryState($c)
     {
         if ($c === ''/* EOF */
@@ -1277,6 +1410,13 @@ class BasicURLParser
         return self::RETURN_OK;
     }
 
+    /**
+     * @see https://url.spec.whatwg.org/#fragment-state
+     *
+     * @param string $c
+     *
+     * @return int
+     */
     private function fragmentState($c)
     {
         if ($c === ''/* EOF */) {
