@@ -384,7 +384,6 @@ class BasicURLParser
             || $c === '+'
             || $c === '-'
             || $c === '.'
-            //|| preg_match('/[+\-.]/u', $c)
         ) {
             $this->buffer .= strtolower($c);
 
