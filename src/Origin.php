@@ -63,12 +63,15 @@ class Origin
     public function getEffectiveDomain()
     {
         if ($this->isOpaque) {
-            return $this;
-        } elseif ($this->domain) {
-            return $this->domain;
-        } else {
-            return $this->host;
+            return 'null';
         }
+
+        if ($this->domain) {
+            return $this->domain;
+        }
+
+
+        return $this->host;
     }
 
     /**
