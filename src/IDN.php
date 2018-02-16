@@ -1,6 +1,24 @@
 <?php
 namespace Rowbot\URL;
 
+use const IDNA_ERROR_BIDI;
+use const IDNA_ERROR_CONTEXTJ;
+use const IDNA_ERROR_DISALLOWED;
+use const IDNA_ERROR_DOMAIN_NAME_TOO_LONG;
+use const IDNA_ERROR_EMPTY_LABEL;
+use const IDNA_ERROR_HYPHEN_3_4;
+use const IDNA_ERROR_INVALID_ACE_LABEL;
+use const IDNA_ERROR_LABEL_HAS_DOT;
+use const IDNA_ERROR_LABEL_TOO_LONG;
+use const IDNA_ERROR_LEADING_COMBINING_MARK;
+use const IDNA_ERROR_LEADING_HYPHEN;
+use const IDNA_ERROR_PUNYCODE;
+use const IDNA_ERROR_TRAILING_HYPHEN;
+use const INTL_IDNA_VARIANT_UTS46;
+use const IDNA_NONTRANSITIONAL_TO_ASCII;
+use const IDNA_NONTRANSITIONAL_TO_UNICODE;
+use const IDNA_USE_STD3_RULES;
+
 use function idn_to_ascii;
 use function idn_to_utf8;
 
