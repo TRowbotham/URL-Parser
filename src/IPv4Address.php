@@ -191,7 +191,6 @@ class IPv4Address implements NetworkAddress
             $syntaxViolationFlag = true;
             $input = (string) substr($input, 2);
             $R = 16;
-            $len -= 2;
         } elseif ($len > 1 && $input[0] === '0') {
             $syntaxViolationFlag = true;
             $input = (string) substr($input, 1);
