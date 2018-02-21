@@ -6,6 +6,7 @@ use function array_shift;
 use function ctype_digit;
 use function ctype_xdigit;
 use function intval;
+use function mb_convert_encoding;
 use function mb_strlen;
 use function mb_substr;
 use function pow;
