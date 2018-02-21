@@ -11,6 +11,8 @@ The URL object is the primary object for working with a URL.
 Providing an invalid URL or an invalid base URL will case the constructor to throw a `TypeError`.
 
 ```php
+use Rowbot\URL\URL;
+
 // Construct a new URL object.
 $url = new URL('https://example.com/');
 
@@ -68,9 +70,11 @@ The URL object implements the `JsonSerializable` interface allowing you to pass 
 The URLSearchParams object allows you to work with query strings when you don't need a full URL.
 
 ### The constructor
-`URLSearchParams([string[][]|object|string $init])`
+`URLSearchParams([array<array<string>>|object|string $init])`
 
 ```php
+use Rowbot\URL\URLSearchParams;
+
 // Construct an empty list of search params.
 $params = new URLSearchParams();
 
@@ -83,12 +87,27 @@ $params = new URLSearchParams('?foo=bar');
 $params = new URLSearchParams([
     ['foo', 'bar'],
     ['foo', 'bar'] // Duplicates are allowed!
+    ['one', 'two']
 ]);
+
+// Iterate over a URLSearchParams object.
+foreach ($params as $index => $param) {
+    echo $param[0] . '=' . $param[1];
+
+    if ($index > 0) {
+        echo '&';
+    }
+}
+
+// Above loop prints "foo=bar&foo=bar&one=two".
 
 // Construct a new list using an object
 $obj = new \stdClass();
 $obj->foo = 'bar';
 $params = new URLSearchParams($obj);
+
+// Copy an existing URLSearchParams object into a new one.
+$params1 = new URLSearchParams($params);
 ```
 
 ### Members
@@ -113,8 +132,8 @@ If the list contains name-value pairs whose name is `$name`, the first name-valu
 #### `void URLSearchParams::sort()`
 Sorts the list of search params by comparing code units. The relative order of name-value pairs with the same name are preserved.
 
-#### `string[] URLSearchParams::getIterator()`
-URLSearchParams implements the IteratorAggregate interface, allowing you to easily iterate over the list of search params using a `foreach` loop.  It returns an array containing exactly 2 items, the first is the pairs name, and the second is the pairs value.
+#### `array<array<string>> URLSearchParams::getIterator()`
+URLSearchParams implements the IteratorAggregate interface, allowing you to easily iterate over the list of search params using a `foreach` loop.  It returns an array of arrays, with each array containing exactly 2 items, the first is the pairs name, and the second is the pairs value.
 
 #### `string URLSearchParams::toString()`
 Returns the serialization of the list of name-value pairs.
