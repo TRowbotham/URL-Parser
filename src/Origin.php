@@ -58,7 +58,7 @@ class Origin
     /**
      * @see https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-effective-domain
      *
-     * @return object
+     * @return string
      */
     public function getEffectiveDomain()
     {
@@ -70,7 +70,7 @@ class Origin
             return $this->domain;
         }
 
-        return $this->host;
+        return (string) $this->host;
     }
 
     /**
