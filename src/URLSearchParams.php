@@ -38,8 +38,8 @@ class URLSearchParams implements IteratorAggregate
         // If $init is given, is a string, and starts with "?", remove the
         // first code point from $init.
         if (func_num_args() > 0) {
-            if (is_string($init) && mb_substr($init, 0, 1) === '?') {
-                $init = mb_substr($init, 1);
+            if (is_string($init) && mb_substr($init, 0, 1, 'UTF-8') === '?') {
+                $init = mb_substr($init, 1, null, 'UTF-8');
             }
 
             $this->init($init);
