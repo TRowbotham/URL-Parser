@@ -70,7 +70,6 @@ class Origin
             return $this->domain;
         }
 
-
         return $this->host;
     }
 

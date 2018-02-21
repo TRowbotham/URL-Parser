@@ -347,7 +347,9 @@ class BasicURLParser
                 continue;
             }
 
-            if ($retVal === self::RETURN_TERMINATE || $parser->pointer >= $len) {
+            if ($retVal === self::RETURN_TERMINATE
+                || $parser->pointer >= $len
+            ) {
                 break;
             }
 
@@ -1237,9 +1239,13 @@ class BasicURLParser
 
                     // This is a (platform-independent) Windows
                     // drive letter quirk.
-                    $this->buffer = mb_substr($this->buffer, 0, 1, $this->encoding)
-                        . ':'
-                        . mb_substr($this->buffer, 2, null, $this->encoding);
+                    $this->buffer = mb_substr(
+                        $this->buffer,
+                        0,
+                        1,
+                        $this->encoding
+                    ) . ':'
+                    . mb_substr($this->buffer, 2, null, $this->encoding);
                 }
 
                 $this->url->path[] = $this->buffer;
