@@ -189,12 +189,12 @@ class IPv4Address implements NetworkAddress
             && (substr($input, 0, 2) === '0x' || substr($input, 0, 2) === '0X')
         ) {
             $syntaxViolationFlag = true;
-            $input = substr($input, 2);
+            $input = (string) substr($input, 2);
             $R = 16;
             $len -= 2;
         } elseif ($len > 1 && $input[0] === '0') {
             $syntaxViolationFlag = true;
-            $input = substr($input, 1);
+            $input = (string) substr($input, 1);
             $R = 8;
         }
 
