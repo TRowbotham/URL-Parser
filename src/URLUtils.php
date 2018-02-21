@@ -67,13 +67,6 @@ abstract class URLUtils
         'wss'    => 443
     ];
 
-    public static function encode($stream, $encoding = 'UTF-8')
-    {
-        $inputEncoding = mb_detect_encoding($stream);
-
-        return mb_convert_encoding($stream, $encoding, $inputEncoding);
-    }
-
     /**
      * Decodes a percent encoded byte into a code point.
      *

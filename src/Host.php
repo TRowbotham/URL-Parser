@@ -68,7 +68,7 @@ class Host
 
         // TODO: Let domain be the result of utf-8 decode without BOM on the
         // percent decoding of utf-8 encode on input
-        $domain = URLUtils::percentDecode(URLUtils::encode($input));
+        $domain = URLUtils::percentDecode($input);
         $asciiDomain = self::domainToASCII($domain);
 
         if ($asciiDomain === false) {
