@@ -7,6 +7,7 @@ use function ctype_xdigit;
 use function decoct;
 use function explode;
 use function floor;
+use function gmp_cmp;
 use function gmp_init;
 use function gmp_pow;
 use function intval;
@@ -106,16 +107,18 @@ class IPv4Address implements NetworkAddress
             }
         }
 
-        if ($numbers[$len - 1] >= pow(256, (5 - $len))) {
+        $cmp = gmp_cmp($numbers[$len - 1],  gmp_pow('256', (5 - $len)));
+
+        if ($cmp >= 0) {
             // Syntax violation
             return false;
         }
 
-        $ipv4 = gmp_init(array_pop($numbers), 10);
+        $ipv4 = array_pop($numbers);
         $counter = 0;
 
         foreach ($numbers as $n) {
-            $ipv4 += $n * gmp_pow(gmp_init(256, 10), (3 - $counter));
+            $ipv4 += $n * gmp_pow('256', (3 - $counter));
             $counter++;
         }
 
@@ -178,7 +181,7 @@ class IPv4Address implements NetworkAddress
      * @param string    $input                A string of numbers to be parsed.
      * @param bool|null $syntaxViolationFlag  A flag that represents if there was a syntax violation while parsing.
      *
-     * @return int|bool Returns a bool on failure and an int otherwise.
+     * @return \GMP|bool Returns a bool on failure and an int otherwise.
      */
     protected static function parseIPv4Number($input, &$syntaxViolationFlag)
     {
@@ -210,6 +213,6 @@ class IPv4Address implements NetworkAddress
         // Return the mathematical integer value that is represented by
         // input in radix-R notation, using ASCII hex digits for digits with
         // values 0 through 15.
-        return intval($input, $R);
+        return gmp_init($input, $R);
     }
 }
