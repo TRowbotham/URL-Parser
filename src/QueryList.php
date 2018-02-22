@@ -111,18 +111,49 @@ class QueryList implements Countable, IteratorAggregate
 
     public function sort()
     {
-        usort($this->list, function ($pair1, $pair2) {
-            $len1 = strlen(mb_convert_encoding($pair1['name'], 'UTF-16LE')) / 2;
-            $len2 = strlen(mb_convert_encoding($pair2['name'], 'UTF-16LE')) / 2;
+        $array = [];
+        $i = 0;
 
+        foreach ($this->list as $pair) {
+            $array[] = [$i++, $pair];
+        }
+
+        usort($array, function ($a, $b) {
+            $len1 = strlen(mb_convert_encoding(
+                $a[1]['name'],
+                'UTF-16LE',
+                'UTF-8'
+            )) / 2;
+            $len2 = strlen(mb_convert_encoding(
+                $b[1]['name'],
+                'UTF-16LE',
+                'UTF-8'
+            )) / 2;
+
+            // Firstly, sort by number of code units.
             if ($len1 > $len2) {
                 return -1;
             } elseif ($len1 < $len2) {
                 return 1;
             }
 
-            return strcmp($pair1['name'], $pair2['name']);
+            // If the number of code units is the same, fallback to sorting by
+            // codepoints.
+            if ($a[1]['name'] > $b[1]['name']) {
+                return 1;
+            } elseif ($a[1]['name'] < $b[1]['name']) {
+                return -1;
+            }
+
+            // Finally, if all else is equal, sort by relative position.
+            return $a[0] - $b[0];
         });
+
+        foreach ($array as &$item) {
+            $item = $item[1];
+        }
+
+        $this->list = $array;
     }
 
     public function clear()
