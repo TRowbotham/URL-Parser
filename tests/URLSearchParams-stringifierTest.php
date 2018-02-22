@@ -111,16 +111,15 @@ class URLSearchParamsStringifierTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('a%00b=c', $params . '');
     }
 
-    /**
-     * @requires PHP 7
-     */
     public function testSerializeUnicodePileOfPoo()
     {
         $params = new URLSearchParams();
-        $params->append('a', "b\u{1F4A9}c");
+        // $params->append('a', "b\u{1F4A9}c");
+        $params->append('a', "b\xF0\x9F\x92\xA9c");
         $this->assertEquals('a=b%F0%9F%92%A9c', $params . '');
         $params->delete('a');
-        $params->append("a\u{1F4A9}b", 'c');
+        // $params->append("a\u{1F4A9}b", 'c');
+        $params->append("a\xF0\x9F\x92\xA9b", 'c');
         $this->assertEquals('a%F0%9F%92%A9b=c', $params . '');
     }
 
