@@ -107,7 +107,7 @@ class IPv4Address implements NetworkAddress
             }
         }
 
-        $cmp = gmp_cmp($numbers[$len - 1],  gmp_pow('256', (5 - $len)));
+        $cmp = gmp_cmp($numbers[$len - 1], gmp_pow('256', (5 - $len)));
 
         if ($cmp >= 0) {
             // Syntax violation
@@ -192,15 +192,18 @@ class IPv4Address implements NetworkAddress
             && (substr($input, 0, 2) === '0x' || substr($input, 0, 2) === '0X')
         ) {
             $syntaxViolationFlag = true;
-            $input = (string) substr($input, 2);
+            $input = substr($input, 2);
             $R = 16;
         } elseif ($len > 1 && $input[0] === '0') {
             $syntaxViolationFlag = true;
-            $input = (string) substr($input, 1);
+            $input = substr($input, 1);
             $R = 8;
         }
 
-        if ($input === '') {
+        // Check for $input being false here since substr() will return false
+        // if the start position is the same as the string's length on
+        // PHP 5.6.
+        if ($input === '' || $input === false) {
             return 0;
         }
 
