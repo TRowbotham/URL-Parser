@@ -82,8 +82,8 @@ $params = new URLSearchParams();
 $params = new URLSearchParams('?foo=bar');
 
 // Construct a new list using an array of arrays containing strings. Alternatively, you could pass an
-// object that implements the Traversable interface and whose iterator returns an array containing
-// exactly 2 items.
+// object that implements the Traversable interface and whose iterator returns an array of arrays,
+// with each array containing exactly 2 items.
 $params = new URLSearchParams([
     ['foo', 'bar'],
     ['foo', 'bar'] // Duplicates are allowed!
@@ -92,11 +92,11 @@ $params = new URLSearchParams([
 
 // Iterate over a URLSearchParams object.
 foreach ($params as $index => $param) {
-    echo $param[0] . '=' . $param[1];
-
     if ($index > 0) {
         echo '&';
     }
+
+    echo $param[0] . '=' . $param[1];
 }
 
 // Above loop prints "foo=bar&foo=bar&one=two".
