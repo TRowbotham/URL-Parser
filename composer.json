@@ -1,6 +1,8 @@
 {
     "name": "rowbot/url",
-    "description": "A URL parser and builder for PHP.",
+    "description": "A PHP URL parser and builder for manipulating URLs and their query strings.",
+    "keywords": ["url", "url-parser"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Trevor Rowbotham",
