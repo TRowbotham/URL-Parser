@@ -1,7 +1,6 @@
 {
     "name": "rowbot/url",
     "description": "A URL parser and builder for PHP.",
-    "version": "1.0.0-dev",
     "authors": [
         {
             "name": "Trevor Rowbotham",
