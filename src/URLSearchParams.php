@@ -1,8 +1,7 @@
 <?php
 namespace Rowbot\URL;
 
-use ArrayIterator;
-use IteratorAggregate;
+use Iterator;
 use Rowbot\URL\Exception\TypeError;
 use Traversable;
 
@@ -18,7 +17,7 @@ use function mb_substr;
  * @see https://url.spec.whatwg.org/#urlsearchparams
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
  */
-class URLSearchParams implements IteratorAggregate
+class URLSearchParams implements Iterator
 {
     use URLFormEncoded;
 
@@ -256,16 +255,6 @@ class URLSearchParams implements IteratorAggregate
     }
 
     /**
-     * Returns an iterator in the form of string[][].
-     *
-     * @return \ArrayIterator
-     */
-    public function getIterator()
-    {
-        return $this->list->getIterator();
-    }
-
-    /**
      * Clears the list of search params.
      *
      * @internal
@@ -330,5 +319,30 @@ class URLSearchParams implements IteratorAggregate
     public function setUrl(URLRecord $url)
     {
         $this->url = $url;
+    }
+
+    public function current()
+    {
+        return $this->list->current();
+    }
+
+    public function key()
+    {
+        return $this->list->key();
+    }
+
+    public function next()
+    {
+        $this->list->next();
+    }
+
+    public function rewind()
+    {
+        $this->list->rewind();
+    }
+
+    public function valid()
+    {
+        return $this->list->valid();
     }
 }

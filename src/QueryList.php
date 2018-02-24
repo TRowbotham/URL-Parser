@@ -1,13 +1,11 @@
 <?php
 namespace Rowbot\URL;
 
-use ArrayIterator;
 use Countable;
-use IteratorAggregate;
+use Iterator;
 
 use function array_filter;
 use function array_flip;
-use function array_map;
 use function array_splice;
 use function in_array;
 use function mb_convert_encoding;
@@ -15,15 +13,17 @@ use function strcmp;
 use function strlen;
 use function usort;
 
-class QueryList implements Countable, IteratorAggregate
+class QueryList implements Countable, Iterator
 {
-    private $list;
     private $cache;
+    private $cursor;
+    private $list;
 
     public function __construct(array $list = [])
     {
         $this->list = [];
         $this->cache = [];
+        $this->cursor = 0;
         $this->appendAll($list);
     }
 
@@ -102,13 +102,6 @@ class QueryList implements Countable, IteratorAggregate
         return count($this->list);
     }
 
-    public function getIterator()
-    {
-        return new ArrayIterator(array_map(function ($pair) {
-            return array_values($pair);
-        }, $this->list));
-    }
-
     public function sort()
     {
         $array = [];
@@ -176,5 +169,32 @@ class QueryList implements Countable, IteratorAggregate
     public function all()
     {
         return $this->list;
+    }
+
+    public function current()
+    {
+        $current = $this->list[$this->cursor];
+
+        return [$current['name'], $current['value']];
+    }
+
+    public function key()
+    {
+        return $this->cursor;
+    }
+
+    public function next()
+    {
+        ++$this->cursor;
+    }
+
+    public function rewind()
+    {
+        $this->cursor = 0;
+    }
+
+    public function valid()
+    {
+        return isset($this->list[$this->cursor]);
     }
 }

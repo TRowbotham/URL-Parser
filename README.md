@@ -86,7 +86,7 @@ Returns the serialization of the URL.
 See [URL::toString()](#string-url-tostring)
 
 ## URLSearchParams
-The URLSearchParams object allows you to work with query strings when you don't need a full URL.
+The URLSearchParams object allows you to work with query strings when you don't need a full URL. The URLSearchParams object implements the `Iterator` interface so that you may iterate over the list of search parameters. The iterator will return an array containing exactly 2 items. The first item is the parameter name and the second item is the parameter value.
 
 ### The constructor
 `URLSearchParams([array<array<string>>|object|string $init])`
@@ -150,9 +150,6 @@ If the list contains name-value pairs whose name is `$name`, the first name-valu
 
 #### `void URLSearchParams::sort()`
 Sorts the list of search params by comparing code units. The relative order of name-value pairs with the same name are preserved.
-
-#### `array<array<string>> URLSearchParams::getIterator()`
-URLSearchParams implements the IteratorAggregate interface, allowing you to easily iterate over the list of search params using a `foreach` loop.  It returns an array of arrays, with each array containing exactly 2 items, the first is the pairs name, and the second is the pairs value.
 
 #### `string URLSearchParams::toString()`
 Returns the serialization of the list of name-value pairs.
