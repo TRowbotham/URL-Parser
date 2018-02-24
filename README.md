@@ -18,9 +18,22 @@ $url = new URL('https://example.com/');
 
 // Construct a new URL object using a relative URL, by also providing the constructor with the base URL.
 $url = new URL('path/to/file.php?query=string', 'http://example.com');
+echo $url->href; // Outputs: "http://example.com/path/to/file.php?query=string"
+
+// You can also pass an existing URL object to either the $url or $base arguments.
+$url = new URL('https://example.org:123');
+$url1 = new URL(foo/bar/, $url);
+echo $url1->href; // Outputs: "https://example.org:123/foo/bar/"
+
+// Catch the error when URL parsing fails.
+try {
+    $url = new URL('http://2001::1]');
+} catch (\Rowbot\URL\Exception\TypeError $e) {
+    echo 'Invalid URL';
+}
 ```
 ### Members
-#### `string URL::href `
+#### `string URL::href`
 The `href` getter returns the serialization of the URL.  The `href` setter will parse the entire string
 updating all the components of the URL with the new values. Providing an invalid URL will cause the
 setter to throw a `TypeError`.
@@ -65,6 +78,12 @@ Returns a JSON encoded string of the URL. Note that this method escapes forward 
 
 #### `string URL::jsonSerialize()`
 The URL object implements the `JsonSerializable` interface allowing you to pass the object as a whole to the json_encode() function.
+
+#### `string URL::toString()`
+Returns the serialization of the URL.
+
+#### `string URL::__toString()`
+See [URL::toString()](#string-url-tostring)
 
 ## URLSearchParams
 The URLSearchParams object allows you to work with query strings when you don't need a full URL.
