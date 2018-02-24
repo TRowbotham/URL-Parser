@@ -4,12 +4,11 @@ namespace Rowbot\URL;
 use Countable;
 use Iterator;
 
+use function count;
 use function array_filter;
-use function array_flip;
 use function array_splice;
 use function in_array;
 use function mb_convert_encoding;
-use function strcmp;
 use function strlen;
 use function usort;
 
