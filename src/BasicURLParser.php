@@ -1281,14 +1281,7 @@ class BasicURLParser
             // Validation error
         }
 
-        $remaining = mb_substr(
-            $this->input,
-            $this->pointer + 1,
-            2,
-            $this->encoding
-        );
-
-        if ($c === '%' && !ctype_xdigit($remaining)) {
+        if ($c === '%' && !$this->isNextTwoCharsPercentEncoded()) {
             // Validation error
         }
 
@@ -1328,9 +1321,7 @@ class BasicURLParser
             // Validation error.
         }
 
-        if ($c === '%' && !ctype_xdigit(
-            mb_substr($this->input, $this->pointer + 1, 2, $this->encoding)
-        )) {
+        if ($c === '%' && !$this->isNextTwoCharsPercentEncoded()) {
             // Validation error.
         }
 
@@ -1406,9 +1397,7 @@ class BasicURLParser
             // Validation error.
         }
 
-        if ($c === '%' && !ctype_xdigit(
-            mb_substr($this->input, $this->pointer + 1, 2, $this->encoding)
-        )) {
+        if ($c === '%' && !$this->isNextTwoCharsPercentEncoded()) {
             // Validation error.
         }
 
@@ -1438,9 +1427,7 @@ class BasicURLParser
             // Validation error.
         }
 
-        if ($c === '%' && !ctype_xdigit(
-            mb_substr($this->input, $this->pointer + 1, 2, $this->encoding)
-        )) {
+        if ($c === '%' && !$this->isNextTwoCharsPercentEncoded()) {
             // Validation error.
         }
 
@@ -1450,5 +1437,24 @@ class BasicURLParser
         );
 
         return self::RETURN_OK;
+    }
+
+    /**
+     * Determines if next two characters, starting from the current
+     * position in input, are percent encoded.
+     *
+     * @return bool
+     */
+    private function isNextTwoCharsPercentEncoded()
+    {
+        $remaining = mb_substr(
+            $this->input,
+            $this->pointer + 1,
+            2,
+            $this->encoding
+        );
+        $length = mb_strlen($remaining, $this->encoding);
+
+        return $length === 2 && ctype_xdigit($remaining);
     }
 }
