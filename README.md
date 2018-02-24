@@ -22,7 +22,7 @@ echo $url->href; // Outputs: "http://example.com/path/to/file.php?query=string"
 
 // You can also pass an existing URL object to either the $url or $base arguments.
 $url = new URL('https://example.org:123');
-$url1 = new URL(foo/bar/, $url);
+$url1 = new URL('foo/bar/', $url);
 echo $url1->href; // Outputs: "https://example.org:123/foo/bar/"
 
 // Catch the error when URL parsing fails.
