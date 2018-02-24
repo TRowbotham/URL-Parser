@@ -1,6 +1,13 @@
 <?php
 namespace Rowbot\URL;
 
+use function explode;
+use function mb_strpos;
+use function rawurldecode;
+use function rawurlencode;
+use function str_replace;
+use function strlen;
+
 trait URLFormEncoded
 {
     /**

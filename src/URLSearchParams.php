@@ -5,6 +5,7 @@ use Iterator;
 use Rowbot\URL\Exception\TypeError;
 use Traversable;
 
+use function count;
 use function array_column;
 use function func_num_args;
 use function is_array;
