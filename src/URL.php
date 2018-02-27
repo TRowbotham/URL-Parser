@@ -27,8 +27,10 @@ class URL implements JsonSerializable
         $this->url = null;
         $parsedBase = null;
 
-        if ($base) {
-            $parsedBase = BasicURLParser::parseBasicUrl($base);
+        if ($base !== null) {
+            $parsedBase = BasicURLParser::parseBasicUrl(URLUtils::strval(
+                $base
+            ));
 
             if ($parsedBase === false) {
                 throw new TypeError($base . ' is not a valid URL.');
@@ -36,7 +38,10 @@ class URL implements JsonSerializable
             }
         }
 
-        $parsedURL = BasicURLParser::parseBasicUrl($url, $parsedBase);
+        $parsedURL = BasicURLParser::parseBasicUrl(
+            URLUtils::strval($url),
+            $parsedBase
+        );
 
         if ($parsedURL === false) {
             throw new TypeError($url . ' is not a valid URL.');

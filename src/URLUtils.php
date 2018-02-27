@@ -1,14 +1,13 @@
 <?php
 namespace Rowbot\URL;
 
+use InvalidArgumentException;
+use UConverter;
+
 use function get_class;
+use function is_array;
 use function is_bool;
 use function is_object;
-use function is_scalar;
-use function is_string;
-use function mb_convert_encoding;
-use function mb_detect_encoding;
-use function mb_substitute_character;
 use function method_exists;
 use function pack;
 use function preg_match;
@@ -133,33 +132,25 @@ abstract class URLUtils
      * @param  mixed $arg A value to cast to a string.
      *
      * @return string
+     *
+     * @throws \InvalidArgumentException
      */
     public static function strval($arg)
     {
-        if (is_string($arg)) {
-            return $arg;
+        if (is_array($arg)) {
+            throw new InvalidArgumentException('Arrays are not valid input.');
+        } elseif (is_object($arg) && !method_exists($arg, '__toString')) {
+            throw new InvalidArgumentException(
+                'Objects without a __toString() method are not valid input.'
+            );
         }
 
         if (is_bool($arg)) {
             return $arg ? 'true' : 'false';
-        }
-
-        if ($arg === null) {
+        } elseif ($arg === null) {
             return 'null';
         }
 
-        if (is_scalar($arg)) {
-            return (string) $arg;
-        }
-
-        if (is_object($arg)) {
-            if (method_exists($arg, '__toString')) {
-                return (string) $arg;
-            }
-
-            return get_class($arg);
-        }
-
-        return '';
+        return UConverter::transcode((string) $arg, 'UTF-8', 'UTF-8');
     }
 }

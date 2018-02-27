@@ -1,6 +1,8 @@
 <?php
 namespace Rowbot\URL;
 
+use UConverter;
+
 use function explode;
 use function mb_strpos;
 use function rawurldecode;
@@ -59,8 +61,16 @@ trait URLFormEncoded
             // Let nameString and valueString be the result of running UTF-8
             // decode without BOM on the percent decoding of name and value,
             // respectively.
-            $name = rawurldecode($name);
-            $value = rawurldecode($value);
+            $name = UConverter::transcode(
+                rawurldecode($name),
+                'UTF-8',
+                'UTF-8'
+            );
+            $value = UConverter::transcode(
+                rawurldecode($value),
+                'UTF-8',
+                'UTF-8'
+            );
             $output[] = ['name'  => $name, 'value' => $value];
         }
 

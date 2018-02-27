@@ -1,6 +1,7 @@
 <?php
 namespace Rowbot\URL;
 
+use InvalidArgumentException;
 use Iterator;
 use Rowbot\URL\Exception\TypeError;
 use Traversable;
@@ -39,6 +40,13 @@ class URLSearchParams implements Iterator
         // If $init is given, is a string, and starts with "?", remove the
         // first code point from $init.
         if (func_num_args() > 0) {
+            try {
+                // Try to get a string value, otherwise just pass the value on.
+                $init = URLUtils::strval($init);
+            } catch (InvalidArgumentException $e) {
+                // Do nothing.
+            }
+
             if (is_string($init) && mb_substr($init, 0, 1, 'UTF-8') === '?') {
                 $init = mb_substr($init, 1, null, 'UTF-8');
             }
@@ -119,7 +127,10 @@ class URLSearchParams implements Iterator
 
         if (is_object($init)) {
             foreach ($init as $name => $value) {
-                $this->append($name, URLUtils::strval($value));
+                $this->append(
+                    URLUtils::strval($name),
+                    URLUtils::strval($value)
+                );
             }
 
             return;
