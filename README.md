@@ -3,6 +3,10 @@ The objects and behavior of this package follow the [WHATWG URL](https://url.spe
 
 This API offers 2 objects that you can use to help you work with URLs; [URL](#url) and [URLSearchParams](#urlsearchparams).
 
+## Installation
+```bash
+composer require rowbot/url
+```
 ## URL
 The URL object is the primary object for working with a URL.
 ### The constructor
