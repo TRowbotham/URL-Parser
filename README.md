@@ -1,5 +1,5 @@
 # URL-Parser
-The objects and behavior of this package follow the [WHATWG URL](https://url.spec.whatwg.org/) specification.
+A [WHATWG URL](https://url.spec.whatwg.org/) spec compliant URL parser for working with URL's and their query strings.
 
 This API offers 2 objects that you can use to help you work with URLs; [URL](#url) and [URLSearchParams](#urlsearchparams).
 

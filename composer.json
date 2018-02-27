@@ -1,6 +1,6 @@
 {
     "name": "rowbot/url",
-    "description": "A PHP URL parser and builder for manipulating URLs and their query strings.",
+    "description": "A WHATWG URL spec compliant URL parser for working with URL's and their query strings.",
     "keywords": ["url", "url-parser"],
     "license": "MIT",
     "authors": [
