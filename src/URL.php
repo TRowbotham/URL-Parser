@@ -300,6 +300,11 @@ class URL implements JsonSerializable
 
                 break;
 
+            case 'searchParams':
+                throw new TypeError(
+                    'URL::searchParams attribute cannot be set directly.'
+                );
+
             case 'username':
                 if ($this->url->cannotHaveUsernamePasswordPort()) {
                     return;
