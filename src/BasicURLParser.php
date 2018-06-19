@@ -1353,56 +1353,50 @@ class BasicURLParser
             $this->encoding = 'UTF-8';
         }
 
-        if ($c === ''/* EOF */
-            || ($this->stateOverride === null && $c === '#')
-        ) {
-            $oldEncoding = $this->encoding;
-
-            if ($this->encoding !== $oldEncoding) {
-                $this->buffer = mb_convert_encoding(
-                    $this->buffer,
-                    $this->encoding,
-                    $oldEncoding
-                );
+        if ($this->stateOverride === null && $c === '#') {
+            $this->url->fragment = '';
+            $this->state = self::FRAGMENT_STATE;
+        } elseif ($c !== ''/* EOF */) {
+            if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c)
+                && $c !== '%'
+            ) {
+                // Validation error.
             }
 
-            $length = strlen($this->buffer);
+            if ($c === '%' && !$this->isNextTwoCharsPercentEncoded()) {
+                // Validation error.
+            }
 
-            for ($i = 0; $i < $length; $i++) {
-                if ($this->buffer[$i] < "\x21"
-                    || $this->buffer[$i] > "\x7E"
-                    || $this->buffer[$i] === "\x22"
-                    || $this->buffer[$i] === "\x23"
-                    || $this->buffer[$i] === "\x3C"
-                    || $this->buffer[$i] === "\x3E"
-                ) {
-                    $this->url->query .= rawurlencode($this->buffer[$i]);
-                } else {
-                    $this->url->query .= $this->buffer[$i];
+            $bytes = mb_convert_encoding($c, $this->encoding);
+
+            // This can happen when encoding code points using a non-UTF-8
+            // encoding.
+            if (mb_substr($bytes, 0, 2, $this->encoding) === '&#'
+                && mb_substr($bytes, -1, null, $this->encoding) === ';'
+            ) {
+                $length = mb_strlen($bytes, $this->encoding);
+                $bytes = '%26%23'
+                    . mb_substr($bytes, 2, $length - 1, $this->encoding)
+                    . '%3B';
+                $this->url->query .= $bytes;
+            } else {
+                $length = strlen($bytes);
+
+                for ($i = 0; $i < $length; ++$i) {
+                    if ($bytes[$i] < "\x21"
+                        || $bytes[$i] > "\x7E"
+                        || $bytes[$i] === "\x22"
+                        || $bytes[$i] === "\x23"
+                        || $bytes[$i] === "\x3C"
+                        || $bytes[$i] === "\x3E"
+                    ) {
+                        $this->url->query .= rawurlencode($bytes[$i]);
+                    } else {
+                        $this->url->query .= $bytes[$i];
+                    }
                 }
             }
-
-            $this->buffer = '';
-
-            if ($c === '#') {
-                $this->url->fragment = '';
-                $this->state = self::FRAGMENT_STATE;
-            }
-
-            return self::RETURN_OK;
         }
-
-        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c)
-            && $c !== '%'
-        ) {
-            // Validation error.
-        }
-
-        if ($c === '%' && !$this->isNextTwoCharsPercentEncoded()) {
-            // Validation error.
-        }
-
-        $this->buffer .= $c;
 
         return self::RETURN_OK;
     }
