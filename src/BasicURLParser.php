@@ -840,7 +840,7 @@ class BasicURLParser
                 return self::RETURN_FAILURE;
             }
 
-            $host = Host::parse($this->buffer, $this->url->isSpecial());
+            $host = Host::parse($this->buffer, !$this->url->isSpecial());
 
             if ($host === false) {
                 // Return failure.
@@ -875,7 +875,7 @@ class BasicURLParser
                 return self::RETURN_TERMINATE;
             }
 
-            $host = Host::parse($this->buffer, $this->url->isSpecial());
+            $host = Host::parse($this->buffer, !$this->url->isSpecial());
 
             if ($host === false) {
                 // Return failure.
@@ -1125,7 +1125,7 @@ class BasicURLParser
                 return self::RETURN_OK;
             }
 
-            $host = Host::parse($this->buffer, $this->url->isSpecial());
+            $host = Host::parse($this->buffer, !$this->url->isSpecial());
 
             if ($host === false) {
                 // Return failure.

@@ -38,14 +38,14 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-host-parser
      *
-     * @param string $input     An IPv4, IPv6 address, domain, or opaque host.
+     * @param string $input        An IPv4, IPv6 address, domain, or opaque host.
      *
-     * @param bool   $isSpecial Whether or not the URL has a special scheme.
+     * @param bool   $isNotSpecial (optional) Whether or not the URL has a special scheme.
      *
      * @return \Rowbot\URL\Host|bool Returns a Host if it was successfully parsed or false if parsing fails. The
      *                               returned Host can never be null.
      */
-    public static function parse($input, $isSpecial)
+    public static function parse($input, $isNotSpecial = false)
     {
         if (mb_substr($input, 0, 1, 'UTF-8') === '[') {
             if (mb_substr($input, -1, null, 'UTF-8') !== ']') {
@@ -62,7 +62,7 @@ class Host
             return new self($ipv6);
         }
 
-        if (!$isSpecial) {
+        if ($isNotSpecial) {
             return self::parseOpaqueHost($input);
         }
 
