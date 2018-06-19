@@ -221,24 +221,30 @@ class IPv6Address implements NetworkAddress
             $i++;
         }
 
-        foreach ($this->address as $index => $piece) {
-            if ($compressPointer === $index) {
-                $output .= $index == 0 ? '::' : ':';
-            }
+        $pieceIndex = 0;
 
-            // Ignore all subsequent 16-bit pieces that are 0 that fall within
-            // the compressed range.
-            if ($compressPointer !== null && $index >= $compressPointer
-                && $index < $compressPointer + $longestSequence
-            ) {
+        while ($pieceIndex < 8) {
+            if ($compressPointer === $pieceIndex) {
+                $output .= $pieceIndex == 0 ? '::' : ':';
+
+                // Advance the pointer to $compressPointer + $longestSequence
+                // to skip over all 16-bit pieces that are 0 that immediately
+                // follow the piece at $compressPointer.
+                $pieceIndex = $compressPointer + $longestSequence;
                 continue;
             }
 
-            $output .= mb_strtolower(base_convert($piece, 10, 16), 'UTF-8');
+            $output .= mb_strtolower(base_convert(
+                $this->address[$pieceIndex],
+                10,
+                16
+            ), 'UTF-8');
 
-            if ($index < 7) {
+            if ($pieceIndex < 7) {
                 $output .= ':';
             }
+
+            ++$pieceIndex;
         }
 
         return $output;
