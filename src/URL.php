@@ -4,6 +4,8 @@ namespace Rowbot\URL;
 use JsonSerializable;
 use Rowbot\URL\Exception\TypeError;
 
+use const JSON_UNESCAPED_SLASHES;
+
 use function implode;
 use function json_encode;
 use function mb_substr;

@@ -3,6 +3,7 @@ namespace Rowbot\URL;
 
 use function is_string;
 use function mb_substr;
+use function preg_match;
 
 class Host
 {

@@ -3,6 +3,7 @@ namespace Rowbot\URL;
 
 use function array_pop;
 use function array_shift;
+use function count;
 use function ctype_digit;
 use function ctype_xdigit;
 use function intval;

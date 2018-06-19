@@ -2,6 +2,7 @@
 namespace Rowbot\URL;
 
 use function array_pop;
+use function count;
 use function ctype_digit;
 use function ctype_xdigit;
 use function decoct;

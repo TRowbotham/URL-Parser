@@ -1,6 +1,8 @@
 <?php
 namespace Rowbot\URL;
 
+use const IDNA_CHECK_BIDI;
+use const IDNA_CHECK_CONTEXTJ;
 use const IDNA_ERROR_BIDI;
 use const IDNA_ERROR_CONTEXTJ;
 use const IDNA_ERROR_DISALLOWED;

@@ -1,6 +1,8 @@
 <?php
 namespace Rowbot\URL;
 
+use function intval;
+
 /**
  * @see https://html.spec.whatwg.org/multipage/browsers.html#origin
  */

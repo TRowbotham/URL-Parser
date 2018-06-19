@@ -2,6 +2,8 @@
 namespace Rowbot\URL;
 
 use function array_pop;
+use function count;
+use function implode;
 use function mb_substr;
 use function preg_match;
 
