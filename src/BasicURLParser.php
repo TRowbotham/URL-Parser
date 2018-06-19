@@ -1345,17 +1345,18 @@ class BasicURLParser
      */
     private function queryState($c)
     {
+        if ($this->encoding !== 'UTF-8'
+            && (!$this->url->isSpecial()
+                || $this->url->scheme === 'ws'
+                || $this->url->scheme === 'wss')
+        ) {
+            $this->encoding = 'UTF-8';
+        }
+
         if ($c === ''/* EOF */
             || ($this->stateOverride === null && $c === '#')
         ) {
             $oldEncoding = $this->encoding;
-
-            if (!$this->url->isSpecial()
-                || $this->url->scheme === 'ws'
-                || $this->url->scheme === 'wss'
-            ) {
-                $this->encoding = 'UTF-8';
-            }
 
             if ($this->encoding !== $oldEncoding) {
                 $this->buffer = mb_convert_encoding(
