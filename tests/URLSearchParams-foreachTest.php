@@ -51,4 +51,55 @@ class URLSearchParamsForeachTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(false);
         }
     }
+
+    public function testDeleteNextParamDuringIteration()
+    {
+        $url = new URL("http://localhost/query?param0=0&param1=1&param2=2");
+        $searchParams = $url->searchParams;
+        $seen = [];
+
+        foreach ($searchParams as $param) {
+            if ($param[0] === 'param0') {
+                $searchParams->delete('param1');
+            }
+
+            $seen[] = $param;
+        }
+
+        $this->assertEquals(["param0", "0"], $seen[0]);
+        $this->assertEquals(["param2", "2"], $seen[1]);
+    }
+
+    public function testDeleteCurrentParamDuringIteration()
+    {
+        $url = new URL("http://localhost/query?param0=0&param1=1&param2=2");
+        $searchParams = $url->searchParams;
+        $seen = [];
+
+        foreach ($searchParams as $param) {
+            if ($param[0] === 'param0') {
+                $searchParams->delete('param1');
+                // 'param1=1' is now in the first slot, so the next iteration will see 'param2=2'.
+            } else {
+                $seen[] = $param;
+            }
+        }
+
+        $this->assertEquals(["param2", "2"], $seen[0]);
+    }
+
+    public function testDeleteEveryParamSeenDuringIteration()
+    {
+        $url = new URL("http://localhost/query?param0=0&param1=1&param2=2");
+        $searchParams = $url->searchParams;
+        $seen = [];
+
+        foreach ($searchParams as $param) {
+            $seen[] = $param[0];
+            $searchParams->delete($param[0]);
+        }
+
+        $this->assertEquals(["param0", "param2"], $seen);
+        $this->assertEquals("param1=1", (string) $searchParams);
+    }
 }
