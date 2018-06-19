@@ -1390,6 +1390,7 @@ class BasicURLParser
                         || $bytes[$i] === "\x23"
                         || $bytes[$i] === "\x3C"
                         || $bytes[$i] === "\x3E"
+                        || ($bytes[$i] === "\x27" && $this->url->isSpecial())
                     ) {
                         $this->url->query .= rawurlencode($bytes[$i]);
                     } else {
