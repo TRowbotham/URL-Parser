@@ -149,9 +149,9 @@ trait URLFormEncoded
             $name = $this->urlencode($tuple['name']);
             $value = $tuple['value'];
 
-            if (isset($tuple['type']) && $tuple['type'] === 'file') {
-                // TODO: Set value to value's filename
-            }
+            // TODO: If $value is a file, then set $value to $value's filename.
+            // The HTML standard invokes this algorithm with values that are
+            // files, however, this is unused in the URL standard.
 
             $value = $this->urlencode($value);
 
