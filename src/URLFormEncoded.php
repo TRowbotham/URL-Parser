@@ -149,12 +149,8 @@ trait URLFormEncoded
             $name = $this->urlencode($tuple['name']);
             $value = $tuple['value'];
 
-            if (isset($tuple['type'])) {
-                if ($tuple['type'] === 'hidden' && $name === '_charset_') {
-                    $value = $encoding;
-                } elseif ($tuple['type'] === 'file') {
-                    // TODO: Set value to value's filename
-                }
+            if (isset($tuple['type']) && $tuple['type'] === 'file') {
+                // TODO: Set value to value's filename
             }
 
             $value = $this->urlencode($value);
