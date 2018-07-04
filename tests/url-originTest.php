@@ -1,12 +1,12 @@
 <?php
-namespace phpjs\tests\url;
+namespace Rowbot\URL\tests;
 
 
 use Rowbot\URL\URL;
 use PHPUnit_Framework_TestCase;
 
 /**
- * @see https://github.com/w3c/web-platform-tests/blob/master/url/url-origin.html
+ * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-origin.html
  */
 class URLOriginTest extends PHPUnit_Framework_TestCase
 {

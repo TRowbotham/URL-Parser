@@ -1,5 +1,5 @@
 <?php
-namespace phpjs\tests\url;
+namespace Rowbot\URL\tests;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
@@ -7,7 +7,7 @@ use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
 
 /**
- * @see https://github.com/w3c/web-platform-tests/blob/master/url/url-setters.html
+ * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-setters.html
  */
 class URLSettersTest extends PHPUnit_Framework_TestCase
 {

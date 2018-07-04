@@ -1,11 +1,11 @@
 <?php
-namespace phpjs\tests\urls;
+namespace Rowbot\URL\testss;
 
 use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
 
 /**
- * @see https://github.com/w3c/web-platform-tests/blob/master/url/urlsearchparams-getall.html
+ * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-getall.html
  */
 class URLSearchParamsGetAllTest extends PHPUnit_Framework_TestCase
 {

@@ -1,12 +1,12 @@
 <?php
-namespace phpjs\tests\url;
+namespace Rowbot\URL\tests;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
 
 /**
- * @see https://github.com/w3c/web-platform-tests/blob/master/url/urlsearchparams-constructor.html
+ * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-constructor.html
  */
 class URLSearchParamsConstructorTest extends PHPUnit_Framework_TestCase
 {
