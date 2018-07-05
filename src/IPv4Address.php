@@ -205,7 +205,7 @@ class IPv4Address implements NetworkAddress
         // if the start position is the same as the string's length on
         // PHP 5.6.
         if ($input === '' || $input === false) {
-            return 0;
+            return gmp_init(0, 10);
         }
 
         if (($R == 10 && !ctype_digit($input)) ||
