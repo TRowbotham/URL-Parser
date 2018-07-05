@@ -112,7 +112,7 @@ class IPv6Address implements NetworkAddress
                     }
 
                     while (ctype_digit($c)) {
-                        $number = (int) base_convert(intval($c, 16), 16, 10);
+                        $number = (int) $c;
 
                         if ($ipv4Piece === null) {
                             $ipv4Piece = $number;
