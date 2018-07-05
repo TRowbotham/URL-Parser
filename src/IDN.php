@@ -94,7 +94,7 @@ final class IDN
 
         // There is currently no way to disable the check on the domain's
         // length. So, whitelist some errors to check against. Normally, a
-        // domain name is restricted to betwen 1 and 253 bytes. This excludes
+        // domain name is restricted to between 1 and 253 bytes. This excludes
         // the root domain and its '.' delimiter.
         if (!($flags & self::VERIFY_DNS_LENGTH)) {
             // If the domain name is the empty string, simply return the empty
