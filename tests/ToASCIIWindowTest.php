@@ -1,5 +1,5 @@
 <?php
-namespace Rowbot\URL\tests;
+namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
@@ -8,7 +8,7 @@ use PHPUnit_Framework_TestCase;
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/toascii.window.js
  */
-class toAsciiTest extends PHPUnit_Framework_TestCase
+class ToASCIIWindowTest extends PHPUnit_Framework_TestCase
 {
     protected $testData = null;
 

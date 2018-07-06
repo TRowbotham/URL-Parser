@@ -1,5 +1,5 @@
 <?php
-namespace Rowbot\URL\tests;
+namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
@@ -7,7 +7,7 @@ use PHPUnit_Framework_TestCase;
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlencoded-parser.html
  */
-class UrlEncodedParserTest extends PHPUnit_Framework_TestCase
+class URLEncodedParserTest extends PHPUnit_Framework_TestCase
 {
     protected $testData;
 

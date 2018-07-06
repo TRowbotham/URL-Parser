@@ -1,5 +1,5 @@
 <?php
-namespace Rowbot\URL\tests;
+namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URLSearchParams;

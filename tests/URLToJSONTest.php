@@ -1,5 +1,5 @@
 <?php
-namespace Rowbot\URL\tests;
+namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\URL;
 use PHPUnit_Framework_TestCase;
@@ -7,7 +7,7 @@ use PHPUnit_Framework_TestCase;
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-tojson.html
  */
-class URLtoJsonTest extends PHPUnit_Framework_TestCase
+class URLToJSONTest extends PHPUnit_Framework_TestCase
 {
     public function testBasicToJSON()
     {
