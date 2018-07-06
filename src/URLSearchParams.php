@@ -216,9 +216,9 @@ class URLSearchParams implements Iterator
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-has
      *
-     * @param boolean $name The key name you want to test if it exists.
+     * @param string $name The key name you want to test if it exists.
      *
-     * @return boolean         Returns true if the key exits, otherwise false.
+     * @return bool Returns true if the key exits, otherwise false.
      */
     public function has($name)
     {
