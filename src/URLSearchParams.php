@@ -352,7 +352,9 @@ class URLSearchParams implements Iterator
      */
     public function current()
     {
-        return $this->list->current();
+        $current = $this->list->current();
+
+        return [$current['name'], $current['value']];
     }
 
     /**

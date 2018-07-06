@@ -272,13 +272,11 @@ class QueryList implements Countable, Iterator
     /**
      * Returns the current name-value pair.
      *
-     * @return string[]
+     * @return array<string, string>
      */
     public function current()
     {
-        $current = $this->list[$this->cursor];
-
-        return [$current['name'], $current['value']];
+        return $this->list[$this->cursor];
     }
 
     /**
