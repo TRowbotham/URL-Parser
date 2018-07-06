@@ -15,6 +15,19 @@ use function mb_substr;
  *
  * @see https://url.spec.whatwg.org/#api
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL
+ *
+ * @property string $href
+ * @property string $origin
+ * @property string $protocol
+ * @property string $username
+ * @property string $password
+ * @property string $host
+ * @property string $hostname
+ * @property string $port
+ * @property string $pathname
+ * @property string $search
+ * @property-read \Rowbot\URL\URLSearchParams $searchParams
+ * @property string $hash
  */
 class URL implements JsonSerializable
 {
