@@ -235,7 +235,7 @@ class IPv6Address implements NetworkAddress
             }
 
             $output .= mb_strtolower(base_convert(
-                $this->address[$pieceIndex],
+                (string) $this->address[$pieceIndex],
                 10,
                 16
             ), 'UTF-8');

@@ -43,7 +43,7 @@ class Host
      *
      * @param bool   $isNotSpecial (optional) Whether or not the URL has a special scheme.
      *
-     * @return \Rowbot\URL\Host|bool Returns a Host if it was successfully parsed or false if parsing fails. The
+     * @return \Rowbot\URL\Host|false Returns a Host if it was successfully parsed or false if parsing fails. The
      *                               returned Host can never be null.
      */
     public static function parse($input, $isNotSpecial = false)
@@ -101,7 +101,7 @@ class Host
      *
      * @param  string $input
      *
-     * @return \Rowbot\URL\Host|bool
+     * @return \Rowbot\URL\Host|false
      */
     private static function parseOpaqueHost($input)
     {
@@ -242,7 +242,7 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-domain-to-unicode
      *
-     * @return Host|bool Returns the domain name upon success or false on failure.
+     * @return \Rowbot\URL\Host|false Returns the domain name upon success or false on failure.
      */
     public function domainToUnicode()
     {
@@ -271,7 +271,7 @@ class Host
      * @param string $domain   The domain name to be converted.
      * @param bool   $beStrict
      *
-     * @return string|bool Returns the domain name upon success or false on failure.
+     * @return string|false Returns the domain name upon success or false on failure.
      */
     private static function domainToASCII($domain, $beStrict = false)
     {

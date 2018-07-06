@@ -83,7 +83,7 @@ class URL implements JsonSerializable
                     return (string) $this->url->host;
                 }
 
-                return (string) $this->url->host . ':' . $this->url->port;
+                return $this->url->host . ':' . $this->url->port;
 
             case 'hostname':
                 if ($this->url->host->isNull()) {

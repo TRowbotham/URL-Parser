@@ -31,7 +31,7 @@ class URLSearchParams implements Iterator
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
-     * @param array<array<string>>|object|string $init
+     * @param \Rowbot\URL\URLSearchParams|array<array<string>>|object|string $init (optional)
      */
     public function __construct($init = '')
     {
@@ -102,7 +102,7 @@ class URLSearchParams implements Iterator
     /**
      * @internal
      *
-     * @param \Rowbot\URL\URLSearchParams|string $init
+     * @param \Rowbot\URL\URLSearchParams|array<array<string>>|object|string $init
      *
      * @return void
      */

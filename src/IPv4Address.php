@@ -119,7 +119,7 @@ class IPv4Address implements NetworkAddress
         $counter = 0;
 
         foreach ($numbers as $n) {
-            $ipv4 += $n * gmp_pow('256', (3 - $counter));
+            $ipv4 += gmp_mul($n, gmp_pow('256', (3 - $counter)));
             $counter++;
         }
 
@@ -179,10 +179,10 @@ class IPv4Address implements NetworkAddress
      *
      * @see https://url.spec.whatwg.org/#ipv4-number-parser
      *
-     * @param string    $input                A string of numbers to be parsed.
-     * @param bool|null $syntaxViolationFlag  A flag that represents if there was a syntax violation while parsing.
+     * @param string $input                A string of numbers to be parsed.
+     * @param bool   $syntaxViolationFlag  A flag that represents if there was a syntax violation while parsing.
      *
-     * @return \GMP|bool Returns a bool on failure and an int otherwise.
+     * @return \GMP|false Returns false on failure and an GMP object otherwise.
      */
     protected static function parseIPv4Number($input, &$syntaxViolationFlag)
     {

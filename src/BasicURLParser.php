@@ -143,28 +143,27 @@ class BasicURLParser
      *
      * @see https://url.spec.whatwg.org/#concept-basic-url-parser
      *
-     * @param string $input The URL string that is to be parsed.
+     * @param string $input                                 The URL string that is to be parsed.
      *
-     * @param URLRecord|null $base Optional argument that is only needed
-     *     if the input is a relative URL.  This represents the base URL, which
-     *     in most cases, is the document's URL, it may also be a node's base
-     *     URI or whatever base URL you wish to resolve relative URLs against.
-     *     Default is null.
+     * @param \Rowbot\URL\URLRecord|null $base              (optional) This represents the base URL, which in most
+     *                                                      cases, is the document's URL, it may also be a node's base
+     *                                                      URI or whatever base URL you wish to resolve relative URLs
+     *                                                      against. Default is null.
      *
-     * @param string $encodingOverride Optional argument that overrides the
-     *     default encoding. Default is UTF-8.
+     * @param string                      $encodingOverride (optional) Overrides the default encoding, which is UTF-8.
      *
-     * @param URLRecord|null $url Optional argument. This represents an
-     *     existing URL object that should be modified based on the input URL
-     *     and optional base URL.  Default is null.
      *
-     * @param int|null $stateOverride Optional argument. An integer that
-     *     determines what state the state machine will begin parsing the input
-     *     URL from. Suppling a value for this parameter will override the
-     *     default state of SCHEME_START_STATE. Default is null.
+     * @param \Rowbot\URL\URLRecord|null  $url              (optional) This represents an existing URL record object
+     *                                                      that should be modified based on the input URL and optional
+     *                                                      base URL. Default is null.
      *
-     * @return URLRecord|bool Returns a URL object upon successfully parsing
-     *     the input or false if parsing input failed.
+     * @param int|null                    $stateOverride    (optional) An integer that determines what state the state
+     *                                                      machine will begin parsing the input URL from. Suppling a
+     *                                                      value for this parameter will override the default state of
+     *                                                      SCHEME_START_STATE. Default is null.
+     *
+     * @return \Rowbot\URL\URLRecord|false Returns a URL object upon successfully parsing the input or false if parsing
+     *                                     input failed.
      */
     public static function parseBasicUrl(
         $input,
