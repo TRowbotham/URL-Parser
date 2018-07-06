@@ -11,4 +11,11 @@ interface NetworkAddress
      * @return bool
      */
     public function equals($address);
+
+    /**
+     * Serializes a a network address.
+     *
+     * @return string
+     */
+    public function __toString();
 }

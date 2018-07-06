@@ -135,11 +135,9 @@ class IPv4Address implements NetworkAddress
     }
 
     /**
-     * Serializes an IPv4 address in to a string.
+     * {@inheritDoc}
      *
      * @see https://url.spec.whatwg.org/#concept-ipv4-serializer
-     *
-     * @return string
      */
     public function __toString()
     {

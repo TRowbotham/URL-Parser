@@ -194,11 +194,9 @@ class IPv6Address implements NetworkAddress
     }
 
     /**
-     * Serializes an IPv6 address.
+     * {@inheritDoc}
      *
      * @see https://url.spec.whatwg.org/#concept-ipv6-serializer
-     *
-     * @return string
      */
     public function __toString()
     {
