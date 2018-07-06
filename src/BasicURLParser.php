@@ -121,6 +121,17 @@ class BasicURLParser
      */
     private $url;
 
+    /**
+     * Constructor.
+     *
+     * @param string                     $input
+     * @param \Rowbot\URL\URLRecord|null $base             (optional)
+     * @param string|null                $encodingOverride (optional)
+     * @param \Rowbot\URL\URLRecord|null $url              (optional)
+     * @param int|null                   $stateOverride    (optional)
+     *
+     * @return void
+     */
     protected function __construct(
         $input,
         URLRecord $base = null,
@@ -150,7 +161,7 @@ class BasicURLParser
      *                                                      URI or whatever base URL you wish to resolve relative URLs
      *                                                      against. Default is null.
      *
-     * @param string                      $encodingOverride (optional) Overrides the default encoding, which is UTF-8.
+     * @param string|null                 $encodingOverride (optional) Overrides the default encoding, which is UTF-8.
      *
      *
      * @param \Rowbot\URL\URLRecord|null  $url              (optional) This represents an existing URL record object

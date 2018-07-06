@@ -6,8 +6,8 @@ use Iterator;
 use Rowbot\URL\Exception\TypeError;
 use Traversable;
 
-use function count;
 use function array_column;
+use function count;
 use function func_num_args;
 use function is_array;
 use function is_object;
@@ -25,13 +25,20 @@ class URLSearchParams implements Iterator
 {
     use URLFormEncoded;
 
+    /**
+     * @var \Rowbot\URL\QueryList
+     */
     private $list;
+
+    /**
+     * @var \Rowbot\URL\URLRecord|null
+     */
     private $url;
 
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
-     * @param \Rowbot\URL\URLSearchParams|array<array<string>>|object|string $init (optional)
+     * @param self|array<array<string>>|object|string $init (optional)
      */
     public function __construct($init = '')
     {
@@ -56,6 +63,9 @@ class URLSearchParams implements Iterator
         }
     }
 
+    /**
+     * @return void
+     */
     public function __clone()
     {
         $this->list = clone $this->list;
@@ -75,6 +85,9 @@ class URLSearchParams implements Iterator
         return $this->urlencodeList($this->list->all());
     }
 
+    /**
+     * @return string
+     */
     public function toString()
     {
         return $this->urlencodeList($this->list->all());
@@ -85,10 +98,10 @@ class URLSearchParams implements Iterator
      *
      * @internal
      *
-     * @param \Rowbot\URL\URLSearchParams|string $init The query string or another URLSearchParams object.
-     * @param \Rowbot\URL\URLRecord              $url  The associated URLRecord object.
+     * @param string                $init The query string or another URLSearchParams object.
+     * @param \Rowbot\URL\URLRecord $url  The associated URLRecord object.
      *
-     * @return \Rowbot\URL\URLSearchParams
+     * @return self
      */
     public static function create($init, URLRecord $url)
     {
@@ -102,7 +115,7 @@ class URLSearchParams implements Iterator
     /**
      * @internal
      *
-     * @param \Rowbot\URL\URLSearchParams|array<array<string>>|object|string $init
+     * @param self|array<array<string>>|object|string $init
      *
      * @return void
      */
@@ -196,10 +209,9 @@ class URLSearchParams implements Iterator
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-getall
      *
-     * @param string $name The name of the key whose values you want to
-     *     retrieve.
+     * @param string $name The name of the key whose values you want to retrieve.
      *
-     * @return string[] An array containing all the values of the specified key.
+     * @return array<array<string>> An array containing all the values of the specified key.
      */
     public function getAll($name)
     {
@@ -326,7 +338,7 @@ class URLSearchParams implements Iterator
      *
      * @internal
      *
-     * @param URLRecord $url
+     * @param \Rowbot\URL\URLRecord $url
      *
      * @return void
      */
@@ -335,26 +347,41 @@ class URLSearchParams implements Iterator
         $this->url = $url;
     }
 
+    /**
+     * @return string[]
+     */
     public function current()
     {
         return $this->list->current();
     }
 
+    /**
+     * @return int
+     */
     public function key()
     {
         return $this->list->key();
     }
 
+    /**
+     * @return void
+     */
     public function next()
     {
         $this->list->next();
     }
 
+    /**
+     * @return void
+     */
     public function rewind()
     {
         $this->list->rewind();
     }
 
+    /**
+     * @return bool
+     */
     public function valid()
     {
         return $this->list->valid();

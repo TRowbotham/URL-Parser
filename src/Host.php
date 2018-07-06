@@ -9,13 +9,26 @@ class Host
 {
     const FORBIDDEN_HOST_CODEPOINT = '/[\x00\x09\x0A\x0D\x20#%\/:?@[\\\\\]]/u';
 
+    /**
+     * @var \Rowbot\URL\NetworkAddress|string|null
+     */
     private $host;
 
+    /**
+     * Constructor.
+     *
+     * @param \Rowbot\URL\NetworkAddress|string|null $host
+     *
+     * @return void
+     */
     protected function __construct($host)
     {
         $this->host = $host;
     }
 
+    /**
+     * @return void
+     */
     public function __clone()
     {
         if ($this->host instanceof NetworkAddress) {
@@ -27,7 +40,7 @@ class Host
      * Creates a new Host whose host is null. This will serialize to the empty
      * string and is not a valid host string.
      *
-     * @return \Rowbot\URL\Host
+     * @return self
      */
     public static function createNullHost()
     {
@@ -43,8 +56,8 @@ class Host
      *
      * @param bool   $isNotSpecial (optional) Whether or not the URL has a special scheme.
      *
-     * @return \Rowbot\URL\Host|false Returns a Host if it was successfully parsed or false if parsing fails. The
-     *                               returned Host can never be null.
+     * @return self|false Returns a Host if it was successfully parsed or false if parsing fails. The returned Host can
+     *                    never be null.
      */
     public static function parse($input, $isNotSpecial = false)
     {
@@ -99,9 +112,9 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-opaque-host-parser
      *
-     * @param  string $input
+     * @param string $input
      *
-     * @return \Rowbot\URL\Host|false
+     * @return self|false
      */
     private static function parseOpaqueHost($input)
     {
@@ -180,7 +193,7 @@ class Host
     /**
      * Checks to see if two hosts are equal.
      *
-     * @param \Rowbot\URL\Host|string $host Another Host object or a string.
+     * @param self|string $host Another Host object or a string.
      *
      * @return bool
      */
@@ -242,7 +255,7 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-domain-to-unicode
      *
-     * @return \Rowbot\URL\Host|false Returns the domain name upon success or false on failure.
+     * @return self|false Returns the domain name upon success or false on failure.
      */
     public function domainToUnicode()
     {

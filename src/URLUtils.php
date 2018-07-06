@@ -71,7 +71,7 @@ abstract class URLUtils
      *
      * @see https://url.spec.whatwg.org/#percent-decode
      *
-     * @param  string $byteSequence A byte sequence to be decoded.
+     * @param string $byteSequence A byte sequence to be decoded.
      *
      * @return string
      */
@@ -105,7 +105,6 @@ abstract class URLUtils
      * @see https://url.spec.whatwg.org/#utf-8-percent-encode
      *
      * @param string $codePoint         A code point stream to be encoded.
-     *
      * @param string $percentEncodedSet The encode set used to decide whether or
      *                                  not the code point should be percent
      *                                  encoded.
@@ -129,7 +128,7 @@ abstract class URLUtils
      * like they do in JavaScript, which differs from the default conversions in
      * PHP, which can be unexpected.
      *
-     * @param  mixed $arg A value to cast to a string.
+     * @param mixed $arg A value to cast to a string.
      *
      * @return string
      *

@@ -33,6 +33,9 @@ final class IDN
     const VERIFY_DNS_LENGTH          = 16;
     const NONTRANSITIONAL_PROCESSING = 32;
 
+    /**
+     * @var self
+     */
     private static $instance;
     private static $errors = IDNA_ERROR_EMPTY_LABEL
         | IDNA_ERROR_LABEL_TOO_LONG
@@ -48,10 +51,20 @@ final class IDN
         | IDNA_ERROR_BIDI
         | IDNA_ERROR_CONTEXTJ;
 
+    /**
+     * Constructor.
+     *
+     * @return void
+     */
     private function __construct()
     {
     }
 
+    /**
+     * Gets the instance.
+     *
+     * @return self
+     */
     public static function getInstance()
     {
         if (!self::$instance) {
@@ -67,7 +80,7 @@ final class IDN
      * @param string $domainName A UTF-8 string.
      * @param int    $flags      A bitmask of flags.
      *
-     * @return bool|string
+     * @return string|false
      */
     public function toASCII($domainName, $flags = 0)
     {
@@ -125,7 +138,7 @@ final class IDN
      * @param string $domainName An ASCII string.
      * @param int    $flags      A bitmask of flags.
      *
-     * @return bool|string
+     * @return string|false
      */
     public function toUnicode($domainName, $flags = 0)
     {

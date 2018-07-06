@@ -24,11 +24,19 @@ class IPv4Address implements NetworkAddress
      */
     private $address;
 
+    /**
+     * Constructor.
+     *
+     * @param \GMP $address
+     */
     protected function __construct($address)
     {
         $this->address = $address;
     }
 
+    /**
+     * @return void
+     */
     public function __clone()
     {
         // Since GMP is an object and not an int, we need to clone that object.
@@ -42,9 +50,9 @@ class IPv4Address implements NetworkAddress
      *
      * @param string $input A string representing an IPv4 address.
      *
-     * @return \Rowbot\URL\IPv4Address|string|bool Returns a IPv4Address object if the input is a valid IPv4 address or
-     *                                             a string if the input is determined to be a domain. This will return
-     *                                             false if the input is neither a domain or IPv4 address.
+     * @return self|string|bool Returns a IPv4Address object if the input is a valid IPv4 address or a string if the
+     *                          input is determined to be a domain. This will return false if the input is neither a
+     *                          domain or IPv4 address.
      */
     public static function parse($input)
     {
@@ -152,11 +160,7 @@ class IPv4Address implements NetworkAddress
     }
 
     /**
-     * Checks to see if two IPv4 addresses are equal.
-     *
-     * @param \Rowbot\URL\IPv4Address|string $address Another IPv4Address or a valid IPv4 address string.
-     *
-     * @return bool
+     * {@inheritDoc}
      */
     public function equals($address)
     {

@@ -8,10 +8,29 @@ use function intval;
  */
 class Origin
 {
+    /**
+     * @var string|null
+     */
     private $domain;
+
+    /**
+     * @var \Rowbot\URL\Host
+     */
     private $host;
+
+    /**
+     * @var bool
+     */
     private $isOpaque;
+
+    /**
+     * @var int|null
+     */
     private $port;
+
+    /**
+     * @var string
+     */
     private $scheme;
 
     private function __construct()
@@ -23,10 +42,10 @@ class Origin
      * Creates a tuple origin, which consists of a scheme, host, port, and
      * optionally a domain.
      *
-     * @param string      $scheme
-     * @param Host        $host
-     * @param int|null    $port
-     * @param string|null $domain
+     * @param string           $scheme
+     * @param \Rowbot\URL\Host $host
+     * @param int|null         $port
+     * @param string|null      $domain (optional)
      *
      * @return self
      */
@@ -90,7 +109,7 @@ class Origin
      *
      * @see https://html.spec.whatwg.org/multipage/browsers.html#same-origin
      *
-     * @param Origin $other The origin being compared.
+     * @param self $other The origin being compared.
      *
      * @return bool
      */
@@ -117,7 +136,7 @@ class Origin
      *
      * @see https://html.spec.whatwg.org/multipage/browsers.html#same-origin-domain
      *
-     * @param Origin $other The origin being compared.
+     * @param self $other The origin being compared.
      *
      * @return bool
      */

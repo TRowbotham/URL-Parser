@@ -33,13 +33,28 @@ class URL implements JsonSerializable
 {
     use URLFormEncoded;
 
+    /**
+     * @var \Rowbot\URL\URLSearchParams
+     */
     private $queryObject;
+
+    /**
+     * @var \Rowbot\URL\URLRecord
+     */
     private $url;
 
+    /**
+     * Constructor.
+     *
+     * @param self|string $url
+     * @param self|string $base
+     *
+     * @return void
+     *
+     * @throws \Rowbot\URL\Exception\TypeError
+     */
     public function __construct($url, $base = null)
     {
-        $this->queryObject = null;
-        $this->url = null;
         $parsedBase = null;
 
         if ($base !== null) {
@@ -68,6 +83,9 @@ class URL implements JsonSerializable
         $this->queryObject = URLSearchParams::create($query, $parsedURL);
     }
 
+    /**
+     * @return void
+     */
     public function __clone()
     {
         $this->url = clone $this->url;
@@ -75,6 +93,11 @@ class URL implements JsonSerializable
         $this->queryObject->setUrl($this->url);
     }
 
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
     public function __get($name)
     {
         switch ($name) {
@@ -150,6 +173,14 @@ class URL implements JsonSerializable
         }
     }
 
+    /**
+     * @param string     $name
+     * @param string|int $value
+     *
+     * @return void
+     *
+     * @throws \Rowbot\URL\Exception\TypeError Only when trying to set URL::$searchParams
+     */
     public function __set($name, $value)
     {
         $value = URLUtils::strval($value);
@@ -331,11 +362,17 @@ class URL implements JsonSerializable
         }
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->url->serializeURL();
     }
 
+    /**
+     * @return string
+     */
     public function toString()
     {
         return $this->url->serializeURL();

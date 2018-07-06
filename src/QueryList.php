@@ -14,10 +14,28 @@ use function usort;
 
 class QueryList implements Countable, Iterator
 {
+    /**
+     * @var array<string, bool>
+     */
     private $cache;
+
+    /**
+     * @var int
+     */
     private $cursor;
+
+    /**
+     * @var array<array<string, string>>
+     */
     private $list;
 
+    /**
+     * Constructor.
+     *
+     * @param array<array<string, string>> $list
+     *
+     * @return void
+     */
     public function __construct(array $list = [])
     {
         $this->list = [];
@@ -26,12 +44,27 @@ class QueryList implements Countable, Iterator
         $this->appendAll($list);
     }
 
+    /**
+     * Appends a new name-value pair to the list.
+     *
+     * @param string $name
+     * @param string $value
+     *
+     * @return void
+     */
     public function append($name, $value)
     {
         $this->list[] = ['name' => $name, 'value' => $value];
         $this->cache[$name] = true;
     }
 
+    /**
+     * Appends all name-value pairs in $pairs to $list.
+     *
+     * @param array<array<string>> $pairs
+     *
+     * @return void
+     */
     public function appendAll($pairs)
     {
         foreach ($pairs as $pair) {
@@ -40,6 +73,13 @@ class QueryList implements Countable, Iterator
         }
     }
 
+    /**
+     * Removes all name-value pairs with name $name from the list.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
     public function remove($name)
     {
         for ($i = count($this->list) - 1; $i >= 0; $i--) {
@@ -51,6 +91,13 @@ class QueryList implements Countable, Iterator
         unset($this->cache[$name]);
     }
 
+    /**
+     * Determines if a name-value pair with name $name exists in the collection.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
     public function contains($name)
     {
         if (isset($this->cache[$name])) {
@@ -63,6 +110,13 @@ class QueryList implements Countable, Iterator
         return $exists;
     }
 
+    /**
+     * Returns the first name-value pair in the list whose name is $name.
+     *
+     * @param string $name
+     *
+     * @return string|null
+     */
     public function first($name)
     {
         foreach ($this->list as $pair) {
@@ -74,11 +128,27 @@ class QueryList implements Countable, Iterator
         return null;
     }
 
+    /**
+     * Returns a filtered array based on the given callback.
+     *
+     * @param callable $callback
+     *
+     * @return array<array<string, string>>
+     */
     public function filter(callable $callback)
     {
         return array_filter($this->list, $callback);
     }
 
+    /**
+     * Sets the value of the first name-value pair with $name to $value and
+     * removes all other occurances that have name $name.
+     *
+     * @param string $name
+     * @param string $value
+     *
+     * @return void
+     */
     public function set($name, $value)
     {
         $prevIndex = null;
@@ -96,11 +166,22 @@ class QueryList implements Countable, Iterator
         $this->list[$prevIndex]['value'] = $value;
     }
 
+    /**
+     * Returns the number of items in the collection.
+     *
+     * @return int
+     */
     public function count()
     {
         return count($this->list);
     }
 
+    /**
+     * Sorts the collection by code units and preserves the relative positioning
+     * of name-value pairs.
+     *
+     * @return void
+     */
     public function sort()
     {
         $array = [];
@@ -148,12 +229,25 @@ class QueryList implements Countable, Iterator
         $this->list = $array;
     }
 
+    /**
+     * Clears the collection and cache.
+     *
+     * @return void
+     */
     public function clear()
     {
         $this->list = [];
         $this->cache = [];
     }
 
+    /**
+     * Clears the collection and cache and then fills the collection with the
+     * new name-value pairs in $list.
+     *
+     * @param array<array<string, string>> $list
+     *
+     * @return void
+     */
     public function update(array $list)
     {
         $this->list = [];
@@ -165,11 +259,21 @@ class QueryList implements Countable, Iterator
         }
     }
 
+    /**
+     * Returns the entire collection as an array.
+     *
+     * @return array<array<string, string>>
+     */
     public function all()
     {
         return $this->list;
     }
 
+    /**
+     * Returns the current name-value pair.
+     *
+     * @return string[]
+     */
     public function current()
     {
         $current = $this->list[$this->cursor];
@@ -177,21 +281,41 @@ class QueryList implements Countable, Iterator
         return [$current['name'], $current['value']];
     }
 
+    /**
+     * Returns the iterator key.
+     *
+     * @return int
+     */
     public function key()
     {
         return $this->cursor;
     }
 
+    /**
+     * Advances the iterator to the next position.
+     *
+     * @return void
+     */
     public function next()
     {
         ++$this->cursor;
     }
 
+    /**
+     * Rewinds the iterator to the beginning.
+     *
+     * @void
+     */
     public function rewind()
     {
         $this->cursor = 0;
     }
 
+    /**
+     * Returns whether the iterator is valid.
+     *
+     * @return bool
+     */
     public function valid()
     {
         return isset($this->list[$this->cursor]);

@@ -16,6 +16,13 @@ class IPv6Address implements NetworkAddress
      */
     private $address;
 
+    /**
+     * Constructor.
+     *
+     * @param int[] $address
+     *
+     * @return void
+     */
     protected function __construct($address)
     {
         $this->address = $address;
@@ -28,8 +35,8 @@ class IPv6Address implements NetworkAddress
      *
      * @param string $input An IPv6 address.
      *
-     * @return \Rowbot\URL\IPv6Address|bool Returns an array if the string was successfully parsed as an IPv6 address or
-     *                                      false if the input is not an IPv6 address.
+     * @return self|false Returns an array if the string was successfully parsed as an IPv6 address or false if the
+     *                    input is not an IPv6 address.
      */
     public static function parse($input)
     {
@@ -251,12 +258,7 @@ class IPv6Address implements NetworkAddress
     }
 
     /**
-     * Checks to see if two IPv6 addresses are equal.
-     *
-     * @param  IPv6Address|string $address Another IPv6Address or a valid IPv6
-     *                                     address string.
-     *
-     * @return bool
+     * {@inheritDoc}
      */
     public function equals($address)
     {

@@ -83,6 +83,9 @@ class URLRecord
         $this->cannotBeABaseUrl = false;
     }
 
+    /**
+     * @return void
+     */
     public function __clone()
     {
         $this->host = clone $this->host;
@@ -94,6 +97,8 @@ class URLRecord
      * @see https://url.spec.whatwg.org/#set-the-username
      *
      * @param string $username The URL's username.
+     *
+     * @return void
      */
     public function setUsername($username)
     {
@@ -114,6 +119,8 @@ class URLRecord
      * @see https://url.spec.whatwg.org/#set-the-password
      *
      * @param string $password The URL's password.
+     *
+     * @return void
      */
     public function setPassword($password)
     {
@@ -172,6 +179,8 @@ class URLRecord
      * and the path does not contain a normalized Windows drive letter.
      *
      * @see https://url.spec.whatwg.org/#shorten-a-urls-path
+     *
+     * @return void
      */
     public function shortenPath()
     {
@@ -199,7 +208,7 @@ class URLRecord
      *
      * @see https://url.spec.whatwg.org/#origin
      *
-     * @return Origin
+     * @return \Rowbot\URL\Origin
      */
     public function getOrigin()
     {
@@ -245,10 +254,8 @@ class URLRecord
      *
      * @see https://url.spec.whatwg.org/#concept-url-equals
      *
-     * @param URLRecord $otherUrl A URL to compare equality against.
-     *
-     * @param bool $excludeFragment Optional argument that determines
-     *     whether a URL's fragment should be factored into equality.
+     * @param self $otherUrl        A URL to compare equality against.
+     * @param bool $excludeFragment (optional) determines whether a URL's fragment should be factored into equality.
      *
      * @return bool
      */
@@ -263,8 +270,7 @@ class URLRecord
      *
      * @see https://url.spec.whatwg.org/#concept-url-serializer
      *
-     * @param bool $excludeFragment Optional argument, that, when
-     *     specified will exclude the URL's fragment from being serialized.
+     * @param bool $excludeFragment (optional) When specified it will exclude the URL's fragment from being serialized.
      *
      * @return string
      */
