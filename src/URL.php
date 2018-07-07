@@ -1,6 +1,7 @@
 <?php
 namespace Rowbot\URL;
 
+use InvalidArgumentException;
 use JsonSerializable;
 use Rowbot\URL\Exception\TypeError;
 
@@ -97,6 +98,8 @@ class URL implements JsonSerializable
      * @param string $name
      *
      * @return string
+     *
+     * @throws \InvalidArgumentException When an invalid $name value is passed.
      */
     public function __get($name)
     {
@@ -170,6 +173,11 @@ class URL implements JsonSerializable
 
             case 'username':
                 return $this->url->username;
+
+            default:
+                throw new InvalidArgumentException(
+                    $name . ' is not a valid property.'
+                );
         }
     }
 
@@ -179,6 +187,7 @@ class URL implements JsonSerializable
      *
      * @return void
      *
+     * @throws \InvalidArgumentException       When an invalid $name or $value value is passed.
      * @throws \Rowbot\URL\Exception\TypeError Only when trying to set URL::$searchParams
      */
     public function __set($name, $value)
@@ -361,6 +370,11 @@ class URL implements JsonSerializable
                 $this->url->setUsername($value);
 
                 break;
+
+            default:
+                throw new InvalidArgumentException(
+                    $name . ' is not a valid property.'
+                );
         }
     }
 
