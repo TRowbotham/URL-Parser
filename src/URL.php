@@ -351,6 +351,8 @@ class URL implements JsonSerializable
                     'URL::searchParams attribute cannot be set directly.'
                 );
 
+                break;
+
             case 'username':
                 if ($this->url->cannotHaveUsernamePasswordPort()) {
                     return;
