@@ -18,7 +18,7 @@ use function mb_substr;
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL
  *
  * @property string $href
- * @property string $origin
+ * @property-read string $origin
  * @property string $protocol
  * @property string $username
  * @property string $password

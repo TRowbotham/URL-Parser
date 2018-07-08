@@ -36,9 +36,13 @@ class URLSearchParams implements Iterator
     private $url;
 
     /**
+     * Constructor.
+     *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
      * @param self|array<array<string>>|object|string $init (optional)
+     *
+     * @return void
      */
     public function __construct($init = '')
     {

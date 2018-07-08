@@ -31,6 +31,11 @@ class Origin
      */
     private $scheme;
 
+    /**
+     * Constructor.
+     *
+     * @return void
+     */
     private function __construct()
     {
         $this->isOpaque = true;

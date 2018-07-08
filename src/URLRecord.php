@@ -31,7 +31,7 @@ class URLRecord
     public $password;
 
     /**
-     * @var Host
+     * @var \Rowbot\URL\Host
      */
     public $host;
 
@@ -70,6 +70,11 @@ class URLRecord
      */
     public $cannotBeABaseUrl;
 
+    /**
+     * Constructor.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->scheme = '';

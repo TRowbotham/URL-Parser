@@ -28,6 +28,8 @@ class IPv4Address implements NetworkAddress
      * Constructor.
      *
      * @param \GMP $address
+     *
+     * @return void
      */
     protected function __construct($address)
     {

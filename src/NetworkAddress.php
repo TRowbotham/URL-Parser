@@ -13,7 +13,7 @@ interface NetworkAddress
     public function equals($address);
 
     /**
-     * Serializes a a network address.
+     * Serializes a network address.
      *
      * @return string
      */
