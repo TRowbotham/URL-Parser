@@ -192,6 +192,45 @@ class IPv6Address implements NetworkAddress
     }
 
     /**
+     * Finds the longest sequence, with a length greater than 1, of 16-bit
+     * pieces that are 0 and sets $compress to the first 16-bit piece in that
+     * sequence, otherwise $compress will remain null.
+     *
+     * @param null $compress
+     *
+     * @return int
+     */
+    private function getLongestSequence(&$compress)
+    {
+        $i = 0;
+        $longestSequence = 1;
+
+        while ($i < 8) {
+            if ($this->address[$i] == 0) {
+                $sequenceLength = 0;
+
+                while ($i < 8 && $this->address[$i] == 0) {
+                    ++$sequenceLength;
+                    ++$i;
+                }
+
+                // We are only interested in sequences with a length greater
+                // than one. We also only want to note the first of those
+                // sequences since there may be multiple sequences of zero that
+                // have the same length.
+                if ($sequenceLength > $longestSequence) {
+                    $longestSequence = $sequenceLength;
+                    $compress = $i - $sequenceLength;
+                }
+            }
+
+            ++$i;
+        }
+
+        return $longestSequence;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @see https://url.spec.whatwg.org/#concept-ipv6-serializer
@@ -200,30 +239,7 @@ class IPv6Address implements NetworkAddress
     {
         $output = '';
         $compress = null;
-        $i = 0;
-        $longestSequence = 1;
-
-        // Finds the longest sequence, with a length greater than 1, of 16-bit
-        // pieces that are 0 and sets the $compress to the first 16-bit
-        // piece in that sequence, otherwise $compress will remain null.
-        while ($i < 8) {
-            if ($this->address[$i] == 0) {
-                $sequenceLength = 0;
-
-                while ($i < 8 && $this->address[$i] == 0) {
-                    $sequenceLength++;
-                    $i++;
-                }
-
-                if ($sequenceLength > $longestSequence) {
-                    $longestSequence = $sequenceLength;
-                    $compress = $i - $sequenceLength;
-                }
-            }
-
-            $i++;
-        }
-
+        $longestSequence = $this->getLongestSequence($compress);
         $pieceIndex = 0;
 
         while ($pieceIndex < 8) {
