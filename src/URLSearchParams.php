@@ -1,6 +1,8 @@
 <?php
 namespace Rowbot\URL;
 
+use ArrayAccess;
+use Countable;
 use InvalidArgumentException;
 use Iterator;
 use Rowbot\URL\Exception\TypeError;
@@ -9,6 +11,7 @@ use Traversable;
 use function array_column;
 use function count;
 use function func_num_args;
+use function gettype;
 use function is_array;
 use function is_object;
 use function is_string;
@@ -122,13 +125,55 @@ class URLSearchParams implements Iterator
      * @param self|array<array<string>>|object|string $init
      *
      * @return void
+     *
+     * @throws \InvalidArgumentException
+     * @throws \Rowbot\URL\TypeError
      */
     private function init($init)
     {
         if (is_array($init) || $init instanceof Traversable) {
             foreach ($init as $pair) {
+                // Try to catch cases where $pair isn't countable or $pair is
+                // countable, but isn't a valid sequence, such as:
+                //
+                // class CountableClass implements \Countable
+                // {
+                //     public function count()
+                //     {
+                //         return 2;
+                //     }
+                // }
+                //
+                // $s = new \Rowbot\URL\URLSearchParams([new CountableClass()]);
+                //
+                // or:
+                //
+                // $a = new \ArrayObject(['x', 'y']);
+                // $s = new \Rowbot\URL\URLSearchParams($a);
+                //
+                // while still allowing things like:
+                //
+                // $a = new \ArrayObject(new \ArrayObject(['x', 'y']));
+                // $s = new \Rowbot\URL\URLSearchParams($a);'
+                if (!is_array($pair)
+                    && (!$pair instanceof ArrayAccess
+                        || !$pair instanceof Countable)
+                ) {
+                    throw new InvalidArgumentException(sprintf(
+                        'Expected a valid sequence such as an Array or Object '
+                        . 'that implements both the ArrayAccess and Countable '
+                        . 'interfaces. %s found instead.',
+                        gettype($pair)
+                    ));
+                    return;
+                }
+
                 if (count($pair) != 2) {
-                    throw new TypeError();
+                    throw new TypeError(sprintf(
+                        'Expected sequence with excatly 2 items. Sequence '
+                        . 'contained %d items.',
+                        count($pair)
+                    ));
                     return;
                 }
             }
