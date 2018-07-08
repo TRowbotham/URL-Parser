@@ -56,14 +56,14 @@ class IPv4Address implements NetworkAddress
      */
     public static function parse($input)
     {
-        $syntaxViolation = false;
+        $validationError = false;
         $parts = explode('.', $input);
         $len = count($parts);
 
         // If the last item in parts is an empty string, that is a syntax
         // violation, remove it from parts.
         if ($parts[$len - 1] === '') {
-            $syntaxViolation = true;
+            $validationError = true;
 
             if ($len > 1) {
                 array_pop($parts);
@@ -86,7 +86,7 @@ class IPv4Address implements NetworkAddress
                 return $input;
             }
 
-            $n = self::parseIPv4Number($part, $syntaxViolation);
+            $n = self::parseIPv4Number($part, $validationError);
 
             // If the part is not a number, then this is probably a domain, so
             // return the original input.
@@ -97,13 +97,13 @@ class IPv4Address implements NetworkAddress
             $numbers[] = $n;
         }
 
-        if ($syntaxViolation) {
-            // Syntax violation
+        if ($validationError) {
+            // Validation error
         }
 
         foreach ($numbers as $number) {
             if ($number > 255) {
-                // Syntax violation
+                // Validation error
                 break;
             }
         }
@@ -119,7 +119,7 @@ class IPv4Address implements NetworkAddress
         $cmp = gmp_cmp($numbers[$len - 1], gmp_pow('256', (5 - $len)));
 
         if ($cmp >= 0) {
-            // Syntax violation
+            // Validation error
             return false;
         }
 
@@ -181,12 +181,12 @@ class IPv4Address implements NetworkAddress
      *
      * @see https://url.spec.whatwg.org/#ipv4-number-parser
      *
-     * @param string $input                A string of numbers to be parsed.
-     * @param bool   $syntaxViolationFlag  A flag that represents if there was a syntax violation while parsing.
+     * @param string $input           A string of numbers to be parsed.
+     * @param bool   $validationError A flag that represents if there was a validation error while parsing.
      *
      * @return \GMP|false Returns false on failure and an GMP object otherwise.
      */
-    protected static function parseIPv4Number($input, &$syntaxViolationFlag)
+    protected static function parseIPv4Number($input, &$validationError)
     {
         $R = 10;
         $len = strlen($input);
@@ -194,11 +194,11 @@ class IPv4Address implements NetworkAddress
         if ($len > 1
             && (substr($input, 0, 2) === '0x' || substr($input, 0, 2) === '0X')
         ) {
-            $syntaxViolationFlag = true;
+            $validationError = true;
             $input = substr($input, 2);
             $R = 16;
         } elseif ($len > 1 && $input[0] === '0') {
-            $syntaxViolationFlag = true;
+            $validationError = true;
             $input = substr($input, 1);
             $R = 8;
         }
