@@ -18,7 +18,13 @@ The URL object is the primary object for working with a URL.
 
 `URL(self|string $url[, self|string $base])`
 
-Providing an invalid URL or an invalid base URL will case the constructor to throw a `TypeError`.
+#### Throws:
+
+* `\InvalidArgumentException`
+    * When passed a value that cannot be cast to a string, such as an array or object that does not have a `__toString` method.
+
+* `\Rowbot\URL\TypeError`
+    * When the URL parser determines that the given input is not a valid URL.
 
 ```php
 use Rowbot\URL\URL;
@@ -44,6 +50,8 @@ try {
 ```
 
 ### Members
+
+Note: All writable properties will throw an `\InvalidArgumentException` if they are given a value that cannot be cast to a string, such as an array or an object that does not have a `__toString()` method. As a convience, both the `__get()` and `__set()` methods will throw an `\InvalidArgumentException` if you try to get or set an invalid property.
 
 #### `string URL::href`
 
@@ -111,7 +119,7 @@ Returns the serialization of the URL.
 
 #### `string URL::__toString()`
 
-See [URL::toString()](#string-url-tostring)
+See [URL::toString()](#string-urltostring)
 
 ## URLSearchParams
 
@@ -120,6 +128,21 @@ The URLSearchParams object allows you to work with query strings when you don't 
 ### The constructor
 
 `URLSearchParams([self|array<array<string>>|object|string $init])`
+
+### The constructor
+
+`URLSearchParams([self|array<array<string>>|object|string $init])`
+
+#### Throws:
+
+* `\InvalidArgumentException`
+
+    * When passed an iterable that contains invalid sequences, such as strings or objects that do not implement the `\ArrayAccess` and `\Countable` interfaces.
+    * When the parsed name or value cannot be cast to a string, such as an array or an object that does not have a `__toString()` method.
+
+* `\Rowbot\URL\TypeError`
+
+    * When an iterable is passed and one of its sequences does not contain exactly 2 items, such as an array that contains only 1 string.
 
 ```php
 use Rowbot\URL\URLSearchParams;
@@ -161,6 +184,8 @@ $params1 = new URLSearchParams($params);
 
 ### Members
 
+Note: All methods that take arguments will throw an `\InvalidArgumentException` if they are given a value that cannot be cast to a string, such as an array or an object that does not have a `__toString()` method.
+
 #### `void URLSearchParams::append(string $name, string $value)`
 
 Appends a new name-value pair to the list.
@@ -195,4 +220,4 @@ Returns the serialization of the list of name-value pairs.
 
 #### `string URLSearchParams::__toString()`
 
-See [URLSearchParams::toString()](#string-urlsearchparams-tostring)
+See [URLSearchParams::toString()](#string-urlsearchparamstostring)
