@@ -20,11 +20,12 @@ The URL object is the primary object for working with a URL.
 
 #### Throws:
 
-* `\InvalidArgumentException`
-    * When passed a value that cannot be cast to a string, such as an array or object that does not have a `__toString` method.
+*   `\InvalidArgumentException`
 
-* `\Rowbot\URL\TypeError`
-    * When the URL parser determines that the given input is not a valid URL.
+    *   When passed a value that cannot be cast to a string, such as an array or object that does not have a `__toString` method.
+
+*   `\Rowbot\URL\Exception\TypeError`
+    *   When the URL parser determines that the given input is not a valid URL.
 
 ```php
 use Rowbot\URL\URL;
@@ -135,14 +136,14 @@ The URLSearchParams object allows you to work with query strings when you don't 
 
 #### Throws:
 
-* `\InvalidArgumentException`
+*   `\InvalidArgumentException`
 
-    * When passed an iterable that contains invalid sequences, such as strings or objects that do not implement the `\ArrayAccess` and `\Countable` interfaces.
-    * When the parsed name or value cannot be cast to a string, such as an array or an object that does not have a `__toString()` method.
+    *   When passed an iterable that contains invalid sequences, such as strings or objects that do not implement the `\ArrayAccess` and `\Countable` interfaces.
+    *   When the parsed name or value cannot be cast to a string, such as an array or an object that does not have a `__toString()` method.
 
-* `\Rowbot\URL\TypeError`
+*   `\Rowbot\URL\Exception\TypeError`
 
-    * When an iterable is passed and one of its sequences does not contain exactly 2 items, such as an array that contains only 1 string.
+    *   When an iterable is passed and one of its sequences does not contain exactly 2 items, such as an array that contains only 1 string.
 
 ```php
 use Rowbot\URL\URLSearchParams;

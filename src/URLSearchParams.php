@@ -127,7 +127,7 @@ class URLSearchParams implements Iterator
      * @return void
      *
      * @throws \InvalidArgumentException
-     * @throws \Rowbot\URL\TypeError
+     * @throws \Rowbot\URL\Exception\TypeError
      */
     private function init($init)
     {
