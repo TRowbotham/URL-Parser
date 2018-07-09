@@ -296,7 +296,7 @@ class URLRecord
                 $output .= '@';
             }
 
-            $output .= (string) $this->host;
+            $output .= $this->host;
 
             if ($this->port !== null) {
                 $output .= ':' . $this->port;

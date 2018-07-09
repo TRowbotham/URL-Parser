@@ -185,7 +185,7 @@ class Origin
 
         $result = $this->scheme;
         $result .= '://';
-        $result .= (string) $this->host;
+        $result .= $this->host;
 
         if ($this->port !== null) {
             $result .= ':' . $this->port;
