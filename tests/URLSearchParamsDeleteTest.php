@@ -21,9 +21,6 @@ class URLSearchParamsDeleteTest extends PHPUnit_Framework_TestCase
         $params = new URLSearchParams('a=a&=&b=b&c=c');
         $params->delete('');
         $this->assertEquals('a=a&b=b&c=c', $params . '');
-        $params = new URLSearchParams('a=a&null=null&b=b');
-        $params->delete(null);
-        $this->assertEquals('a=a&b=b', $params . '');
     }
 
     public function testDeleteAppendMultiple()

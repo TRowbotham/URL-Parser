@@ -192,6 +192,10 @@ class URL implements JsonSerializable
      */
     public function __set($name, $value)
     {
+        if ($name === 'searchParams') {
+            throw new TypeError();
+        }
+
         $value = URLUtils::strval($value);
 
         switch ($name) {
@@ -352,13 +356,6 @@ class URL implements JsonSerializable
                     BasicURLParser::QUERY_STATE
                 );
                 $this->queryObject->modify($this->urldecodeString($input));
-
-                break;
-
-            case 'searchParams':
-                throw new TypeError(
-                    'URL::searchParams attribute cannot be set directly.'
-                );
 
                 break;
 

@@ -4,14 +4,13 @@ namespace Rowbot\URL;
 use InvalidArgumentException;
 use UConverter;
 
-use function get_class;
-use function is_array;
-use function is_bool;
+use function gettype;
 use function is_object;
 use function method_exists;
 use function pack;
 use function preg_match;
 use function rawurlencode;
+use function sprintf;
 use function strlen;
 use function substr;
 
@@ -123,10 +122,7 @@ abstract class URLUtils
     }
 
     /**
-     * This is mostly designed to keep tests happy, however, I'm not so sure
-     * its the right thing to do here. This makes string conversions work more
-     * like they do in JavaScript, which differs from the default conversions in
-     * PHP, which can be unexpected.
+     * Casts arguments to a string and attempts to fix invalid byte sequences.
      *
      * @param mixed $arg A value to cast to a string.
      *
@@ -136,18 +132,14 @@ abstract class URLUtils
      */
     public static function strval($arg)
     {
-        if (is_array($arg)) {
-            throw new InvalidArgumentException('Arrays are not valid input.');
-        } elseif (is_object($arg) && !method_exists($arg, '__toString')) {
-            throw new InvalidArgumentException(
-                'Objects without a __toString() method are not valid input.'
-            );
-        }
-
-        if (is_bool($arg)) {
-            return $arg ? 'true' : 'false';
-        } elseif ($arg === null) {
-            return 'null';
+        if (!is_scalar($arg)
+            || is_object($arg) && !method_exists($arg, '__toString')
+        ) {
+            throw new InvalidArgumentException(sprintf(
+                'Only scalar values and objects with a __toString() method are'
+                . ' considered valid input. Given value was of type %s.',
+                gettype($arg)
+            ));
         }
 
         return UConverter::transcode((string) $arg, 'UTF-8', 'UTF-8');

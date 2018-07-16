@@ -1,8 +1,8 @@
 <?php
 namespace Rowbot\URL\Tests;
 
-use Rowbot\URL\URLSearchParams;
 use PHPUnit_Framework_TestCase;
+use Rowbot\URL\URLSearchParams;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-append.html
@@ -28,15 +28,6 @@ class URLSearchParamsAppendTest extends PHPUnit_Framework_TestCase
         $params->append('', '');
         $this->assertEquals('=&=', $params . '');
         $params->append('a', 'c');
-    }
-
-    public function testAppendNull()
-    {
-        $params = new URLSearchParams();
-        $params->append(null, null);
-        $this->assertEquals('null=null', $params . '');
-        $params->append(null, null);
-        $this->assertEquals('null=null&null=null', $params . '');
     }
 
     public function testAppendMultiple()

@@ -19,8 +19,6 @@ class URLSearchParamsHasTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($params->has('a'));
         $params = new URLSearchParams('=b&c=d');
         $this->assertTrue($params->has(''));
-        $params = new URLSearchParams('null=a');
-        $this->assertTrue($params->has(null));
     }
 
     public function testHasFollowingDelete()
