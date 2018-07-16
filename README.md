@@ -22,7 +22,7 @@ The URL object is the primary object for working with a URL.
 
 *   `\InvalidArgumentException`
 
-    *   When passed a value that cannot be cast to a string, such as an array or object that does not have a `__toString` method.
+    *   When passed a non-scalar value or an object that does not have a `toString()` method.
 
 *   `\Rowbot\URL\Exception\TypeError`
     *   When the URL parser determines that the given input is not a valid URL.
@@ -52,7 +52,7 @@ try {
 
 ### Members
 
-Note: All writable properties will throw an `\InvalidArgumentException` if they are given a value that cannot be cast to a string, such as an array or an object that does not have a `__toString()` method. As a convience, both the `__get()` and `__set()` methods will throw an `\InvalidArgumentException` if you try to get or set an invalid property.
+Note: All writable properties will throw an `\InvalidArgumentException` if they are given a non-scalar value or an object that does not have a `__toString()` method. As a convience, both the `__get()` and `__set()` methods will throw an `\InvalidArgumentException` if you try to get or set an invalid property.
 
 #### `string URL::href`
 
@@ -139,7 +139,7 @@ The URLSearchParams object allows you to work with query strings when you don't 
 *   `\InvalidArgumentException`
 
     *   When passed an iterable that contains invalid sequences, such as strings or objects that do not implement the `\ArrayAccess` and `\Countable` interfaces.
-    *   When the parsed name or value cannot be cast to a string, such as an array or an object that does not have a `__toString()` method.
+    *   When the name or value are passed a non-scalar value or an object that does not have a `__toString()` method.
 
 *   `\Rowbot\URL\Exception\TypeError`
 
@@ -185,7 +185,7 @@ $params1 = new URLSearchParams($params);
 
 ### Members
 
-Note: All methods that take arguments will throw an `\InvalidArgumentException` if they are given a value that cannot be cast to a string, such as an array or an object that does not have a `__toString()` method.
+Note: All methods that take arguments will throw an `\InvalidArgumentException` if they are given a non-scalar value or an object that does not have a `__toString()` method.
 
 #### `void URLSearchParams::append(string $name, string $value)`
 
