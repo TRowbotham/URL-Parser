@@ -22,7 +22,7 @@ The URL object is the primary object for working with a URL.
 
 *   `\InvalidArgumentException`
 
-    *   When passed a non-scalar value or an object that does not have a `toString()` method.
+    *   When passed a non-scalar value or an object that does not have a `__toString()` method.
 
 *   `\Rowbot\URL\Exception\TypeError`
     *   When the URL parser determines that the given input is not a valid URL.
@@ -125,10 +125,6 @@ See [URL::toString()](#string-urltostring)
 ## URLSearchParams
 
 The URLSearchParams object allows you to work with query strings when you don't need a full URL. The URLSearchParams object implements the `Iterator` interface so that you may iterate over the list of search parameters. The iterator will return an array containing exactly 2 items. The first item is the parameter name and the second item is the parameter value.
-
-### The constructor
-
-`URLSearchParams([self|array<array<string>>|object|string $init])`
 
 ### The constructor
 
