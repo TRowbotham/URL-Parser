@@ -103,82 +103,89 @@ class URL implements JsonSerializable
      */
     public function __get($name)
     {
-        switch ($name) {
-            case 'hash':
-                if ($this->url->fragment === null
-                    || $this->url->fragment === ''
-                ) {
-                    return '';
-                }
+        if ($name === 'hash') {
+            if ($this->url->fragment === null
+                || $this->url->fragment === ''
+            ) {
+                return '';
+            }
 
-                return '#' . $this->url->fragment;
-
-            case 'host':
-                if ($this->url->host->isNull()) {
-                    return '';
-                }
-
-                if ($this->url->port === null) {
-                    return (string) $this->url->host;
-                }
-
-                return $this->url->host . ':' . $this->url->port;
-
-            case 'hostname':
-                if ($this->url->host->isNull()) {
-                    return '';
-                }
-
-                return (string) $this->url->host;
-
-            case 'href':
-                return $this->url->serializeURL();
-
-            case 'origin':
-                return (string) $this->url->getOrigin();
-
-            case 'password':
-                return $this->url->password;
-
-            case 'pathname':
-                if ($this->url->cannotBeABaseUrl) {
-                    return $this->url->path[0];
-                }
-
-                if (empty($this->url->path)) {
-                    return '';
-                }
-
-                return '/' . implode('/', $this->url->path);
-
-            case 'port':
-                if ($this->url->port === null) {
-                    return '';
-                }
-
-                return (string) $this->url->port;
-
-            case 'protocol':
-                return $this->url->scheme . ':';
-
-            case 'search':
-                if ($this->url->query === null || $this->url->query === '') {
-                    return '';
-                }
-
-                return '?' . $this->url->query;
-
-            case 'searchParams':
-                return $this->queryObject;
-
-            case 'username':
-                return $this->url->username;
-
-            default:
-                throw new InvalidArgumentException(
-                    $name . ' is not a valid property.'
-                );
+            return '#' . $this->url->fragment;
         }
+
+        if ($name === 'host') {
+            if ($this->url->host->isNull()) {
+                return '';
+            }
+
+            if ($this->url->port === null) {
+                return (string) $this->url->host;
+            }
+
+            return $this->url->host . ':' . $this->url->port;
+        }
+
+        if ($name === 'hostname') {
+            if ($this->url->host->isNull()) {
+                return '';
+            }
+
+            return (string) $this->url->host;
+        }
+
+        if ($name === 'href') {
+            return $this->url->serializeURL();
+        }
+
+        if ($name === 'origin') {
+            return (string) $this->url->getOrigin();
+        }
+
+        if ($name === 'password') {
+            return $this->url->password;
+        }
+
+        if ($name === 'pathname') {
+            if ($this->url->cannotBeABaseUrl) {
+                return $this->url->path[0];
+            }
+
+            if (empty($this->url->path)) {
+                return '';
+            }
+
+            return '/' . implode('/', $this->url->path);
+        }
+
+        if ($name === 'port') {
+            if ($this->url->port === null) {
+                return '';
+            }
+
+            return (string) $this->url->port;
+        }
+
+        if ($name === 'protocol') {
+            return $this->url->scheme . ':';
+        }
+
+        if ($name === 'search') {
+            if ($this->url->query === null || $this->url->query === '') {
+                return '';
+            }
+
+            return '?' . $this->url->query;
+        }
+
+        if ($name === 'searchParams') {
+            return $this->queryObject;
+        }
+
+        if ($name === 'username') {
+            return $this->url->username;
+        }
+
+        throw new InvalidArgumentException($name . ' is not a valid property.');
     }
 
     /**
@@ -198,180 +205,149 @@ class URL implements JsonSerializable
 
         $value = URLUtils::strval($value);
 
-        switch ($name) {
-            case 'hash':
-                if ($value === '') {
-                    $this->url->fragment = null;
+        if ($name === 'hash') {
+            if ($value === '') {
+                $this->url->fragment = null;
 
-                    // Terminate these steps
-                    return;
-                }
+                // Terminate these steps
+                return;
+            }
 
-                $input = $value;
+            $input = $value;
 
-                if (mb_substr($input, 0, 1, 'UTF-8') === '#') {
-                    $input = mb_substr($input, 1, null, 'UTF-8');
-                }
+            if (mb_substr($input, 0, 1, 'UTF-8') === '#') {
+                $input = mb_substr($input, 1, null, 'UTF-8');
+            }
 
-                $this->url->fragment = '';
-                BasicURLParser::parseBasicUrl(
-                    $input,
-                    null,
-                    null,
-                    $this->url,
-                    BasicURLParser::FRAGMENT_STATE
-                );
+            $this->url->fragment = '';
+            BasicURLParser::parseBasicUrl(
+                $input,
+                null,
+                null,
+                $this->url,
+                BasicURLParser::FRAGMENT_STATE
+            );
+        } elseif ($name === 'host') {
+            if ($this->url->cannotBeABaseUrl) {
+                // Terminate these steps
+                return;
+            }
 
-                break;
+            BasicURLParser::parseBasicUrl(
+                $value,
+                null,
+                null,
+                $this->url,
+                BasicURLParser::HOST_STATE
+            );
+        } elseif ($name === 'hostname') {
+            if ($this->url->cannotBeABaseUrl) {
+                // Terminate these steps
+                return;
+            }
 
-            case 'host':
-                if ($this->url->cannotBeABaseUrl) {
-                    // Terminate these steps
-                    return;
-                }
+            BasicURLParser::parseBasicUrl(
+                $value,
+                null,
+                null,
+                $this->url,
+                BasicURLParser::HOSTNAME_STATE
+            );
+        } elseif ($name === 'href') {
+            $parsedURL = BasicURLParser::parseBasicUrl($value);
 
-                BasicURLParser::parseBasicUrl(
-                    $value,
-                    null,
-                    null,
-                    $this->url,
-                    BasicURLParser::HOST_STATE
-                );
+            if ($parsedURL === false) {
+                throw new TypeError($value . ' is not a valid URL.');
+                return;
+            }
 
-                break;
+            $this->url = $parsedURL;
+            $this->queryObject->setUrl($this->url);
+            $this->queryObject->clear();
 
-            case 'hostname':
-                if ($this->url->cannotBeABaseUrl) {
-                    // Terminate these steps
-                    return;
-                }
+            if ($this->url->query !== null) {
+                $this->queryObject->modify($this->urldecodeString(
+                    $this->url->query
+                ));
+            }
+        } elseif ($name === 'password') {
+            if ($this->url->cannotHaveUsernamePasswordPort()) {
+                return;
+            }
 
-                BasicURLParser::parseBasicUrl(
-                    $value,
-                    null,
-                    null,
-                    $this->url,
-                    BasicURLParser::HOSTNAME_STATE
-                );
+            $this->url->setPassword($value);
+        } elseif ($name === 'pathname') {
+            if ($this->url->cannotBeABaseUrl) {
+                // Terminate these steps
+                return;
+            }
 
-                break;
+            $this->url->path = [];
+            BasicURLParser::parseBasicUrl(
+                $value,
+                null,
+                null,
+                $this->url,
+                BasicURLParser::PATH_START_STATE
+            );
+        } elseif ($name === 'port') {
+            if ($this->url->cannotHaveUsernamePasswordPort()) {
+                return;
+            }
 
-            case 'href':
-                $parsedURL = BasicURLParser::parseBasicUrl($value);
+            if ($value === '') {
+                $this->url->port = null;
+                return;
+            }
 
-                if ($parsedURL === false) {
-                    throw new TypeError($value . ' is not a valid URL.');
-                    return;
-                }
-
-                $this->url = $parsedURL;
-                $this->queryObject->setUrl($this->url);
+            BasicURLParser::parseBasicUrl(
+                $value,
+                null,
+                null,
+                $this->url,
+                BasicURLParser::PORT_STATE
+            );
+        } elseif ($name === 'protocol') {
+            BasicURLParser::parseBasicUrl(
+                $value . ':',
+                null,
+                null,
+                $this->url,
+                BasicURLParser::SCHEME_START_STATE
+            );
+        } elseif ($name === 'search') {
+            if ($value === '') {
+                $this->url->query = null;
                 $this->queryObject->clear();
 
-                if ($this->url->query !== null) {
-                    $this->queryObject->modify($this->urldecodeString(
-                        $this->url->query
-                    ));
-                }
+                return;
+            }
 
-                break;
+            $input = $value;
 
-            case 'password':
-                if ($this->url->cannotHaveUsernamePasswordPort()) {
-                    return;
-                }
+            if (mb_substr($input, 0, 1, 'UTF-8') === '?') {
+                $input = mb_substr($input, 1, null, 'UTF-8');
+            }
 
-                $this->url->setPassword($value);
+            $this->url->query = '';
+            BasicURLParser::parseBasicUrl(
+                $input,
+                null,
+                null,
+                $this->url,
+                BasicURLParser::QUERY_STATE
+            );
+            $this->queryObject->modify($this->urldecodeString($input));
+        } elseif ($name === 'username') {
+            if ($this->url->cannotHaveUsernamePasswordPort()) {
+                return;
+            }
 
-                break;
-
-            case 'pathname':
-                if ($this->url->cannotBeABaseUrl) {
-                    // Terminate these steps
-                    return;
-                }
-
-                $this->url->path = [];
-                BasicURLParser::parseBasicUrl(
-                    $value,
-                    null,
-                    null,
-                    $this->url,
-                    BasicURLParser::PATH_START_STATE
-                );
-
-                break;
-
-            case 'port':
-                if ($this->url->cannotHaveUsernamePasswordPort()) {
-                    return;
-                }
-
-                if ($value === '') {
-                    $this->url->port = null;
-                    return;
-                }
-
-                BasicURLParser::parseBasicUrl(
-                    $value,
-                    null,
-                    null,
-                    $this->url,
-                    BasicURLParser::PORT_STATE
-                );
-
-                break;
-
-            case 'protocol':
-                BasicURLParser::parseBasicUrl(
-                    $value . ':',
-                    null,
-                    null,
-                    $this->url,
-                    BasicURLParser::SCHEME_START_STATE
-                );
-
-                break;
-
-            case 'search':
-                if ($value === '') {
-                    $this->url->query = null;
-                    $this->queryObject->clear();
-
-                    return;
-                }
-
-                $input = $value;
-
-                if (mb_substr($input, 0, 1, 'UTF-8') === '?') {
-                    $input = mb_substr($input, 1, null, 'UTF-8');
-                }
-
-                $this->url->query = '';
-                BasicURLParser::parseBasicUrl(
-                    $input,
-                    null,
-                    null,
-                    $this->url,
-                    BasicURLParser::QUERY_STATE
-                );
-                $this->queryObject->modify($this->urldecodeString($input));
-
-                break;
-
-            case 'username':
-                if ($this->url->cannotHaveUsernamePasswordPort()) {
-                    return;
-                }
-
-                $this->url->setUsername($value);
-
-                break;
-
-            default:
-                throw new InvalidArgumentException(
-                    $name . ' is not a valid property.'
-                );
+            $this->url->setUsername($value);
+        } else {
+            throw new InvalidArgumentException(
+                $name . ' is not a valid property.'
+            );
         }
     }
 

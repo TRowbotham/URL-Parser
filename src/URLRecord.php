@@ -217,41 +217,42 @@ class URLRecord
      */
     public function getOrigin()
     {
-        switch ($this->scheme) {
-            case 'blob':
-                $url = BasicURLParser::parseBasicUrl($this->path[0]);
+        if ($this->scheme === 'blob') {
+            $url = BasicURLParser::parseBasicUrl($this->path[0]);
 
-                if ($url === false) {
-                    // Return a new opaque origin
-                    return Origin::createOpaqueOrigin();
-                }
-
-                return $url->getOrigin();
-
-            case 'ftp':
-            case 'gopher':
-            case 'http':
-            case 'https':
-            case 'ws':
-            case 'wss':
-                // Return a tuple consiting of URL's scheme, host, port, and
-                // null
-                return Origin::createTupleOrigin(
-                    $this->scheme,
-                    $this->host,
-                    $this->port,
-                    null
-                );
-
-            case 'file':
-                // Unfortunate as it is, this is left as an exercise to the
-                // reader. When in doubt, return a new opaque origin.
+            if ($url === false) {
+                // Return a new opaque origin
                 return Origin::createOpaqueOrigin();
+            }
 
-            default:
-                // Return a new opaque origin.
-                return Origin::createOpaqueOrigin();
+            return $url->getOrigin();
         }
+
+        if ($this->scheme === 'ftp'
+            || $this->scheme === 'gopher'
+            || $this->scheme === 'http'
+            || $this->scheme === 'https'
+            || $this->scheme === 'ws'
+            || $this->scheme === 'wss'
+        ) {
+            // Return a tuple consiting of URL's scheme, host, port, and
+            // null
+            return Origin::createTupleOrigin(
+                $this->scheme,
+                $this->host,
+                $this->port,
+                null
+            );
+        }
+
+        if ($this->scheme === 'file') {
+            // Unfortunate as it is, this is left as an exercise to the
+            // reader. When in doubt, return a new opaque origin.
+            return Origin::createOpaqueOrigin();
+        }
+
+        // Return a new opaque origin.
+        return Origin::createOpaqueOrigin();
     }
 
     /**
