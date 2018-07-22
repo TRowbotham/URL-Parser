@@ -186,7 +186,10 @@ class Host
 
         return IDN::getInstance()->toUnicode(
             $result,
-            IDN::CHECK_BIDI | IDN::CHECK_JOINERS | IDN::USE_STD3_ASCII_RULES
+            IDN::CHECK_BIDI
+            | IDN::CHECK_JOINERS
+            | IDN::USE_STD3_ASCII_RULES
+            | IDN::NONTRANSITIONAL_PROCESSING
         ) !== false;
     }
 
@@ -266,7 +269,9 @@ class Host
             return false;
         }
 
-        $options = IDN::CHECK_BIDI | IDN::CHECK_JOINERS;
+        $options = IDN::CHECK_BIDI
+            | IDN::CHECK_JOINERS
+            | IDN::NONTRANSITIONAL_PROCESSING;
         $result = IDN::getInstance()->toUnicode($this->host, $options);
 
         if ($result === false) {
@@ -288,8 +293,9 @@ class Host
      */
     private static function domainToASCII($domain, $beStrict = false)
     {
-        $options = IDN::CHECK_BIDI | IDN::CHECK_JOINERS |
-            IDN::NONTRANSITIONAL_PROCESSING;
+        $options = IDN::CHECK_BIDI
+            | IDN::CHECK_JOINERS
+            | IDN::NONTRANSITIONAL_PROCESSING;
 
         if ($beStrict) {
             $options |= IDN::USE_STD3_ASCII_RULES | IDN::VERIFY_DNS_LENGTH;

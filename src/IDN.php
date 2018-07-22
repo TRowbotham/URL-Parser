@@ -142,7 +142,12 @@ final class IDN
      */
     public function toUnicode($domainName, $flags = 0)
     {
-        $options = $this->options($flags) | IDNA_NONTRANSITIONAL_TO_UNICODE;
+        $options = $this->options($flags);
+
+        if ($flags & self::NONTRANSITIONAL_PROCESSING) {
+            $options |= IDNA_NONTRANSITIONAL_TO_UNICODE;
+        }
+
         $result = idn_to_utf8(
             $domainName,
             $options,
