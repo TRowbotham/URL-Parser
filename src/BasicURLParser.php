@@ -1,6 +1,8 @@
 <?php
 namespace Rowbot\URL;
 
+use Rowbot\URL\Exception\InvalidParserState;
+
 use function array_pop;
 use function array_shift;
 use function count;
@@ -348,6 +350,14 @@ class BasicURLParser
                     $retVal = $parser->fragmentState($c);
 
                     break;
+
+                default:
+                    // This should never happen and indicates an error on my
+                    // part as we should be passing in one of the valid states
+                    // defined above.
+                    throw new InvalidParserState(
+                        "Invalid parser state ({$parser->state})."
+                    );
             }
 
             if ($retVal === self::RETURN_FAILURE) {
