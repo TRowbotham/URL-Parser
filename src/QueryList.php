@@ -100,14 +100,7 @@ class QueryList implements Countable, Iterator
      */
     public function contains($name)
     {
-        if (isset($this->cache[$name])) {
-            return $this->cache[$name];
-        }
-
-        $exists = in_array($name, $this->list, true);
-        $this->cache[$name] = $exists;
-
-        return $exists;
+        return isset($this->cache[$name]);
     }
 
     /**
