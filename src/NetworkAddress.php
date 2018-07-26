@@ -6,7 +6,7 @@ interface NetworkAddress
     /**
      * Checks to see if two NetworkAddresses are equal.
      *
-     * @param self|string $address Another NetworkAddress or a string.
+     * @param self|string|null $address Another NetworkAddress, string, or null.
      *
      * @return bool
      */

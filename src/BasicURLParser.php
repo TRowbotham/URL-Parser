@@ -119,33 +119,17 @@ class BasicURLParser
     private $stateOverride;
 
     /**
-     * @var \Rowbot\URL\URLRecord|null
+     * @var \Rowbot\URL\URLRecord
      */
     private $url;
 
     /**
      * Constructor.
      *
-     * @param string                     $input
-     * @param \Rowbot\URL\URLRecord|null $base             (optional)
-     * @param string|null                $encodingOverride (optional)
-     * @param \Rowbot\URL\URLRecord|null $url              (optional)
-     * @param int|null                   $stateOverride    (optional)
-     *
      * @return void
      */
-    protected function __construct(
-        $input,
-        URLRecord $base = null,
-        $encodingOverride = null,
-        URLRecord $url = null,
-        $stateOverride = null
-    ) {
-        $this->input = $input;
-        $this->base = $base;
-        $this->encodingOverride = $encodingOverride;
-        $this->url = $url;
-        $this->stateOverride = $stateOverride;
+    private function __construct()
+    {
     }
 
     /**
@@ -185,17 +169,14 @@ class BasicURLParser
         URLRecord $url = null,
         $stateOverride = null
     ) {
-        $parser = new static(
-            $input,
-            $base,
-            $encodingOverride,
-            $url,
-            $stateOverride
-        );
+        $parser = new self();
+        $parser->input = $input;
+        $parser->base = $base;
+        $parser->encodingOverride = $encodingOverride;
+        $parser->stateOverride = $stateOverride;
+        $parser->url = $url ?: new URLRecord();
 
-        if ($parser->url === null) {
-            $parser->url = new URLRecord();
-
+        if ($url === null) {
             // Remove any leading or trailing C0 control and space characters.
             $parser->input = preg_replace(
                 '/^[\x00-\x1F\x20]+|[\x00-\x1F\x20]+$/u',
@@ -950,15 +931,9 @@ class BasicURLParser
                     return self::RETURN_FAILURE;
                 }
 
-                $isSpecial = $this->url->isSpecial();
-
-                if ($isSpecial) {
-                    $defaultPort = URLUtils::$specialSchemes[
-                        $this->url->scheme
-                    ];
-                }
-
-                if ($isSpecial && $defaultPort === $port) {
+                if (isset(URLUtils::$specialSchemes[$this->url->scheme])
+                    && URLUtils::$specialSchemes[$this->url->scheme] === $port
+                ) {
                     $this->url->port = null;
                 } else {
                     $this->url->port = $port;
@@ -1101,6 +1076,8 @@ class BasicURLParser
 
         $this->state = self::PATH_STATE;
         --$this->pointer;
+
+        return self::RETURN_OK;
     }
 
     /**

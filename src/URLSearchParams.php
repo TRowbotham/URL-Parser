@@ -246,7 +246,7 @@ class URLSearchParams implements Iterator
      *
      * @param string $name The name of the key whose value you want to retrive.
      *
-     * @return string The value of the specified key.
+     * @return string|null The value of the specified key.
      */
     public function get($name)
     {
