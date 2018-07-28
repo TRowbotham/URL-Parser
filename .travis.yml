@@ -9,13 +9,7 @@ php:
 
 matrix:
   fast_finish: true
-
-  # There are known failures due to a bug in PHP
   allow_failures:
-    - php: 5.6
-    - php: 7.0
-    - php: 7.1
-    - php: 7.2
     - php: nightly
 
 install:
