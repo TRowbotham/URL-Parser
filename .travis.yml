@@ -13,7 +13,7 @@ matrix:
     - php: nightly
 
 install:
-  - composer require satooshi/php-coveralls:^2.1
+  - composer require php-coveralls/php-coveralls:^2.1
   - composer install --no-interaction
 
 before_script:
