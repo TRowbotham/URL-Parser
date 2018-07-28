@@ -19,7 +19,7 @@ install:
 before_script:
   - mkdir -p build/logs
 
-scripts:
+script:
  - ./vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml
 
 after_success:
