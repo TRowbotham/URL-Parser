@@ -13,4 +13,14 @@ matrix:
     - php: nightly
 
 install:
+  - composer require satooshi/php-coveralls:^2.1
   - composer install --no-interaction
+
+before_script:
+  - mkdir -p build/logs
+
+scripts:
+ - ./vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml
+
+after_success:
+  - travis_retry php vendor/bin/php-coveralls
