@@ -9,3 +9,6 @@ php:
 
 matrix:
   fast_finish: true
+
+install:
+  - composer install --no-interaction
