@@ -1,4 +1,10 @@
 # URL-Parser
+[![GitHub](https://img.shields.io/github/license/TRowbotham/URL-Parser.svg?style=flat-square)](https://github.com/TRowbotham/URL-Parser/blob/master/LICENSE)
+[![Travis (.com)](https://img.shields.io/travis/com/TRowbotham/URL-Parser.svg?style=flat-square)](https://travis-ci.com/TRowbotham/URL-Parser)
+[![Coverage Status](https://img.shields.io/coveralls/github/TRowbotham/URL-Parser.svg?style=flat-square)](https://coveralls.io/github/TRowbotham/URL-Parser?branch=master)
+[![Packagist](https://img.shields.io/packagist/v/rowbot/url.svg?style=flat-square)](https://packagist.org/packages/rowbot/url)
+[![PHP version from PHP-Eye](https://php-eye.com/badge/rowbot/url/tested.svg?style=flat-square)](https://php-eye.com/package/rowbot/url)
+[![Packagist](https://img.shields.io/packagist/dt/rowbot/url.svg?style=flat-square)](https://packagist.org/packages/rowbot/url)
 
 A [WHATWG URL](https://url.spec.whatwg.org/) spec compliant URL parser for working with URLs and their query strings.
 
