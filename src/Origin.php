@@ -90,7 +90,7 @@ class Origin
             return 'null';
         }
 
-        if ($this->domain) {
+        if ($this->domain !== null) {
             return $this->domain;
         }
 

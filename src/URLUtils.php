@@ -55,6 +55,11 @@ abstract class URLUtils
     const USERINFO_PERCENT_ENCODE_SET   = self::PATH_PERCENT_ENCODE_SET
         . '\/:;=@[\\\\\]^|';
 
+    /**
+     * @see https://url.spec.whatwg.org/#special-scheme
+     *
+     * @var array<string, int|string>
+     */
     public static $specialSchemes = [
         'ftp'    => 21,
         'file'   => '',
@@ -81,10 +86,10 @@ abstract class URLUtils
         for ($i = 0, $len = strlen($byteSequence); $i < $len; $i++) {
             if ($byteSequence[$i] !== '%') {
                 $output .= $byteSequence[$i];
-            } elseif (!preg_match(
+            } elseif (preg_match(
                 '/%[A-Fa-f0-9]{2}/',
                 substr($byteSequence, $i, 3)
-            )) {
+            ) !== 1) {
                 $output .= $byteSequence[$i];
             } else {
                 // TODO: utf-8 decode without BOM
@@ -114,7 +119,7 @@ abstract class URLUtils
         $codePoint,
         $percentEncodedSet = self::C0_CONTROL_PERCENT_ENCODE_SET
     ) {
-        if (!preg_match('/[' . $percentEncodedSet . ']/u', $codePoint)) {
+        if (preg_match('/[' . $percentEncodedSet . ']/u', $codePoint) !== 1) {
             return $codePoint;
         }
 

@@ -12,14 +12,14 @@ use function mb_substr;
 class IPv6Address implements NetworkAddress
 {
     /**
-     * @var int[]
+     * @var array<int, int>
      */
     private $address;
 
     /**
      * Constructor.
      *
-     * @param int[] $address
+     * @param array<int, int> $address
      *
      * @return void
      */
@@ -118,7 +118,7 @@ class IPv6Address implements NetworkAddress
                         return false;
                     }
 
-                    while (ctype_digit($c)) {
+                    do {
                         $number = (int) $c;
 
                         if ($ipv4Piece === null) {
@@ -136,7 +136,7 @@ class IPv6Address implements NetworkAddress
                         }
 
                         $c = mb_substr($input, ++$pointer, 1, 'UTF-8');
-                    }
+                    } while (ctype_digit($c));
 
                     $address[$pieceIndex] = $address[
                         $pieceIndex
@@ -183,7 +183,7 @@ class IPv6Address implements NetworkAddress
                 $pieceIndex--;
                 $swaps--;
             }
-        } elseif ($compress === null && $pieceIndex != 8) {
+        } elseif ($pieceIndex != 8) {
             // Validation error.
             return false;
         }

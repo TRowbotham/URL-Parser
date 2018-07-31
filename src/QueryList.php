@@ -295,7 +295,7 @@ class QueryList implements Countable, Iterator
     /**
      * Rewinds the iterator to the beginning.
      *
-     * @void
+     * @return void
      */
     public function rewind()
     {

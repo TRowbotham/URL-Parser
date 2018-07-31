@@ -369,7 +369,7 @@ class URLSearchParams implements Iterator
      */
     protected function update()
     {
-        if (!$this->url) {
+        if ($this->url === null) {
             return;
         }
 

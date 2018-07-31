@@ -37,6 +37,12 @@ final class IDN
      * @var self
      */
     private static $instance;
+
+    /**
+     * @see https://secure.php.net/manual/en/intl.constants.php
+     *
+     * @var int
+     */
     private static $errors = IDNA_ERROR_EMPTY_LABEL
         | IDNA_ERROR_LABEL_TOO_LONG
         | IDNA_ERROR_DOMAIN_NAME_TOO_LONG
@@ -86,7 +92,7 @@ final class IDN
     {
         $options = $this->options($flags);
 
-        if ($flags & self::NONTRANSITIONAL_PROCESSING) {
+        if (($flags & self::NONTRANSITIONAL_PROCESSING) !== 0) {
             $options |= IDNA_NONTRANSITIONAL_TO_ASCII;
         }
 
@@ -109,7 +115,7 @@ final class IDN
         // length. So, whitelist some errors to check against. Normally, a
         // domain name is restricted to between 1 and 253 bytes. This excludes
         // the root domain and its '.' delimiter.
-        if (!($flags & self::VERIFY_DNS_LENGTH)) {
+        if (($flags & self::VERIFY_DNS_LENGTH) === 0) {
             // If the domain name is the empty string, simply return the empty
             // string as no other rules can possibly apply to it.
             if ($domainName === '') {
@@ -124,7 +130,7 @@ final class IDN
         $whitelistedErrors |= $this->maybeWhitelistHyphenErrors($flags);
 
         if ($result === false
-            && ((self::$errors & ~$whitelistedErrors) & $info['errors'])
+            && ((self::$errors & ~$whitelistedErrors) & $info['errors']) !== 0
         ) {
             return false;
         }
@@ -144,7 +150,7 @@ final class IDN
     {
         $options = $this->options($flags);
 
-        if ($flags & self::NONTRANSITIONAL_PROCESSING) {
+        if (($flags & self::NONTRANSITIONAL_PROCESSING) !== 0) {
             $options |= IDNA_NONTRANSITIONAL_TO_UNICODE;
         }
 
@@ -165,7 +171,7 @@ final class IDN
         $whitelistedErrors = $this->maybeWhitelistHyphenErrors($flags);
 
         if ($result === false
-            && ((self::$errors & ~$whitelistedErrors) & $info['errors'])
+            && ((self::$errors & ~$whitelistedErrors) & $info['errors']) !== 0
         ) {
             return false;
         }
@@ -185,15 +191,15 @@ final class IDN
     {
         $options = 0;
 
-        if ($flags & self::CHECK_BIDI) {
+        if (($flags & self::CHECK_BIDI) !== 0) {
             $options |= IDNA_CHECK_BIDI;
         }
 
-        if ($flags & self::CHECK_JOINERS) {
+        if (($flags & self::CHECK_JOINERS) !== 0) {
             $options |= IDNA_CHECK_CONTEXTJ;
         }
 
-        if ($flags & self::USE_STD3_ASCII_RULES) {
+        if (($flags & self::USE_STD3_ASCII_RULES) !== 0) {
             $options |= IDNA_USE_STD3_RULES;
         }
 
@@ -213,7 +219,7 @@ final class IDN
         // There is currently no way to disable the check for hyphens in the
         // 3rd and 4th spots in a domain, however, we can look for the
         // error and add it to a whitelist of errors to check against.
-        if ($flags & self::CHECK_HYPHENS) {
+        if (($flags & self::CHECK_HYPHENS) !== 0) {
             return 0;
         }
 

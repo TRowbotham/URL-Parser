@@ -200,7 +200,7 @@ class URLRecord
             && preg_match(
                 URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
                 $this->path[0]
-            )
+            ) === 1
         ) {
             return;
         }

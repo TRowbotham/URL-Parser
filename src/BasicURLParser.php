@@ -48,11 +48,22 @@ class BasicURLParser
     const RETURN_FAILURE   = 2;
     const RETURN_TERMINATE = 3;
 
+    /**
+     * @see https://url.spec.whatwg.org/#single-dot-path-segment
+     *
+     * @var array<string, string>
+     */
     private static $singleDotPathSegment = [
         '.'   => '',
         '%2e' => '',
         '%2E' => ''
     ];
+
+    /**
+     * @see https://url.spec.whatwg.org/#double-dot-path-segment
+     *
+     * @var array<string, string>
+     */
     private static $doubleDotPathSegment = [
         '..'     => '',
         '.%2e'   => '',
@@ -211,7 +222,7 @@ class BasicURLParser
 
         // TODO: If encoding override is given, set it to the result of the
         // getting an output encoding algorithm.
-        if ($parser->encodingOverride) {
+        if ($parser->encodingOverride !== null) {
             $parser->encoding = $parser->encodingOverride;
         }
 
@@ -370,7 +381,7 @@ class BasicURLParser
      */
     private function schemeStartState($c)
     {
-        if (preg_match(URLUtils::REGEX_ASCII_ALPHA, $c)) {
+        if (preg_match(URLUtils::REGEX_ASCII_ALPHA, $c) === 1) {
             $this->buffer .= strtolower($c);
             $this->state = self::SCHEME_STATE;
 
@@ -399,7 +410,7 @@ class BasicURLParser
      */
     private function schemeState($c)
     {
-        if (preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c)
+        if (preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c) === 1
             || $c === '+'
             || $c === '-'
             || $c === '.'
@@ -921,7 +932,7 @@ class BasicURLParser
             return self::RETURN_OK;
         } elseif (($c === ''/* EOF */ || $c === '/' || $c === '?' || $c === '#')
             || ($this->url->isSpecial() && $c === '\\')
-            || $this->stateOverride
+            || $this->stateOverride !== null
         ) {
             if ($this->buffer !== '') {
                 $port = intval($this->buffer, 10);
@@ -1001,7 +1012,7 @@ class BasicURLParser
 
             // This is a (platform-independent) Windows drive
             // letter quirk.
-            if (!preg_match(
+            if (preg_match(
                 URLUtils::STARTS_WITH_WINDOWS_DRIVE_LETTER,
                 mb_substr(
                     $this->input,
@@ -1009,7 +1020,7 @@ class BasicURLParser
                     null,
                     $this->encoding
                 )
-            )) {
+            ) !== 1) {
                 $this->url->host = clone $this->base->host;
                 $this->url->path = $this->base->path;
                 $this->url->shortenPath();
@@ -1050,7 +1061,7 @@ class BasicURLParser
 
         if ($this->base !== null
             && $this->base->scheme === 'file'
-            && !preg_match(
+            && preg_match(
                 URLUtils::STARTS_WITH_WINDOWS_DRIVE_LETTER,
                 mb_substr(
                     $this->input,
@@ -1058,12 +1069,12 @@ class BasicURLParser
                     null,
                     $this->encoding
                 )
-            )
+            ) !== 1
         ) {
             if (preg_match(
                 URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
                 $this->base->path[0]
-            )) {
+            ) === 1) {
                 // This is a (platform-independent) Windows
                 // drive letter quirk. Both url’s and base’s
                 // host are null under these conditions and
@@ -1101,7 +1112,7 @@ class BasicURLParser
                 && preg_match(
                     URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
                     $this->buffer
-                )
+                ) === 1
             ) {
                 // Validation error
                 $this->state = self::PATH_STATE;
@@ -1136,7 +1147,7 @@ class BasicURLParser
 
             $this->url->host = $host;
 
-            if ($this->stateOverride) {
+            if ($this->stateOverride !== null) {
                 return self::RETURN_TERMINATE;
             }
 
@@ -1199,7 +1210,7 @@ class BasicURLParser
         if ($c === ''/* EOF */
             || $c === '/'
             || ($this->url->isSpecial() && $c === '\\')
-            || (!$this->stateOverride && ($c === '?' || $c === '#'))
+            || ($this->stateOverride === null && ($c === '?' || $c === '#'))
         ) {
             $urlIsSpecial = $this->url->isSpecial();
 
@@ -1226,7 +1237,7 @@ class BasicURLParser
                     && preg_match(
                         URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
                         $this->buffer
-                    )
+                    ) === 1
                 ) {
                     if (!$this->url->host->isEmpty()
                         && !$this->url->host->isNull()
@@ -1273,7 +1284,7 @@ class BasicURLParser
             return self::RETURN_OK;
         }
 
-        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c)
+        if (preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1
             && $c !== '%'
         ) {
             // Validation error
@@ -1313,7 +1324,7 @@ class BasicURLParser
         }
 
         if ($c !== ''/* EOF */ &&
-            !preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c)
+            preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1
             && $c !== '%'
         ) {
             // Validation error.
@@ -1355,7 +1366,7 @@ class BasicURLParser
             $this->url->fragment = '';
             $this->state = self::FRAGMENT_STATE;
         } elseif ($c !== ''/* EOF */) {
-            if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c)
+            if (preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1
                 && $c !== '%'
             ) {
                 // Validation error.
@@ -1417,7 +1428,9 @@ class BasicURLParser
             return self::RETURN_OK;
         }
 
-        if (!preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) && $c !== '%') {
+        if (preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1 &&
+            $c !== '%'
+        ) {
             // Validation error.
         }
 

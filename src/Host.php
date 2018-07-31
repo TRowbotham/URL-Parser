@@ -89,7 +89,7 @@ class Host
             return false;
         }
 
-        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $asciiDomain)) {
+        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $asciiDomain) === 1) {
             // Syntax violation
             return false;
         }
@@ -119,7 +119,7 @@ class Host
     private static function parseOpaqueHost($input)
     {
         // Match a forbidden host code point, minus the "%" character.
-        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $input, $matches)
+        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $input, $matches) === 1
             && $matches[0] !== '%'
         ) {
             return false;
