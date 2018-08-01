@@ -24,7 +24,7 @@ before_script:
 
 script:
   - if [[ $SKIP_STATIC_ANALYSIS != true ]]; then ./vendor/bin/phpstan analyse -c phpstan-ci.neon -l max src; fi
-  - $phpunit_flags="--verbose --coverage-clover build/logs/clover.xml"
+  - phpunit_flags="--verbose --coverage-clover build/logs/clover.xml"
   - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then ./vendor/bin/phpunit $phpunit_flags; fi
   - if [[ $TRAVIS_PHP_VERSION == nightly ]]; then phpdbg -qrr ./vendor/bin/phpunit $phpunit_flags; fi
 
