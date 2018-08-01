@@ -20,7 +20,9 @@ before_script:
   - mkdir -p build/logs
 
 script:
- - ./vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml
+  - $phpunit_flags="--verbose --coverage-clover build/logs/clover.xml"
+  - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then ./vendor/bin/phpunit $phpunit_flags; fi
+  - if [[ $TRAVIS_PHP_VERSION == nightly ]]; then phpdbg -qrr ./vendor/bin/phpunit $phpunit_flags; fi
 
 after_success:
   - travis_retry php vendor/bin/php-coveralls
