@@ -35,8 +35,7 @@ class IPv6Address implements NetworkAddress
      *
      * @param string $input An IPv6 address.
      *
-     * @return self|false Returns an array if the string was successfully parsed as an IPv6 address or false if the
-     *                    input is not an IPv6 address.
+     * @return self|false Returns an instance of itself, or false if the input is not a valid IPv6 address.
      */
     public static function parse($input)
     {
