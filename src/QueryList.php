@@ -2,13 +2,12 @@
 namespace Rowbot\URL;
 
 use Countable;
+use IntlBreakIterator;
 use Iterator;
 
 use function count;
 use function array_filter;
 use function array_splice;
-use function mb_convert_encoding;
-use function strlen;
 use function usort;
 
 class QueryList implements Countable, Iterator
@@ -158,49 +157,128 @@ class QueryList implements Countable, Iterator
      */
     public function sort()
     {
-        $array = [];
+        $temp = [];
         $i = 0;
 
+        // Add information about the relative position of each name-value pair.
         foreach ($this->list as $pair) {
-            $array[] = [$i++, $pair];
+            $temp[] = [$i++, $pair];
         }
 
-        usort($array, function ($a, $b) {
-            $len1 = strlen(mb_convert_encoding(
-                $a[1]['name'],
-                'UTF-16LE',
-                'UTF-8'
-            )) / 2;
-            $len2 = strlen(mb_convert_encoding(
-                $b[1]['name'],
-                'UTF-16LE',
-                'UTF-8'
-            )) / 2;
+        // Gasp! What is this black magic?
+        $breakIterator1 = IntlBreakIterator::createCodePointInstance();
+        $breakIterator2 = IntlBreakIterator::createCodePointInstance();
+        $iterator1 = $breakIterator1->getPartsIterator();
+        $iterator2 = $breakIterator2->getPartsIterator();
 
-            // Firstly, sort by number of code units.
-            if ($len1 > $len2) {
-                return -1;
-            } elseif ($len1 < $len2) {
-                return 1;
-            }
+        // Sorting priority overview:
+        //
+        // Each string is compared character by character against each other.
+        //
+        // 1) If the two strings have different lengths, and the strings are
+        //    equal up to the end of the shortest string, then the shorter of
+        //    the two strings will be moved up in the array (ex. "aa" will come
+        //    before "aaa").
+        // 2) If the number of code units differ between the two characters,
+        //    then the character with more code units will be moved up in the
+        //    array (ex. "🌈" will come before "ﬃ").
+        // 3) If the code points of the two characters are different, then the
+        //    first string with a character with a lower code point will be
+        //    moved up in the array (ex. "bba" will come before "bbb").
+        usort($temp, function (
+            $a,
+            $b
+        ) use (
+            $breakIterator1,
+            $breakIterator2,
+            $iterator1,
+            $iterator2
+        ) {
+            $breakIterator1->setText($a[1]['name']);
+            $breakIterator2->setText($b[1]['name']);
+            $iterator1->rewind();
+            $iterator2->rewind();
 
-            // If the number of code units is the same, fallback to sorting by
-            // codepoints.
-            if ($a[1]['name'] > $b[1]['name']) {
-                return 1;
-            } elseif ($a[1]['name'] < $b[1]['name']) {
-                return -1;
+            while (true) {
+                $aIsValid = $iterator1->valid();
+                $bIsValid = $iterator2->valid();
+
+                if (!$aIsValid && !$bIsValid) {
+                    // If we have reached this point then there are 2
+                    // possibilities:
+                    //
+                    // 1) Both $a and $b are an empty string.
+                    // 2) Both $a and $b have the same length and are considered
+                    //    equal to each other.
+                    //
+                    // In either case, break out of the loop as we now need to
+                    // compare the relative position of $a and $b to each other
+                    // to settle the tie.
+                    break;
+                }
+
+                if (!$aIsValid) {
+                    // If we have reached this point then there are 2
+                    // possibilities:
+                    //
+                    // 1) $a is an empty string and $b is not.
+                    // 2) $a is a non-empty string, but its length is shorter
+                    //    than $b.
+                    //
+                    // $a and $b are considered equal thus far, but $a is
+                    // shorter so it gets to come before $b.
+                    return -1;
+                }
+
+                if (!$bIsValid) {
+                    // If we have reached this point then there are 2
+                    // possibilities:
+                    //
+                    // 1) $b is an empty string and $a is not.
+                    // 2) $b is a non-empty string, but its length is shorter
+                    //    than $a.
+                    //
+                    // $a and $b are considered equal thus far, but $b is
+                    // shorter so it gets to come before $a.
+                    return 1;
+                }
+
+                $aCodePoint = $breakIterator1->getLastCodePoint();
+                $bCodePoint = $breakIterator2->getLastCodePoint();
+
+                // JavaScript likes to be fancy by using UTF-16 encoded strings.
+                // In UTF-16, all code points in the Basic Multilingual Plane
+                // (BMP) are represented by a single code unit. Code points
+                // outside of the BMP (> 0xFFFF) are represented by 2 code
+                // units.
+                $aCodeUnits = $aCodePoint > 0xFFFF ? 2 : 1;
+                $bCodeUnits = $bCodePoint > 0xFFFF ? 2 : 1;
+
+                if ($aCodeUnits > $bCodeUnits) {
+                    return -1;
+                } elseif ($aCodeUnits < $bCodeUnits) {
+                    return 1;
+                } elseif ($aCodePoint > $bCodePoint) {
+                    return 1;
+                } elseif ($aCodePoint < $bCodePoint) {
+                    return -1;
+                }
+
+                $iterator1->next();
+                $iterator2->next();
             }
 
             // Finally, if all else is equal, sort by relative position.
             return $a[0] - $b[0];
         });
 
-        foreach ($array as &$item) {
+        // Remove the relative positioning information so that $temp only
+        // contains the sorted name-value pairs.
+        foreach ($temp as &$item) {
             $item = $item[1];
         }
 
-        $this->list = $array;
+        $this->list = $temp;
     }
 
     /**
