@@ -24,7 +24,7 @@ class QueryList implements Countable, Iterator
     private $cursor;
 
     /**
-     * @var array<array<string, string>>
+     * @var array<int, array<string, string>>
      */
     private $list;
 
@@ -107,7 +107,7 @@ class QueryList implements Countable, Iterator
      *
      * @param callable $callback
      *
-     * @return array<array<string, string>>
+     * @return array<int, array<string, string>>
      */
     public function filter(callable $callback)
     {
@@ -218,7 +218,7 @@ class QueryList implements Countable, Iterator
      * Clears the collection and cache and then fills the collection with the
      * new name-value pairs in $list.
      *
-     * @param array<array<string, string>> $list
+     * @param array<int, array<string, string>> $list
      *
      * @return void
      */
@@ -236,7 +236,7 @@ class QueryList implements Countable, Iterator
     /**
      * Returns the entire collection as an array.
      *
-     * @return array<array<string, string>>
+     * @return array<int, array<string, string>>
      */
     public function all()
     {

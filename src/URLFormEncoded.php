@@ -25,7 +25,7 @@ trait URLFormEncoded
      *
      * @param string $input
      *
-     * @return array<array<string, string>>
+     * @return array<int, array<string, string>>
      */
     private function urldecode($input)
     {
@@ -82,7 +82,7 @@ trait URLFormEncoded
      *
      * @param string $input
      *
-     * @return array<array<string, string>>
+     * @return array<int, array<string, string>>
      */
     private function urldecodeString($input)
     {
@@ -130,7 +130,7 @@ trait URLFormEncoded
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-serializer
      *
-     * @param array<array<string, string>> $tuples
+     * @param array<int, array<string, string>> $tuples
      * @param ?string                      $encodingOverride (optional)
      *
      * @return string

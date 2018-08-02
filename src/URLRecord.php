@@ -45,7 +45,7 @@ class URLRecord
     /**
      * A list of zero or more ASCII strings holding data.
      *
-     * @var string[]
+     * @var array<int, string>
      */
     public $path;
 

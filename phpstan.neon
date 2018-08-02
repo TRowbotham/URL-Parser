@@ -15,7 +15,7 @@ parameters:
 		- '#Parameter \#1 \$address of class Rowbot\\URL\\IPv6Address constructor expects array<int, int>, array<int, float\|int> given\.#'
 
 		# See https://github.com/phpstan/phpstan/issues/1311
-		- '#Property Rowbot\\URL\\QueryList::\$list \(array<array<string, string>>\) does not accept array<int, array<int, array<string, string>\|int>>\.#'
+		- '#Property Rowbot\\URL\\QueryList::\$list \(array<int, array<string, string>>\) does not accept array<int, array<int, array<string, string>\|int>>\.#'
 
 		# See https://github.com/phpstan/phpstan/issues/1215
 		- '#Strict comparison using === between string and false will always evaluate to false\.#'
