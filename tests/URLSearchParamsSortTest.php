@@ -72,6 +72,24 @@ class URLSearchParamsSortTest extends PHPUnit_Framework_TestCase
                     ["z", "u"],
                     ["z", "t"]
                 ]
+            ],
+            [
+                "input" => "bbb&bb&aaa&aa=x&aa=y",
+                "output" => [
+                    ["aa", "x"],
+                    ["aa", "y"],
+                    ["aaa", ""],
+                    ["bb", ""],
+                    ["bbb", ""]
+                ]
+            ],
+            [
+                "input" => "z=z&=f&=t&=x",
+                "output" => [["", "f"], ["", "t"], ["", "x"], ["z", "z"]]
+            ],
+            [
+                "input" => "a🌈&a💩",
+                "output" => [["a🌈", ""], ["a💩", ""]]
             ]
         ];
     }
