@@ -65,7 +65,6 @@ class URL implements JsonSerializable
 
             if ($parsedBase === false) {
                 throw new TypeError($base . ' is not a valid URL.');
-                return;
             }
         }
 
@@ -76,7 +75,6 @@ class URL implements JsonSerializable
 
         if ($parsedURL === false) {
             throw new TypeError($url . ' is not a valid URL.');
-            return;
         }
 
         $this->url = $parsedURL;
@@ -258,7 +256,6 @@ class URL implements JsonSerializable
 
             if ($parsedURL === false) {
                 throw new TypeError($value . ' is not a valid URL.');
-                return;
             }
 
             $this->url = $parsedURL;

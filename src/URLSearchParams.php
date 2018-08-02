@@ -165,7 +165,6 @@ class URLSearchParams implements Iterator
                         . 'interfaces. %s found instead.',
                         gettype($pair)
                     ));
-                    return;
                 }
 
                 if (count($pair) != 2) {
@@ -174,7 +173,6 @@ class URLSearchParams implements Iterator
                         . 'contained %d items.',
                         count($pair)
                     ));
-                    return;
                 }
             }
 
