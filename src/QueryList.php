@@ -31,16 +31,13 @@ class QueryList implements Countable, Iterator
     /**
      * Constructor.
      *
-     * @param array<array<string, string>> $list
-     *
      * @return void
      */
-    public function __construct(array $list = [])
+    public function __construct()
     {
         $this->list = [];
         $this->cache = [];
         $this->cursor = 0;
-        $this->appendAll($list);
     }
 
     /**
@@ -55,21 +52,6 @@ class QueryList implements Countable, Iterator
     {
         $this->list[] = ['name' => $name, 'value' => $value];
         $this->cache[$name] = true;
-    }
-
-    /**
-     * Appends all name-value pairs in $pairs to $list.
-     *
-     * @param array<array<string>> $pairs
-     *
-     * @return void
-     */
-    public function appendAll($pairs)
-    {
-        foreach ($pairs as $pair) {
-            $this->list[] = ['name' => $pair[0], 'value' => $pair[1]];
-            $this->cache[$pair[0]] = true;
-        }
     }
 
     /**
