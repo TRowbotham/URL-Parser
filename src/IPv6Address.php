@@ -195,14 +195,15 @@ class IPv6Address implements NetworkAddress
      * pieces that are 0 and sets $compress to the first 16-bit piece in that
      * sequence, otherwise $compress will remain null.
      *
-     * @param null $compress
-     *
-     * @return int
+     * @return array<int, int|null> The first item is the compress pointer, which indicates where in the address it can
+     *                              start compression, or null if the address isn't compressable. The second item is the
+     *                              the length of the longest sequence of zeroes.
      */
-    private function getLongestSequence(&$compress)
+    private function getLongestSequence()
     {
         $i = 0;
         $longestSequence = 1;
+        $compress = null;
 
         while ($i < 8) {
             if ($this->address[$i] == 0) {
@@ -226,7 +227,7 @@ class IPv6Address implements NetworkAddress
             ++$i;
         }
 
-        return $longestSequence;
+        return [$compress, $longestSequence];
     }
 
     /**
@@ -237,8 +238,7 @@ class IPv6Address implements NetworkAddress
     public function __toString()
     {
         $output = '';
-        $compress = null;
-        $longestSequence = $this->getLongestSequence($compress);
+        list($compress, $longestSequence) = $this->getLongestSequence();
         $pieceIndex = 0;
 
         while ($pieceIndex < 8) {
