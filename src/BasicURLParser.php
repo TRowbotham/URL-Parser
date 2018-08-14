@@ -1290,7 +1290,7 @@ class BasicURLParser
             // Validation error
         }
 
-        if ($c === '%' && !$this->isNextTwoCharsPercentEncoded()) {
+        if ($c === '%' && !$this->remainingStartsWithTwoAsciiHexDigits()) {
             // Validation error
         }
 
@@ -1330,7 +1330,7 @@ class BasicURLParser
             // Validation error.
         }
 
-        if ($c === '%' && !$this->isNextTwoCharsPercentEncoded()) {
+        if ($c === '%' && !$this->remainingStartsWithTwoAsciiHexDigits()) {
             // Validation error.
         }
 
@@ -1372,7 +1372,7 @@ class BasicURLParser
                 // Validation error.
             }
 
-            if ($c === '%' && !$this->isNextTwoCharsPercentEncoded()) {
+            if ($c === '%' && !$this->remainingStartsWithTwoAsciiHexDigits()) {
                 // Validation error.
             }
 
@@ -1434,7 +1434,7 @@ class BasicURLParser
             // Validation error.
         }
 
-        if ($c === '%' && !$this->isNextTwoCharsPercentEncoded()) {
+        if ($c === '%' && !$this->remainingStartsWithTwoAsciiHexDigits()) {
             // Validation error.
         }
 
@@ -1447,12 +1447,12 @@ class BasicURLParser
     }
 
     /**
-     * Determines if next two characters, starting from the current
-     * position in input, are percent encoded.
+     * Determines if next two characters, starting immediately after the current
+     * position in input, are ASCII hex digits.
      *
      * @return bool
      */
-    private function isNextTwoCharsPercentEncoded()
+    private function remainingStartsWithTwoAsciiHexDigits()
     {
         $remaining = mb_substr(
             $this->input,
