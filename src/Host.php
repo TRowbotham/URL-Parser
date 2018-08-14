@@ -7,7 +7,13 @@ use function preg_match;
 
 class Host
 {
-    const FORBIDDEN_HOST_CODEPOINT = '/[\x00\x09\x0A\x0D\x20#%\/:?@[\\\\\]]/u';
+    /**
+     * @see https://url.spec.whatwg.org/#forbidden-host-code-point
+     * @see https://url.spec.whatwg.org/#ref-for-forbidden-host-code-point%E2%91%A0
+     */
+    const FORBIDDEN_CODEPOINTS  = '\x00\x09\x0A\x0D\x20#\/:?@[\\\\\]';
+    const FORBIDDEN_HOST        = '/[' . self::FORBIDDEN_CODEPOINTS . '%]/u';
+    const FORBIDDEN_OPAQUE_HOST = '/[' . self::FORBIDDEN_CODEPOINTS . ']/u';
 
     /**
      * @var \Rowbot\URL\NetworkAddress|string|null
@@ -89,7 +95,7 @@ class Host
             return false;
         }
 
-        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $asciiDomain) === 1) {
+        if (preg_match(self::FORBIDDEN_HOST, $asciiDomain) === 1) {
             // Syntax violation
             return false;
         }
@@ -119,9 +125,7 @@ class Host
     private static function parseOpaqueHost($input)
     {
         // Match a forbidden host code point, minus the "%" character.
-        if (preg_match(self::FORBIDDEN_HOST_CODEPOINT, $input, $matches) === 1
-            && $matches[0] !== '%'
-        ) {
+        if (preg_match(self::FORBIDDEN_OPAQUE_HOST, $input) === 1) {
             return false;
         }
 
