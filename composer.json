@@ -1,7 +1,7 @@
 {
     "name": "rowbot/url",
     "description": "A WHATWG URL spec compliant URL parser for working with URLs and their query strings.",
-    "keywords": ["url", "url-parser"],
+    "keywords": ["url", "url-parser", "uri", "querystring", "query-string", "url-parsing", "whatwg"],
     "license": "MIT",
     "authors": [
         {
