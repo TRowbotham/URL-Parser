@@ -11,9 +11,6 @@ parameters:
 		# See https://github.com/phpstan/phpstan/issues/1060
 		- '#Argument of an invalid type object supplied for foreach, only iterables are supported\.#'
 
-		# See https://github.com/phpstan/phpstan/issues/1312
-		- '#Parameter \#1 \$address of class Rowbot\\URL\\IPv6Address constructor expects array<int, int>, array<int, float\|int> given\.#'
-
 		# See https://github.com/phpstan/phpstan/issues/1311
 		- '#Property Rowbot\\URL\\QueryList::\$list \(array<int, array<string, string>>\) does not accept array<int, array<int, array<string, string>\|int>>\.#'
 
