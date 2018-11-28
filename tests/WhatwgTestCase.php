@@ -66,37 +66,27 @@ abstract class WhatwgTestCase extends TestCase
     public function urlTestDataSuccessProvider(): iterable
     {
         foreach ($this->loadTestData('urltestdata.json') as $inputs) {
-            if (isset($inputs['failure'])) {
-                continue;
+            if (!isset($inputs['failure'])) {
+                yield [(object) $inputs];
             }
-
-            yield [(object) $inputs];
         }
     }
 
     public function urlTestDataFailureProvider(): iterable
     {
         foreach ($this->loadTestData('urltestdata.json') as $inputs) {
-            if (!isset($inputs['failure'])) {
-                continue;
+            if (isset($inputs['failure'])) {
+                yield [(object) $inputs];
             }
-
-            yield [(object) $inputs];
         }
     }
 
     public function urlTestDataOriginProvider(): iterable
     {
         foreach ($this->loadTestData('urltestdata.json') as $inputs) {
-            if (isset($inputs['failure'])) {
-                continue;
+            if (isset($inputs['origin'])) {
+                yield [(object) $inputs];
             }
-
-            if (!isset($inputs['origin'])) {
-                continue;
-            }
-
-            yield [(object) $inputs];
         }
     }
 
@@ -119,15 +109,9 @@ abstract class WhatwgTestCase extends TestCase
     public function toAsciiTestProvider(): iterable
     {
         foreach ($this->loadTestData('toascii.json') as $inputs) {
-            if (!is_array($inputs)) {
-                continue;
+            if (isset($inputs['comment'])) {
+                yield [(object) $inputs];
             }
-
-            if (!isset($inputs['comment'])) {
-                continue;
-            }
-
-            yield [(object) $inputs];
         }
     }
 }
