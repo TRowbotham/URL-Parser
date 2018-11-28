@@ -34,7 +34,7 @@ class ToASCIIWindowTest extends WhatwgTestCase
     /**
      * @dataProvider toAsciiTestProvider
      */
-    public function testHostSetter($hostTest)
+    public function testHostSetter(stdClass $hostTest): void
     {
         $url = new URL('https://x/x');
         $url->host = $hostTest->input;
@@ -48,7 +48,7 @@ class ToASCIIWindowTest extends WhatwgTestCase
     /**
      * @dataProvider toAsciiTestProvider
      */
-    public function testHostnameSetter($hostTest)
+    public function testHostnameSetter(stdClass $hostTest): void
     {
         // Skip comments
         if (is_string($hostTest)) {

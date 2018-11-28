@@ -12,7 +12,7 @@ class URLOriginTest extends WhatwgTestCase
     /**
      * @dataProvider urlTestDataOriginProvider
      */
-    public function testOrigin(stdClass $expected)
+    public function testOrigin(stdClass $expected): void
     {
         $base = $expected->base ? $expected->base : 'about:blank';
         $url = new URL($expected->input, $base);
