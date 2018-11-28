@@ -3,44 +3,18 @@ namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
-use PHPUnit_Framework_TestCase;
+use stdClass;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/toascii.window.js
  */
-class ToASCIIWindowTest extends PHPUnit_Framework_TestCase
+class ToASCIIWindowTest extends WhatwgTestCase
 {
-    protected $testData = null;
-
-    public function getTestData()
-    {
-        if (!isset($this->testData)) {
-            $data = json_decode(
-                file_get_contents(
-                    __DIR__ . DIRECTORY_SEPARATOR . 'toascii.json'
-                )
-            );
-
-            $this->testData = [];
-
-            foreach ($data as $d) {
-                $this->testData[] = [$d];
-            }
-        }
-
-        return $this->testData;
-    }
-
     /**
-     * @dataProvider getTestData
+     * @dataProvider toAsciiTestProvider
      */
-    public function testURLContructor($hostTest)
+    public function testURLContructor(stdClass $hostTest): void
     {
-        // Skip comments
-        if (is_string($hostTest)) {
-            return;
-        }
-
         if ($hostTest->output !== null) {
             $url = new URL('https://' . $hostTest->input . '/x');
             $this->assertEquals($hostTest->output, $url->host);
@@ -50,25 +24,20 @@ class ToASCIIWindowTest extends PHPUnit_Framework_TestCase
                 'https://' . $hostTest->output . '/x',
                 $url->href
             );
-        } else {
-            $this->expectException(TypeError::class);
-            $url = new URL($hostTest->input);
-        }
-    }
-
-    /**
-     * @dataProvider getTestData
-     */
-    public function testHostSetter($hostTest)
-    {
-        // Skip comments
-        if (is_string($hostTest)) {
             return;
         }
 
+        $this->expectException(TypeError::class);
+        new URL($hostTest->input);
+    }
+
+    /**
+     * @dataProvider toAsciiTestProvider
+     */
+    public function testHostSetter($hostTest)
+    {
         $url = new URL('https://x/x');
         $url->host = $hostTest->input;
-
         if ($hostTest->output !== null) {
             $this->assertEquals($hostTest->output, $url->host);
         } else {
@@ -77,7 +46,7 @@ class ToASCIIWindowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider getTestData
+     * @dataProvider toAsciiTestProvider
      */
     public function testHostnameSetter($hostTest)
     {
