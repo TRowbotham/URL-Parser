@@ -13,3 +13,4 @@ parameters:
         # This is occuring because we are using the result of mb_strlen() with numeric operators.
         # See https://github.com/phpstan/phpstan/issues/1322
         - '#Only numeric types are allowed in [-+], int\|false given on the left side\.#'
+        - '#Only numeric types are allowed in [-+], int\|null given on the right side\.#'

@@ -3,12 +3,12 @@ namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\URL;
 use Rowbot\URL\URLSearchParams;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-foreach.html
  */
-class URLSearchParamsForeachTest extends PHPUnit_Framework_TestCase
+class URLSearchParamsForeachTest extends TestCase
 {
     public function test1()
     {
@@ -45,11 +45,7 @@ class URLSearchParamsForeachTest extends PHPUnit_Framework_TestCase
     {
         $a = new URL("http://a.b/c");
         $b = $a->searchParams;
-
-        foreach ($b as $i) {
-            // This should be unreachable.
-            $this->assertTrue(false);
-        }
+        $this->assertFalse($b->valid());
     }
 
     public function testDeleteNextParamDuringIteration()

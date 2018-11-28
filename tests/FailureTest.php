@@ -3,12 +3,12 @@ namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/failure.html
  */
-class FailureTest extends PHPUnit_Framework_TestCase
+class FailureTest extends TestCase
 {
     protected $testData = null;
 
@@ -24,7 +24,9 @@ class FailureTest extends PHPUnit_Framework_TestCase
             $this->testData = [];
 
             foreach ($data as $d) {
-                $this->testData[] = [$d];
+                if (property_exists($d, 'failure')) {
+                    $this->testData[] = [$d];
+                }
             }
         }
 
@@ -40,13 +42,6 @@ class FailureTest extends PHPUnit_Framework_TestCase
      */
     public function testURLContructor($test)
     {
-        if (is_string($test)
-            || (!property_exists($test, 'failure') || !$test->failure)
-            || $test->base !== "about:blank"
-        ) {
-            return;
-        }
-
         $this->expectException(TypeError::class);
         new URL("about:blank", $test->input);
     }

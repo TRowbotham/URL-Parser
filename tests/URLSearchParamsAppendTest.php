@@ -1,13 +1,13 @@
 <?php
 namespace Rowbot\URL\Tests;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Rowbot\URL\URLSearchParams;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-append.html
  */
-class URLSearchParamsAppendTest extends PHPUnit_Framework_TestCase
+class URLSearchParamsAppendTest extends TestCase
 {
     public function testAppendSameName()
     {

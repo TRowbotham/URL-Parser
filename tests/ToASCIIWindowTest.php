@@ -3,12 +3,12 @@ namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/toascii.window.js
  */
-class ToASCIIWindowTest extends PHPUnit_Framework_TestCase
+class ToASCIIWindowTest extends TestCase
 {
     protected $testData = null;
 
@@ -24,6 +24,9 @@ class ToASCIIWindowTest extends PHPUnit_Framework_TestCase
             $this->testData = [];
 
             foreach ($data as $d) {
+                if (is_string($d)) {
+                    continue;
+                }
                 $this->testData[] = [$d];
             }
         }
@@ -36,11 +39,6 @@ class ToASCIIWindowTest extends PHPUnit_Framework_TestCase
      */
     public function testURLContructor($hostTest)
     {
-        // Skip comments
-        if (is_string($hostTest)) {
-            return;
-        }
-
         if ($hostTest->output !== null) {
             $url = new URL('https://' . $hostTest->input . '/x');
             $this->assertEquals($hostTest->output, $url->host);

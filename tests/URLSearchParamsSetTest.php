@@ -2,12 +2,12 @@
 namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\URLSearchParams;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-set.html
  */
-class URLSearchParamsSetTest extends PHPUnit_Framework_TestCase
+class URLSearchParamsSetTest extends TestCase
 {
     public function testSetBasics()
     {
