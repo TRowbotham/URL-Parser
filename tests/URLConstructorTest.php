@@ -27,7 +27,7 @@ class URLConstructorTest extends TestCase
             $this->testDataSuccess = [];
 
             foreach ($data as $d) {
-                if (is_object($d) && !property_exists($d, 'failure') && $d->base !== 'about:blank') {
+                if (property_exists($d, 'base')  && 'about:blank' !== $d->base && !property_exists($d, 'failure')) {
                     $this->testDataSuccess[] = [$d];
                 }
             }
