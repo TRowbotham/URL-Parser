@@ -27,7 +27,7 @@ class URLConstructorTest extends TestCase
             $this->testDataSuccess = [];
 
             foreach ($data as $d) {
-                if (is_object($d) && !property_exists($d, 'failure')) {
+                if (is_object($d) && !property_exists($d, 'failure') && $d->base !== 'about:blank') {
                     $this->testDataSuccess[] = [$d];
                 }
             }
@@ -73,7 +73,7 @@ class URLConstructorTest extends TestCase
             $this->testDataFail = [];
 
             foreach ($data as $d) {
-                if (property_exists($d, 'failure') && true === $d->failure) {
+                if (property_exists($d, 'failure')) {
                     $this->testDataFail[] = [$d];
                 }
             }
@@ -88,8 +88,7 @@ class URLConstructorTest extends TestCase
     public function testUrlConstructorFailed($expected)
     {
         $this->expectException(TypeError::class);
-        $base = $expected->base ? $expected->base : 'about:blank';
-        $url = new URL($expected->input, $base);
+        new URL($expected->input, $expected->base);
     }
 
     public function test1()
