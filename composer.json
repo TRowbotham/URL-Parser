@@ -36,11 +36,11 @@
         }
     },
     "scripts": {
-        "phpstan": "phpstan analyse -c phpstan-ci.neon -l max src",
+        "phpstan": "phpstan analyse -c phpstan.src.neon -l max src",
         "phpunit": "phpunit --coverage-text",
         "test": [
-            "@phpunit",
-            "@phpstan"
+            "@phpstan",
+            "@phpunit"
         ]
     },
     "config": {

@@ -11,33 +11,35 @@ use PHPUnit\Framework\TestCase;
  */
 class URLConstructorTest extends TestCase
 {
-    protected $testData = null;
+    protected $testDataSuccess = null;
 
-    public function getTestData()
+    protected $testDataFail = null;
+
+    public function getUrlTestDataSuccessDataProvider()
     {
-        if (!isset($this->testData)) {
+        if (!isset($this->testDataSuccess)) {
             $data = json_decode(
                 file_get_contents(
                     __DIR__ . DIRECTORY_SEPARATOR . 'urltestdata.json'
                 )
             );
 
-            $this->testData = [];
+            $this->testDataSuccess = [];
 
             foreach ($data as $d) {
                 if (is_object($d) && !property_exists($d, 'failure')) {
-                    $this->testData[] = [$d];
+                    $this->testDataSuccess[] = [$d];
                 }
             }
         }
 
-        return $this->testData;
+        return $this->testDataSuccess;
     }
 
     /**
-     * @dataProvider getTestData
+     * @dataProvider getUrlTestDataSuccessDataProvider
      */
-    public function testUrl($expected)
+    public function testUrlConstructorSucceeded($expected)
     {
         $base = $expected->base ? $expected->base : 'about:blank';
         $url = new URL($expected->input, $base);
@@ -57,6 +59,37 @@ class URLConstructorTest extends TestCase
         }
 
         $this->assertEquals($expected->hash, $url->hash, 'hash');
+    }
+
+    public function getUrlTestDataFailDataProvider()
+    {
+        if (!isset($this->testDataFail)) {
+            $data = json_decode(
+                file_get_contents(
+                    __DIR__ . DIRECTORY_SEPARATOR . 'urltestdata.json'
+                )
+            );
+
+            $this->testDataFail = [];
+
+            foreach ($data as $d) {
+                if (property_exists($d, 'failure') && true === $d->failure) {
+                    $this->testDataFail[] = [$d];
+                }
+            }
+        }
+
+        return $this->testDataFail;
+    }
+
+    /**
+     * @dataProvider getUrlTestDataFailDataProvider
+     */
+    public function testUrlConstructorFailed($expected)
+    {
+        $this->expectException(TypeError::class);
+        $base = $expected->base ? $expected->base : 'about:blank';
+        $url = new URL($expected->input, $base);
     }
 
     public function test1()

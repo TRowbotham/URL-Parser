@@ -24,7 +24,7 @@ class FailureTest extends TestCase
             $this->testData = [];
 
             foreach ($data as $d) {
-                if (property_exists($d, 'failure')) {
+                if (property_exists($d, 'failure') && 'about:blank' === $d->base) {
                     $this->testData[] = [$d];
                 }
             }
