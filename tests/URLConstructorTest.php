@@ -27,7 +27,7 @@ class URLConstructorTest extends TestCase
             $this->testDataSuccess = [];
 
             foreach ($data as $d) {
-                if (property_exists($d, 'base')  && 'about:blank' !== $d->base && !property_exists($d, 'failure')) {
+                if (property_exists($d, 'base') && !property_exists($d, 'failure')) {
                     $this->testDataSuccess[] = [$d];
                 }
             }
@@ -41,6 +41,13 @@ class URLConstructorTest extends TestCase
      */
     public function testUrlConstructorSucceeded($expected)
     {
+        if (property_exists($expected, 'failure')) {
+            $this->expectException(TypeError::class);
+            $base = $expected->base ? $expected->base : 'about:blank';
+            new URL($expected->input, $base);
+            return;
+        }
+
         $base = $expected->base ? $expected->base : 'about:blank';
         $url = new URL($expected->input, $base);
         $this->assertEquals($expected->href, $url->href, 'href');

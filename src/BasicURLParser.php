@@ -671,7 +671,7 @@ class BasicURLParser
         $this->url->port = $this->base->port;
         $this->url->path = $this->base->path;
 
-        if (!empty($this->url->path)) {
+        if ([] !== $this->url->path) {
             array_pop($this->url->path);
         }
 
@@ -1233,7 +1233,7 @@ class BasicURLParser
                 self::$singleDotPathSegment[$this->buffer]
             )) {
                 if ($this->url->scheme === 'file'
-                    && empty($this->url->path)
+                    && [] === $this->url->path
                     && preg_match(
                         URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
                         $this->buffer
@@ -1335,7 +1335,7 @@ class BasicURLParser
         }
 
         if ($c !== ''/* EOF */) {
-            if (!empty($this->url->path)) {
+            if ([] !== $this->url->path) {
                 $this->url->path[0] .= URLUtils::utf8PercentEncode(
                     $c
                 );

@@ -16,7 +16,7 @@ matrix:
       env:
         - RUN_PHPSTAN=false
         - IGNORE_PLATFORMS=false
-        - CODE_COVERAGE=false
+        - CODE_COVERAGE=true
     - php: 7.2
       env:
         - RUN_PHPSTAN=true
@@ -26,7 +26,7 @@ matrix:
       env:
         - RUN_PHPSTAN=false
         - IGNORE_PLATFORMS=false
-        - CODE_COVERAGE=false
+        - CODE_COVERAGE=true
     - php: nightly
       env:
         - RUN_PHPSTAN=false

@@ -1,3 +1,7 @@
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+
 parameters:
     polluteScopeWithLoopInitialAssignments: false
     checkAlwaysTrueCheckTypeFunctionCall: true
@@ -5,6 +9,10 @@ parameters:
     checkAlwaysTrueStrictComparison: true
     checkFunctionNameCase: true
     ignoreErrors:
+        # This is occuring because we are using the result of mb_strlen() with numeric operators.
+        # See https://github.com/phpstan/phpstan/issues/1322
+        - '#Only numeric types are allowed in [-+], int\|(false|null) given on the (left|right) side\.#'
+
         # This is occuring because we are using the result of mb_strlen() with numeric operators.
         # See https://github.com/phpstan/phpstan/issues/1306
         - '#Variable \$bufferIsSpecialScheme might not be defined\.#'

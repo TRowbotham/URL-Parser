@@ -148,7 +148,7 @@ class URL implements JsonSerializable
                 return $this->url->path[0];
             }
 
-            if (empty($this->url->path)) {
+            if ([] === $this->url->path) {
                 return '';
             }
 
