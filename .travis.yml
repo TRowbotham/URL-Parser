@@ -1,32 +1,53 @@
+sudo: false
+
 language: php
 
-php:
-  - 5.6
-  - 7.0
-  - 7.1
-  - 7.2
-  - nightly
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+env:
+  global:
+    - COMPOSER_ARGS="--dev --no-suggest --no-interaction --prefer-source"
 
 matrix:
-  fast_finish: true
+  include:
+    - php: 7.1
+      env:
+        - RUN_PHPSTAN=false
+        - IGNORE_PLATFORMS=false
+        - CODE_COVERAGE=true
+    - php: 7.2
+      env:
+        - RUN_PHPSTAN=true
+        - IGNORE_PLATFORMS=false
+        - CODE_COVERAGE=true
+    - php: 7.3
+      env:
+        - RUN_PHPSTAN=false
+        - IGNORE_PLATFORMS=false
+        - CODE_COVERAGE=true
+    - php: nightly
+      env:
+        - RUN_PHPSTAN=false
+        - IGNORE_PLATFORMS=true
+        - CODE_COVERAGE=false
   allow_failures:
     - php: nightly
+  fast_finish: true
+
+before_install:
+  - mkdir -p build/logs
+  - travis_retry composer self-update
 
 install:
-  - flags="--dev --no-progress --no-suggest"
-  - if [[ $(phpenv version-name) == "5.6" || $(phpenv version-name) == "7.0" ]]; then SKIP_STATIC_ANALYSIS=true; fi
-  - if [[ $SKIP_STATIC_ANALYSIS != true ]]; then composer require $flags phpstan/phpstan-deprecation-rules phpstan/phpstan-strict-rules; fi
-  - composer require $flags php-coveralls/php-coveralls:^2.1
-  - composer install --no-interaction --no-progress --no-suggest --optimize-autoloader
-
-before_script:
-  - mkdir -p build/logs
+  - if [ "$IGNORE_PLATFORMS" == "false" ]; then travis_retry composer update $COMPOSER_ARGS; fi
+  - if [ "$IGNORE_PLATFORMS" == "true" ]; then travis_retry composer update $COMPOSER_ARGS --ignore-platform-reqs; fi
 
 script:
-  - if [[ $SKIP_STATIC_ANALYSIS != true ]]; then ./vendor/bin/phpstan analyse -c phpstan-ci.neon -l max src; fi
-  - phpunit_flags="--verbose --coverage-clover build/logs/clover.xml"
-  - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then ./vendor/bin/phpunit $phpunit_flags; fi
-  - if [[ $TRAVIS_PHP_VERSION == nightly ]]; then phpdbg -qrr ./vendor/bin/phpunit $phpunit_flags; fi
+  - if [ "$RUN_PHPSTAN" == "true" ]; then composer phpstan; fi
+  - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then composer phpunit; fi
+  - if [[ $TRAVIS_PHP_VERSION == nightly ]]; then phpdbg -qrr vendor/bin/phpunit --coverage-text; fi
 
-after_success:
-  - travis_retry php ./vendor/bin/php-coveralls
+after_script:
+  - if [ "$CODE_COVERAGE" == "true" ]; then travis_retry php vendor/bin/php-coveralls; fi

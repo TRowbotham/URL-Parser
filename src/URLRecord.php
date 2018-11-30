@@ -309,7 +309,7 @@ class URLRecord
         if ($this->cannotBeABaseUrl) {
             $output .= $this->path[0];
         } else {
-            if (!empty($this->path)) {
+            if ([] !== $this->path) {
                 $output .= '/';
             }
 

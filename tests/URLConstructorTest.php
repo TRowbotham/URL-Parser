@@ -4,58 +4,52 @@ namespace Rowbot\URL\Tests;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
 use Rowbot\URL\URLSearchParams;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-constructor.html
  */
-class URLConstructorTest extends PHPUnit_Framework_TestCase
+class URLConstructorTest extends TestCase
 {
-    protected $testData = null;
+    protected $testDataSuccess = null;
 
-    public function getTestData()
+    protected $testDataFail = null;
+
+    public function getUrlTestDataSuccessDataProvider()
     {
-        if (!isset($this->testData)) {
+        if (!isset($this->testDataSuccess)) {
             $data = json_decode(
                 file_get_contents(
                     __DIR__ . DIRECTORY_SEPARATOR . 'urltestdata.json'
                 )
             );
 
-            $this->testData = [];
+            $this->testDataSuccess = [];
 
             foreach ($data as $d) {
-                $this->testData[] = [$d];
+                if (property_exists($d, 'base') && !property_exists($d, 'failure')) {
+                    $this->testDataSuccess[] = [$d];
+                }
             }
         }
 
-        return $this->testData;
+        return $this->testDataSuccess;
     }
 
     /**
-     * @dataProvider getTestData
+     * @dataProvider getUrlTestDataSuccessDataProvider
      */
-    public function testUrl($expected)
+    public function testUrlConstructorSucceeded($expected)
     {
-        // Skip over comments in the json file.
-        if (is_string($expected)) {
-            return;
-        }
-
-        $shouldFail = property_exists($expected, 'failure') &&
-            $expected->failure;
-
-        if ($shouldFail) {
+        if (property_exists($expected, 'failure')) {
             $this->expectException(TypeError::class);
+            $base = $expected->base ? $expected->base : 'about:blank';
+            new URL($expected->input, $base);
+            return;
         }
 
         $base = $expected->base ? $expected->base : 'about:blank';
         $url = new URL($expected->input, $base);
-
-        if ($shouldFail) {
-            return;
-        }
-
         $this->assertEquals($expected->href, $url->href, 'href');
         $this->assertEquals($expected->protocol, $url->protocol, 'protocol');
         $this->assertEquals($expected->username, $url->username, 'username');
@@ -72,6 +66,36 @@ class URLConstructorTest extends PHPUnit_Framework_TestCase
         }
 
         $this->assertEquals($expected->hash, $url->hash, 'hash');
+    }
+
+    public function getUrlTestDataFailDataProvider()
+    {
+        if (!isset($this->testDataFail)) {
+            $data = json_decode(
+                file_get_contents(
+                    __DIR__ . DIRECTORY_SEPARATOR . 'urltestdata.json'
+                )
+            );
+
+            $this->testDataFail = [];
+
+            foreach ($data as $d) {
+                if (property_exists($d, 'failure')) {
+                    $this->testDataFail[] = [$d];
+                }
+            }
+        }
+
+        return $this->testDataFail;
+    }
+
+    /**
+     * @dataProvider getUrlTestDataFailDataProvider
+     */
+    public function testUrlConstructorFailed($expected)
+    {
+        $this->expectException(TypeError::class);
+        new URL($expected->input, $expected->base);
     }
 
     public function test1()

@@ -189,7 +189,7 @@ class BasicURLParser
 
         if ($url === null) {
             // Remove any leading or trailing C0 control and space characters.
-            $parser->input = preg_replace(
+            $parser->input = (string) preg_replace(
                 '/^[\x00-\x1F\x20]+|[\x00-\x1F\x20]+$/u',
                 '',
                 $parser->input,
@@ -205,7 +205,7 @@ class BasicURLParser
         }
 
         // A URL should not contain any tab or newline characters.
-        $parser->input = preg_replace(
+        $parser->input = (string) preg_replace(
             '/[\x09\x0A\x0D]+/u',
             '',
             $parser->input,
@@ -671,7 +671,7 @@ class BasicURLParser
         $this->url->port = $this->base->port;
         $this->url->path = $this->base->path;
 
-        if (!empty($this->url->path)) {
+        if ([] !== $this->url->path) {
             array_pop($this->url->path);
         }
 
@@ -1233,7 +1233,7 @@ class BasicURLParser
                 self::$singleDotPathSegment[$this->buffer]
             )) {
                 if ($this->url->scheme === 'file'
-                    && empty($this->url->path)
+                    && [] === $this->url->path
                     && preg_match(
                         URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
                         $this->buffer
@@ -1335,7 +1335,7 @@ class BasicURLParser
         }
 
         if ($c !== ''/* EOF */) {
-            if (!empty($this->url->path)) {
+            if ([] !== $this->url->path) {
                 $this->url->path[0] .= URLUtils::utf8PercentEncode(
                     $c
                 );

@@ -2,12 +2,12 @@
 namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\URL;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-origin.html
  */
-class URLOriginTest extends PHPUnit_Framework_TestCase
+class URLOriginTest extends TestCase
 {
     protected $testData;
 
@@ -23,7 +23,9 @@ class URLOriginTest extends PHPUnit_Framework_TestCase
             $this->testData = [];
 
             foreach ($data as $d) {
-                $this->testData[] = [$d];
+                if (property_exists($d, 'origin')) {
+                    $this->testData[] = [$d];
+                }
             }
         }
 
@@ -35,11 +37,6 @@ class URLOriginTest extends PHPUnit_Framework_TestCase
      */
     public function testOrigin($expected)
     {
-        // Skip comments and tests without origin
-        if (is_string($expected) || !property_exists($expected, 'origin')) {
-            return;
-        }
-
         $base = $expected->base ? $expected->base : 'about:blank';
         $url = new URL($expected->input, $base);
         $this->assertEquals($expected->origin, $url->origin);

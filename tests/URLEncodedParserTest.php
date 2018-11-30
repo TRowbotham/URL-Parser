@@ -2,12 +2,12 @@
 namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\URLSearchParams;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlencoded-parser.html
  */
-class URLEncodedParserTest extends PHPUnit_Framework_TestCase
+class URLEncodedParserTest extends TestCase
 {
     protected $testData;
 
@@ -65,6 +65,10 @@ class URLEncodedParserTest extends PHPUnit_Framework_TestCase
     {
         $sp = new URLSearchParams($input);
         $i = 0;
+        if (in_array($input, ['', '&'], true)) {
+            $this->assertFalse($sp->valid());
+            return;
+        }
 
         foreach ($sp as $item) {
             $this->assertEquals($output[$i++], $item);

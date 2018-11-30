@@ -107,7 +107,7 @@ final class IDN
         // We died a horrible death and can't recover. There is currently a bug
         // in PHP's idn_to_* functions where this can occur when the given
         // domain exceeds 254 bytes.
-        if (empty($info)) {
+        if ([] === $info) {
             return false;
         }
 
@@ -164,7 +164,7 @@ final class IDN
         // We died a horrible death and can't recover. There is currently a bug
         // in PHP's idn_to_* functions where this can occur when the given
         // domain exceeds 254 bytes.
-        if (empty($info)) {
+        if ([] === $info) {
             return false;
         }
 
