@@ -3,94 +3,56 @@ namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
-use PHPUnit\Framework\TestCase;
-
+use stdClass;
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/toascii.window.js
  */
-class ToASCIIWindowTest extends TestCase
+class ToASCIIWindowTest extends WhatwgTestCase
 {
-    protected $testData = null;
-
-    public function getTestData()
+    public function toAsciiTestProvider(): iterable
     {
-        if (!isset($this->testData)) {
-            $data = json_decode(
-                file_get_contents(
-                    __DIR__ . DIRECTORY_SEPARATOR . 'toascii.json'
-                )
-            );
-
-            $this->testData = [];
-
-            foreach ($data as $d) {
-                if (is_string($d)) {
-                    continue;
-                }
-                $this->testData[] = [$d];
-            }
+        foreach ($this->loadTestData('toascii.json') as $inputs) {
+            yield [(object) $inputs];
         }
-
-        return $this->testData;
     }
 
     /**
-     * @dataProvider getTestData
+     * @dataProvider toAsciiTestProvider
      */
-    public function testURLContructor($hostTest)
+    public function testURLContructor(stdClass $hostTest): void
     {
         if ($hostTest->output !== null) {
             $url = new URL('https://' . $hostTest->input . '/x');
             $this->assertEquals($hostTest->output, $url->host);
             $this->assertEquals($hostTest->output, $url->hostname);
             $this->assertEquals('/x', $url->pathname);
-            $this->assertEquals(
-                'https://' . $hostTest->output . '/x',
-                $url->href
-            );
-        } else {
-            $this->expectException(TypeError::class);
-            $url = new URL($hostTest->input);
-        }
-    }
-
-    /**
-     * @dataProvider getTestData
-     */
-    public function testHostSetter($hostTest)
-    {
-        // Skip comments
-        if (is_string($hostTest)) {
+            $this->assertEquals('https://' . $hostTest->output . '/x', $url->href);
             return;
         }
 
+        $this->expectException(TypeError::class);
+        $url = new URL($hostTest->input);
+    }
+
+    /**
+     * @dataProvider toAsciiTestProvider
+     */
+    public function testHostSetter(stdClass $hostTest): void
+    {
         $url = new URL('https://x/x');
         $url->host = $hostTest->input;
 
-        if ($hostTest->output !== null) {
-            $this->assertEquals($hostTest->output, $url->host);
-        } else {
-            $this->assertEquals('x', $url->host);
-        }
+        $this->assertEquals($hostTest->output ?? 'x', $url->host);
     }
 
     /**
-     * @dataProvider getTestData
+     * @dataProvider toAsciiTestProvider
      */
-    public function testHostnameSetter($hostTest)
+    public function testHostnameSetter(stdClass $hostTest): void
     {
-        // Skip comments
-        if (is_string($hostTest)) {
-            return;
-        }
-
         $url = new URL('https://x/x');
         $url->hostname = $hostTest->input;
 
-        if ($hostTest->output !== null) {
-            $this->assertEquals($hostTest->output, $url->hostname);
-        } else {
-            $this->assertEquals('x', $url->hostname);
-        }
+        $this->assertEquals($hostTest->output ?? 'x', $url->hostname);
     }
 }

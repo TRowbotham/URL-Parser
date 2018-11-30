@@ -3,34 +3,20 @@ namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
-use PHPUnit\Framework\TestCase;
+use stdClass;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/failure.html
  */
-class FailureTest extends TestCase
+class FailureTest extends WhatwgTestCase
 {
-    protected $testData = null;
-
-    public function getTestData()
+    public function urlTestDataFailureProvider(): iterable
     {
-        if (!isset($this->testData)) {
-            $data = json_decode(
-                file_get_contents(
-                    __DIR__ . DIRECTORY_SEPARATOR . 'urltestdata.json'
-                )
-            );
-
-            $this->testData = [];
-
-            foreach ($data as $d) {
-                if (property_exists($d, 'failure') && true === $d->failure && 'about:blank' === $d->base) {
-                    $this->testData[] = [$d];
-                }
+        foreach ($this->loadTestData('urltestdata.json') as $inputs) {
+            if (isset($inputs['failure'])) {
+                yield [(object) $inputs];
             }
         }
-
-        return $this->testData;
     }
 
     /**
@@ -38,9 +24,9 @@ class FailureTest extends TestCase
      * URL fails to parse with any valid base, it must also fail to parse with
      * no base, i.e. when used as a base URL itself.
      *
-     * @dataProvider getTestData
+     * @dataProvider urlTestDataFailureProvider
      */
-    public function testURLContructor($test)
+    public function testURLContructor(stdClass $test): void
     {
         $this->expectException(TypeError::class);
         new URL("about:blank", $test->input);

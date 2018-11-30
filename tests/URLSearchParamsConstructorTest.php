@@ -4,13 +4,14 @@ namespace Rowbot\URL\Tests;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URLSearchParams;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-constructor.html
  */
 class URLSearchParamsConstructorTest extends TestCase
 {
-    public function testBasicConstruction()
+    public function testBasicConstruction(): void
     {
         $params = new URLSearchParams();
         $this->assertEquals('', $params . '');
@@ -22,19 +23,19 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('a=b', $params . '');
     }
 
-    public function testConstructorNoArguments()
+    public function testConstructorNoArguments(): void
     {
         $params = new URLSearchParams();
         $this->assertEquals('', $params->toString());
     }
 
-    public function testConstructorEmptyObject()
+    public function testConstructorEmptyObject(): void
     {
-        $params = new URLSearchParams(new \stdClass());
+        $params = new URLSearchParams(new stdClass());
         $this->assertEquals('', (string) $params);
     }
 
-    public function testConstructorString()
+    public function testConstructorString(): void
     {
         $params = new URLSearchParams('a=b');
         $this->assertNotNull($params);
@@ -54,7 +55,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertTrue($params->has('møø'));
     }
 
-    public function testConstructorObject()
+    public function testConstructorObject(): void
     {
         $seed = new URLSearchParams('a=b&c=d');
         $params = new URLSearchParams($seed);
@@ -70,7 +71,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertFalse($seed->has('g'));
     }
 
-    public function testParsePlusSign()
+    public function testParsePlusSign(): void
     {
         $params = new URLSearchParams('a=b+c');
         $this->assertEquals('b c', $params->get('a'));
@@ -78,7 +79,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('c', $params->get('a b'));
     }
 
-    public function testParseSpace()
+    public function testParseSpace(): void
     {
         $params = new URLSearchParams('a=b c');
         $this->assertEquals('b c', $params->get('a'));
@@ -86,7 +87,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('c', $params->get('a b'));
     }
 
-    public function testParseSpacePercentEncoded()
+    public function testParseSpacePercentEncoded(): void
     {
         $params = new URLSearchParams('a=b%20c');
         $this->assertEquals('b c', $params->get('a'));
@@ -94,7 +95,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('c', $params->get('a b'));
     }
 
-    public function testParseNullByte()
+    public function testParseNullByte(): void
     {
         $params = new URLSearchParams("a=b\0c");
         $this->assertEquals("b\0c", $params->get('a'));
@@ -102,7 +103,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('c', $params->get("a\0b"));
     }
 
-    public function testParseNullBytePercentEncoded()
+    public function testParseNullBytePercentEncoded(): void
     {
         $params = new URLSearchParams('a=b%00c');
         $this->assertEquals("b\0c", $params->get('a'));
@@ -110,7 +111,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('c', $params->get("a\0b"));
     }
 
-    public function testParseUnicodeCompositionSymbol()
+    public function testParseUnicodeCompositionSymbol(): void
     {
         $params = new URLSearchParams("a=b\xE2\x8E\x84");
         $this->assertEquals("b\xE2\x8E\x84", $params->get('a'));
@@ -118,7 +119,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('c', $params->get("a\xE2\x8E\x84"));
     }
 
-    public function testParseUnicodeCompositionSymbolPercentEncoded()
+    public function testParseUnicodeCompositionSymbolPercentEncoded(): void
     {
         $params = new URLSearchParams("a=b%E2%8E%84");
         $this->assertEquals("b\xE2\x8E\x84", $params->get('a'));
@@ -126,7 +127,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('c', $params->get("a\xE2\x8E\x84"));
     }
 
-    public function testParseUnicodePileOfPoo()
+    public function testParseUnicodePileOfPoo(): void
     {
         // $params = new URLSearchParams("a=b\u{1F4A9}c");
         // $this->assertEquals("b\u{1F4A9}c", $params->get('a'));
@@ -138,7 +139,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('c', $params->get("a\xF0\x9F\x92\xA9b"));
     }
 
-    public function testParseUnicodePileOfPooPercentEncoded()
+    public function testParseUnicodePileOfPooPercentEncoded(): void
     {
         $params = new URLSearchParams("a=b%f0%9f%92%a9c");
         // $this->assertEquals("b\u{1F4A9}c", $params->get('a'));
@@ -148,7 +149,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('c', $params->get("a\xF0\x9F\x92\xA9b"));
     }
 
-    public function testSequenceOfSequences()
+    public function testSequenceOfSequences(): void
     {
         $params = new URLSearchParams([]);
         $this->assertNotNull($params);
@@ -171,16 +172,16 @@ class URLSearchParamsConstructorTest extends TestCase
         }
     }
 
-    public function getTestData()
+    public function getTestData(): array
     {
-        $obj = new \stdClass();
+        $obj = new stdClass();
         $obj->{"+"} = '%C2';
 
-        $obj2 = new \stdClass();
+        $obj2 = new stdClass();
         $obj2->c = 'x';
         $obj2->a = '?';
 
-        $obj3 = new \stdClass();
+        $obj3 = new stdClass();
         $obj3->{"a\0b"} = "42";
         // $obj3->{"c\u{D83D}"} = "23";
         // $obj3->{"d\u{1234}"} = "foo";
@@ -222,7 +223,7 @@ class URLSearchParamsConstructorTest extends TestCase
     /**
      * @dataProvider getTestData
      */
-    public function test($input, $output)
+    public function test($input, array $output): void
     {
         $params = new URLSearchParams($input);
         $i = 0;

@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
  */
 class URLSearchParamsSortTest extends TestCase
 {
-    public function getTestData()
+    public function getTestData(): array
     {
         return [
             [
@@ -97,7 +97,7 @@ class URLSearchParamsSortTest extends TestCase
     /**
      * @dataProvider getTestData
      */
-    public function testSort($input, $output)
+    public function testSort(string $input, array $output): void
     {
         $url = new URL('?' . $input, 'https://example/');
         $url->searchParams->sort();
@@ -111,7 +111,7 @@ class URLSearchParamsSortTest extends TestCase
         }
     }
 
-    public function testSortingNonExistentParamsRemovesQuestionMark()
+    public function testSortingNonExistentParamsRemovesQuestionMark(): void
     {
         $url = new URL('http://example.com/?');
         $url->searchParams->sort();

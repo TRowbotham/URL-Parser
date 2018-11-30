@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
  */
 class URLSearchParamsForeachTest extends TestCase
 {
-    public function test1()
+    public function test1(): void
     {
         $params = new URLSearchParams('a=1&b=2&c=3');
         $keys = [];
@@ -25,7 +25,7 @@ class URLSearchParamsForeachTest extends TestCase
         $this->assertEquals(['1', '2', '3'], $values);
     }
 
-    public function test2()
+    public function test2(): void
     {
         $a = new URL("http://a.b/c?a=1&b=2&c=3&d=4");
         $b = $a->searchParams;
@@ -41,14 +41,14 @@ class URLSearchParamsForeachTest extends TestCase
         $this->assertEquals(["z","3"], $c[2]);
     }
 
-    public function test3()
+    public function test3(): void
     {
         $a = new URL("http://a.b/c");
         $b = $a->searchParams;
         $this->assertFalse($b->valid());
     }
 
-    public function testDeleteNextParamDuringIteration()
+    public function testDeleteNextParamDuringIteration(): void
     {
         $url = new URL("http://localhost/query?param0=0&param1=1&param2=2");
         $searchParams = $url->searchParams;
@@ -66,7 +66,7 @@ class URLSearchParamsForeachTest extends TestCase
         $this->assertEquals(["param2", "2"], $seen[1]);
     }
 
-    public function testDeleteCurrentParamDuringIteration()
+    public function testDeleteCurrentParamDuringIteration(): void
     {
         $url = new URL("http://localhost/query?param0=0&param1=1&param2=2");
         $searchParams = $url->searchParams;
@@ -84,7 +84,7 @@ class URLSearchParamsForeachTest extends TestCase
         $this->assertEquals(["param2", "2"], $seen[0]);
     }
 
-    public function testDeleteEveryParamSeenDuringIteration()
+    public function testDeleteEveryParamSeenDuringIteration(): void
     {
         $url = new URL("http://localhost/query?param0=0&param1=1&param2=2");
         $searchParams = $url->searchParams;

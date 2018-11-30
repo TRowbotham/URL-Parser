@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
  */
 class URLSearchParamsHasTest extends TestCase
 {
-    public function testHasBasics()
+    public function testHasBasics(): void
     {
         $params = new URLSearchParams('a=b&c=d');
         $this->assertTrue($params->has('a'));
@@ -21,7 +21,7 @@ class URLSearchParamsHasTest extends TestCase
         $this->assertTrue($params->has(''));
     }
 
-    public function testHasFollowingDelete()
+    public function testHasFollowingDelete(): void
     {
         $params = new URLSearchParams('a=b&c=d&&');
         $params->append('first', 1);
