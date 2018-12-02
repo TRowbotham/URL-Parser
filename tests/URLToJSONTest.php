@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
  */
 class URLToJSONTest extends TestCase
 {
-    public function testBasicToJSON()
+    public function testBasicToJSON(): void
     {
         $a = new URL('https://example.com');
         $this->assertEquals('"' . str_replace('/', '\/', $a->href) . '"', json_encode($a));

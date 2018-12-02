@@ -2,40 +2,26 @@
 namespace Rowbot\URL\Tests;
 
 use Rowbot\URL\URL;
-use PHPUnit\Framework\TestCase;
+use stdClass;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-origin.html
  */
-class URLOriginTest extends TestCase
+class URLOriginTest extends WhatwgTestCase
 {
-    protected $testData;
-
-    public function getTestData()
+    public function urlTestDataOriginProvider(): iterable
     {
-        if (!isset($this->testData)) {
-            $data = json_decode(
-                file_get_contents(
-                    __DIR__ . DIRECTORY_SEPARATOR . 'urltestdata.json'
-                )
-            );
-
-            $this->testData = [];
-
-            foreach ($data as $d) {
-                if (property_exists($d, 'origin')) {
-                    $this->testData[] = [$d];
-                }
+        foreach ($this->loadTestData('urltestdata.json') as $inputs) {
+            if (isset($inputs['origin'])) {
+                yield [(object) $inputs];
             }
         }
-
-        return $this->testData;
     }
 
     /**
-     * @dataProvider getTestData
+     * @dataProvider urlTestDataOriginProvider
      */
-    public function testOrigin($expected)
+    public function testOrigin(stdClass $expected): void
     {
         $base = $expected->base ? $expected->base : 'about:blank';
         $url = new URL($expected->input, $base);

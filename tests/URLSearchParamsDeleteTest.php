@@ -10,7 +10,7 @@ use Rowbot\URL\URL;
  */
 class URLSearchParamsDeleteTest extends TestCase
 {
-    public function testDeleteBasics()
+    public function testDeleteBasics(): void
     {
         $params = new URLSearchParams('a=b&c=d');
         $params->delete('a');
@@ -23,7 +23,7 @@ class URLSearchParamsDeleteTest extends TestCase
         $this->assertEquals('a=a&b=b&c=c', $params . '');
     }
 
-    public function testDeleteAppendMultiple()
+    public function testDeleteAppendMultiple(): void
     {
         $params = new URLSearchParams();
         $params->append('first', 1);
@@ -37,7 +37,7 @@ class URLSearchParamsDeleteTest extends TestCase
         $this->assertFalse($params->has('first'));
     }
 
-    public function testDeleteAllRemovesQuestionMark()
+    public function testDeleteAllRemovesQuestionMark(): void
     {
         $url = new URL('http://example.com/?param1&param2');
         $url->searchParams->delete('param1');
@@ -46,7 +46,7 @@ class URLSearchParamsDeleteTest extends TestCase
         $this->assertEquals('', $url->search);
     }
 
-    public function testDeleteNonExistentParamRemovesQuestionMark()
+    public function testDeleteNonExistentParamRemovesQuestionMark(): void
     {
         $url = new URL('http://example.com/?');
         $url->searchParams->delete('param1');

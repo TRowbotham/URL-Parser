@@ -11,7 +11,7 @@ class URLEncodedParserTest extends TestCase
 {
     protected $testData;
 
-    public function getTestData()
+    public function getTestData(): array
     {
         if (isset($this->testData)) {
             return $this->testData;
@@ -61,7 +61,7 @@ class URLEncodedParserTest extends TestCase
     /**
      * @dataProvider getTestData
      */
-    public function test($input, $output)
+    public function test(string $input, array $output): void
     {
         $sp = new URLSearchParams($input);
         $i = 0;

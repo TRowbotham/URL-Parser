@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
  */
 class URLSearchParamsStringifierTest extends TestCase
 {
-    public function testSerializeSpace()
+    public function testSerializeSpace(): void
     {
         $params = new URLSearchParams();
         $params->append('a', 'b c');
@@ -20,7 +20,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('a+b=c', $params . '');
     }
 
-    public function testSerializeEmptyValue()
+    public function testSerializeEmptyValue(): void
     {
         $params = new URLSearchParams();
         $params->append('a', '');
@@ -35,7 +35,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('a=&a=&=b&=&=', $params . '');
     }
 
-    public function testSerializeEmptyName()
+    public function testSerializeEmptyName(): void
     {
         $params = new URLSearchParams();
         $params->append('', 'b');
@@ -44,7 +44,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('=b&=b', $params . '');
     }
 
-    public function testSerialzieEmptyNameAndValue()
+    public function testSerialzieEmptyNameAndValue(): void
     {
         $params = new URLSearchParams();
         $params->append('', '');
@@ -53,7 +53,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('=&=', $params . '');
     }
 
-    public function testSerialziePlusSign()
+    public function testSerialziePlusSign(): void
     {
         $params = new URLSearchParams();
         $params->append('a', 'b+c');
@@ -63,7 +63,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('a%2Bb=c', $params . '');
     }
 
-    public function testSerializeEqualSign()
+    public function testSerializeEqualSign(): void
     {
         $params = new URLSearchParams();
         $params->append('=', 'a');
@@ -72,7 +72,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('%3D=a&b=%3D', $params . '');
     }
 
-    public function testSerializeAmpersand()
+    public function testSerializeAmpersand(): void
     {
         $params = new URLSearchParams();
         $params->append('&', 'a');
@@ -81,7 +81,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('%26=a&b=%26', $params . '');
     }
 
-    public function testSerializeSpecialChars()
+    public function testSerializeSpecialChars(): void
     {
         $params = new URLSearchParams();
         $params->append('a', '*-._');
@@ -91,7 +91,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('*-._=c', $params . '');
     }
 
-    public function testSerializePercentSign()
+    public function testSerializePercentSign(): void
     {
         $params = new URLSearchParams();
         $params->append('a', 'b%c');
@@ -101,7 +101,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('a%25b=c', $params . '');
     }
 
-    public function testSerializeNullByte()
+    public function testSerializeNullByte(): void
     {
         $params = new URLSearchParams();
         $params->append('a', "b\0c");
@@ -111,7 +111,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('a%00b=c', $params . '');
     }
 
-    public function testSerializeUnicodePileOfPoo()
+    public function testSerializeUnicodePileOfPoo(): void
     {
         $params = new URLSearchParams();
         // $params->append('a', "b\u{1F4A9}c");
@@ -123,7 +123,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('a%F0%9F%92%A9b=c', $params . '');
     }
 
-    public function testStringification()
+    public function testStringification(): void
     {
         $params = new URLSearchParams('a=b&c=d&&e&&');
         $this->assertEquals('a=b&c=d&e=', $params->toString());
@@ -134,7 +134,7 @@ class URLSearchParamsStringifierTest extends TestCase
         $this->assertEquals('a=&a=b', $params->toString());
     }
 
-    public function testURLSearchParamsConnectedToURL()
+    public function testURLSearchParamsConnectedToURL(): void
     {
         $url = new URL('http://www.example.com/?a=b,c');
         $params = $url->searchParams;

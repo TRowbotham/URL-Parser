@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
  */
 class URLSearchParamsSetTest extends TestCase
 {
-    public function testSetBasics()
+    public function testSetBasics(): void
     {
         $params = new URLSearchParams('a=b&c=d');
         $params->set('a', 'B');
@@ -21,7 +21,7 @@ class URLSearchParamsSetTest extends TestCase
         $this->assertEquals('a=B&c=d&e=f', $params . '');
     }
 
-    public function testURLSearchParamsSet()
+    public function testURLSearchParamsSet(): void
     {
         $params = new URLSearchParams('a=1&a=2&a=3');
 

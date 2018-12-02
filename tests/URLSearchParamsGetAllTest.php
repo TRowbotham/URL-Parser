@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
  */
 class URLSearchParamsGetAllTest extends TestCase
 {
-    public function testGetAllBasics()
+    public function testGetAllBasics(): void
     {
         $params = new URLSearchParams('a=b&c=d');
         $this->assertEquals(['b'], $params->getAll('a'));
@@ -23,7 +23,7 @@ class URLSearchParamsGetAllTest extends TestCase
         $this->assertEquals(['', 'e'], $params->getAll('a'));
     }
 
-    public function testGetAllMultiple()
+    public function testGetAllMultiple(): void
     {
         $params = new URLSearchParams('a=1&a=2&a=3&a');
         $this->assertTrue($params->has('a'));

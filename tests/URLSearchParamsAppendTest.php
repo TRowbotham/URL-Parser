@@ -9,7 +9,7 @@ use Rowbot\URL\URLSearchParams;
  */
 class URLSearchParamsAppendTest extends TestCase
 {
-    public function testAppendSameName()
+    public function testAppendSameName(): void
     {
         $params = new URLSearchParams();
         $params->append('a', 'b');
@@ -20,7 +20,7 @@ class URLSearchParamsAppendTest extends TestCase
         $this->assertEquals('a=b&a=b&a=c', $params . '');
     }
 
-    public function testAppendEmptyString()
+    public function testAppendEmptyString(): void
     {
         $params = new URLSearchParams();
         $params->append('', '');
@@ -30,7 +30,7 @@ class URLSearchParamsAppendTest extends TestCase
         $params->append('a', 'c');
     }
 
-    public function testAppendMultiple()
+    public function testAppendMultiple(): void
     {
         $params = new URLSearchParams();
         $params->append('first', 1);
