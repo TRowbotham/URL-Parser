@@ -8,7 +8,7 @@ cache:
 
 env:
   global:
-    - COMPOSER_ARGS="--dev --no-suggest --no-interaction --prefer-source"
+    - COMPOSER_ARGS="--no-suggest --no-interaction --prefer-source"
 
 matrix:
   include:
