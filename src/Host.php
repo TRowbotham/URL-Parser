@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use function is_string;
@@ -48,7 +50,7 @@ class Host
      *
      * @return self
      */
-    public static function createNullHost()
+    public static function createNullHost(): self
     {
         return new self(null);
     }
@@ -65,7 +67,7 @@ class Host
      * @return self|false Returns a Host if it was successfully parsed or false if parsing fails. The returned Host can
      *                    never be null.
      */
-    public static function parse($input, $isNotSpecial = false)
+    public static function parse(string $input, bool $isNotSpecial = false)
     {
         if (mb_substr($input, 0, 1, 'UTF-8') === '[') {
             if (mb_substr($input, -1, null, 'UTF-8') !== ']') {
@@ -122,7 +124,7 @@ class Host
      *
      * @return self|false
      */
-    private static function parseOpaqueHost($input)
+    private static function parseOpaqueHost(string $input)
     {
         // Match a forbidden host code point, minus the "%" character.
         if (preg_match(self::FORBIDDEN_OPAQUE_HOST, $input) === 1) {
@@ -144,7 +146,7 @@ class Host
      *
      * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return $this->host === '';
     }
@@ -154,7 +156,7 @@ class Host
      *
      * @return bool
      */
-    public function isNull()
+    public function isNull(): bool
     {
         return $this->host === null;
     }
@@ -164,7 +166,7 @@ class Host
      *
      * @return bool
      */
-    public function isDomain()
+    public function isDomain(): bool
     {
         return $this->isValidDomain();
     }
@@ -176,7 +178,7 @@ class Host
      *
      * @return bool
      */
-    private function isValidDomain()
+    private function isValidDomain(): bool
     {
         if (!is_string($this->host)) {
             return false;
@@ -204,7 +206,7 @@ class Host
      *
      * @return bool
      */
-    public function equals($host)
+    public function equals($host): bool
     {
         if ($host instanceof self) {
             $host = $host->host;
@@ -224,7 +226,7 @@ class Host
      *
      * @return void
      */
-    public function setHost($host)
+    public function setHost($host): void
     {
         if (!is_string($host)
             && !$host instanceof NetworkAddress
@@ -243,7 +245,7 @@ class Host
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if ($this->host instanceof IPv4Address) {
             return (string) $this->host;
@@ -295,7 +297,7 @@ class Host
      *
      * @return string|false Returns the domain name upon success or false on failure.
      */
-    private static function domainToASCII($domain, $beStrict = false)
+    private static function domainToASCII(string $domain, bool $beStrict = false)
     {
         $options = IDN::CHECK_BIDI
             | IDN::CHECK_JOINERS

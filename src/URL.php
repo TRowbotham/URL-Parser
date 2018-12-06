@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use InvalidArgumentException;
@@ -47,14 +49,14 @@ class URL implements JsonSerializable
     /**
      * Constructor.
      *
-     * @param self|string $url
-     * @param self|string $base
+     * @param string $url
+     * @param string $base
      *
      * @return void
      *
      * @throws \Rowbot\URL\Exception\TypeError
      */
-    public function __construct($url, $base = null)
+    public function __construct(string $url, string $base = null)
     {
         $parsedBase = null;
 
@@ -95,11 +97,11 @@ class URL implements JsonSerializable
     /**
      * @param string $name
      *
-     * @return string
+     * @return string|\Rowbot\URL\URLSearchParams
      *
      * @throws \InvalidArgumentException When an invalid $name value is passed.
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         if ($name === 'hash') {
             if ($this->url->fragment === null
@@ -187,15 +189,15 @@ class URL implements JsonSerializable
     }
 
     /**
-     * @param string     $name
-     * @param string|int $value
+     * @param string $name
+     * @param string $value
      *
      * @return void
      *
      * @throws \InvalidArgumentException       When an invalid $name or $value value is passed.
      * @throws \Rowbot\URL\Exception\TypeError Only when trying to set URL::$searchParams
      */
-    public function __set($name, $value)
+    public function __set(string $name, string $value): void
     {
         if ($name === 'searchParams') {
             throw new TypeError();
@@ -351,7 +353,7 @@ class URL implements JsonSerializable
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->url->serializeURL();
     }
@@ -359,7 +361,7 @@ class URL implements JsonSerializable
     /**
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         return $this->url->serializeURL();
     }
@@ -373,7 +375,7 @@ class URL implements JsonSerializable
      *
      * @return string
      */
-    public function toJSON()
+    public function toJSON(): string
     {
         // Use JSON_UNESCAPED_SLASHES here since JavaScript's JSON.stringify()
         // method does not escape forward slashes by default.
@@ -387,7 +389,7 @@ class URL implements JsonSerializable
      *
      * @return string
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): string
     {
         return $this->url->serializeURL();
     }

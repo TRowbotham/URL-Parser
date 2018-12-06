@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use function array_pop;
@@ -105,7 +107,7 @@ class URLRecord
      *
      * @return void
      */
-    public function setUsername($username)
+    public function setUsername(string $username): void
     {
         $this->username = '';
 
@@ -127,7 +129,7 @@ class URLRecord
      *
      * @return void
      */
-    public function setPassword($password)
+    public function setPassword(string $password): void
     {
         $this->password = '';
 
@@ -147,7 +149,7 @@ class URLRecord
      *
      * @return bool
      */
-    public function isSpecial()
+    public function isSpecial(): bool
     {
         return isset(URLUtils::$specialSchemes[$this->scheme]);
     }
@@ -159,7 +161,7 @@ class URLRecord
      *
      * @return bool
      */
-    public function cannotHaveUsernamePasswordPort()
+    public function cannotHaveUsernamePasswordPort(): bool
     {
         return $this->host->isNull()
             || $this->host->equals('')
@@ -174,7 +176,7 @@ class URLRecord
      *
      * @return bool
      */
-    public function includesCredentials()
+    public function includesCredentials(): bool
     {
         return $this->username !== '' || $this->password !== '';
     }
@@ -187,7 +189,7 @@ class URLRecord
      *
      * @return void
      */
-    public function shortenPath()
+    public function shortenPath(): void
     {
         $size = count($this->path);
 
@@ -215,7 +217,7 @@ class URLRecord
      *
      * @return \Rowbot\URL\Origin
      */
-    public function getOrigin()
+    public function getOrigin(): Origin
     {
         if ($this->scheme === 'blob') {
             $url = BasicURLParser::parseBasicUrl($this->path[0]);
@@ -265,7 +267,7 @@ class URLRecord
      *
      * @return bool
      */
-    public function isEqual(URLRecord $otherUrl, $excludeFragment = false)
+    public function isEqual(URLRecord $otherUrl, bool $excludeFragment = false): bool
     {
         return $this->serializeURL($excludeFragment)
             === $otherUrl->serializeURL($excludeFragment);
@@ -280,7 +282,7 @@ class URLRecord
      *
      * @return string
      */
-    public function serializeURL($excludeFragment = false)
+    public function serializeURL(bool $excludeFragment = false): string
     {
         $output = $this->scheme . ':';
 

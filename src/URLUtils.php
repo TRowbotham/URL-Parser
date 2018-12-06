@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use InvalidArgumentException;
@@ -79,7 +81,7 @@ abstract class URLUtils
      *
      * @return string
      */
-    public static function percentDecode($byteSequence)
+    public static function percentDecode(string $byteSequence): string
     {
         $output = '';
 
@@ -116,9 +118,9 @@ abstract class URLUtils
      * @return string
      */
     public static function utf8PercentEncode(
-        $codePoint,
-        $percentEncodedSet = self::C0_CONTROL_PERCENT_ENCODE_SET
-    ) {
+        string $codePoint,
+        string $percentEncodedSet = self::C0_CONTROL_PERCENT_ENCODE_SET
+    ): string {
         if (preg_match('/[' . $percentEncodedSet . ']/u', $codePoint) !== 1) {
             return $codePoint;
         }
@@ -135,7 +137,7 @@ abstract class URLUtils
      *
      * @throws \InvalidArgumentException
      */
-    public static function strval($arg)
+    public static function strval($arg): string
     {
         if (!is_scalar($arg)
             || is_object($arg) && !method_exists($arg, '__toString')

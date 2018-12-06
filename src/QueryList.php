@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use Countable;
@@ -47,7 +49,7 @@ class QueryList implements Countable, Iterator
      *
      * @return void
      */
-    public function append($name, $value)
+    public function append(string $name, string $value): void
     {
         $this->list[] = ['name' => $name, 'value' => $value];
         $this->cache[$name] = true;
@@ -60,7 +62,7 @@ class QueryList implements Countable, Iterator
      *
      * @return void
      */
-    public function remove($name)
+    public function remove(string $name): void
     {
         for ($i = count($this->list) - 1; $i >= 0; $i--) {
             if ($this->list[$i]['name'] === $name) {
@@ -78,7 +80,7 @@ class QueryList implements Countable, Iterator
      *
      * @return bool
      */
-    public function contains($name)
+    public function contains(string $name): bool
     {
         return isset($this->cache[$name]);
     }
@@ -90,7 +92,7 @@ class QueryList implements Countable, Iterator
      *
      * @return string|null
      */
-    public function first($name)
+    public function first(string $name): ?string
     {
         foreach ($this->list as $pair) {
             if ($pair['name'] === $name) {
@@ -108,7 +110,7 @@ class QueryList implements Countable, Iterator
      *
      * @return array<int, array<string, string>>
      */
-    public function filter(callable $callback)
+    public function filter(callable $callback): array
     {
         return array_filter($this->list, $callback);
     }
@@ -122,7 +124,7 @@ class QueryList implements Countable, Iterator
      *
      * @return void
      */
-    public function set($name, $value)
+    public function set(string $name, string $value): void
     {
         $prevIndex = null;
 
@@ -144,7 +146,7 @@ class QueryList implements Countable, Iterator
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->list);
     }
@@ -155,7 +157,7 @@ class QueryList implements Countable, Iterator
      *
      * @return void
      */
-    public function sort()
+    public function sort(): void
     {
         $temp = [];
         $i = 0;
@@ -286,7 +288,7 @@ class QueryList implements Countable, Iterator
      *
      * @return void
      */
-    public function clear()
+    public function clear(): void
     {
         $this->list = [];
         $this->cache = [];
@@ -300,7 +302,7 @@ class QueryList implements Countable, Iterator
      *
      * @return void
      */
-    public function update(array $list)
+    public function update(array $list): void
     {
         $this->list = [];
         $this->cache = [];
@@ -316,7 +318,7 @@ class QueryList implements Countable, Iterator
      *
      * @return array<int, array<string, string>>
      */
-    public function all()
+    public function all(): array
     {
         return $this->list;
     }
@@ -326,7 +328,7 @@ class QueryList implements Countable, Iterator
      *
      * @return array<string, string>
      */
-    public function current()
+    public function current(): array
     {
         return $this->list[$this->cursor];
     }
@@ -336,7 +338,7 @@ class QueryList implements Countable, Iterator
      *
      * @return int
      */
-    public function key()
+    public function key(): int
     {
         return $this->cursor;
     }
@@ -346,7 +348,7 @@ class QueryList implements Countable, Iterator
      *
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         ++$this->cursor;
     }
@@ -356,7 +358,7 @@ class QueryList implements Countable, Iterator
      *
      * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->cursor = 0;
     }
@@ -366,7 +368,7 @@ class QueryList implements Countable, Iterator
      *
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->list[$this->cursor]);
     }

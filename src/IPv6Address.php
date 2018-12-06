@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use function base_convert;
@@ -23,7 +25,7 @@ class IPv6Address implements NetworkAddress
      *
      * @return void
      */
-    protected function __construct($address)
+    protected function __construct(array $address)
     {
         $this->address = $address;
     }
@@ -37,7 +39,7 @@ class IPv6Address implements NetworkAddress
      *
      * @return self|false Returns an instance of itself, or false if the input is not a valid IPv6 address.
      */
-    public static function parse($input)
+    public static function parse(string $input)
     {
         $address = [0, 0, 0, 0, 0, 0, 0, 0];
         $pieceIndex = 0;
@@ -199,7 +201,7 @@ class IPv6Address implements NetworkAddress
      *                              start compression, or null if the address isn't compressable. The second item is the
      *                              the length of the longest sequence of zeroes.
      */
-    private function getLongestSequence()
+    private function getLongestSequence(): array
     {
         $i = 0;
         $longestSequence = 1;
@@ -235,7 +237,7 @@ class IPv6Address implements NetworkAddress
      *
      * @see https://url.spec.whatwg.org/#concept-ipv6-serializer
      */
-    public function __toString()
+    public function __toString(): string
     {
         $output = '';
         list($compress, $longestSequence) = $this->getLongestSequence();
@@ -271,7 +273,7 @@ class IPv6Address implements NetworkAddress
     /**
      * {@inheritDoc}
      */
-    public function equals($address)
+    public function equals($address): bool
     {
         if ($address instanceof self) {
             return $this->address === $address->address;

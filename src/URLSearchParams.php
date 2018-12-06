@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use ArrayAccess;
@@ -87,7 +89,7 @@ class URLSearchParams implements Iterator
      *
      * @return string The query string.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->urlencodeList($this->list->all());
     }
@@ -95,7 +97,7 @@ class URLSearchParams implements Iterator
     /**
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         return $this->urlencodeList($this->list->all());
     }
@@ -110,7 +112,7 @@ class URLSearchParams implements Iterator
      *
      * @return self
      */
-    public static function create($init, URLRecord $url)
+    public static function create($init, URLRecord $url): self
     {
         $query = new self();
         $query->url = $url;
@@ -216,7 +218,7 @@ class URLSearchParams implements Iterator
      *
      * @return void
      */
-    public function append($name, $value)
+    public function append(string $name, string $value): void
     {
         $this->list->append(URLUtils::strval($name), URLUtils::strval($value));
         $this->update();
@@ -231,7 +233,7 @@ class URLSearchParams implements Iterator
      *
      * @return void
      */
-    public function delete($name)
+    public function delete(string $name): void
     {
         $this->list->remove(URLUtils::strval($name));
         $this->update();
@@ -246,7 +248,7 @@ class URLSearchParams implements Iterator
      *
      * @return string|null The value of the specified key.
      */
-    public function get($name)
+    public function get(string $name): ?string
     {
         return $this->list->first(URLUtils::strval($name));
     }
@@ -260,7 +262,7 @@ class URLSearchParams implements Iterator
      *
      * @return array<array<string>> An array containing all the values of the specified key.
      */
-    public function getAll($name)
+    public function getAll(string $name): array
     {
         $name = URLUtils::strval($name);
 
@@ -279,7 +281,7 @@ class URLSearchParams implements Iterator
      *
      * @return bool Returns true if the key exits, otherwise false.
      */
-    public function has($name)
+    public function has(string $name): bool
     {
         return $this->list->contains(URLUtils::strval($name));
     }
@@ -298,7 +300,7 @@ class URLSearchParams implements Iterator
      *
      * @return void
      */
-    public function set($name, $value)
+    public function set(string $name, string $value): void
     {
         $name = URLUtils::strval($name);
         $value = URLUtils::strval($value);
@@ -321,7 +323,7 @@ class URLSearchParams implements Iterator
      *
      * @return void
      */
-    public function sort()
+    public function sort(): void
     {
         $this->list->sort();
         $this->update();
@@ -334,7 +336,7 @@ class URLSearchParams implements Iterator
      *
      * @return void
      */
-    public function clear()
+    public function clear(): void
     {
         $this->list->clear();
     }
@@ -350,7 +352,7 @@ class URLSearchParams implements Iterator
      *
      * @return void
      */
-    public function modify(array $list)
+    public function modify(array $list): void
     {
         $this->list->update($list);
     }
@@ -365,7 +367,7 @@ class URLSearchParams implements Iterator
      *
      * @return void
      */
-    protected function update()
+    protected function update(): void
     {
         if ($this->url === null) {
             return;
@@ -389,7 +391,7 @@ class URLSearchParams implements Iterator
      *
      * @return void
      */
-    public function setUrl(URLRecord $url)
+    public function setUrl(URLRecord $url): void
     {
         $this->url = $url;
     }
@@ -397,7 +399,7 @@ class URLSearchParams implements Iterator
     /**
      * @return string[]
      */
-    public function current()
+    public function current(): array
     {
         $current = $this->list->current();
 
@@ -407,7 +409,7 @@ class URLSearchParams implements Iterator
     /**
      * @return int
      */
-    public function key()
+    public function key(): int
     {
         return $this->list->key();
     }
@@ -415,7 +417,7 @@ class URLSearchParams implements Iterator
     /**
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         $this->list->next();
     }
@@ -423,7 +425,7 @@ class URLSearchParams implements Iterator
     /**
      * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->list->rewind();
     }
@@ -431,7 +433,7 @@ class URLSearchParams implements Iterator
     /**
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->list->valid();
     }

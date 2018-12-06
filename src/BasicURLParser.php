@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use Rowbot\URL\Exception\InvalidParserState;
@@ -174,11 +176,11 @@ class BasicURLParser
      *                                     input failed.
      */
     public static function parseBasicUrl(
-        $input,
+        string $input,
         URLRecord $base = null,
-        $encodingOverride = null,
+        string $encodingOverride = null,
         URLRecord $url = null,
-        $stateOverride = null
+        int $stateOverride = null
     ) {
         $parser = new self();
         $parser->input = $input;
@@ -379,7 +381,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function schemeStartState($c)
+    private function schemeStartState(string $c): int
     {
         if (preg_match(URLUtils::REGEX_ASCII_ALPHA, $c) === 1) {
             $this->buffer .= strtolower($c);
@@ -408,7 +410,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function schemeState($c)
+    private function schemeState(string $c): int
     {
         if (preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c) === 1
             || $c === '+'
@@ -523,7 +525,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function noSchemeState($c)
+    private function noSchemeState(string $c): int
     {
         if ($this->base === null
             || ($this->base->cannotBeABaseUrl && $c !== '#')
@@ -563,7 +565,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function specialRelativeOrAuthorityState($c)
+    private function specialRelativeOrAuthorityState(string $c): int
     {
         if ($c === '/' && mb_substr(
             $this->input,
@@ -591,7 +593,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function pathOrAuthorityState($c)
+    private function pathOrAuthorityState(string $c): int
     {
         if ($c === '/') {
             $this->state = self::AUTHORITY_STATE;
@@ -612,7 +614,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function relativeState($c)
+    private function relativeState(string $c): int
     {
         $this->url->scheme = $this->base->scheme;
 
@@ -688,7 +690,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function relativeSlashState($c)
+    private function relativeSlashState(string $c): int
     {
         if ($this->url->isSpecial() && $c === '/' || $c === '\\') {
             if ($c === '\\') {
@@ -723,7 +725,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function specialAuthoritySlashesState($c)
+    private function specialAuthoritySlashesState(string $c): int
     {
         if ($c === '/' && mb_substr(
             $this->input,
@@ -751,7 +753,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function specialAuthorityIgnnoreSlashesState($c)
+    private function specialAuthorityIgnnoreSlashesState(string $c): int
     {
         if ($c !== '/' && $c !== '\\') {
             $this->state = self::AUTHORITY_STATE;
@@ -771,7 +773,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function authorityState($c)
+    private function authorityState(string $c): int
     {
         if ($c === '@') {
             // Validation error.
@@ -838,7 +840,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function hostState($c)
+    private function hostState(string $c): int
     {
         if ($this->stateOverride !== null && $this->url->scheme === 'file') {
             --$this->pointer;
@@ -924,7 +926,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function portState($c)
+    private function portState(string $c): int
     {
         if (ctype_digit($c)) {
             $this->buffer .= $c;
@@ -974,7 +976,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function fileState($c)
+    private function fileState(string $c): int
     {
         $this->url->scheme = 'file';
 
@@ -1047,7 +1049,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function fileSlashState($c)
+    private function fileSlashState(string $c): int
     {
         if ($c === '/' || $c === '\\') {
             if ($c === '\\') {
@@ -1098,7 +1100,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function fileHostState($c)
+    private function fileHostState(string $c): int
     {
         if ($c === ''/* EOF */
             || $c === '/'
@@ -1169,7 +1171,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function pathStartState($c)
+    private function pathStartState(string $c): int
     {
         if ($this->url->isSpecial()) {
             if ($c === '\\') {
@@ -1205,7 +1207,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function pathState($c)
+    private function pathState(string $c): int
     {
         if ($c === ''/* EOF */
             || $c === '/'
@@ -1309,7 +1311,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function cannotBeABaseUrlPathState($c)
+    private function cannotBeABaseUrlPathState(string $c): int
     {
         if ($c === '?') {
             $this->url->query = '';
@@ -1352,7 +1354,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function queryState($c)
+    private function queryState(string $c): int
     {
         if ($this->encoding !== 'UTF-8'
             && (!$this->url->isSpecial()
@@ -1418,7 +1420,7 @@ class BasicURLParser
      *
      * @return int
      */
-    private function fragmentState($c)
+    private function fragmentState(string $c): int
     {
         if ($c === ''/* EOF */) {
             // Do nothing.
@@ -1452,7 +1454,7 @@ class BasicURLParser
      *
      * @return bool
      */
-    private function remainingStartsWithTwoAsciiHexDigits()
+    private function remainingStartsWithTwoAsciiHexDigits(): bool
     {
         $remaining = mb_substr(
             $this->input,

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use UConverter;
@@ -27,7 +29,7 @@ trait URLFormEncoded
      *
      * @return array<int, array<string, string>>
      */
-    private function urldecode($input)
+    private function urldecode(string $input): array
     {
         // Let sequences be the result of splitting input on 0x26 (&).
         $sequences = explode('&', $input);
@@ -84,7 +86,7 @@ trait URLFormEncoded
      *
      * @return array<int, array<string, string>>
      */
-    private function urldecodeString($input)
+    private function urldecodeString(string $input): array
     {
         return $this->urldecode($input);
     }
@@ -99,7 +101,7 @@ trait URLFormEncoded
      *
      * @return string
      */
-    private function urlencode($input)
+    private function urlencode(string $input): string
     {
         $output = '';
         $length = strlen($input);
@@ -135,7 +137,7 @@ trait URLFormEncoded
      *
      * @return string
      */
-    private function urlencodeList(array $tuples, $encodingOverride = null)
+    private function urlencodeList(array $tuples, string $encodingOverride = null): string
     {
         $encoding = 'UTF-8';
 

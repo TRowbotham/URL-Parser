@@ -1,5 +1,9 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
+
+use GMP;
 
 use function array_pop;
 use function count;
@@ -31,7 +35,7 @@ class IPv4Address implements NetworkAddress
      *
      * @return void
      */
-    protected function __construct($address)
+    protected function __construct(GMP $address)
     {
         $this->address = $address;
     }
@@ -56,7 +60,7 @@ class IPv4Address implements NetworkAddress
      *                          input is determined to be a domain. This will return false if the input is neither a
      *                          domain or IPv4 address.
      */
-    public static function parse($input)
+    public static function parse(string $input)
     {
         $validationError = false;
         $parts = explode('.', $input);
@@ -141,7 +145,7 @@ class IPv4Address implements NetworkAddress
      *
      * @see https://url.spec.whatwg.org/#concept-ipv4-serializer
      */
-    public function __toString()
+    public function __toString(): string
     {
         $output = '';
         $n = $this->address;
@@ -162,7 +166,7 @@ class IPv4Address implements NetworkAddress
     /**
      * {@inheritDoc}
      */
-    public function equals($address)
+    public function equals($address): bool
     {
         if ($address instanceof self) {
             return $this->address == $address->address;
@@ -188,7 +192,7 @@ class IPv4Address implements NetworkAddress
      *
      * @return \GMP|false Returns false on failure and an GMP object otherwise.
      */
-    protected static function parseIPv4Number($input, &$validationError)
+    protected static function parseIPv4Number(string $input, bool &$validationError)
     {
         $R = 10;
         $len = strlen($input);

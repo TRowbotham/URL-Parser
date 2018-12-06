@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use const IDNA_CHECK_BIDI;
@@ -71,7 +73,7 @@ final class IDN
      *
      * @return self
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -88,7 +90,7 @@ final class IDN
      *
      * @return string|false
      */
-    public function toASCII($domainName, $flags = 0)
+    public function toASCII(string $domainName, int $flags = 0)
     {
         $options = $this->options($flags);
 
@@ -146,7 +148,7 @@ final class IDN
      *
      * @return string|false
      */
-    public function toUnicode($domainName, $flags = 0)
+    public function toUnicode(string $domainName, int $flags = 0)
     {
         $options = $this->options($flags);
 
@@ -187,7 +189,7 @@ final class IDN
      *
      * @return int
      */
-    private function options($flags)
+    private function options(int $flags): int
     {
         $options = 0;
 
@@ -214,7 +216,7 @@ final class IDN
      *
      * @return int
      */
-    private function maybeWhitelistHyphenErrors($flags)
+    private function maybeWhitelistHyphenErrors(int $flags): int
     {
         // There is currently no way to disable the check for hyphens in the
         // 3rd and 4th spots in a domain, however, we can look for the

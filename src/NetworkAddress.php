@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 interface NetworkAddress
@@ -10,12 +12,12 @@ interface NetworkAddress
      *
      * @return bool
      */
-    public function equals($address);
+    public function equals($address): bool;
 
     /**
      * Serializes a network address.
      *
      * @return string
      */
-    public function __toString();
+    public function __toString(): string;
 }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 /**
@@ -53,11 +55,11 @@ class Origin
      * @return self
      */
     public static function createTupleOrigin(
-        $scheme,
+        string $scheme,
         Host $host,
-        $port,
-        $domain = null
-    ) {
+        ?int $port,
+        string $domain = null
+    ): self {
         $origin = new self();
         $origin->domain = $domain;
         $origin->host = $host;
@@ -74,7 +76,7 @@ class Origin
      *
      * @return self
      */
-    public static function createOpaqueOrigin()
+    public static function createOpaqueOrigin(): self
     {
         return new self();
     }
@@ -84,7 +86,7 @@ class Origin
      *
      * @return string
      */
-    public function getEffectiveDomain()
+    public function getEffectiveDomain(): string
     {
         if ($this->isOpaque) {
             return 'null';
@@ -102,7 +104,7 @@ class Origin
      *
      * @return bool
      */
-    public function isOpaque()
+    public function isOpaque(): bool
     {
         return $this->isOpaque;
     }
@@ -116,7 +118,7 @@ class Origin
      *
      * @return bool
      */
-    public function isSameOrigin(Origin $other)
+    public function isSameOrigin(Origin $other): bool
     {
         // If A and B are the same opaque origin, then return true.
         if ($this->isOpaque && $other->isOpaque && $this === $other) {
@@ -143,7 +145,7 @@ class Origin
      *
      * @return bool
      */
-    public function isSameOriginDomain(Origin $other)
+    public function isSameOriginDomain(Origin $other): bool
     {
         // If A and B are the same opaque origin, then return true.
         if ($this->isOpaque && $other->isOpaque && $this === $other) {
@@ -177,7 +179,7 @@ class Origin
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if ($this->isOpaque) {
             return 'null';
