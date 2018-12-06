@@ -28,12 +28,12 @@ use function idn_to_utf8;
 
 final class IDN
 {
-    const CHECK_HYPHENS              = 1;
-    const CHECK_BIDI                 = 2;
-    const CHECK_JOINERS              = 4;
-    const USE_STD3_ASCII_RULES       = 8;
-    const VERIFY_DNS_LENGTH          = 16;
-    const NONTRANSITIONAL_PROCESSING = 32;
+    public const CHECK_HYPHENS              = 1;
+    public const CHECK_BIDI                 = 2;
+    public const CHECK_JOINERS              = 4;
+    public const USE_STD3_ASCII_RULES       = 8;
+    public const VERIFY_DNS_LENGTH          = 16;
+    public const NONTRANSITIONAL_PROCESSING = 32;
 
     /**
      * @var self

@@ -11,11 +11,11 @@ use function substr;
 
 abstract class URLUtils
 {
-    const REGEX_C0_CONTROLS = '/[\x{0000}-\x{001F}]/';
-    const REGEX_ASCII_ALPHA = '/[\x{0041}-\x{005A}\x{0061}-\x{007A}]/';
-    const REGEX_ASCII_ALPHANUMERIC = '/[\x{0030}-\x{0039}\x{0041}-\x{005A}'
+    public const REGEX_C0_CONTROLS = '/[\x{0000}-\x{001F}]/';
+    public const REGEX_ASCII_ALPHA = '/[\x{0041}-\x{005A}\x{0061}-\x{007A}]/';
+    public const REGEX_ASCII_ALPHANUMERIC = '/[\x{0030}-\x{0039}\x{0041}-\x{005A}'
         . '\x{0061}-\x{007A}]/';
-    const REGEX_URL_CODE_POINTS = '/[\x{0030}-\x{0039}\x{0041}-\x{005A}'
+    public const REGEX_URL_CODE_POINTS = '/[\x{0030}-\x{0039}\x{0041}-\x{005A}'
         . '\x{0061}-\x{007A}'
         . '!$&\'()*+,\-.\/:;=?@_~'
         . '\x{00A0}-\x{D7DD}'
@@ -38,16 +38,16 @@ abstract class URLUtils
         . '\x{F0000}-\x{FFFFD}'
         . '\x{100000}-\x{10FFFD}'
         . ']/u';
-    const REGEX_WINDOWS_DRIVE_LETTER = '/^[A-Za-z][:|]$/u';
-    const REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER = '/^[A-Za-z]:$/u';
-    const STARTS_WITH_WINDOWS_DRIVE_LETTER = '/^[A-Za-z][:|](?:$|[\/\\\?#])/u';
+    public const REGEX_WINDOWS_DRIVE_LETTER = '/^[A-Za-z][:|]$/u';
+    public const REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER = '/^[A-Za-z]:$/u';
+    public const STARTS_WITH_WINDOWS_DRIVE_LETTER = '/^[A-Za-z][:|](?:$|[\/\\\?#])/u';
 
-    const C0_CONTROL_PERCENT_ENCODE_SET = '\x00-\x1F\x7E-\x{10FFFF}';
-    const FRAGMENT_PERCENT_ENCODE_SET   = self::C0_CONTROL_PERCENT_ENCODE_SET
+    public const C0_CONTROL_PERCENT_ENCODE_SET = '\x00-\x1F\x7E-\x{10FFFF}';
+    public const FRAGMENT_PERCENT_ENCODE_SET   = self::C0_CONTROL_PERCENT_ENCODE_SET
         . '\x20"<>`';
-    const PATH_PERCENT_ENCODE_SET       = self::FRAGMENT_PERCENT_ENCODE_SET
+    public const PATH_PERCENT_ENCODE_SET       = self::FRAGMENT_PERCENT_ENCODE_SET
         . '#?{}';
-    const USERINFO_PERCENT_ENCODE_SET   = self::PATH_PERCENT_ENCODE_SET
+    public const USERINFO_PERCENT_ENCODE_SET   = self::PATH_PERCENT_ENCODE_SET
         . '\/:;=@[\\\\\]^|';
 
     /**

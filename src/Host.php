@@ -13,9 +13,9 @@ class Host
      * @see https://url.spec.whatwg.org/#forbidden-host-code-point
      * @see https://url.spec.whatwg.org/#ref-for-forbidden-host-code-point%E2%91%A0
      */
-    const FORBIDDEN_CODEPOINTS  = '\x00\x09\x0A\x0D\x20#\/:?@[\\\\\]';
-    const FORBIDDEN_HOST        = '/[' . self::FORBIDDEN_CODEPOINTS . '%]/u';
-    const FORBIDDEN_OPAQUE_HOST = '/[' . self::FORBIDDEN_CODEPOINTS . ']/u';
+    private const FORBIDDEN_CODEPOINTS  = '\x00\x09\x0A\x0D\x20#\/:?@[\\\\\]';
+    private const FORBIDDEN_HOST        = '/[' . self::FORBIDDEN_CODEPOINTS . '%]/u';
+    private const FORBIDDEN_OPAQUE_HOST = '/[' . self::FORBIDDEN_CODEPOINTS . ']/u';
 
     /**
      * @var \Rowbot\URL\NetworkAddress|string|null

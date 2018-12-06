@@ -23,32 +23,32 @@ use function strtolower;
 
 class BasicURLParser
 {
-    const SCHEME_START_STATE                     = 1;
-    const SCHEME_STATE                           = 2;
-    const NO_SCHEME_STATE                        = 3;
-    const SPECIAL_RELATIVE_OR_AUTHORITY_STATE    = 4;
-    const PATH_OR_AUTHORITY_STATE                = 5;
-    const RELATIVE_STATE                         = 6;
-    const RELATIVE_SLASH_STATE                   = 7;
-    const SPECIAL_AUTHORITY_SLASHES_STATE        = 8;
-    const SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE = 9;
-    const AUTHORITY_STATE                        = 10;
-    const HOST_STATE                             = 11;
-    const HOSTNAME_STATE                         = 12;
-    const PORT_STATE                             = 13;
-    const FILE_STATE                             = 14;
-    const FILE_SLASH_STATE                       = 15;
-    const FILE_HOST_STATE                        = 16;
-    const PATH_START_STATE                       = 17;
-    const PATH_STATE                             = 18;
-    const CANNOT_BE_A_BASE_URL_PATH_STATE        = 19;
-    const QUERY_STATE                            = 20;
-    const FRAGMENT_STATE                         = 21;
+    public const SCHEME_START_STATE                     = 1;
+    public const SCHEME_STATE                           = 2;
+    public const NO_SCHEME_STATE                        = 3;
+    public const SPECIAL_RELATIVE_OR_AUTHORITY_STATE    = 4;
+    public const PATH_OR_AUTHORITY_STATE                = 5;
+    public const RELATIVE_STATE                         = 6;
+    public const RELATIVE_SLASH_STATE                   = 7;
+    public const SPECIAL_AUTHORITY_SLASHES_STATE        = 8;
+    public const SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE = 9;
+    public const AUTHORITY_STATE                        = 10;
+    public const HOST_STATE                             = 11;
+    public const HOSTNAME_STATE                         = 12;
+    public const PORT_STATE                             = 13;
+    public const FILE_STATE                             = 14;
+    public const FILE_SLASH_STATE                       = 15;
+    public const FILE_HOST_STATE                        = 16;
+    public const PATH_START_STATE                       = 17;
+    public const PATH_STATE                             = 18;
+    public const CANNOT_BE_A_BASE_URL_PATH_STATE        = 19;
+    public const QUERY_STATE                            = 20;
+    public const FRAGMENT_STATE                         = 21;
 
-    const RETURN_OK        = 0;
-    const RETURN_CONTINUE  = 1;
-    const RETURN_FAILURE   = 2;
-    const RETURN_TERMINATE = 3;
+    private const RETURN_OK        = 0;
+    private const RETURN_CONTINUE  = 1;
+    private const RETURN_FAILURE   = 2;
+    private const RETURN_TERMINATE = 3;
 
     /**
      * @see https://url.spec.whatwg.org/#single-dot-path-segment
