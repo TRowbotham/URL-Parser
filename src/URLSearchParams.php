@@ -8,16 +8,19 @@ use Countable;
 use InvalidArgumentException;
 use Iterator;
 use Rowbot\URL\Exception\TypeError;
-use Traversable;
+use UConverter;
 
 use function array_column;
 use function count;
 use function func_num_args;
 use function gettype;
 use function is_array;
+use function is_iterable;
 use function is_object;
+use function is_scalar;
 use function is_string;
 use function mb_substr;
+use function method_exists;
 
 /**
  * An object containing a list of all URL query parameters.  This allows you to
@@ -57,11 +60,10 @@ class URLSearchParams implements Iterator
         // If $init is given, is a string, and starts with "?", remove the
         // first code point from $init.
         if (func_num_args() > 0) {
-            try {
-                // Try to get a string value, otherwise just pass the value on.
-                $init = URLUtils::strval($init);
-            } catch (InvalidArgumentException $e) {
-                // Do nothing.
+            if (is_scalar($init)
+                || is_object($init) && method_exists($init, '__toString')
+            ) {
+                $init = UConverter::transcode((string) $init, 'UTF-8', 'UTF-8');
             }
 
             if (is_string($init) && mb_substr($init, 0, 1, 'UTF-8') === '?') {
@@ -133,7 +135,7 @@ class URLSearchParams implements Iterator
      */
     private function init($init)
     {
-        if (is_array($init) || $init instanceof Traversable) {
+        if (is_iterable($init)) {
             foreach ($init as $pair) {
                 // Try to catch cases where $pair isn't countable or $pair is
                 // countable, but isn't a valid sequence, such as:
@@ -180,8 +182,8 @@ class URLSearchParams implements Iterator
 
             foreach ($init as $pair) {
                 $this->list->append(
-                    URLUtils::strval($pair[0]),
-                    URLUtils::strval($pair[1])
+                    UConverter::transcode($pair[0], 'UTF-8', 'UTF-8'),
+                    UConverter::transcode($pair[1], 'UTF-8', 'UTF-8')
                 );
             }
 
@@ -191,8 +193,8 @@ class URLSearchParams implements Iterator
         if (is_object($init)) {
             foreach ($init as $name => $value) {
                 $this->append(
-                    URLUtils::strval($name),
-                    URLUtils::strval($value)
+                    UConverter::transcode($name, 'UTF-8', 'UTF-8'),
+                    UConverter::transcode($value, 'UTF-8', 'UTF-8')
                 );
             }
 
@@ -220,7 +222,10 @@ class URLSearchParams implements Iterator
      */
     public function append(string $name, string $value): void
     {
-        $this->list->append(URLUtils::strval($name), URLUtils::strval($value));
+        $this->list->append(
+            UConverter::transcode($name, 'UTF-8', 'UTF-8'),
+            UConverter::transcode($value, 'UTF-8', 'UTF-8')
+        );
         $this->update();
     }
 
@@ -235,7 +240,7 @@ class URLSearchParams implements Iterator
      */
     public function delete(string $name): void
     {
-        $this->list->remove(URLUtils::strval($name));
+        $this->list->remove(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
         $this->update();
     }
 
@@ -250,7 +255,7 @@ class URLSearchParams implements Iterator
      */
     public function get(string $name): ?string
     {
-        return $this->list->first(URLUtils::strval($name));
+        return $this->list->first(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
     }
 
     /**
@@ -264,7 +269,7 @@ class URLSearchParams implements Iterator
      */
     public function getAll(string $name): array
     {
-        $name = URLUtils::strval($name);
+        $name = UConverter::transcode($name, 'UTF-8', 'UTF-8');
 
         return array_column($this->list->filter(function ($pair) use ($name) {
             return $pair['name'] === $name;
@@ -283,7 +288,7 @@ class URLSearchParams implements Iterator
      */
     public function has(string $name): bool
     {
-        return $this->list->contains(URLUtils::strval($name));
+        return $this->list->contains(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
     }
 
     /**
@@ -302,8 +307,8 @@ class URLSearchParams implements Iterator
      */
     public function set(string $name, string $value): void
     {
-        $name = URLUtils::strval($name);
-        $value = URLUtils::strval($value);
+        $name = UConverter::transcode($name, 'UTF-8', 'UTF-8');
+        $value = UConverter::transcode($value, 'UTF-8', 'UTF-8');
 
         if ($this->list->contains($name)) {
             $this->list->set($name, $value);

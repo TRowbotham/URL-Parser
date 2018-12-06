@@ -3,16 +3,9 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
-use InvalidArgumentException;
-use UConverter;
-
-use function gettype;
-use function is_object;
-use function method_exists;
 use function pack;
 use function preg_match;
 use function rawurlencode;
-use function sprintf;
 use function strlen;
 use function substr;
 
@@ -126,29 +119,5 @@ abstract class URLUtils
         }
 
         return rawurlencode($codePoint);
-    }
-
-    /**
-     * Casts arguments to a string and attempts to fix invalid byte sequences.
-     *
-     * @param mixed $arg A value to cast to a string.
-     *
-     * @return string
-     *
-     * @throws \InvalidArgumentException
-     */
-    public static function strval($arg): string
-    {
-        if (!is_scalar($arg)
-            || is_object($arg) && !method_exists($arg, '__toString')
-        ) {
-            throw new InvalidArgumentException(sprintf(
-                'Only scalar values and objects with a __toString() method are'
-                . ' considered valid input. Given value was of type %s.',
-                gettype($arg)
-            ));
-        }
-
-        return UConverter::transcode((string) $arg, 'UTF-8', 'UTF-8');
     }
 }

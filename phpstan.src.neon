@@ -23,9 +23,6 @@ parameters:
         # See https://github.com/phpstan/phpstan/issues/1311
         - '#Property Rowbot\\URL\\QueryList::\$list \(array<int, array<string, string>>\) does not accept array<int, array<int, array<string, string>\|int>>\.#'
 
-        # See https://github.com/phpstan/phpstan/issues/1215
-        - '#Strict comparison using === between string and false will always evaluate to false\.#'
-
         # See https://github.com/phpstan/phpstan/issues/1254
         - '#Result of && is always false\.#'
         - '#Strict comparison using !== between null and null will always evaluate to false\.#'

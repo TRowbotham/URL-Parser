@@ -209,10 +209,7 @@ class IPv4Address implements NetworkAddress
             $R = 8;
         }
 
-        // Check for $input being false here since substr() will return false
-        // if the start position is the same as the string's length on
-        // PHP 5.6.
-        if ($input === '' || $input === false) {
+        if ($input === '') {
             return gmp_init(0, 10);
         }
 

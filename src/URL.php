@@ -6,6 +6,7 @@ namespace Rowbot\URL;
 use InvalidArgumentException;
 use JsonSerializable;
 use Rowbot\URL\Exception\TypeError;
+use UConverter;
 
 use const JSON_UNESCAPED_SLASHES;
 
@@ -61,9 +62,7 @@ class URL implements JsonSerializable
         $parsedBase = null;
 
         if ($base !== null) {
-            $parsedBase = BasicURLParser::parseBasicUrl(URLUtils::strval(
-                $base
-            ));
+            $parsedBase = BasicURLParser::parseBasicUrl(UConverter::transcode($base, 'UTF-8', 'UTF-8'));
 
             if ($parsedBase === false) {
                 throw new TypeError($base . ' is not a valid URL.');
@@ -71,7 +70,7 @@ class URL implements JsonSerializable
         }
 
         $parsedURL = BasicURLParser::parseBasicUrl(
-            URLUtils::strval($url),
+            UConverter::transcode($url, 'UTF-8', 'UTF-8'),
             $parsedBase
         );
 
@@ -203,7 +202,7 @@ class URL implements JsonSerializable
             throw new TypeError();
         }
 
-        $value = URLUtils::strval($value);
+        $value = UConverter::transcode($value, 'UTF-8', 'UTF-8');
 
         if ($name === 'hash') {
             if ($value === '') {
