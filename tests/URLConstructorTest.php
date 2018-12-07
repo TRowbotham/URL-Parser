@@ -24,13 +24,6 @@ class URLConstructorTest extends WhatwgTestCase
      */
     public function testUrlConstructorSucceeded(stdClass $expected): void
     {
-        if (property_exists($expected, 'failure')) {
-            $this->expectException(TypeError::class);
-            $base = $expected->base ? $expected->base : 'about:blank';
-            new URL($expected->input, $base);
-            return;
-        }
-
         $base = $expected->base ? $expected->base : 'about:blank';
         $url = new URL($expected->input, $base);
         $this->assertEquals($expected->href, $url->href, 'href');
