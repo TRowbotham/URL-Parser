@@ -13,7 +13,7 @@ class FailureTest extends WhatwgTestCase
     public function urlTestDataFailureProvider(): iterable
     {
         foreach ($this->loadTestData('urltestdata.json') as $inputs) {
-            if (isset($inputs['failure'])) {
+            if (isset($inputs['failure']) && $inputs['base'] === 'about:blank') {
                 yield [(object) $inputs];
             }
         }
