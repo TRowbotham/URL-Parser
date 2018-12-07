@@ -46,8 +46,8 @@ install:
 
 script:
   - if [ "$RUN_PHPSTAN" == "true" ]; then composer phpstan; fi
-  - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then composer phpunit --coverage-clover build/logs/clover.xml; fi
-  - if [[ $TRAVIS_PHP_VERSION == nightly ]]; then phpdbg -qrr vendor/bin/phpunit --coverage-clover build/logs/clover.xml; fi
+  - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then composer phpunit; fi
+  - if [[ $TRAVIS_PHP_VERSION == nightly ]]; then phpdbg -qrr vendor/bin/phpunit --coverage-text; fi
 
 after_script:
   - if [ "$CODE_COVERAGE" == "true" ]; then travis_retry php vendor/bin/php-coveralls; fi
