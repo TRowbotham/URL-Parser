@@ -141,47 +141,6 @@ final class IDN
     }
 
     /**
-     * The domain name to be converted to UTF-8.
-     *
-     * @param string $domainName An ASCII string.
-     * @param int    $flags      A bitmask of flags.
-     *
-     * @return string|false
-     */
-    public function toUnicode(string $domainName, int $flags = 0)
-    {
-        $options = $this->options($flags);
-
-        if (($flags & self::NONTRANSITIONAL_PROCESSING) !== 0) {
-            $options |= IDNA_NONTRANSITIONAL_TO_UNICODE;
-        }
-
-        $result = idn_to_utf8(
-            $domainName,
-            $options,
-            INTL_IDNA_VARIANT_UTS46,
-            $info
-        );
-
-        // We died a horrible death and can't recover. There is currently a bug
-        // in PHP's idn_to_* functions where this can occur when the given
-        // domain exceeds 254 bytes.
-        if ([] === $info) {
-            return false;
-        }
-
-        $whitelistedErrors = $this->maybeWhitelistHyphenErrors($flags);
-
-        if ($result === false
-            && ((self::$errors & ~$whitelistedErrors) & $info['errors']) !== 0
-        ) {
-            return false;
-        }
-
-        return $info['result'];
-    }
-
-    /**
      * Translates the wrapper object option flags to the equivilant IDNA_*
      * option flags.
      *

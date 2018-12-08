@@ -162,44 +162,6 @@ class Host
     }
 
     /**
-     * Returns whether or not the host is a domain.
-     *
-     * @return bool
-     */
-    public function isDomain(): bool
-    {
-        return $this->isValidDomain();
-    }
-
-    /**
-     * Returns whether or not the host is a valid domain.
-     *
-     * @see https://url.spec.whatwg.org/#valid-domain
-     *
-     * @return bool
-     */
-    private function isValidDomain(): bool
-    {
-        if (!is_string($this->host)) {
-            return false;
-        }
-
-        $result = self::domainToASCII($this->host, true);
-
-        if ($result === false) {
-            return false;
-        }
-
-        return IDN::getInstance()->toUnicode(
-            $result,
-            IDN::CHECK_BIDI
-            | IDN::CHECK_JOINERS
-            | IDN::USE_STD3_ASCII_RULES
-            | IDN::NONTRANSITIONAL_PROCESSING
-        ) !== false;
-    }
-
-    /**
      * Checks to see if two hosts are equal.
      *
      * @param self|string $host Another Host object or a string.
@@ -257,34 +219,6 @@ class Host
 
         // Since host can be null, make sure we cast this to a string.
         return (string) $this->host;
-    }
-
-    /**
-     * Converts a domain name to unicode.
-     *
-     * @see https://url.spec.whatwg.org/#concept-domain-to-unicode
-     *
-     * @return self|false Returns the domain name upon success or false on failure.
-     */
-    public function domainToUnicode()
-    {
-        // Only strings can be valid domains. Make sure that the host is not
-        // null or a network address before trying to run it through the IDNA
-        // algorithm.
-        if (!is_string($this->host)) {
-            return false;
-        }
-
-        $options = IDN::CHECK_BIDI
-            | IDN::CHECK_JOINERS
-            | IDN::NONTRANSITIONAL_PROCESSING;
-        $result = IDN::getInstance()->toUnicode($this->host, $options);
-
-        if ($result === false) {
-            return false;
-        }
-
-        return new self($result);
     }
 
     /**
