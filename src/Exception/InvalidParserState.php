@@ -1,8 +1,8 @@
 <?php
+declare(strict_types=1);
+
 namespace Rowbot\URL\Exception;
 
-use Exception;
-
-class InvalidParserState extends Exception
+class InvalidParserState extends URLException
 {
 }
