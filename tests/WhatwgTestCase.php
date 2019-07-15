@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\UriResolver;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use function is_array;
 use function json_decode;
 use function json_encode;
@@ -21,12 +21,13 @@ abstract class WhatwgTestCase extends TestCase
 
     protected function loadTestData(string $url): array
     {
-        $cache = new FilesystemCache('whatwg-test-suite', self::CACHE_TTL, __DIR__.'/data');
+        $cache = new FilesystemAdapter('whatwg-test-suite', self::CACHE_TTL, __DIR__.'/data');
         $cacheKey = $url;
         $uri = UriResolver::resolve(uri_for(self::WHATWG_BASE_URI), uri_for($url));
+        $testData = $cache->getItem($cacheKey);
 
-        if ($cache->has($cacheKey)) {
-            $json = json_decode($cache->get($cacheKey), true);
+        if ($testData->isHit()) {
+            $json = json_decode($testData->get(), true);
             if (JSON_ERROR_NONE === json_last_error()) {
                 return $json;
             }
@@ -58,7 +59,9 @@ abstract class WhatwgTestCase extends TestCase
         }
 
         $json = array_filter($json, 'is_array');
-        $cache->set($cacheKey, json_encode($json), self::CACHE_TTL);
+        $testData->set(json_encode($json));
+        $testData->expiresAfter(self::CACHE_TTL);
+        $cache->save($testData);
 
         return $json;
     }
