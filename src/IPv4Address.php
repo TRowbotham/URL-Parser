@@ -9,14 +9,12 @@ use function array_pop;
 use function count;
 use function ctype_digit;
 use function ctype_xdigit;
-use function decoct;
 use function explode;
 use function gmp_cmp;
 use function gmp_div_q;
 use function gmp_init;
 use function gmp_pow;
 use function is_string;
-use function octdec;
 use function strlen;
 use function substr;
 
@@ -216,7 +214,7 @@ class IPv4Address implements NetworkAddress
 
         if (($R == 10 && !ctype_digit($input)) ||
             ($R == 16 && !ctype_xdigit($input)) ||
-            ($R == 8 && decoct(octdec($input)) != $input)) {
+            ($R == 8 && !self::isOctal($input))) {
             return false;
         }
 
@@ -224,5 +222,19 @@ class IPv4Address implements NetworkAddress
         // input in radix-R notation, using ASCII hex digits for digits with
         // values 0 through 15.
         return gmp_init($input, $R);
+    }
+
+    /**
+     * Checks if the given string contains only octal digits.
+     */
+    private static function isOctal(string $input): bool
+    {
+        for ($i = 0, $len = strlen($input); $i < $len; ++$i) {
+            if ($input[$i] < '0' || $input[$i] > '7') {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
