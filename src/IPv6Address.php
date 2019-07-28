@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
-use function base_convert;
 use function ctype_digit;
 use function ctype_xdigit;
+use function dechex;
 use function intval;
 use function is_string;
-use function mb_strtolower;
 use function mb_substr;
 
 class IPv6Address implements NetworkAddress
@@ -254,11 +253,8 @@ class IPv6Address implements NetworkAddress
                 continue;
             }
 
-            $output .= mb_strtolower(base_convert(
-                (string) $this->address[$pieceIndex],
-                10,
-                16
-            ), 'UTF-8');
+            // Is it safe to assume this always returns lowercase letters?
+            $output .= dechex($this->address[$pieceIndex]);
 
             if ($pieceIndex < 7) {
                 $output .= ':';

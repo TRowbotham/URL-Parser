@@ -15,7 +15,6 @@ use function floor;
 use function gmp_cmp;
 use function gmp_init;
 use function gmp_pow;
-use function intval;
 use function is_string;
 use function octdec;
 use function strlen;
@@ -151,7 +150,7 @@ class IPv4Address implements NetworkAddress
         $n = $this->address;
 
         for ($i = 0; $i < 4; $i++) {
-            $output = intval($n % 256, 10) . $output;
+            $output = ($n % 256) . $output;
 
             if ($i < 3) {
                 $output = '.' . $output;
