@@ -11,14 +11,16 @@ use function ctype_digit;
 use function ctype_xdigit;
 use function decoct;
 use function explode;
-use function floor;
 use function gmp_cmp;
+use function gmp_div_q;
 use function gmp_init;
 use function gmp_pow;
 use function is_string;
 use function octdec;
 use function strlen;
 use function substr;
+
+use const GMP_ROUND_MINUSINF;
 
 class IPv4Address implements NetworkAddress
 {
@@ -156,7 +158,7 @@ class IPv4Address implements NetworkAddress
                 $output = '.' . $output;
             }
 
-            $n = floor($n / 256);
+            $n = gmp_div_q($n, 256, GMP_ROUND_MINUSINF);
         }
 
         return $output;
