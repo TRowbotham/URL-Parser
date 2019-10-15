@@ -9,6 +9,7 @@ cache:
 env:
   global:
     - COMPOSER_ARGS="--no-suggest --no-interaction --prefer-source"
+    - PHPSTAN_PACKAGES="phpstan/phpstan:^0.12.x-dev phpstan/extension-installer:^1.0.2 phpstan/phpstan-strict-rules:^0.12-dev phpstan/phpstan-deprecation-rules:^0.12-dev"
 
 matrix:
   include:
@@ -41,11 +42,12 @@ before_install:
   - travis_retry composer self-update
 
 install:
+  - if [ "$RUN_PHPSTAN" == "true" ]; then travis_retry composer require --dev $PHPSTAN_PACKAGES; fi
   - if [ "$IGNORE_PLATFORMS" == "false" ]; then travis_retry composer update $COMPOSER_ARGS; fi
   - if [ "$IGNORE_PLATFORMS" == "true" ]; then travis_retry composer update $COMPOSER_ARGS --ignore-platform-reqs; fi
 
 script:
-  - if [ "$RUN_PHPSTAN" == "true" ]; then composer phpstan; fi
+  - if [ "$RUN_PHPSTAN" == "true" ]; then vendor/bin/phpstan analyse; fi
   - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then composer phpunit; fi
   - if [[ $TRAVIS_PHP_VERSION == nightly ]]; then phpdbg -qrr vendor/bin/phpunit --coverage-text; fi
 

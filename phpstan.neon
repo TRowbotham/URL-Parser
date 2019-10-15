@@ -1,13 +1,9 @@
-includes:
-    - vendor/phpstan/phpstan-strict-rules/rules.neon
-    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
-
 parameters:
-    polluteScopeWithLoopInitialAssignments: false
-    checkAlwaysTrueCheckTypeFunctionCall: true
-    checkAlwaysTrueInstanceof: true
-    checkAlwaysTrueStrictComparison: true
-    checkFunctionNameCase: true
+    level: max
+
+    paths:
+        - src
+
     ignoreErrors:
         # This is occuring because we are using the result of mb_strlen() with numeric operators.
         # See https://github.com/phpstan/phpstan/issues/1322
