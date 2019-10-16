@@ -185,85 +185,101 @@ class URLSearchParams implements Iterator
     /**
      * @internal
      *
-     * @param self|iterable<int, array{0: string, 1: string}>|object|string $init
+     * @param self|iterable<int, array{0: string, 1: string}>|object|string $input
      *
      * @throws \InvalidArgumentException
      * @throws \Rowbot\URL\Exception\TypeError
      */
-    private function init($init): void
+    private function init($input): void
     {
-        if (is_iterable($init)) {
-            foreach ($init as $pair) {
-                // Try to catch cases where $pair isn't countable or $pair is
-                // countable, but isn't a valid sequence, such as:
-                //
-                // class CountableClass implements \Countable
-                // {
-                //     public function count()
-                //     {
-                //         return 2;
-                //     }
-                // }
-                //
-                // $s = new \Rowbot\URL\URLSearchParams([new CountableClass()]);
-                //
-                // or:
-                //
-                // $a = new \ArrayObject(['x', 'y']);
-                // $s = new \Rowbot\URL\URLSearchParams($a);
-                //
-                // while still allowing things like:
-                //
-                // $a = new \ArrayObject(new \ArrayObject(['x', 'y']));
-                // $s = new \Rowbot\URL\URLSearchParams($a);'
-                if (
-                    !is_array($pair)
-                    && (!$pair instanceof ArrayAccess || !$pair instanceof Countable)
-                ) {
-                    throw new InvalidArgumentException(sprintf(
-                        'Expected a valid sequence such as an Array or Object '
-                        . 'that implements both the ArrayAccess and Countable '
-                        . 'interfaces. %s found instead.',
-                        gettype($pair)
-                    ));
-                }
-
-                if (count($pair) !== 2) {
-                    throw new TypeError(sprintf(
-                        'Expected sequence with excatly 2 items. Sequence '
-                        . 'contained %d items.',
-                        count($pair)
-                    ));
-                }
-            }
-
-            foreach ($init as $pair) {
-                $this->list->append(
-                    UConverter::transcode($pair[0], 'UTF-8', 'UTF-8'),
-                    UConverter::transcode($pair[1], 'UTF-8', 'UTF-8')
-                );
-            }
+        if (is_iterable($input)) {
+            $this->initIterator($input);
 
             return;
         }
 
-        if (is_object($init)) {
-            foreach ($init as $name => $value) {
-                $this->append(
-                    UConverter::transcode($name, 'UTF-8', 'UTF-8'),
-                    UConverter::transcode($value, 'UTF-8', 'UTF-8')
-                );
-            }
+        if (is_object($input)) {
+            $this->initObject($input);
 
             return;
         }
 
-        if (is_string($init)) {
-            $pairs = $this->urldecodeString($init);
+        if (is_string($input)) {
+            $this->initString($input);
+        }
+    }
 
-            foreach ($pairs as $pair) {
-                $this->list->append($pair['name'], $pair['value']);
+    private function initIterator(iterable $input): void
+    {
+        foreach ($input as $pair) {
+            // Try to catch cases where $pair isn't countable or $pair is
+            // countable, but isn't a valid sequence, such as:
+            //
+            // class CountableClass implements \Countable
+            // {
+            //     public function count()
+            //     {
+            //         return 2;
+            //     }
+            // }
+            //
+            // $s = new \Rowbot\URL\URLSearchParams([new CountableClass()]);
+            //
+            // or:
+            //
+            // $a = new \ArrayObject(['x', 'y']);
+            // $s = new \Rowbot\URL\URLSearchParams($a);
+            //
+            // while still allowing things like:
+            //
+            // $a = new \ArrayObject(new \ArrayObject(['x', 'y']));
+            // $s = new \Rowbot\URL\URLSearchParams($a);'
+            if (
+                !is_array($pair)
+                && (!$pair instanceof ArrayAccess || !$pair instanceof Countable)
+            ) {
+                throw new InvalidArgumentException(sprintf(
+                    'Expected a valid sequence such as an Array or Object that implements both the '
+                    . 'ArrayAccess and Countable interfaces. %s found instead.',
+                    gettype($pair)
+                ));
             }
+
+            if (count($pair) !== 2) {
+                throw new TypeError(sprintf(
+                    'Expected sequence with excatly 2 items. Sequence contained %d items.',
+                    count($pair)
+                ));
+            }
+        }
+
+        foreach ($input as $pair) {
+            $this->list->append(
+                UConverter::transcode($pair[0], 'UTF-8', 'UTF-8'),
+                UConverter::transcode($pair[1], 'UTF-8', 'UTF-8')
+            );
+        }
+    }
+
+    /**
+     * @param object $input
+     */
+    private function initObject($input): void
+    {
+        foreach ($input as $name => $value) {
+            $this->append(
+                UConverter::transcode($name, 'UTF-8', 'UTF-8'),
+                UConverter::transcode($value, 'UTF-8', 'UTF-8')
+            );
+        }
+    }
+
+    private function initString(string $input): void
+    {
+        $pairs = $this->urldecodeString($input);
+
+        foreach ($pairs as $pair) {
+            $this->list->append($pair['name'], $pair['value']);
         }
     }
 
