@@ -1,7 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Rowbot\URL;
+
+use function idn_to_ascii;
 
 use const IDNA_CHECK_BIDI;
 use const IDNA_CHECK_CONTEXTJ;
@@ -18,13 +21,9 @@ use const IDNA_ERROR_LEADING_COMBINING_MARK;
 use const IDNA_ERROR_LEADING_HYPHEN;
 use const IDNA_ERROR_PUNYCODE;
 use const IDNA_ERROR_TRAILING_HYPHEN;
-use const INTL_IDNA_VARIANT_UTS46;
 use const IDNA_NONTRANSITIONAL_TO_ASCII;
-use const IDNA_NONTRANSITIONAL_TO_UNICODE;
 use const IDNA_USE_STD3_RULES;
-
-use function idn_to_ascii;
-use function idn_to_utf8;
+use const INTL_IDNA_VARIANT_UTS46;
 
 final class IDN
 {
@@ -59,19 +58,12 @@ final class IDN
         | IDNA_ERROR_BIDI
         | IDNA_ERROR_CONTEXTJ;
 
-    /**
-     * Constructor.
-     *
-     * @return void
-     */
     private function __construct()
     {
     }
 
     /**
      * Gets the instance.
-     *
-     * @return self
      */
     public static function getInstance(): self
     {
@@ -109,7 +101,7 @@ final class IDN
         // We died a horrible death and can't recover. There is currently a bug
         // in PHP's idn_to_* functions where this can occur when the given
         // domain exceeds 254 bytes.
-        if ([] === $info) {
+        if ($info === []) {
             return false;
         }
 
@@ -131,9 +123,7 @@ final class IDN
 
         $whitelistedErrors |= $this->maybeWhitelistHyphenErrors($flags);
 
-        if ($result === false
-            && ((self::$errors & ~$whitelistedErrors) & $info['errors']) !== 0
-        ) {
+        if ($result === false && ((self::$errors & ~$whitelistedErrors) & $info['errors']) !== 0) {
             return false;
         }
 
@@ -141,12 +131,9 @@ final class IDN
     }
 
     /**
-     * Translates the wrapper object option flags to the equivilant IDNA_*
-     * option flags.
+     * Translates the wrapper object option flags to the equivilant IDNA_* option flags.
      *
      * @param int $flags A bitmask of flags.
-     *
-     * @return int
      */
     private function options(int $flags): int
     {
@@ -168,12 +155,8 @@ final class IDN
     }
 
     /**
-     * Checks to see if the user wants to validate hyphens and if not, adds the
-     * appropriate errors to a whitelist.
-     *
-     * @param int $flags
-     *
-     * @return int
+     * Checks to see if the user wants to validate hyphens and if not, adds the appropriate errors
+     * to a whitelist.
      */
     private function maybeWhitelistHyphenErrors(int $flags): int
     {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Rowbot\URL;
@@ -14,7 +15,6 @@ use function intval;
 use function mb_convert_encoding;
 use function mb_strlen;
 use function mb_substr;
-use function pow;
 use function preg_match;
 use function preg_replace;
 use function rawurlencode;
@@ -58,7 +58,7 @@ class BasicURLParser
     private static $singleDotPathSegment = [
         '.'   => '',
         '%2e' => '',
-        '%2E' => ''
+        '%2E' => '',
     ];
 
     /**
@@ -75,7 +75,7 @@ class BasicURLParser
         '%2e%2e' => '',
         '%2E%2E' => '',
         '%2e%2E' => '',
-        '%2E%2e' => ''
+        '%2E%2e' => '',
     ];
 
     /**
@@ -140,8 +140,6 @@ class BasicURLParser
 
     /**
      * Constructor.
-     *
-     * @return void
      */
     private function __construct()
     {
@@ -155,24 +153,19 @@ class BasicURLParser
      *
      * @see https://url.spec.whatwg.org/#concept-basic-url-parser
      *
-     * @param string $input                                 The URL string that is to be parsed.
-     *
-     * @param \Rowbot\URL\URLRecord|null $base              (optional) This represents the base URL, which in most
-     *                                                      cases, is the document's URL, it may also be a node's base
-     *                                                      URI or whatever base URL you wish to resolve relative URLs
-     *                                                      against. Default is null.
-     *
-     * @param string|null                 $encodingOverride (optional) Overrides the default encoding, which is UTF-8.
-     *
-     *
-     * @param \Rowbot\URL\URLRecord|null  $url              (optional) This represents an existing URL record object
-     *                                                      that should be modified based on the input URL and optional
-     *                                                      base URL. Default is null.
-     *
-     * @param int|null                    $stateOverride    (optional) An integer that determines what state the state
-     *                                                      machine will begin parsing the input URL from. Suppling a
-     *                                                      value for this parameter will override the default state of
-     *                                                      SCHEME_START_STATE. Default is null.
+     * @param string                     $input            The URL string that is to be parsed.
+     * @param \Rowbot\URL\URLRecord|null $base             (optional) This represents the base URL, which in most
+     *                                                     cases, is the document's URL, it may also be a node's base
+     *                                                     URI or whatever base URL you wish to resolve relative URLs
+     *                                                     against. Default is null.
+     * @param string|null                $encodingOverride (optional) Overrides the default encoding, which is UTF-8.
+     * @param \Rowbot\URL\URLRecord|null $url              (optional) This represents an existing URL record object
+     *                                                     that should be modified based on the input URL and optional
+     *                                                     base URL. Default is null.
+     * @param int|null                   $stateOverride    (optional) An integer that determines what state the state
+     *                                                     machine will begin parsing the input URL from. Suppling a
+     *                                                     value for this parameter will override the default state of
+     *                                                     SCHEME_START_STATE. Default is null.
      *
      * @return \Rowbot\URL\URLRecord|false Returns a URL object upon successfully parsing the input or false if parsing
      *                                     input failed.
@@ -238,12 +231,7 @@ class BasicURLParser
         $len = mb_strlen($parser->input, $parser->encoding);
 
         while (true) {
-            $c = mb_substr(
-                $parser->input,
-                $parser->pointer,
-                1,
-                $parser->encoding
-            );
+            $c = mb_substr($parser->input, $parser->pointer, 1, $parser->encoding);
 
             switch ($parser->state) {
                 case self::SCHEME_START_STATE:
@@ -351,9 +339,7 @@ class BasicURLParser
                     // This should never happen and indicates an error on my
                     // part as we should be passing in one of the valid states
                     // defined above.
-                    throw new InvalidParserState(
-                        "Invalid parser state ({$parser->state})."
-                    );
+                    throw new InvalidParserState("Invalid parser state ({$parser->state}).");
             }
 
             if ($retVal === self::RETURN_FAILURE) {
@@ -364,9 +350,7 @@ class BasicURLParser
                 continue;
             }
 
-            if ($retVal === self::RETURN_TERMINATE
-                || $parser->pointer >= $len
-            ) {
+            if ($retVal === self::RETURN_TERMINATE || $parser->pointer >= $len) {
                 break;
             }
 
@@ -378,10 +362,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#scheme-start-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function schemeStartState(string $c): int
     {
@@ -407,14 +387,11 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#scheme-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function schemeState(string $c): int
     {
-        if (preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c) === 1
+        if (
+            preg_match(URLUtils::REGEX_ASCII_ALPHANUMERIC, $c) === 1
             || $c === '+'
             || $c === '-'
             || $c === '.'
@@ -424,9 +401,7 @@ class BasicURLParser
             return self::RETURN_OK;
         } elseif ($c === ':') {
             if ($this->stateOverride !== null) {
-                $bufferIsSpecialScheme = isset(
-                    URLUtils::$specialSchemes[$this->buffer]
-                );
+                $bufferIsSpecialScheme = isset(URLUtils::$specialSchemes[$this->buffer]);
                 $urlIsSpecial = $this->url->isSpecial();
 
                 if ($urlIsSpecial && !$bufferIsSpecialScheme) {
@@ -437,15 +412,16 @@ class BasicURLParser
                     return self::RETURN_TERMINATE;
                 }
 
-                if ($this->url->includesCredentials()
+                if (
+                    $this->url->includesCredentials()
                     || ($this->url->port !== null && $this->buffer === 'file')
                 ) {
                     return self::RETURN_TERMINATE;
                 }
 
-                if ($this->url->scheme === 'file'
-                    && ($this->url->host->isEmpty()
-                        || $this->url->host->isNull())
+                if (
+                    $this->url->scheme === 'file'
+                    && ($this->url->host->isEmpty() || $this->url->host->isNull())
                 ) {
                     return self::RETURN_TERMINATE;
                 }
@@ -454,9 +430,10 @@ class BasicURLParser
             $this->url->scheme = $this->buffer;
 
             if ($this->stateOverride !== null) {
-                if ($bufferIsSpecialScheme && URLUtils::$specialSchemes[
-                    $this->url->scheme
-                ] === $this->url->port) {
+                if (
+                    $bufferIsSpecialScheme
+                    && URLUtils::$specialSchemes[$this->url->scheme] === $this->url->port
+                ) {
                     $this->url->port = null;
                 }
 
@@ -467,17 +444,13 @@ class BasicURLParser
             $urlIsSpecial = $this->url->isSpecial();
 
             if ($this->url->scheme === 'file') {
-                if (mb_substr(
-                    $this->input,
-                    $this->pointer + 1,
-                    2,
-                    $this->encoding
-                ) !== '//') {
+                if (mb_substr($this->input, $this->pointer + 1, 2, $this->encoding) !== '//') {
                     // Validation error
                 }
 
                 $this->state = self::FILE_STATE;
-            } elseif ($urlIsSpecial
+            } elseif (
+                $urlIsSpecial
                 && $this->base !== null
                 && $this->base->scheme === $this->url->scheme
             ) {
@@ -486,12 +459,7 @@ class BasicURLParser
                 $this->state = self::SPECIAL_RELATIVE_OR_AUTHORITY_STATE;
             } elseif ($urlIsSpecial) {
                 $this->state = self::SPECIAL_AUTHORITY_SLASHES_STATE;
-            } elseif (mb_substr(
-                $this->input,
-                $this->pointer + 1,
-                1,
-                $this->encoding
-            ) === '/') {
+            } elseif (mb_substr($this->input, $this->pointer + 1, 1, $this->encoding) === '/') {
                 $this->state = self::PATH_OR_AUTHORITY_STATE;
                 ++$this->pointer;
             } else {
@@ -522,16 +490,10 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#no-scheme-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function noSchemeState(string $c): int
     {
-        if ($this->base === null
-            || ($this->base->cannotBeABaseUrl && $c !== '#')
-        ) {
+        if ($this->base === null || ($this->base->cannotBeABaseUrl && $c !== '#')) {
             // Validation error. Return failure.
             return self::RETURN_FAILURE;
         }
@@ -562,19 +524,10 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#special-relative-or-authority-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function specialRelativeOrAuthorityState(string $c): int
     {
-        if ($c === '/' && mb_substr(
-            $this->input,
-            $this->pointer + 1,
-            1,
-            $this->encoding
-        ) === '/') {
+        if ($c === '/' && mb_substr($this->input, $this->pointer + 1, 1, $this->encoding) === '/') {
             $this->state = self::SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE;
             ++$this->pointer;
 
@@ -590,10 +543,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#path-or-authority-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function pathOrAuthorityState(string $c): int
     {
@@ -611,10 +560,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#relative-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function relativeState(string $c): int
     {
@@ -675,7 +620,7 @@ class BasicURLParser
         $this->url->port = $this->base->port;
         $this->url->path = $this->base->path;
 
-        if ([] !== $this->url->path) {
+        if ($this->url->path !== []) {
             array_pop($this->url->path);
         }
 
@@ -687,10 +632,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#relative-slash-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function relativeSlashState(string $c): int
     {
@@ -722,19 +663,10 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#special-authority-slashes-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function specialAuthoritySlashesState(string $c): int
     {
-        if ($c === '/' && mb_substr(
-            $this->input,
-            $this->pointer + 1,
-            1,
-            $this->encoding
-        ) === '/') {
+        if ($c === '/' && mb_substr($this->input, $this->pointer + 1, 1, $this->encoding) === '/') {
             $this->state = self::SPECIAL_AUTHORITY_IGNORE_SLASHES_STATE;
             ++$this->pointer;
 
@@ -750,10 +682,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#special-authority-ignore-slashes-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function specialAuthorityIgnnoreSlashesState(string $c): int
     {
@@ -770,10 +698,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#authority-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function authorityState(string $c): int
     {
@@ -787,11 +711,12 @@ class BasicURLParser
             $this->atFlag = true;
             $length = mb_strlen($this->buffer, $this->encoding);
 
-            for ($i = 0; $i < $length; $i++) {
+            for ($i = 0; $i < $length; ++$i) {
                 $codePoint = mb_substr($this->buffer, $i, 1, $this->encoding);
 
                 if ($codePoint === ':' && !$this->passwordTokenSeenFlag) {
                     $this->passwordTokenSeenFlag = true;
+
                     continue;
                 }
 
@@ -812,10 +737,8 @@ class BasicURLParser
             return self::RETURN_OK;
         }
 
-        if (($c === ''/* EOF */
-            || $c === '/'
-            || $c === '?'
-            || $c === '#')
+        if (
+            ($c === ''/* EOF */ || $c === '/' || $c === '?' || $c === '#')
             || ($this->url->isSpecial() && $c === '\\')
         ) {
             if ($this->atFlag && $this->buffer === '') {
@@ -837,10 +760,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#host-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function hostState(string $c): int
     {
@@ -875,7 +794,8 @@ class BasicURLParser
             return self::RETURN_OK;
         }
 
-        if (($c === ''/* EOF */ || $c === '/' || $c === '?' || $c === '#')
+        if (
+            ($c === ''/* EOF */ || $c === '/' || $c === '?' || $c === '#')
             || ($this->url->isSpecial() && $c === '\\')
         ) {
             --$this->pointer;
@@ -883,10 +803,10 @@ class BasicURLParser
             if ($this->url->isSpecial() && $this->buffer === '') {
                 // Validation error. Return failure.
                 return self::RETURN_FAILURE;
-            } elseif ($this->stateOverride !== null
+            } elseif (
+                $this->stateOverride !== null
                 && $this->buffer === ''
-                && ($this->url->includesCredentials()
-                    || $this->url->port !== null)
+                && ($this->url->includesCredentials() || $this->url->port !== null)
             ) {
                 // Validation error.
                 return self::RETURN_TERMINATE;
@@ -923,10 +843,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#port-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function portState(string $c): int
     {
@@ -934,19 +850,21 @@ class BasicURLParser
             $this->buffer .= $c;
 
             return self::RETURN_OK;
-        } elseif (($c === ''/* EOF */ || $c === '/' || $c === '?' || $c === '#')
+        } elseif (
+            ($c === ''/* EOF */ || $c === '/' || $c === '?' || $c === '#')
             || ($this->url->isSpecial() && $c === '\\')
             || $this->stateOverride !== null
         ) {
             if ($this->buffer !== '') {
                 $port = intval($this->buffer, 10);
 
-                if ($port > pow(2, 16) - 1) {
+                if ($port > 2 ** 16 - 1) {
                     // Validation error. Return failure.
                     return self::RETURN_FAILURE;
                 }
 
-                if (isset(URLUtils::$specialSchemes[$this->url->scheme])
+                if (
+                    isset(URLUtils::$specialSchemes[$this->url->scheme])
                     && URLUtils::$specialSchemes[$this->url->scheme] === $port
                 ) {
                     $this->url->port = null;
@@ -973,10 +891,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#file-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function fileState(string $c): int
     {
@@ -1016,15 +930,12 @@ class BasicURLParser
 
             // This is a (platform-independent) Windows drive
             // letter quirk.
-            if (preg_match(
-                URLUtils::STARTS_WITH_WINDOWS_DRIVE_LETTER,
-                mb_substr(
-                    $this->input,
-                    $this->pointer,
-                    null,
-                    $this->encoding
-                )
-            ) !== 1) {
+            if (
+                preg_match(
+                    URLUtils::STARTS_WITH_WINDOWS_DRIVE_LETTER,
+                    mb_substr($this->input, $this->pointer, null, $this->encoding)
+                ) !== 1
+            ) {
                 $this->url->host = clone $this->base->host;
                 $this->url->path = $this->base->path;
                 $this->url->shortenPath();
@@ -1046,10 +957,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#file-slash-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function fileSlashState(string $c): int
     {
@@ -1063,22 +970,20 @@ class BasicURLParser
             return self::RETURN_OK;
         }
 
-        if ($this->base !== null
+        if (
+            $this->base !== null
             && $this->base->scheme === 'file'
             && preg_match(
                 URLUtils::STARTS_WITH_WINDOWS_DRIVE_LETTER,
-                mb_substr(
-                    $this->input,
-                    $this->pointer,
-                    null,
-                    $this->encoding
-                )
+                mb_substr($this->input, $this->pointer, null, $this->encoding)
             ) !== 1
         ) {
-            if (preg_match(
-                URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
-                $this->base->path[0]
-            ) === 1) {
+            if (
+                preg_match(
+                    URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
+                    $this->base->path[0]
+                ) === 1
+            ) {
                 // This is a (platform-independent) Windows
                 // drive letter quirk. Both url’s and base’s
                 // host are null under these conditions and
@@ -1097,26 +1002,15 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#file-host-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function fileHostState(string $c): int
     {
-        if ($c === ''/* EOF */
-            || $c === '/'
-            || $c === '\\'
-            || $c === '?'
-            || $c === '#'
-        ) {
+        if ($c === ''/* EOF */ || $c === '/' || $c === '\\' || $c === '?' || $c === '#') {
             --$this->pointer;
 
-            if ($this->stateOverride === null
-                && preg_match(
-                    URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
-                    $this->buffer
-                ) === 1
+            if (
+                $this->stateOverride === null
+                && preg_match(URLUtils::REGEX_WINDOWS_DRIVE_LETTER, $this->buffer) === 1
             ) {
                 // Validation error
                 $this->state = self::PATH_STATE;
@@ -1168,10 +1062,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#path-start-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function pathStartState(string $c): int
     {
@@ -1204,14 +1094,11 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#path-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function pathState(string $c): int
     {
-        if ($c === ''/* EOF */
+        if (
+            $c === ''/* EOF */
             || $c === '/'
             || ($this->url->isSpecial() && $c === '\\')
             || ($this->stateOverride === null && ($c === '?' || $c === '#'))
@@ -1228,37 +1115,31 @@ class BasicURLParser
                 if ($c !== '/' && !($urlIsSpecial && $c === '\\')) {
                     $this->url->path[] = '';
                 }
-            } elseif (isset(self::$singleDotPathSegment[$this->buffer])
+            } elseif (
+                isset(self::$singleDotPathSegment[$this->buffer])
                 && $c !== '/'
                 && !($this->url->isSpecial() && $c === '\\')
             ) {
                 $this->url->path[] = '';
-            } elseif (!isset(
-                self::$singleDotPathSegment[$this->buffer]
-            )) {
-                if ($this->url->scheme === 'file'
-                    && [] === $this->url->path
+            } elseif (!isset(self::$singleDotPathSegment[$this->buffer])) {
+                if (
+                    $this->url->scheme === 'file'
+                    && $this->url->path === []
                     && preg_match(
                         URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
                         $this->buffer
                     ) === 1
                 ) {
-                    if (!$this->url->host->isEmpty()
-                        && !$this->url->host->isNull()
-                    ) {
+                    if (!$this->url->host->isEmpty() && !$this->url->host->isNull()) {
                         // Validation error.
                         $this->url->host->setHost('');
                     }
 
                     // This is a (platform-independent) Windows
                     // drive letter quirk.
-                    $this->buffer = mb_substr(
-                        $this->buffer,
-                        0,
-                        1,
-                        $this->encoding
-                    ) . ':'
-                    . mb_substr($this->buffer, 2, null, $this->encoding);
+                    $this->buffer = mb_substr($this->buffer, 0, 1, $this->encoding)
+                        . ':'
+                        . mb_substr($this->buffer, 2, null, $this->encoding);
                 }
 
                 $this->url->path[] = $this->buffer;
@@ -1266,9 +1147,7 @@ class BasicURLParser
 
             $this->buffer = '';
 
-            if ($this->url->scheme === 'file'
-                && ($c === '' || $c === '?' || $c === '#')
-            ) {
+            if ($this->url->scheme === 'file' && ($c === '' || $c === '?' || $c === '#')) {
                 $size = count($this->url->path);
 
                 while ($size-- > 1 && $this->url->path[0] === '') {
@@ -1288,9 +1167,7 @@ class BasicURLParser
             return self::RETURN_OK;
         }
 
-        if (preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1
-            && $c !== '%'
-        ) {
+        if (preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1 && $c !== '%') {
             // Validation error
         }
 
@@ -1308,10 +1185,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function cannotBeABaseUrlPathState(string $c): int
     {
@@ -1327,8 +1200,9 @@ class BasicURLParser
             return self::RETURN_OK;
         }
 
-        if ($c !== ''/* EOF */ &&
-            preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1
+        if (
+            $c !== ''/* EOF */
+            && preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1
             && $c !== '%'
         ) {
             // Validation error.
@@ -1339,7 +1213,7 @@ class BasicURLParser
         }
 
         if ($c !== ''/* EOF */) {
-            if ([] !== $this->url->path) {
+            if ($this->url->path !== []) {
                 $this->url->path[0] .= URLUtils::utf8PercentEncode(
                     $c
                 );
@@ -1351,17 +1225,16 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#query-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function queryState(string $c): int
     {
-        if ($this->encoding !== 'UTF-8'
-            && (!$this->url->isSpecial()
+        if (
+            $this->encoding !== 'UTF-8'
+            && (
+                !$this->url->isSpecial()
                 || $this->url->scheme === 'ws'
-                || $this->url->scheme === 'wss')
+                || $this->url->scheme === 'wss'
+            )
         ) {
             $this->encoding = 'UTF-8';
         }
@@ -1370,9 +1243,7 @@ class BasicURLParser
             $this->url->fragment = '';
             $this->state = self::FRAGMENT_STATE;
         } elseif ($c !== ''/* EOF */) {
-            if (preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1
-                && $c !== '%'
-            ) {
+            if (preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1 && $c !== '%') {
                 // Validation error.
             }
 
@@ -1384,7 +1255,8 @@ class BasicURLParser
 
             // This can happen when encoding code points using a non-UTF-8
             // encoding.
-            if (mb_substr($bytes, 0, 2, $this->encoding) === '&#'
+            if (
+                mb_substr($bytes, 0, 2, $this->encoding) === '&#'
                 && mb_substr($bytes, -1, null, $this->encoding) === ';'
             ) {
                 $length = mb_strlen($bytes, $this->encoding);
@@ -1396,7 +1268,8 @@ class BasicURLParser
                 $length = strlen($bytes);
 
                 for ($i = 0; $i < $length; ++$i) {
-                    if ($bytes[$i] < "\x21"
+                    if (
+                        $bytes[$i] < "\x21"
                         || $bytes[$i] > "\x7E"
                         || $bytes[$i] === "\x22"
                         || $bytes[$i] === "\x23"
@@ -1417,10 +1290,6 @@ class BasicURLParser
 
     /**
      * @see https://url.spec.whatwg.org/#fragment-state
-     *
-     * @param string $c
-     *
-     * @return int
      */
     private function fragmentState(string $c): int
     {
@@ -1432,9 +1301,7 @@ class BasicURLParser
             return self::RETURN_OK;
         }
 
-        if (preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1 &&
-            $c !== '%'
-        ) {
+        if (preg_match(URLUtils::REGEX_URL_CODE_POINTS, $c) !== 1 && $c !== '%') {
             // Validation error.
         }
 
@@ -1453,17 +1320,10 @@ class BasicURLParser
     /**
      * Determines if next two characters, starting immediately after the current
      * position in input, are ASCII hex digits.
-     *
-     * @return bool
      */
     private function remainingStartsWithTwoAsciiHexDigits(): bool
     {
-        $remaining = mb_substr(
-            $this->input,
-            $this->pointer + 1,
-            2,
-            $this->encoding
-        );
+        $remaining = mb_substr($this->input, $this->pointer + 1, 2, $this->encoding);
         $length = mb_strlen($remaining, $this->encoding);
 
         return $length === 2 && ctype_xdigit($remaining);

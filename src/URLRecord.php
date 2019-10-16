@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Rowbot\URL;
@@ -72,11 +73,6 @@ class URLRecord
      */
     public $cannotBeABaseUrl;
 
-    /**
-     * Constructor.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->scheme = '';
@@ -90,9 +86,6 @@ class URLRecord
         $this->cannotBeABaseUrl = false;
     }
 
-    /**
-     * @return void
-     */
     public function __clone()
     {
         $this->host = clone $this->host;
@@ -104,8 +97,6 @@ class URLRecord
      * @see https://url.spec.whatwg.org/#set-the-username
      *
      * @param string $username The URL's username.
-     *
-     * @return void
      */
     public function setUsername(string $username): void
     {
@@ -126,8 +117,6 @@ class URLRecord
      * @see https://url.spec.whatwg.org/#set-the-password
      *
      * @param string $password The URL's password.
-     *
-     * @return void
      */
     public function setPassword(string $password): void
     {
@@ -146,8 +135,6 @@ class URLRecord
      * Returns whether or not the URL's scheme is a special scheme.
      *
      * @see https://url.spec.whatwg.org/#is-special
-     *
-     * @return bool
      */
     public function isSpecial(): bool
     {
@@ -158,8 +145,6 @@ class URLRecord
      * Whether or not a URL can have a username, password, or port set.
      *
      * @see https://url.spec.whatwg.org/#cannot-have-a-username-password-port
-     *
-     * @return bool
      */
     public function cannotHaveUsernamePasswordPort(): bool
     {
@@ -173,8 +158,6 @@ class URLRecord
      * Whether or not the URL has a username or password.
      *
      * @see https://url.spec.whatwg.org/#include-credentials
-     *
-     * @return bool
      */
     public function includesCredentials(): bool
     {
@@ -182,23 +165,22 @@ class URLRecord
     }
 
     /**
-     * Removes the last string from a URL's path if its scheme is not "file"
-     * and the path does not contain a normalized Windows drive letter.
+     * Removes the last string from a URL's path if its scheme is not "file" and the path does not
+     * contain a normalized Windows drive letter.
      *
      * @see https://url.spec.whatwg.org/#shorten-a-urls-path
-     *
-     * @return void
      */
     public function shortenPath(): void
     {
         $size = count($this->path);
 
-        if ($size == 0) {
+        if ($size === 0) {
             return;
         }
 
-        if ($this->scheme === 'file'
-            && $size == 1
+        if (
+            $this->scheme === 'file'
+            && $size === 1
             && preg_match(
                 URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
                 $this->path[0]
@@ -230,7 +212,8 @@ class URLRecord
             return $url->getOrigin();
         }
 
-        if ($this->scheme === 'ftp'
+        if (
+            $this->scheme === 'ftp'
             || $this->scheme === 'gopher'
             || $this->scheme === 'http'
             || $this->scheme === 'https'
@@ -264,13 +247,10 @@ class URLRecord
      *
      * @param self $otherUrl        A URL to compare equality against.
      * @param bool $excludeFragment (optional) determines whether a URL's fragment should be factored into equality.
-     *
-     * @return bool
      */
     public function isEqual(URLRecord $otherUrl, bool $excludeFragment = false): bool
     {
-        return $this->serializeURL($excludeFragment)
-            === $otherUrl->serializeURL($excludeFragment);
+        return $this->serializeURL($excludeFragment) === $otherUrl->serializeURL($excludeFragment);
     }
 
     /**
@@ -279,8 +259,6 @@ class URLRecord
      * @see https://url.spec.whatwg.org/#concept-url-serializer
      *
      * @param bool $excludeFragment (optional) When specified it will exclude the URL's fragment from being serialized.
-     *
-     * @return string
      */
     public function serializeURL(bool $excludeFragment = false): string
     {
@@ -311,7 +289,7 @@ class URLRecord
         if ($this->cannotBeABaseUrl) {
             $output .= $this->path[0];
         } else {
-            if ([] !== $this->path) {
+            if ($this->path !== []) {
                 $output .= '/';
             }
 

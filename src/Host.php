@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Rowbot\URL;
@@ -23,20 +24,13 @@ class Host
     private $host;
 
     /**
-     * Constructor.
-     *
      * @param \Rowbot\URL\NetworkAddress|string|null $host
-     *
-     * @return void
      */
     protected function __construct($host)
     {
         $this->host = $host;
     }
 
-    /**
-     * @return void
-     */
     public function __clone()
     {
         if ($this->host instanceof NetworkAddress) {
@@ -45,10 +39,8 @@ class Host
     }
 
     /**
-     * Creates a new Host whose host is null. This will serialize to the empty
-     * string and is not a valid host string.
-     *
-     * @return self
+     * Creates a new Host whose host is null. This will serialize to the empty string and is not a
+     * valid host string.
      */
     public static function createNullHost(): self
     {
@@ -61,7 +53,6 @@ class Host
      * @see https://url.spec.whatwg.org/#concept-host-parser
      *
      * @param string $input        An IPv4, IPv6 address, domain, or opaque host.
-     *
      * @param bool   $isNotSpecial (optional) Whether or not the URL has a special scheme.
      *
      * @return self|false Returns a Host if it was successfully parsed or false if parsing fails. The returned Host can
@@ -120,8 +111,6 @@ class Host
      *
      * @see https://url.spec.whatwg.org/#concept-opaque-host-parser
      *
-     * @param string $input
-     *
      * @return self|false
      */
     private static function parseOpaqueHost(string $input)
@@ -143,8 +132,6 @@ class Host
 
     /**
      * Determines if the host is an empty host.
-     *
-     * @return bool
      */
     public function isEmpty(): bool
     {
@@ -153,8 +140,6 @@ class Host
 
     /**
      * Returns whether or not the host has a null value.
-     *
-     * @return bool
      */
     public function isNull(): bool
     {
@@ -165,8 +150,6 @@ class Host
      * Checks to see if two hosts are equal.
      *
      * @param self|string $host Another Host object or a string.
-     *
-     * @return bool
      */
     public function equals($host): bool
     {
@@ -185,15 +168,10 @@ class Host
      * Sets the host to a new value.
      *
      * @param \Rowbot\URL\NetworkAddress|string|null $host A new host value.
-     *
-     * @return void
      */
     public function setHost($host): void
     {
-        if (!is_string($host)
-            && !$host instanceof NetworkAddress
-            && $host !== null
-        ) {
+        if (!is_string($host) && !$host instanceof NetworkAddress && $host !== null) {
             return;
         }
 
@@ -204,8 +182,6 @@ class Host
      * Serializes a host.
      *
      * @see https://url.spec.whatwg.org/#concept-host-serializer
-     *
-     * @return string
      */
     public function __toString(): string
     {
@@ -225,9 +201,6 @@ class Host
      * Converts a domain name to ASCII.
      *
      * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
-     *
-     * @param string $domain   The domain name to be converted.
-     * @param bool   $beStrict
      *
      * @return string|false Returns the domain name upon success or false on failure.
      */

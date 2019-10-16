@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Rowbot\URL;
@@ -18,11 +19,7 @@ class IPv6Address implements NetworkAddress
     private $address;
 
     /**
-     * Constructor.
-     *
      * @param array<int, int> $address
-     *
-     * @return void
      */
     protected function __construct(array $address)
     {
@@ -53,13 +50,13 @@ class IPv6Address implements NetworkAddress
             }
 
             $pointer += 2;
-            $pieceIndex++;
+            ++$pieceIndex;
             $compress = $pieceIndex;
             $c = mb_substr($input, $pointer, 1, 'UTF-8');
         }
 
         while ($c !== '') {
-            if ($pieceIndex == 8) {
+            if ($pieceIndex === 8) {
                 // Validation error.
                 return false;
             }
@@ -71,8 +68,9 @@ class IPv6Address implements NetworkAddress
                 }
 
                 $c = mb_substr($input, ++$pointer, 1, 'UTF-8');
-                $pieceIndex++;
+                ++$pieceIndex;
                 $compress = $pieceIndex;
+
                 continue;
             }
 
@@ -81,12 +79,12 @@ class IPv6Address implements NetworkAddress
 
             while ($length < 4 && ctype_xdigit($c)) {
                 $value = $value * 0x10 + intval($c, 16);
-                $length++;
+                ++$length;
                 $c = mb_substr($input, ++$pointer, 1, 'UTF-8');
             }
 
             if ($c === '.') {
-                if ($length == 0) {
+                if ($length === 0) {
                     // Validation error.
                     return false;
                 }
@@ -138,17 +136,15 @@ class IPv6Address implements NetworkAddress
                         $c = mb_substr($input, ++$pointer, 1, 'UTF-8');
                     } while (ctype_digit($c));
 
-                    $address[$pieceIndex] = $address[
-                        $pieceIndex
-                    ] * 0x100 + $ipv4Piece;
-                    $numbersSeen++;
+                    $address[$pieceIndex] = $address[$pieceIndex] * 0x100 + $ipv4Piece;
+                    ++$numbersSeen;
 
-                    if ($numbersSeen == 2 || $numbersSeen == 4) {
-                        $pieceIndex++;
+                    if ($numbersSeen === 2 || $numbersSeen === 4) {
+                        ++$pieceIndex;
                     }
                 }
 
-                if ($numbersSeen != 4) {
+                if ($numbersSeen !== 4) {
                     // Validation error.
                     return false;
                 }
@@ -169,21 +165,21 @@ class IPv6Address implements NetworkAddress
             }
 
             $address[$pieceIndex] = $value;
-            $pieceIndex++;
+            ++$pieceIndex;
         }
 
         if ($compress !== null) {
             $swaps = $pieceIndex - $compress;
             $pieceIndex = 7;
 
-            while ($pieceIndex != 0 && $swaps > 0) {
+            while ($pieceIndex !== 0 && $swaps > 0) {
                 $temp = $address[$pieceIndex];
                 $address[$pieceIndex] = $address[$compress + $swaps - 1];
                 $address[$compress + $swaps - 1] = $temp;
-                $pieceIndex--;
-                $swaps--;
+                --$pieceIndex;
+                --$swaps;
             }
-        } elseif ($pieceIndex != 8) {
+        } elseif ($pieceIndex !== 8) {
             // Validation error.
             return false;
         }
@@ -196,9 +192,9 @@ class IPv6Address implements NetworkAddress
      * pieces that are 0 and sets $compress to the first 16-bit piece in that
      * sequence, otherwise $compress will remain null.
      *
-     * @return array<int, int|null> The first item is the compress pointer, which indicates where in the address it can
-     *                              start compression, or null if the address isn't compressable. The second item is the
-     *                              the length of the longest sequence of zeroes.
+     * @return array{0: int|null, 1: int} The first item is the compress pointer, which indicates where in the address
+     *                                    it can start compression, or null if the address isn't compressable. The
+     *                                    second item is the the length of the longest sequence of zeroes.
      */
     private function getLongestSequence(): array
     {
@@ -207,10 +203,10 @@ class IPv6Address implements NetworkAddress
         $compress = null;
 
         while ($i < 8) {
-            if ($this->address[$i] == 0) {
+            if ($this->address[$i] === 0) {
                 $sequenceLength = 0;
 
-                while ($i < 8 && $this->address[$i] == 0) {
+                while ($i < 8 && $this->address[$i] === 0) {
                     ++$sequenceLength;
                     ++$i;
                 }
@@ -232,24 +228,23 @@ class IPv6Address implements NetworkAddress
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @see https://url.spec.whatwg.org/#concept-ipv6-serializer
      */
     public function __toString(): string
     {
         $output = '';
-        list($compress, $longestSequence) = $this->getLongestSequence();
+        [$compress, $longestSequence] = $this->getLongestSequence();
         $pieceIndex = 0;
 
         while ($pieceIndex < 8) {
             if ($compress === $pieceIndex) {
-                $output .= $pieceIndex == 0 ? '::' : ':';
+                $output .= $pieceIndex === 0 ? '::' : ':';
 
                 // Advance the pointer to $compress + $longestSequence
                 // to skip over all 16-bit pieces that are 0 that immediately
                 // follow the piece at $compress.
                 $pieceIndex = $compress + $longestSequence;
+
                 continue;
             }
 
@@ -266,9 +261,6 @@ class IPv6Address implements NetworkAddress
         return $output;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function equals($address): bool
     {
         if ($address instanceof self) {

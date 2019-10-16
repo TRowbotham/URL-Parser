@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Rowbot\URL;
@@ -35,8 +36,6 @@ class Origin
 
     /**
      * Constructor.
-     *
-     * @return void
      */
     private function __construct()
     {
@@ -44,15 +43,7 @@ class Origin
     }
 
     /**
-     * Creates a tuple origin, which consists of a scheme, host, port, and
-     * optionally a domain.
-     *
-     * @param string           $scheme
-     * @param \Rowbot\URL\Host $host
-     * @param int|null         $port
-     * @param string|null      $domain (optional)
-     *
-     * @return self
+     * Creates a tuple origin, which consists of a scheme, host, port, and optionally a domain.
      */
     public static function createTupleOrigin(
         string $scheme,
@@ -71,10 +62,8 @@ class Origin
     }
 
     /**
-     * Creates an opaque origin. An opaque origin serializes to the string
-     * 'null' and is only useful for testing equality.
-     *
-     * @return self
+     * Creates an opaque origin. An opaque origin serializes to the string 'null' and is only useful
+     * for testing equality.
      */
     public static function createOpaqueOrigin(): self
     {
@@ -83,8 +72,6 @@ class Origin
 
     /**
      * @see https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-effective-domain
-     *
-     * @return string
      */
     public function getEffectiveDomain(): string
     {
@@ -101,8 +88,6 @@ class Origin
 
     /**
      * @see https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-opaque
-     *
-     * @return bool
      */
     public function isOpaque(): bool
     {
@@ -115,8 +100,6 @@ class Origin
      * @see https://html.spec.whatwg.org/multipage/browsers.html#same-origin
      *
      * @param self $other The origin being compared.
-     *
-     * @return bool
      */
     public function isSameOrigin(Origin $other): bool
     {
@@ -142,8 +125,6 @@ class Origin
      * @see https://html.spec.whatwg.org/multipage/browsers.html#same-origin-domain
      *
      * @param self $other The origin being compared.
-     *
-     * @return bool
      */
     public function isSameOriginDomain(Origin $other): bool
     {
@@ -158,12 +139,14 @@ class Origin
             // identical and non-null, then return true. Otherwise, if A and B
             // are same origin and their domains are identical and null, then
             // return true.
-            if ($this->scheme === $other->scheme
+            if (
+                $this->scheme === $other->scheme
                 && $this->domain !== null
                 && $this->domain === $other->domain
             ) {
                 return true;
-            } elseif ($this->isSameOrigin($other)
+            } elseif (
+                $this->isSameOrigin($other)
                 && $this->domain === $other->domain
                 && $this->domain === null
             ) {
@@ -176,8 +159,6 @@ class Origin
 
     /**
      * @see https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
-     *
-     * @return string
      */
     public function __toString(): string
     {

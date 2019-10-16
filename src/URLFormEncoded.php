@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Rowbot\URL;
@@ -25,9 +26,7 @@ trait URLFormEncoded
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-parser
      *
-     * @param string $input
-     *
-     * @return array<int, array<string, string>>
+     * @return array<int, array{name: string, value: string}>
      */
     private function urldecode(string $input): array
     {
@@ -54,11 +53,11 @@ trait URLFormEncoded
             $value = '';
 
             if (mb_strpos($bytes, '=', 0, 'UTF-8') !== false) {
-                list($name, $value) = explode('=', $bytes, 2);
+                [$name, $value] = explode('=', $bytes, 2);
             }
 
             // Replace any 0x2B (+) in name and value with 0x20 (SP).
-            list($name, $value) = str_replace('+', "\x20", [$name, $value]);
+            [$name, $value] = str_replace('+', "\x20", [$name, $value]);
 
             // Let nameString and valueString be the result of running UTF-8
             // decode without BOM on the percent decoding of name and value,
@@ -73,7 +72,7 @@ trait URLFormEncoded
                 'UTF-8',
                 'UTF-8'
             );
-            $output[] = ['name'  => $name, 'value' => $value];
+            $output[] = ['name' => $name, 'value' => $value];
         }
 
         return $output;
@@ -82,9 +81,7 @@ trait URLFormEncoded
     /**
      * @see https://url.spec.whatwg.org/#concept-urlencoded-string-parser
      *
-     * @param string $input
-     *
-     * @return array<int, array<string, string>>
+     * @return array<int, array{name: string, value: string}>
      */
     private function urldecodeString(string $input): array
     {
@@ -96,10 +93,6 @@ trait URLFormEncoded
      * string.
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-byte-serializer
-     *
-     * @param string $input
-     *
-     * @return string
      */
     private function urlencode(string $input): string
     {
@@ -109,7 +102,8 @@ trait URLFormEncoded
         for ($i = 0; $i < $length; ++$i) {
             if ($input[$i] === "\x20") {
                 $output .= '+';
-            } elseif ($input[$i] === "\x2A"
+            } elseif (
+                $input[$i] === "\x2A"
                 || $input[$i] === "\x2D"
                 || $input[$i] === "\x2E"
                 || ($input[$i] >= "\x30" && $input[$i] <= "\x39")
@@ -133,9 +127,7 @@ trait URLFormEncoded
      * @see https://url.spec.whatwg.org/#concept-urlencoded-serializer
      *
      * @param array<int, array<string, string>> $tuples
-     * @param ?string                      $encodingOverride (optional)
-     *
-     * @return string
+     * @param string|null                       $encodingOverride (optional)
      */
     private function urlencodeList(array $tuples, string $encodingOverride = null): string
     {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Rowbot\URL;
@@ -7,9 +8,9 @@ use Countable;
 use IntlBreakIterator;
 use Iterator;
 
-use function count;
 use function array_filter;
 use function array_splice;
+use function count;
 use function usort;
 
 class QueryList implements Countable, Iterator
@@ -25,15 +26,10 @@ class QueryList implements Countable, Iterator
     private $cursor;
 
     /**
-     * @var array<int, array<string, string>>
+     * @var array<int, array{name: string, value: string}>
      */
     private $list;
 
-    /**
-     * Constructor.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->list = [];
@@ -43,11 +39,6 @@ class QueryList implements Countable, Iterator
 
     /**
      * Appends a new name-value pair to the list.
-     *
-     * @param string $name
-     * @param string $value
-     *
-     * @return void
      */
     public function append(string $name, string $value): void
     {
@@ -57,14 +48,10 @@ class QueryList implements Countable, Iterator
 
     /**
      * Removes all name-value pairs with name $name from the list.
-     *
-     * @param string $name
-     *
-     * @return void
      */
     public function remove(string $name): void
     {
-        for ($i = count($this->list) - 1; $i >= 0; $i--) {
+        for ($i = count($this->list) - 1; $i >= 0; --$i) {
             if ($this->list[$i]['name'] === $name) {
                 array_splice($this->list, $i, 1);
             }
@@ -75,10 +62,6 @@ class QueryList implements Countable, Iterator
 
     /**
      * Determines if a name-value pair with name $name exists in the collection.
-     *
-     * @param string $name
-     *
-     * @return bool
      */
     public function contains(string $name): bool
     {
@@ -87,10 +70,6 @@ class QueryList implements Countable, Iterator
 
     /**
      * Returns the first name-value pair in the list whose name is $name.
-     *
-     * @param string $name
-     *
-     * @return string|null
      */
     public function first(string $name): ?string
     {
@@ -106,7 +85,6 @@ class QueryList implements Countable, Iterator
     /**
      * Returns a filtered array based on the given callback.
      *
-     * @param callable $callback
      *
      * @return array<int, array<string, string>>
      */
@@ -118,17 +96,12 @@ class QueryList implements Countable, Iterator
     /**
      * Sets the value of the first name-value pair with $name to $value and
      * removes all other occurances that have name $name.
-     *
-     * @param string $name
-     * @param string $value
-     *
-     * @return void
      */
     public function set(string $name, string $value): void
     {
         $prevIndex = null;
 
-        for ($i = count($this->list) - 1; $i >= 0; $i--) {
+        for ($i = count($this->list) - 1; $i >= 0; --$i) {
             if ($this->list[$i]['name'] === $name) {
                 if ($prevIndex !== null) {
                     array_splice($this->list, $prevIndex, 1);
@@ -143,8 +116,6 @@ class QueryList implements Countable, Iterator
 
     /**
      * Returns the number of items in the collection.
-     *
-     * @return int
      */
     public function count(): int
     {
@@ -154,8 +125,6 @@ class QueryList implements Countable, Iterator
     /**
      * Sorts the collection by code units and preserves the relative positioning
      * of name-value pairs.
-     *
-     * @return void
      */
     public function sort(): void
     {
@@ -187,15 +156,15 @@ class QueryList implements Countable, Iterator
         // 3) If the code points of the two characters are different, then the
         //    first string with a character with a lower code point will be
         //    moved up in the array (ex. "bba" will come before "bbb").
-        usort($temp, function (
-            $a,
-            $b
+        usort($temp, static function (
+            array $a,
+            array $b
         ) use (
             $breakIterator1,
             $breakIterator2,
             $iterator1,
             $iterator2
-        ) {
+        ): int {
             $breakIterator1->setText($a[1]['name']);
             $breakIterator2->setText($b[1]['name']);
             $iterator1->rewind();
@@ -285,8 +254,6 @@ class QueryList implements Countable, Iterator
 
     /**
      * Clears the collection and cache.
-     *
-     * @return void
      */
     public function clear(): void
     {
@@ -298,9 +265,7 @@ class QueryList implements Countable, Iterator
      * Clears the collection and cache and then fills the collection with the
      * new name-value pairs in $list.
      *
-     * @param array<int, array<string, string>> $list
-     *
-     * @return void
+     * @param array<int, array{name: string, value: string}> $list
      */
     public function update(array $list): void
     {
@@ -316,7 +281,7 @@ class QueryList implements Countable, Iterator
     /**
      * Returns the entire collection as an array.
      *
-     * @return array<int, array<string, string>>
+     * @return array<int, array{name: string, value: string}>
      */
     public function all(): array
     {
@@ -335,8 +300,6 @@ class QueryList implements Countable, Iterator
 
     /**
      * Returns the iterator key.
-     *
-     * @return int
      */
     public function key(): int
     {
@@ -345,8 +308,6 @@ class QueryList implements Countable, Iterator
 
     /**
      * Advances the iterator to the next position.
-     *
-     * @return void
      */
     public function next(): void
     {
@@ -355,8 +316,6 @@ class QueryList implements Countable, Iterator
 
     /**
      * Rewinds the iterator to the beginning.
-     *
-     * @return void
      */
     public function rewind(): void
     {
@@ -365,8 +324,6 @@ class QueryList implements Countable, Iterator
 
     /**
      * Returns whether the iterator is valid.
-     *
-     * @return bool
      */
     public function valid(): bool
     {

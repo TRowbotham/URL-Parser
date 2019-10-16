@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Rowbot\URL;
@@ -23,8 +24,8 @@ use function mb_substr;
 use function method_exists;
 
 /**
- * An object containing a list of all URL query parameters.  This allows you to
- * manipulate a URL's query string in a granular manner.
+ * An object containing a list of all URL query parameters. This allows you to manipulate a URL's
+ * query string in a granular manner.
  *
  * @see https://url.spec.whatwg.org/#urlsearchparams
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
@@ -44,13 +45,9 @@ class URLSearchParams implements Iterator
     private $url;
 
     /**
-     * Constructor.
-     *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
-     * @param self|array<array<string>>|object|string $init (optional)
-     *
-     * @return void
+     * @param self|iterable<int, array{0: string, 1: string}>|object|string $init (optional)
      */
     public function __construct($init = '')
     {
@@ -60,9 +57,7 @@ class URLSearchParams implements Iterator
         // If $init is given, is a string, and starts with "?", remove the
         // first code point from $init.
         if (func_num_args() > 0) {
-            if (is_scalar($init)
-                || is_object($init) && method_exists($init, '__toString')
-            ) {
+            if (is_scalar($init) || is_object($init) && method_exists($init, '__toString')) {
                 $init = UConverter::transcode((string) $init, 'UTF-8', 'UTF-8');
             }
 
@@ -74,9 +69,6 @@ class URLSearchParams implements Iterator
         }
     }
 
-    /**
-     * @return void
-     */
     public function __clone()
     {
         $this->list = clone $this->list;
@@ -96,9 +88,6 @@ class URLSearchParams implements Iterator
         return $this->urlencodeList($this->list->all());
     }
 
-    /**
-     * @return string
-     */
     public function toString(): string
     {
         return $this->urlencodeList($this->list->all());
@@ -111,8 +100,6 @@ class URLSearchParams implements Iterator
      *
      * @param string                $init The query string or another URLSearchParams object.
      * @param \Rowbot\URL\URLRecord $url  The associated URLRecord object.
-     *
-     * @return self
      */
     public static function create($init, URLRecord $url): self
     {
@@ -126,14 +113,12 @@ class URLSearchParams implements Iterator
     /**
      * @internal
      *
-     * @param self|array<array<string>>|object|string $init
-     *
-     * @return void
+     * @param self|iterable<int, array{0: string, 1: string}>|object|string $init
      *
      * @throws \InvalidArgumentException
      * @throws \Rowbot\URL\Exception\TypeError
      */
-    private function init($init)
+    private function init($init): void
     {
         if (is_iterable($init)) {
             foreach ($init as $pair) {
@@ -159,9 +144,9 @@ class URLSearchParams implements Iterator
                 //
                 // $a = new \ArrayObject(new \ArrayObject(['x', 'y']));
                 // $s = new \Rowbot\URL\URLSearchParams($a);'
-                if (!is_array($pair)
-                    && (!$pair instanceof ArrayAccess
-                        || !$pair instanceof Countable)
+                if (
+                    !is_array($pair)
+                    && (!$pair instanceof ArrayAccess || !$pair instanceof Countable)
                 ) {
                     throw new InvalidArgumentException(sprintf(
                         'Expected a valid sequence such as an Array or Object '
@@ -171,7 +156,7 @@ class URLSearchParams implements Iterator
                     ));
                 }
 
-                if (count($pair) != 2) {
+                if (count($pair) !== 2) {
                     throw new TypeError(sprintf(
                         'Expected sequence with excatly 2 items. Sequence '
                         . 'contained %d items.',
@@ -217,8 +202,6 @@ class URLSearchParams implements Iterator
      *
      * @param string $name  The name of the key in the pair.
      * @param string $value The value assigned to the key.
-     *
-     * @return void
      */
     public function append(string $name, string $value): void
     {
@@ -235,8 +218,6 @@ class URLSearchParams implements Iterator
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-delete
      *
      * @param string $name The name of the key to delete.
-     *
-     * @return void
      */
     public function delete(string $name): void
     {
@@ -265,20 +246,19 @@ class URLSearchParams implements Iterator
      *
      * @param string $name The name of the key whose values you want to retrieve.
      *
-     * @return array<array<string>> An array containing all the values of the specified key.
+     * @return array<int, string> An array containing all the values of the specified key.
      */
     public function getAll(string $name): array
     {
         $name = UConverter::transcode($name, 'UTF-8', 'UTF-8');
 
-        return array_column($this->list->filter(function ($pair) use ($name) {
+        return array_column($this->list->filter(static function (array $pair) use ($name): bool {
             return $pair['name'] === $name;
         }), 'value');
     }
 
     /**
-     * Indicates whether or not a query string contains any keys with the
-     * specified key name.
+     * Indicates whether or not a query string contains any keys with the specified key name.
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-has
      *
@@ -292,18 +272,15 @@ class URLSearchParams implements Iterator
     }
 
     /**
-     * Sets the value of the specified key name.  If multiple pairs exist with
-     * the same key name it will set the value for the first occurance of the
-     * key in the query string and all other occurances will be removed from the
-     * query string.  If the key does not already exist in the query string, it
-     * will be added to the end of the query string.
+     * Sets the value of the specified key name. If multiple pairs exist with the same key name it
+     * will set the value for the first occurance of the key in the query string and all other
+     * occurances will be removed from the query string.  If the key does not already exist in the
+     * query string, it will be added to the end of the query string.
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-set
      *
      * @param string $name  The name of the key you want to modify the value of.
      * @param string $value The value you want to associate with the key name.
-     *
-     * @return void
      */
     public function set(string $name, string $value): void
     {
@@ -320,13 +297,10 @@ class URLSearchParams implements Iterator
     }
 
     /**
-     * Sorts the list of search params by their names by comparing their code
-     * unit values, preserving the relative order between pairs with the same
-     * name.
+     * Sorts the list of search params by their names by comparing their code unit values,
+     * preserving the relative order between pairs with the same name.
      *
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-sort
-     *
-     * @return void
      */
     public function sort(): void
     {
@@ -338,8 +312,6 @@ class URLSearchParams implements Iterator
      * Clears the list of search params.
      *
      * @internal
-     *
-     * @return void
      */
     public function clear(): void
     {
@@ -352,10 +324,8 @@ class URLSearchParams implements Iterator
      *
      * @internal
      *
-     * @param array<array<string, string>> $list A list of name-value pairs to
-     *                                           be added to the list.
-     *
-     * @return void
+     * @param array<int, array{name: string, value: string}> $list A list of name-value pairs to be
+     *                                                             added to the list.
      */
     public function modify(array $list): void
     {
@@ -363,14 +333,11 @@ class URLSearchParams implements Iterator
     }
 
     /**
-     * Set's the associated URL object's query to the serialization of
-     * URLSearchParams.
+     * Set's the associated URL object's query to the serialization of URLSearchParams.
      *
      * @see https://url.spec.whatwg.org/#concept-urlsearchparams-update
      *
      * @internal
-     *
-     * @return void
      */
     protected function update(): void
     {
@@ -393,8 +360,6 @@ class URLSearchParams implements Iterator
      * @internal
      *
      * @param \Rowbot\URL\URLRecord $url
-     *
-     * @return void
      */
     public function setUrl(URLRecord $url): void
     {
@@ -402,7 +367,7 @@ class URLSearchParams implements Iterator
     }
 
     /**
-     * @return string[]
+     * @return array{0: string, 1: string}
      */
     public function current(): array
     {
@@ -411,33 +376,21 @@ class URLSearchParams implements Iterator
         return [$current['name'], $current['value']];
     }
 
-    /**
-     * @return int
-     */
     public function key(): int
     {
         return $this->list->key();
     }
 
-    /**
-     * @return void
-     */
     public function next(): void
     {
         $this->list->next();
     }
 
-    /**
-     * @return void
-     */
     public function rewind(): void
     {
         $this->list->rewind();
     }
 
-    /**
-     * @return bool
-     */
     public function valid(): bool
     {
         return $this->list->valid();

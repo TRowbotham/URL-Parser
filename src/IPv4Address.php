@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Rowbot\URL;
@@ -27,21 +28,11 @@ class IPv4Address implements NetworkAddress
      */
     private $address;
 
-    /**
-     * Constructor.
-     *
-     * @param \GMP $address
-     *
-     * @return void
-     */
     protected function __construct(GMP $address)
     {
         $this->address = $address;
     }
 
-    /**
-     * @return void
-     */
     public function __clone()
     {
         // Since GMP is an object and not an int, we need to clone that object.
@@ -72,7 +63,7 @@ class IPv4Address implements NetworkAddress
 
             if ($len > 1) {
                 array_pop($parts);
-                $len--;
+                --$len;
             }
         }
 
@@ -115,7 +106,7 @@ class IPv4Address implements NetworkAddress
 
         $len = count($numbers);
 
-        for ($i = 0; $i < $len - 1; $i++) {
+        for ($i = 0; $i < $len - 1; ++$i) {
             if ($numbers[$i] > 255) {
                 return false;
             }
@@ -133,15 +124,13 @@ class IPv4Address implements NetworkAddress
 
         foreach ($numbers as $n) {
             $ipv4 += gmp_mul($n, gmp_pow('256', (3 - $counter)));
-            $counter++;
+            ++$counter;
         }
 
         return new self($ipv4);
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @see https://url.spec.whatwg.org/#concept-ipv4-serializer
      */
     public function __toString(): string
@@ -149,7 +138,7 @@ class IPv4Address implements NetworkAddress
         $output = '';
         $n = $this->address;
 
-        for ($i = 0; $i < 4; $i++) {
+        for ($i = 0; $i < 4; ++$i) {
             $output = ($n % 256) . $output;
 
             if ($i < 3) {
@@ -162,9 +151,6 @@ class IPv4Address implements NetworkAddress
         return $output;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function equals($address): bool
     {
         if ($address instanceof self) {
@@ -196,9 +182,7 @@ class IPv4Address implements NetworkAddress
         $R = 10;
         $len = strlen($input);
 
-        if ($len > 1
-            && (substr($input, 0, 2) === '0x' || substr($input, 0, 2) === '0X')
-        ) {
+        if ($len > 1 && (substr($input, 0, 2) === '0x' || substr($input, 0, 2) === '0X')) {
             $validationError = true;
             $input = substr($input, 2);
             $R = 16;
@@ -212,9 +196,11 @@ class IPv4Address implements NetworkAddress
             return gmp_init(0, 10);
         }
 
-        if (($R == 10 && !ctype_digit($input)) ||
-            ($R == 16 && !ctype_xdigit($input)) ||
-            ($R == 8 && !self::isOctal($input))) {
+        if (
+            ($R === 10 && !ctype_digit($input))
+            || ($R === 16 && !ctype_xdigit($input))
+            || ($R === 8 && !self::isOctal($input))
+        ) {
             return false;
         }
 
