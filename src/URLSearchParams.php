@@ -69,28 +69,31 @@ class URLSearchParams implements Iterator
         }
     }
 
-    public function __clone()
+    /**
+     * Appends a new name-value pair to the end of the query string.
+     *
+     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-append
+     *
+     * @param string $name  The name of the key in the pair.
+     * @param string $value The value assigned to the key.
+     */
+    public function append(string $name, string $value): void
     {
-        $this->list = clone $this->list;
-
-        // Null out the url incase someone tries cloning the object returned by
-        // the URL::searchParams attribute.
-        $this->url = null;
+        $this->list->append(
+            UConverter::transcode($name, 'UTF-8', 'UTF-8'),
+            UConverter::transcode($value, 'UTF-8', 'UTF-8')
+        );
+        $this->update();
     }
 
     /**
-     * Returns all name-value pairs stringified in the correct order.
+     * Clears the list of search params.
      *
-     * @return string The query string.
+     * @internal
      */
-    public function __toString(): string
+    public function clear(): void
     {
-        return $this->urlencodeList($this->list->all());
-    }
-
-    public function toString(): string
-    {
-        return $this->urlencodeList($this->list->all());
+        $this->list->clear();
     }
 
     /**
@@ -108,6 +111,75 @@ class URLSearchParams implements Iterator
         $query->init($init);
 
         return $query;
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     */
+    public function current(): array
+    {
+        $current = $this->list->current();
+
+        return [$current['name'], $current['value']];
+    }
+
+    /**
+     * Deletes all occurances of pairs with the specified key name.
+     *
+     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-delete
+     *
+     * @param string $name The name of the key to delete.
+     */
+    public function delete(string $name): void
+    {
+        $this->list->remove(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
+        $this->update();
+    }
+
+    /**
+     * Get the value of the first name-value pair with the specified key name.
+     *
+     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-get
+     *
+     * @param string $name The name of the key whose value you want to retrive.
+     *
+     * @return string|null The value of the specified key.
+     */
+    public function get(string $name): ?string
+    {
+        return $this->list->first(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
+    }
+
+    /**
+     * Gets all name-value pairs that has the specified key name.
+     *
+     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-getall
+     *
+     * @param string $name The name of the key whose values you want to retrieve.
+     *
+     * @return array<int, string> An array containing all the values of the specified key.
+     */
+    public function getAll(string $name): array
+    {
+        $name = UConverter::transcode($name, 'UTF-8', 'UTF-8');
+
+        return array_column($this->list->filter(static function (array $pair) use ($name): bool {
+            return $pair['name'] === $name;
+        }), 'value');
+    }
+
+    /**
+     * Indicates whether or not a query string contains any keys with the specified key name.
+     *
+     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-has
+     *
+     * @param string $name The key name you want to test if it exists.
+     *
+     * @return bool Returns true if the key exits, otherwise false.
+     */
+    public function has(string $name): bool
+    {
+        return $this->list->contains(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
     }
 
     /**
@@ -195,80 +267,33 @@ class URLSearchParams implements Iterator
         }
     }
 
-    /**
-     * Appends a new name-value pair to the end of the query string.
-     *
-     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-append
-     *
-     * @param string $name  The name of the key in the pair.
-     * @param string $value The value assigned to the key.
-     */
-    public function append(string $name, string $value): void
+    public function key(): int
     {
-        $this->list->append(
-            UConverter::transcode($name, 'UTF-8', 'UTF-8'),
-            UConverter::transcode($value, 'UTF-8', 'UTF-8')
-        );
-        $this->update();
+        return $this->list->key();
     }
 
     /**
-     * Deletes all occurances of pairs with the specified key name.
+     * Mutates the the list of query parameters without going through the
+     * public API.
      *
-     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-delete
+     * @internal
      *
-     * @param string $name The name of the key to delete.
+     * @param array<int, array{name: string, value: string}> $list A list of name-value pairs to be
+     *                                                             added to the list.
      */
-    public function delete(string $name): void
+    public function modify(array $list): void
     {
-        $this->list->remove(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
-        $this->update();
+        $this->list->update($list);
     }
 
-    /**
-     * Get the value of the first name-value pair with the specified key name.
-     *
-     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-get
-     *
-     * @param string $name The name of the key whose value you want to retrive.
-     *
-     * @return string|null The value of the specified key.
-     */
-    public function get(string $name): ?string
+    public function next(): void
     {
-        return $this->list->first(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
+        $this->list->next();
     }
 
-    /**
-     * Gets all name-value pairs that has the specified key name.
-     *
-     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-getall
-     *
-     * @param string $name The name of the key whose values you want to retrieve.
-     *
-     * @return array<int, string> An array containing all the values of the specified key.
-     */
-    public function getAll(string $name): array
+    public function rewind(): void
     {
-        $name = UConverter::transcode($name, 'UTF-8', 'UTF-8');
-
-        return array_column($this->list->filter(static function (array $pair) use ($name): bool {
-            return $pair['name'] === $name;
-        }), 'value');
-    }
-
-    /**
-     * Indicates whether or not a query string contains any keys with the specified key name.
-     *
-     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-has
-     *
-     * @param string $name The key name you want to test if it exists.
-     *
-     * @return bool Returns true if the key exits, otherwise false.
-     */
-    public function has(string $name): bool
-    {
-        return $this->list->contains(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
+        $this->list->rewind();
     }
 
     /**
@@ -297,6 +322,18 @@ class URLSearchParams implements Iterator
     }
 
     /**
+     * Sets the associated url record.
+     *
+     * @internal
+     *
+     * @param \Rowbot\URL\URLRecord $url
+     */
+    public function setUrl(URLRecord $url): void
+    {
+        $this->url = $url;
+    }
+
+    /**
      * Sorts the list of search params by their names by comparing their code unit values,
      * preserving the relative order between pairs with the same name.
      *
@@ -308,28 +345,9 @@ class URLSearchParams implements Iterator
         $this->update();
     }
 
-    /**
-     * Clears the list of search params.
-     *
-     * @internal
-     */
-    public function clear(): void
+    public function toString(): string
     {
-        $this->list->clear();
-    }
-
-    /**
-     * Mutates the the list of query parameters without going through the
-     * public API.
-     *
-     * @internal
-     *
-     * @param array<int, array{name: string, value: string}> $list A list of name-value pairs to be
-     *                                                             added to the list.
-     */
-    public function modify(array $list): void
-    {
-        $this->list->update($list);
+        return $this->urlencodeList($this->list->all());
     }
 
     /**
@@ -354,45 +372,27 @@ class URLSearchParams implements Iterator
         $this->url->query = $query;
     }
 
-    /**
-     * Sets the url.
-     *
-     * @internal
-     *
-     * @param \Rowbot\URL\URLRecord $url
-     */
-    public function setUrl(URLRecord $url): void
-    {
-        $this->url = $url;
-    }
-
-    /**
-     * @return array{0: string, 1: string}
-     */
-    public function current(): array
-    {
-        $current = $this->list->current();
-
-        return [$current['name'], $current['value']];
-    }
-
-    public function key(): int
-    {
-        return $this->list->key();
-    }
-
-    public function next(): void
-    {
-        $this->list->next();
-    }
-
-    public function rewind(): void
-    {
-        $this->list->rewind();
-    }
-
     public function valid(): bool
     {
         return $this->list->valid();
+    }
+
+    public function __clone()
+    {
+        $this->list = clone $this->list;
+
+        // Null out the url in-case someone tries cloning the object returned by
+        // the URL::searchParams attribute.
+        $this->url = null;
+    }
+
+    /**
+     * Returns all name-value pairs stringified in the correct order.
+     *
+     * @return string The query string.
+     */
+    public function __toString(): string
+    {
+        return $this->urlencodeList($this->list->all());
     }
 }
