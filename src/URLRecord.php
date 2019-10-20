@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
+use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\Scheme;
 
-use function array_pop;
-use function count;
-use function implode;
 use function mb_substr;
-use function preg_match;
 
 class URLRecord
 {
@@ -50,7 +47,7 @@ class URLRecord
     /**
      * A list of zero or more ASCII strings holding data.
      *
-     * @var array<int, string>
+     * @var \Rowbot\URL\Component\PathListInterface
      */
     public $path;
 
@@ -82,7 +79,7 @@ class URLRecord
         $this->password = '';
         $this->host = Host::createNullHost();
         $this->port = null;
-        $this->path = [];
+        $this->path = new PathList();
         $this->query = null;
         $this->fragment = null;
         $this->cannotBeABaseUrl = false;
@@ -92,6 +89,7 @@ class URLRecord
     {
         $this->scheme = clone $this->scheme;
         $this->host = clone $this->host;
+        $this->path = clone $this->path;
     }
 
     /**
@@ -158,34 +156,6 @@ class URLRecord
     }
 
     /**
-     * Removes the last string from a URL's path if its scheme is not "file" and the path does not
-     * contain a normalized Windows drive letter.
-     *
-     * @see https://url.spec.whatwg.org/#shorten-a-urls-path
-     */
-    public function shortenPath(): void
-    {
-        $size = count($this->path);
-
-        if ($size === 0) {
-            return;
-        }
-
-        if (
-            $this->scheme->isFile()
-            && $size === 1
-            && preg_match(
-                URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
-                $this->path[0]
-            ) === 1
-        ) {
-            return;
-        }
-
-        array_pop($this->path);
-    }
-
-    /**
      * Computes a URL's origin.
      *
      * @see https://url.spec.whatwg.org/#origin
@@ -195,7 +165,7 @@ class URLRecord
     public function getOrigin(): Origin
     {
         if ($this->scheme->isBlob()) {
-            $url = BasicURLParser::parseBasicUrl($this->path[0]);
+            $url = BasicURLParser::parseBasicUrl((string) $this->path->first());
 
             if ($url === false) {
                 // Return a new opaque origin
@@ -272,13 +242,13 @@ class URLRecord
         }
 
         if ($this->cannotBeABaseUrl) {
-            $output .= $this->path[0];
+            $output .= $this->path->first();
         } else {
-            if ($this->path !== []) {
+            if (!$this->path->isEmpty()) {
                 $output .= '/';
             }
 
-            $output .= implode('/', $this->path);
+            $output .= $this->path;
         }
 
         if ($this->query !== null) {

@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
+use Rowbot\URL\Component\Path;
 use Rowbot\URL\Component\Scheme;
 use Rowbot\URL\Exception\InvalidParserState;
 
-use function array_pop;
-use function array_shift;
-use function count;
 use function ctype_digit;
 use function ctype_xdigit;
 use function intval;
@@ -465,7 +463,7 @@ class BasicURLParser
                 ++$this->pointer;
             } else {
                 $this->url->cannotBeABaseUrl = true;
-                $this->url->path[] = '';
+                $this->url->path->push(new Path());
                 $this->state = self::CANNOT_BE_A_BASE_URL_PATH_STATE;
             }
 
@@ -501,7 +499,7 @@ class BasicURLParser
 
         if ($this->base->cannotBeABaseUrl && $c === '#') {
             $this->url->scheme = clone $this->base->scheme;
-            $this->url->path = $this->base->path;
+            $this->url->path = clone $this->base->path;
             $this->url->query = $this->base->query;
             $this->url->fragment = '';
             $this->url->cannotBeABaseUrl = true;
@@ -571,7 +569,7 @@ class BasicURLParser
             $this->url->password = $this->base->password;
             $this->url->host = clone $this->base->host;
             $this->url->port = $this->base->port;
-            $this->url->path = $this->base->path;
+            $this->url->path = clone $this->base->path;
             $this->url->query = $this->base->query;
 
             return self::RETURN_OK;
@@ -588,7 +586,7 @@ class BasicURLParser
             $this->url->password = $this->base->password;
             $this->url->host = clone $this->base->host;
             $this->url->port = $this->base->port;
-            $this->url->path = $this->base->path;
+            $this->url->path = clone $this->base->path;
             $this->url->query = '';
             $this->state = self::QUERY_STATE;
 
@@ -600,7 +598,7 @@ class BasicURLParser
             $this->url->password = $this->base->password;
             $this->url->host = clone $this->base->host;
             $this->url->port = $this->base->port;
-            $this->url->path = $this->base->path;
+            $this->url->path = clone $this->base->path;
             $this->url->query = $this->base->query;
             $this->url->fragment = '';
             $this->state = self::FRAGMENT_STATE;
@@ -619,10 +617,10 @@ class BasicURLParser
         $this->url->password = $this->base->password;
         $this->url->host = clone $this->base->host;
         $this->url->port = $this->base->port;
-        $this->url->path = $this->base->path;
+        $this->url->path = clone $this->base->path;
 
-        if ($this->url->path !== []) {
-            array_pop($this->url->path);
+        if (!$this->url->path->isEmpty()) {
+            $this->url->path->pop();
         }
 
         $this->state = self::PATH_STATE;
@@ -905,20 +903,20 @@ class BasicURLParser
         } elseif ($this->base !== null && $this->base->scheme->isFile()) {
             if ($c === ''/* EOF */) {
                 $this->url->host = clone $this->base->host;
-                $this->url->path = $this->base->path;
+                $this->url->path = clone $this->base->path;
                 $this->url->query = $this->base->query;
 
                 return self::RETURN_OK;
             } elseif ($c === '?') {
                 $this->url->host = clone $this->base->host;
-                $this->url->path = $this->base->path;
+                $this->url->path = clone $this->base->path;
                 $this->url->query = '';
                 $this->state = self::QUERY_STATE;
 
                 return self::RETURN_OK;
             } elseif ($c === '#') {
                 $this->url->host = clone $this->base->host;
-                $this->url->path = $this->base->path;
+                $this->url->path = clone $this->base->path;
                 $this->url->query = $this->base->query;
                 $this->url->fragment = '';
                 $this->state = self::FRAGMENT_STATE;
@@ -935,8 +933,8 @@ class BasicURLParser
                 ) !== 1
             ) {
                 $this->url->host = clone $this->base->host;
-                $this->url->path = $this->base->path;
-                $this->url->shortenPath();
+                $this->url->path = clone $this->base->path;
+                $this->url->path->shorten($this->url->scheme);
             } else {
                 // Validation error.
             }
@@ -976,17 +974,12 @@ class BasicURLParser
                 mb_substr($this->input, $this->pointer, null, $this->encoding)
             ) !== 1
         ) {
-            if (
-                preg_match(
-                    URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
-                    $this->base->path[0]
-                ) === 1
-            ) {
+            if ($this->base->path->first()->isNormalizedWindowsDriveLetter()) {
                 // This is a (platform-independent) Windows
                 // drive letter quirk. Both url’s and base’s
                 // host are null under these conditions and
                 // therefore not copied.
-                $this->url->path[] = $this->base->path[0];
+                $this->url->path->push($this->base->path->first());
             } else {
                 $this->url->host = clone $this->base->host;
             }
@@ -1108,21 +1101,21 @@ class BasicURLParser
             }
 
             if (isset(self::$doubleDotPathSegment[$this->buffer])) {
-                $this->url->shortenPath();
+                $this->url->path->shorten($this->url->scheme);
 
                 if ($c !== '/' && !($urlIsSpecial && $c === '\\')) {
-                    $this->url->path[] = '';
+                    $this->url->path->push(new Path());
                 }
             } elseif (
                 isset(self::$singleDotPathSegment[$this->buffer])
                 && $c !== '/'
                 && !($this->url->scheme->isSpecial() && $c === '\\')
             ) {
-                $this->url->path[] = '';
+                $this->url->path->push(new Path());
             } elseif (!isset(self::$singleDotPathSegment[$this->buffer])) {
                 if (
                     $this->url->scheme->isFile()
-                    && $this->url->path === []
+                    && $this->url->path->isEmpty()
                     && preg_match(
                         URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
                         $this->buffer
@@ -1140,17 +1133,17 @@ class BasicURLParser
                         . mb_substr($this->buffer, 2, null, $this->encoding);
                 }
 
-                $this->url->path[] = $this->buffer;
+                $this->url->path->push(new Path($this->buffer));
             }
 
             $this->buffer = '';
 
             if ($this->url->scheme->isFile() && ($c === '' || $c === '?' || $c === '#')) {
-                $size = count($this->url->path);
+                $size = $this->url->path->count();
 
-                while ($size-- > 1 && $this->url->path[0] === '') {
+                while ($size-- > 1 && $this->url->path->first()->isEmpty()) {
                     // Validation error.
-                    array_shift($this->url->path);
+                    $this->url->path->shift();
                 }
             }
 
@@ -1211,10 +1204,8 @@ class BasicURLParser
         }
 
         if ($c !== ''/* EOF */) {
-            if ($this->url->path !== []) {
-                $this->url->path[0] .= URLUtils::utf8PercentEncode(
-                    $c
-                );
+            if (!$this->url->path->isEmpty()) {
+                $this->url->path->first()->append(URLUtils::utf8PercentEncode($c));
             }
         }
 

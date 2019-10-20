@@ -6,10 +6,10 @@ namespace Rowbot\URL;
 
 use InvalidArgumentException;
 use JsonSerializable;
+use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Exception\TypeError;
 use UConverter;
 
-use function implode;
 use function json_encode;
 use function mb_substr;
 
@@ -137,14 +137,14 @@ class URL implements JsonSerializable
 
         if ($name === 'pathname') {
             if ($this->url->cannotBeABaseUrl) {
-                return $this->url->path[0];
+                return (string) $this->url->path->first();
             }
 
-            if ($this->url->path === []) {
+            if ($this->url->path->isEmpty()) {
                 return '';
             }
 
-            return '/' . implode('/', $this->url->path);
+            return '/' . $this->url->path;
         }
 
         if ($name === 'port') {
@@ -266,7 +266,7 @@ class URL implements JsonSerializable
                 return;
             }
 
-            $this->url->path = [];
+            $this->url->path = new PathList();
             BasicURLParser::parseBasicUrl(
                 $value,
                 null,

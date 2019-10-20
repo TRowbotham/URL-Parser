@@ -38,7 +38,6 @@ final class URLUtils
         . '\x{100000}-\x{10FFFD}'
         . ']/u';
     public const REGEX_WINDOWS_DRIVE_LETTER            = '/^[A-Za-z][:|]$/u';
-    public const REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER = '/^[A-Za-z]:$/u';
     public const STARTS_WITH_WINDOWS_DRIVE_LETTER      = '/^[A-Za-z][:|](?:$|[\/\\\?#])/u';
 
     public const C0_CONTROL_PERCENT_ENCODE_SET = '\x00-\x1F\x7E-\x{10FFFF}';
