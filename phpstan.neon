@@ -28,3 +28,12 @@ parameters:
         # I plan to handle this at a later date. Though, this should only happen if someone tries to json encode a URL
         # object that failed to parse its input.
         - '#Method Rowbot\\URL\\URL::toJSON\(\) should return string but returns string\|false\.#'
+
+        -
+            message: '#Strict comparison using !== between 0 and 0 will always evaluate to false\.#'
+            path: %currentWorkingDirectory%/src/String/AbstractString.php
+
+        # Note to self: You can't escape single quotes in neon. Another possible alternative would be to replace single quotes with \x27.
+        -
+            message: "#Strict comparison using === between \\*NEVER\\* and '\\S+' will always evaluate to false\\.#"
+            path: %currentWorkingDirectory%/src/String/CodePoint.php
