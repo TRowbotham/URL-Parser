@@ -259,7 +259,7 @@ class URL implements JsonSerializable
                 return;
             }
 
-            $this->url->setPassword($value);
+            $this->setUrlPassword($value);
         } elseif ($name === 'pathname') {
             if ($this->url->cannotBeABaseUrl) {
                 // Terminate these steps
@@ -328,11 +328,43 @@ class URL implements JsonSerializable
                 return;
             }
 
-            $this->url->setUsername($value);
+            $this->setUrlUsername($value);
         } else {
             throw new InvalidArgumentException(
                 $name . ' is not a valid property.'
             );
+        }
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#set-the-password
+     */
+    private function setUrlPassword(string $password): void
+    {
+        $this->url->password = '';
+
+        while (($codePoint = mb_substr($password, 0, 1, 'utf-8')) !== '') {
+            $this->url->password .= URLUtils::utf8PercentEncode(
+                $codePoint,
+                URLUtils::USERINFO_PERCENT_ENCODE_SET
+            );
+            $password = mb_substr($password, 1, null, 'utf-8');
+        }
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#set-the-username
+     */
+    private function setUrlUsername(string $username): void
+    {
+        $this->url->username = '';
+
+        while (($codePoint = mb_substr($username, 0, 1, 'utf-8')) !== '') {
+            $this->url->username .= URLUtils::utf8PercentEncode(
+                $codePoint,
+                URLUtils::USERINFO_PERCENT_ENCODE_SET
+            );
+            $username = mb_substr($username, 1, null, 'utf-8');
         }
     }
 

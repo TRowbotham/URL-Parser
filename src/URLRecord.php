@@ -7,8 +7,6 @@ namespace Rowbot\URL;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\Scheme;
 
-use function mb_substr;
-
 class URLRecord
 {
     /**
@@ -90,46 +88,6 @@ class URLRecord
         $this->scheme = clone $this->scheme;
         $this->host = clone $this->host;
         $this->path = clone $this->path;
-    }
-
-    /**
-     * Used to set the URL's username anywhere outside of the URL parser.
-     *
-     * @see https://url.spec.whatwg.org/#set-the-username
-     *
-     * @param string $username The URL's username.
-     */
-    public function setUsername(string $username): void
-    {
-        $this->username = '';
-
-        while (($codePoint = mb_substr($username, 0, 1, 'utf-8')) !== '') {
-            $this->username .= URLUtils::utf8PercentEncode(
-                $codePoint,
-                URLUtils::USERINFO_PERCENT_ENCODE_SET
-            );
-            $username = mb_substr($username, 1, null, 'utf-8');
-        }
-    }
-
-    /**
-     * Used to set the URL's passwrod anywhere outside of the URL parser.
-     *
-     * @see https://url.spec.whatwg.org/#set-the-password
-     *
-     * @param string $password The URL's password.
-     */
-    public function setPassword(string $password): void
-    {
-        $this->password = '';
-
-        while (($codePoint = mb_substr($password, 0, 1, 'utf-8')) !== '') {
-            $this->password .= URLUtils::utf8PercentEncode(
-                $codePoint,
-                URLUtils::USERINFO_PERCENT_ENCODE_SET
-            );
-            $password = mb_substr($password, 1, null, 'utf-8');
-        }
     }
 
     /**
