@@ -215,7 +215,7 @@ class BasicURLParser
         }
 
         $parser->state = $parser->stateOverride ?: self::SCHEME_START_STATE;
-        $parser->encoding = 'UTF-8';
+        $parser->encoding = 'utf-8';
 
         // TODO: If encoding override is given, set it to the result of the
         // getting an output encoding algorithm.
@@ -1229,14 +1229,14 @@ class BasicURLParser
     private function queryState(string $c): int
     {
         if (
-            $this->encoding !== 'UTF-8'
+            $this->encoding !== 'utf-8'
             && (
                 !$this->url->isSpecial()
                 || $this->url->scheme === 'ws'
                 || $this->url->scheme === 'wss'
             )
         ) {
-            $this->encoding = 'UTF-8';
+            $this->encoding = 'utf-8';
         }
 
         if ($this->stateOverride === null && $c === '#') {

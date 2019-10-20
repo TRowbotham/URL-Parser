@@ -41,10 +41,10 @@ class IPv6Address implements NetworkAddress
         $pieceIndex = 0;
         $compress = null;
         $pointer = 0;
-        $c = mb_substr($input, $pointer, 1, 'UTF-8');
+        $c = mb_substr($input, $pointer, 1, 'utf-8');
 
         if ($c === ':') {
-            if (mb_substr($input, $pointer + 1, 1, 'UTF-8') !== ':') {
+            if (mb_substr($input, $pointer + 1, 1, 'utf-8') !== ':') {
                 // Validation error.
                 return false;
             }
@@ -52,7 +52,7 @@ class IPv6Address implements NetworkAddress
             $pointer += 2;
             ++$pieceIndex;
             $compress = $pieceIndex;
-            $c = mb_substr($input, $pointer, 1, 'UTF-8');
+            $c = mb_substr($input, $pointer, 1, 'utf-8');
         }
 
         while ($c !== '') {
@@ -67,7 +67,7 @@ class IPv6Address implements NetworkAddress
                     return false;
                 }
 
-                $c = mb_substr($input, ++$pointer, 1, 'UTF-8');
+                $c = mb_substr($input, ++$pointer, 1, 'utf-8');
                 ++$pieceIndex;
                 $compress = $pieceIndex;
 
@@ -80,7 +80,7 @@ class IPv6Address implements NetworkAddress
             while ($length < 4 && ctype_xdigit($c)) {
                 $value = $value * 0x10 + intval($c, 16);
                 ++$length;
-                $c = mb_substr($input, ++$pointer, 1, 'UTF-8');
+                $c = mb_substr($input, ++$pointer, 1, 'utf-8');
             }
 
             if ($c === '.') {
@@ -90,7 +90,7 @@ class IPv6Address implements NetworkAddress
                 }
 
                 $pointer -= $length;
-                $c = mb_substr($input, $pointer, 1, 'UTF-8');
+                $c = mb_substr($input, $pointer, 1, 'utf-8');
 
                 if ($pieceIndex > 6) {
                     // Validation error.
@@ -104,7 +104,7 @@ class IPv6Address implements NetworkAddress
 
                     if ($numbersSeen > 0) {
                         if ($c === '.' && $numbersSeen < 4) {
-                            $c = mb_substr($input, ++$pointer, 1, 'UTF-8');
+                            $c = mb_substr($input, ++$pointer, 1, 'utf-8');
                         } else {
                             // Validation error.
                             return false;
@@ -133,7 +133,7 @@ class IPv6Address implements NetworkAddress
                             return false;
                         }
 
-                        $c = mb_substr($input, ++$pointer, 1, 'UTF-8');
+                        $c = mb_substr($input, ++$pointer, 1, 'utf-8');
                     } while (ctype_digit($c));
 
                     $address[$pieceIndex] = $address[$pieceIndex] * 0x100 + $ipv4Piece;
@@ -153,7 +153,7 @@ class IPv6Address implements NetworkAddress
             }
 
             if ($c === ':') {
-                $c = mb_substr($input, ++$pointer, 1, 'UTF-8');
+                $c = mb_substr($input, ++$pointer, 1, 'utf-8');
 
                 if ($c === '') {
                     // Validation error.

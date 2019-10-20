@@ -58,11 +58,11 @@ class URLSearchParams implements Iterator
         // first code point from $init.
         if (func_num_args() > 0) {
             if (is_scalar($init) || is_object($init) && method_exists($init, '__toString')) {
-                $init = UConverter::transcode((string) $init, 'UTF-8', 'UTF-8');
+                $init = UConverter::transcode((string) $init, 'utf-8', 'utf-8');
             }
 
-            if (is_string($init) && mb_substr($init, 0, 1, 'UTF-8') === '?') {
-                $init = mb_substr($init, 1, null, 'UTF-8');
+            if (is_string($init) && mb_substr($init, 0, 1, 'utf-8') === '?') {
+                $init = mb_substr($init, 1, null, 'utf-8');
             }
 
             $this->init($init);
@@ -80,8 +80,8 @@ class URLSearchParams implements Iterator
     public function append(string $name, string $value): void
     {
         $this->list->append(
-            UConverter::transcode($name, 'UTF-8', 'UTF-8'),
-            UConverter::transcode($value, 'UTF-8', 'UTF-8')
+            UConverter::transcode($name, 'utf-8', 'utf-8'),
+            UConverter::transcode($value, 'utf-8', 'utf-8')
         );
         $this->update();
     }
@@ -132,7 +132,7 @@ class URLSearchParams implements Iterator
      */
     public function delete(string $name): void
     {
-        $this->list->remove(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
+        $this->list->remove(UConverter::transcode($name, 'utf-8', 'utf-8'));
         $this->update();
     }
 
@@ -147,7 +147,7 @@ class URLSearchParams implements Iterator
      */
     public function get(string $name): ?string
     {
-        return $this->list->first(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
+        return $this->list->first(UConverter::transcode($name, 'utf-8', 'utf-8'));
     }
 
     /**
@@ -161,7 +161,7 @@ class URLSearchParams implements Iterator
      */
     public function getAll(string $name): array
     {
-        $name = UConverter::transcode($name, 'UTF-8', 'UTF-8');
+        $name = UConverter::transcode($name, 'utf-8', 'utf-8');
 
         return array_column($this->list->filter(static function (array $pair) use ($name): bool {
             return $pair['name'] === $name;
@@ -179,7 +179,7 @@ class URLSearchParams implements Iterator
      */
     public function has(string $name): bool
     {
-        return $this->list->contains(UConverter::transcode($name, 'UTF-8', 'UTF-8'));
+        return $this->list->contains(UConverter::transcode($name, 'utf-8', 'utf-8'));
     }
 
     /**
@@ -255,8 +255,8 @@ class URLSearchParams implements Iterator
 
         foreach ($input as $pair) {
             $this->list->append(
-                UConverter::transcode($pair[0], 'UTF-8', 'UTF-8'),
-                UConverter::transcode($pair[1], 'UTF-8', 'UTF-8')
+                UConverter::transcode($pair[0], 'utf-8', 'utf-8'),
+                UConverter::transcode($pair[1], 'utf-8', 'utf-8')
             );
         }
     }
@@ -268,8 +268,8 @@ class URLSearchParams implements Iterator
     {
         foreach ($input as $name => $value) {
             $this->append(
-                UConverter::transcode($name, 'UTF-8', 'UTF-8'),
-                UConverter::transcode($value, 'UTF-8', 'UTF-8')
+                UConverter::transcode($name, 'utf-8', 'utf-8'),
+                UConverter::transcode($value, 'utf-8', 'utf-8')
             );
         }
     }
@@ -325,8 +325,8 @@ class URLSearchParams implements Iterator
      */
     public function set(string $name, string $value): void
     {
-        $name = UConverter::transcode($name, 'UTF-8', 'UTF-8');
-        $value = UConverter::transcode($value, 'UTF-8', 'UTF-8');
+        $name = UConverter::transcode($name, 'utf-8', 'utf-8');
+        $value = UConverter::transcode($value, 'utf-8', 'utf-8');
 
         if ($this->list->contains($name)) {
             $this->list->set($name, $value);

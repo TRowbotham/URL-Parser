@@ -52,7 +52,7 @@ trait URLFormEncoded
             $name = $bytes;
             $value = '';
 
-            if (mb_strpos($bytes, '=', 0, 'UTF-8') !== false) {
+            if (mb_strpos($bytes, '=', 0, 'utf-8') !== false) {
                 [$name, $value] = explode('=', $bytes, 2);
             }
 
@@ -64,13 +64,13 @@ trait URLFormEncoded
             // respectively.
             $name = UConverter::transcode(
                 rawurldecode($name),
-                'UTF-8',
-                'UTF-8'
+                'utf-8',
+                'utf-8'
             );
             $value = UConverter::transcode(
                 rawurldecode($value),
-                'UTF-8',
-                'UTF-8'
+                'utf-8',
+                'utf-8'
             );
             $output[] = ['name' => $name, 'value' => $value];
         }
@@ -131,7 +131,7 @@ trait URLFormEncoded
      */
     private function urlencodeList(array $tuples, string $encodingOverride = null): string
     {
-        $encoding = 'UTF-8';
+        $encoding = 'utf-8';
 
         if ($encodingOverride !== null) {
             $encoding = $encodingOverride;

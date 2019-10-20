@@ -102,12 +102,12 @@ class URLRecord
     {
         $this->username = '';
 
-        while (($codePoint = mb_substr($username, 0, 1, 'UTF-8')) !== '') {
+        while (($codePoint = mb_substr($username, 0, 1, 'utf-8')) !== '') {
             $this->username .= URLUtils::utf8PercentEncode(
                 $codePoint,
                 URLUtils::USERINFO_PERCENT_ENCODE_SET
             );
-            $username = mb_substr($username, 1, null, 'UTF-8');
+            $username = mb_substr($username, 1, null, 'utf-8');
         }
     }
 
@@ -122,12 +122,12 @@ class URLRecord
     {
         $this->password = '';
 
-        while (($codePoint = mb_substr($password, 0, 1, 'UTF-8')) !== '') {
+        while (($codePoint = mb_substr($password, 0, 1, 'utf-8')) !== '') {
             $this->password .= URLUtils::utf8PercentEncode(
                 $codePoint,
                 URLUtils::USERINFO_PERCENT_ENCODE_SET
             );
-            $password = mb_substr($password, 1, null, 'UTF-8');
+            $password = mb_substr($password, 1, null, 'utf-8');
         }
     }
 

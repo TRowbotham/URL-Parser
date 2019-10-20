@@ -58,8 +58,8 @@ class URL implements JsonSerializable
         if ($base !== null) {
             $parsedBase = BasicURLParser::parseBasicUrl(UConverter::transcode(
                 $base,
-                'UTF-8',
-                'UTF-8'
+                'utf-8',
+                'utf-8'
             ));
 
             if ($parsedBase === false) {
@@ -68,7 +68,7 @@ class URL implements JsonSerializable
         }
 
         $parsedURL = BasicURLParser::parseBasicUrl(
-            UConverter::transcode($url, 'UTF-8', 'UTF-8'),
+            UConverter::transcode($url, 'utf-8', 'utf-8'),
             $parsedBase
         );
 
@@ -188,7 +188,7 @@ class URL implements JsonSerializable
             throw new TypeError();
         }
 
-        $value = UConverter::transcode($value, 'UTF-8', 'UTF-8');
+        $value = UConverter::transcode($value, 'utf-8', 'utf-8');
 
         if ($name === 'hash') {
             if ($value === '') {
@@ -200,8 +200,8 @@ class URL implements JsonSerializable
 
             $input = $value;
 
-            if (mb_substr($input, 0, 1, 'UTF-8') === '#') {
-                $input = mb_substr($input, 1, null, 'UTF-8');
+            if (mb_substr($input, 0, 1, 'utf-8') === '#') {
+                $input = mb_substr($input, 1, null, 'utf-8');
             }
 
             $this->url->fragment = '';
@@ -310,8 +310,8 @@ class URL implements JsonSerializable
 
             $input = $value;
 
-            if (mb_substr($input, 0, 1, 'UTF-8') === '?') {
-                $input = mb_substr($input, 1, null, 'UTF-8');
+            if (mb_substr($input, 0, 1, 'utf-8') === '?') {
+                $input = mb_substr($input, 1, null, 'utf-8');
             }
 
             $this->url->query = '';

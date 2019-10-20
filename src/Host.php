@@ -60,13 +60,13 @@ class Host
      */
     public static function parse(string $input, bool $isNotSpecial = false)
     {
-        if (mb_substr($input, 0, 1, 'UTF-8') === '[') {
-            if (mb_substr($input, -1, null, 'UTF-8') !== ']') {
+        if (mb_substr($input, 0, 1, 'utf-8') === '[') {
+            if (mb_substr($input, -1, null, 'utf-8') !== ']') {
                 // Syntax violation
                 return false;
             }
 
-            $ipv6 = IPv6Address::parse(mb_substr($input, 1, -1, 'UTF-8'));
+            $ipv6 = IPv6Address::parse(mb_substr($input, 1, -1, 'utf-8'));
 
             if ($ipv6 === false) {
                 return false;
@@ -122,9 +122,9 @@ class Host
 
         $output = '';
 
-        while (($char = mb_substr($input, 0, 1, 'UTF-8')) !== '') {
+        while (($char = mb_substr($input, 0, 1, 'utf-8')) !== '') {
             $output .= URLUtils::utf8PercentEncode($char);
-            $input = mb_substr($input, 1, null, 'UTF-8');
+            $input = mb_substr($input, 1, null, 'utf-8');
         }
 
         return new self($output);
