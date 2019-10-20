@@ -46,21 +46,6 @@ final class URLUtils
     public const PATH_PERCENT_ENCODE_SET       = self::FRAGMENT_PERCENT_ENCODE_SET . '#?{}';
     public const USERINFO_PERCENT_ENCODE_SET   = self::PATH_PERCENT_ENCODE_SET . '\/:;=@[\\\\\]^|';
 
-    /**
-     * @see https://url.spec.whatwg.org/#special-scheme
-     *
-     * @var array<string, int|string>
-     */
-    public static $specialSchemes = [
-        'ftp'    => 21,
-        'file'   => '',
-        'gopher' => 70,
-        'http'   => 80,
-        'https'  => 443,
-        'ws'     => 80,
-        'wss'    => 443,
-    ];
-
     private function __construct()
     {
     }

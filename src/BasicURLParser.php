@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
+use Rowbot\URL\Component\Scheme;
 use Rowbot\URL\Exception\InvalidParserState;
 
 use function array_pop;
@@ -401,9 +402,11 @@ class BasicURLParser
 
             return self::RETURN_OK;
         } elseif ($c === ':') {
+            $candidateScheme = new Scheme($this->buffer);
+
             if ($this->stateOverride !== null) {
-                $bufferIsSpecialScheme = isset(URLUtils::$specialSchemes[$this->buffer]);
-                $urlIsSpecial = $this->url->isSpecial();
+                $bufferIsSpecialScheme = $candidateScheme->isSpecial();
+                $urlIsSpecial = $this->url->scheme->isSpecial();
 
                 if ($urlIsSpecial && !$bufferIsSpecialScheme) {
                     return self::RETURN_TERMINATE;
@@ -415,26 +418,23 @@ class BasicURLParser
 
                 if (
                     $this->url->includesCredentials()
-                    || ($this->url->port !== null && $this->buffer === 'file')
+                    || ($this->url->port !== null && $candidateScheme->isFile())
                 ) {
                     return self::RETURN_TERMINATE;
                 }
 
                 if (
-                    $this->url->scheme === 'file'
+                    $this->url->scheme->isFile()
                     && ($this->url->host->isEmpty() || $this->url->host->isNull())
                 ) {
                     return self::RETURN_TERMINATE;
                 }
             }
 
-            $this->url->scheme = $this->buffer;
+            $this->url->scheme = $candidateScheme;
 
             if ($this->stateOverride !== null) {
-                if (
-                    $bufferIsSpecialScheme
-                    && URLUtils::$specialSchemes[$this->url->scheme] === $this->url->port
-                ) {
+                if ($bufferIsSpecialScheme && $this->url->scheme->isDefaultPort($this->url->port)) {
                     $this->url->port = null;
                 }
 
@@ -442,9 +442,9 @@ class BasicURLParser
             }
 
             $this->buffer = '';
-            $urlIsSpecial = $this->url->isSpecial();
+            $urlIsSpecial = $this->url->scheme->isSpecial();
 
-            if ($this->url->scheme === 'file') {
+            if ($this->url->scheme->isFile()) {
                 if (mb_substr($this->input, $this->pointer + 1, 2, $this->encoding) !== '//') {
                     // Validation error
                 }
@@ -453,7 +453,7 @@ class BasicURLParser
             } elseif (
                 $urlIsSpecial
                 && $this->base !== null
-                && $this->base->scheme === $this->url->scheme
+                && $this->base->scheme->equals($this->url->scheme)
             ) {
                 // This means that base's cannot-be-a-base-URL flag
                 // is unset.
@@ -500,7 +500,7 @@ class BasicURLParser
         }
 
         if ($this->base->cannotBeABaseUrl && $c === '#') {
-            $this->url->scheme = $this->base->scheme;
+            $this->url->scheme = clone $this->base->scheme;
             $this->url->path = $this->base->path;
             $this->url->query = $this->base->query;
             $this->url->fragment = '';
@@ -510,7 +510,7 @@ class BasicURLParser
             return self::RETURN_OK;
         }
 
-        if ($this->base->scheme !== 'file') {
+        if (!$this->base->scheme->isFile()) {
             $this->state = self::RELATIVE_STATE;
             --$this->pointer;
 
@@ -564,7 +564,7 @@ class BasicURLParser
      */
     private function relativeState(string $c): int
     {
-        $this->url->scheme = $this->base->scheme;
+        $this->url->scheme = clone $this->base->scheme;
 
         if ($c === ''/* EOF */) {
             $this->url->username = $this->base->username;
@@ -608,7 +608,7 @@ class BasicURLParser
             return self::RETURN_OK;
         }
 
-        if ($this->url->isSpecial() && $c === '\\') {
+        if ($this->url->scheme->isSpecial() && $c === '\\') {
             // Validation error
             $this->state = self::RELATIVE_SLASH_STATE;
 
@@ -636,7 +636,7 @@ class BasicURLParser
      */
     private function relativeSlashState(string $c): int
     {
-        if ($this->url->isSpecial() && $c === '/' || $c === '\\') {
+        if ($this->url->scheme->isSpecial() && $c === '/' || $c === '\\') {
             if ($c === '\\') {
                 // Validation error.
             }
@@ -740,7 +740,7 @@ class BasicURLParser
 
         if (
             ($c === ''/* EOF */ || $c === '/' || $c === '?' || $c === '#')
-            || ($this->url->isSpecial() && $c === '\\')
+            || ($this->url->scheme->isSpecial() && $c === '\\')
         ) {
             if ($this->atFlag && $this->buffer === '') {
                 // Validation error.
@@ -764,7 +764,7 @@ class BasicURLParser
      */
     private function hostState(string $c): int
     {
-        if ($this->stateOverride !== null && $this->url->scheme === 'file') {
+        if ($this->stateOverride !== null && $this->url->scheme->isFile()) {
             --$this->pointer;
             $this->state = self::FILE_HOST_STATE;
 
@@ -777,7 +777,7 @@ class BasicURLParser
                 return self::RETURN_FAILURE;
             }
 
-            $host = Host::parse($this->buffer, !$this->url->isSpecial());
+            $host = Host::parse($this->buffer, !$this->url->scheme->isSpecial());
 
             if ($host === false) {
                 // Return failure.
@@ -797,11 +797,11 @@ class BasicURLParser
 
         if (
             ($c === ''/* EOF */ || $c === '/' || $c === '?' || $c === '#')
-            || ($this->url->isSpecial() && $c === '\\')
+            || ($this->url->scheme->isSpecial() && $c === '\\')
         ) {
             --$this->pointer;
 
-            if ($this->url->isSpecial() && $this->buffer === '') {
+            if ($this->url->scheme->isSpecial() && $this->buffer === '') {
                 // Validation error. Return failure.
                 return self::RETURN_FAILURE;
             } elseif (
@@ -813,7 +813,7 @@ class BasicURLParser
                 return self::RETURN_TERMINATE;
             }
 
-            $host = Host::parse($this->buffer, !$this->url->isSpecial());
+            $host = Host::parse($this->buffer, !$this->url->scheme->isSpecial());
 
             if ($host === false) {
                 // Return failure.
@@ -853,7 +853,7 @@ class BasicURLParser
             return self::RETURN_OK;
         } elseif (
             ($c === ''/* EOF */ || $c === '/' || $c === '?' || $c === '#')
-            || ($this->url->isSpecial() && $c === '\\')
+            || ($this->url->scheme->isSpecial() && $c === '\\')
             || $this->stateOverride !== null
         ) {
             if ($this->buffer !== '') {
@@ -864,10 +864,7 @@ class BasicURLParser
                     return self::RETURN_FAILURE;
                 }
 
-                if (
-                    isset(URLUtils::$specialSchemes[$this->url->scheme])
-                    && URLUtils::$specialSchemes[$this->url->scheme] === $port
-                ) {
+                if ($this->url->scheme->isDefaultPort($port)) {
                     $this->url->port = null;
                 } else {
                     $this->url->port = $port;
@@ -895,7 +892,7 @@ class BasicURLParser
      */
     private function fileState(string $c): int
     {
-        $this->url->scheme = 'file';
+        $this->url->scheme = new Scheme('file');
 
         if ($c === '/' || $c === '\\') {
             if ($c === '\\') {
@@ -905,7 +902,7 @@ class BasicURLParser
             $this->state = self::FILE_SLASH_STATE;
 
             return self::RETURN_OK;
-        } elseif ($this->base !== null && $this->base->scheme === 'file') {
+        } elseif ($this->base !== null && $this->base->scheme->isFile()) {
             if ($c === ''/* EOF */) {
                 $this->url->host = clone $this->base->host;
                 $this->url->path = $this->base->path;
@@ -973,7 +970,7 @@ class BasicURLParser
 
         if (
             $this->base !== null
-            && $this->base->scheme === 'file'
+            && $this->base->scheme->isFile()
             && preg_match(
                 URLUtils::STARTS_WITH_WINDOWS_DRIVE_LETTER,
                 mb_substr($this->input, $this->pointer, null, $this->encoding)
@@ -1033,7 +1030,7 @@ class BasicURLParser
                 return self::RETURN_OK;
             }
 
-            $host = Host::parse($this->buffer, !$this->url->isSpecial());
+            $host = Host::parse($this->buffer, !$this->url->scheme->isSpecial());
 
             if ($host === false) {
                 // Return failure.
@@ -1066,7 +1063,7 @@ class BasicURLParser
      */
     private function pathStartState(string $c): int
     {
-        if ($this->url->isSpecial()) {
+        if ($this->url->scheme->isSpecial()) {
             if ($c === '\\') {
                 // Validation error.
             }
@@ -1101,10 +1098,10 @@ class BasicURLParser
         if (
             $c === ''/* EOF */
             || $c === '/'
-            || ($this->url->isSpecial() && $c === '\\')
+            || ($this->url->scheme->isSpecial() && $c === '\\')
             || ($this->stateOverride === null && ($c === '?' || $c === '#'))
         ) {
-            $urlIsSpecial = $this->url->isSpecial();
+            $urlIsSpecial = $this->url->scheme->isSpecial();
 
             if ($urlIsSpecial && $c === '\\') {
                 // Validation error.
@@ -1119,12 +1116,12 @@ class BasicURLParser
             } elseif (
                 isset(self::$singleDotPathSegment[$this->buffer])
                 && $c !== '/'
-                && !($this->url->isSpecial() && $c === '\\')
+                && !($this->url->scheme->isSpecial() && $c === '\\')
             ) {
                 $this->url->path[] = '';
             } elseif (!isset(self::$singleDotPathSegment[$this->buffer])) {
                 if (
-                    $this->url->scheme === 'file'
+                    $this->url->scheme->isFile()
                     && $this->url->path === []
                     && preg_match(
                         URLUtils::REGEX_WINDOWS_DRIVE_LETTER,
@@ -1148,7 +1145,7 @@ class BasicURLParser
 
             $this->buffer = '';
 
-            if ($this->url->scheme === 'file' && ($c === '' || $c === '?' || $c === '#')) {
+            if ($this->url->scheme->isFile() && ($c === '' || $c === '?' || $c === '#')) {
                 $size = count($this->url->path);
 
                 while ($size-- > 1 && $this->url->path[0] === '') {
@@ -1231,11 +1228,7 @@ class BasicURLParser
     {
         if (
             $this->encoding !== 'utf-8'
-            && (
-                !$this->url->isSpecial()
-                || $this->url->scheme === 'ws'
-                || $this->url->scheme === 'wss'
-            )
+            && (!$this->url->scheme->isSpecial() || $this->url->scheme->isWebsocket())
         ) {
             $this->encoding = 'utf-8';
         }
@@ -1270,7 +1263,7 @@ class BasicURLParser
                         || $bytes[$i] === "\x23"
                         || $bytes[$i] === "\x3C"
                         || $bytes[$i] === "\x3E"
-                        || ($bytes[$i] === "\x27" && $this->url->isSpecial())
+                        || ($bytes[$i] === "\x27" && $this->url->scheme->isSpecial())
                     ) {
                         $this->url->query .= rawurlencode($bytes[$i]);
                     } else {

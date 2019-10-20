@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
+use Rowbot\URL\Component\Scheme;
+
 use function array_pop;
 use function count;
 use function implode;
@@ -15,7 +17,7 @@ class URLRecord
     /**
      * An ASCII string that identifies the type of URL.
      *
-     * @var string
+     * @var \Rowbot\URL\Component\Scheme
      */
     public $scheme;
 
@@ -75,7 +77,7 @@ class URLRecord
 
     public function __construct()
     {
-        $this->scheme = '';
+        $this->scheme = new Scheme();
         $this->username = '';
         $this->password = '';
         $this->host = Host::createNullHost();
@@ -88,6 +90,7 @@ class URLRecord
 
     public function __clone()
     {
+        $this->scheme = clone $this->scheme;
         $this->host = clone $this->host;
     }
 
@@ -132,16 +135,6 @@ class URLRecord
     }
 
     /**
-     * Returns whether or not the URL's scheme is a special scheme.
-     *
-     * @see https://url.spec.whatwg.org/#is-special
-     */
-    public function isSpecial(): bool
-    {
-        return isset(URLUtils::$specialSchemes[$this->scheme]);
-    }
-
-    /**
      * Whether or not a URL can have a username, password, or port set.
      *
      * @see https://url.spec.whatwg.org/#cannot-have-a-username-password-port
@@ -151,7 +144,7 @@ class URLRecord
         return $this->host->isNull()
             || $this->host->equals('')
             || $this->cannotBeABaseUrl
-            || $this->scheme === 'file';
+            || $this->scheme->isFile();
     }
 
     /**
@@ -179,7 +172,7 @@ class URLRecord
         }
 
         if (
-            $this->scheme === 'file'
+            $this->scheme->isFile()
             && $size === 1
             && preg_match(
                 URLUtils::REGEX_NORMALIZED_WINDOWS_DRIVE_LETTER,
@@ -201,7 +194,7 @@ class URLRecord
      */
     public function getOrigin(): Origin
     {
-        if ($this->scheme === 'blob') {
+        if ($this->scheme->isBlob()) {
             $url = BasicURLParser::parseBasicUrl($this->path[0]);
 
             if ($url === false) {
@@ -212,28 +205,20 @@ class URLRecord
             return $url->getOrigin();
         }
 
-        if (
-            $this->scheme === 'ftp'
-            || $this->scheme === 'gopher'
-            || $this->scheme === 'http'
-            || $this->scheme === 'https'
-            || $this->scheme === 'ws'
-            || $this->scheme === 'wss'
-        ) {
-            // Return a tuple consiting of URL's scheme, host, port, and
-            // null
+        if ($this->scheme->isFile()) {
+            // Unfortunate as it is, this is left as an exercise to the
+            // reader. When in doubt, return a new opaque origin.
+            return Origin::createOpaqueOrigin();
+        }
+
+        if ($this->scheme->isSpecial()) {
+            // Return a tuple consiting of URL's scheme, host, port, and null
             return Origin::createTupleOrigin(
-                $this->scheme,
+                (string) $this->scheme,
                 $this->host,
                 $this->port,
                 null
             );
-        }
-
-        if ($this->scheme === 'file') {
-            // Unfortunate as it is, this is left as an exercise to the
-            // reader. When in doubt, return a new opaque origin.
-            return Origin::createOpaqueOrigin();
         }
 
         // Return a new opaque origin.
@@ -282,7 +267,7 @@ class URLRecord
             if ($this->port !== null) {
                 $output .= ':' . $this->port;
             }
-        } elseif ($this->host->isNull() && $this->scheme === 'file') {
+        } elseif ($this->host->isNull() && $this->scheme->isFile()) {
             $output .= '//';
         }
 
