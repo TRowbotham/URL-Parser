@@ -129,7 +129,7 @@ The URLSearchParams object allows you to work with query strings when you don't 
 
 ### The constructor
 
-`URLSearchParams([self|array<array<string>>|object|string $init])`
+`URLSearchParams([self|iterable<mixed, iterable<mixed, scalar>>|object|string $init])`
 
 #### Throws:
 

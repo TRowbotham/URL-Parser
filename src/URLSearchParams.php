@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
-use ArrayAccess;
 use Countable;
 use InvalidArgumentException;
 use Iterator;
@@ -49,7 +48,7 @@ class URLSearchParams implements Iterator
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
-     * @param self|iterable<int, array{0: string, 1: string}>|object|string $init (optional)
+     * @param self|iterable<mixed, iterable<mixed, scalar>>|object|string $init (optional)
      */
     public function __construct($init = '')
     {
@@ -187,7 +186,7 @@ class URLSearchParams implements Iterator
     /**
      * @internal
      *
-     * @param self|iterable<int, array{0: string, 1: string}>|object|string $input
+     * @param self|iterable<mixed, iterable<mixed, scalar>>|object|string $input
      *
      * @throws \InvalidArgumentException
      * @throws \Rowbot\URL\Exception\TypeError
@@ -236,13 +235,10 @@ class URLSearchParams implements Iterator
             //
             // $a = new \ArrayObject(new \ArrayObject(['x', 'y']));
             // $s = new \Rowbot\URL\URLSearchParams($a);'
-            if (
-                !is_array($pair)
-                && (!$pair instanceof ArrayAccess || !$pair instanceof Countable)
-            ) {
+            if (!is_array($pair) && (!is_iterable($pair) || !$pair instanceof Countable)) {
                 throw new InvalidArgumentException(sprintf(
-                    'Expected a valid sequence such as an Array or Object that implements both the '
-                    . 'ArrayAccess and Countable interfaces. %s found instead.',
+                    'Expected a valid sequence such as an Array or iterable Object that implements '
+                    . 'the \Countable interface. %s found instead.',
                     gettype($pair)
                 ));
             }
@@ -256,10 +252,13 @@ class URLSearchParams implements Iterator
         }
 
         foreach ($input as $pair) {
-            $this->list->append(
-                UConverter::transcode($pair[0], 'utf-8', 'utf-8'),
-                UConverter::transcode($pair[1], 'utf-8', 'utf-8')
-            );
+            $parts = [];
+
+            foreach ($pair as $part) {
+                $parts[] = UConverter::transcode((string) $part, 'utf-8', 'utf-8');
+            }
+
+            $this->list->append(...$parts);
         }
     }
 
