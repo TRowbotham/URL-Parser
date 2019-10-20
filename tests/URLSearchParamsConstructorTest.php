@@ -113,40 +113,34 @@ class URLSearchParamsConstructorTest extends TestCase
 
     public function testParseUnicodeCompositionSymbol(): void
     {
-        $params = new URLSearchParams("a=b\xE2\x8E\x84");
-        $this->assertEquals("b\xE2\x8E\x84", $params->get('a'));
-        $params = new URLSearchParams("a\xE2\x8E\x84=c");
-        $this->assertEquals('c', $params->get("a\xE2\x8E\x84"));
+        $params = new URLSearchParams("a=b\u{2384}");
+        $this->assertEquals("b\u{2384}", $params->get('a'));
+        $params = new URLSearchParams("a\u{2384}=c");
+        $this->assertEquals('c', $params->get("a\u{2384}"));
     }
 
     public function testParseUnicodeCompositionSymbolPercentEncoded(): void
     {
         $params = new URLSearchParams("a=b%E2%8E%84");
-        $this->assertEquals("b\xE2\x8E\x84", $params->get('a'));
+        $this->assertEquals("b\u{2384}", $params->get('a'));
         $params = new URLSearchParams("a%E2%8E%84=c");
-        $this->assertEquals('c', $params->get("a\xE2\x8E\x84"));
+        $this->assertEquals('c', $params->get("a\u{2384}"));
     }
 
     public function testParseUnicodePileOfPoo(): void
     {
-        // $params = new URLSearchParams("a=b\u{1F4A9}c");
-        // $this->assertEquals("b\u{1F4A9}c", $params->get('a'));
-        // $params = new URLSearchParams("a\u{1F4A9}b=c");
-        // $this->assertEquals('c', $params->get("a\u{1F4A9}b"));
-        $params = new URLSearchParams("a=b\xF0\x9F\x92\xA9c");
-        $this->assertEquals("b\xF0\x9F\x92\xA9c", $params->get('a'));
-        $params = new URLSearchParams("a\xF0\x9F\x92\xA9b=c");
-        $this->assertEquals('c', $params->get("a\xF0\x9F\x92\xA9b"));
+        $params = new URLSearchParams("a=b\u{1F4A9}c");
+        $this->assertEquals("b\u{1F4A9}c", $params->get('a'));
+        $params = new URLSearchParams("a\u{1F4A9}b=c");
+        $this->assertEquals('c', $params->get("a\u{1F4A9}b"));
     }
 
     public function testParseUnicodePileOfPooPercentEncoded(): void
     {
         $params = new URLSearchParams("a=b%f0%9f%92%a9c");
-        // $this->assertEquals("b\u{1F4A9}c", $params->get('a'));
-        $this->assertEquals("b\xF0\x9F\x92\xA9c", $params->get('a'));
+        $this->assertEquals("b\u{1F4A9}c", $params->get('a'));
         $params = new URLSearchParams("a%f0%9f%92%a9b=c");
-        // $this->assertEquals('c', $params->get("a\u{1F4A9}b"));
-        $this->assertEquals('c', $params->get("a\xF0\x9F\x92\xA9b"));
+        $this->assertEquals('c', $params->get("a\u{1F4A9}b"));
     }
 
     public function testSequenceOfSequences(): void
@@ -183,10 +177,8 @@ class URLSearchParamsConstructorTest extends TestCase
 
         $obj3 = new stdClass();
         $obj3->{"a\0b"} = "42";
-        // $obj3->{"c\u{D83D}"} = "23";
-        // $obj3->{"d\u{1234}"} = "foo";
-        $obj3->{"c\xF0\x9F"} = "23";
-        $obj3->{"d\xE1\x88\xB4"} = "foo";
+        $obj3->{"c\u{D83D}"} = "23";
+        $obj3->{"d\u{1234}"} = "foo";
 
         return [
             ['input' => $obj, 'output' => [['+', "%C2"]]],
@@ -211,10 +203,8 @@ class URLSearchParamsConstructorTest extends TestCase
                 'input' => $obj3,
                 'output' => [
                     ["a\0b", "42"],
-                    // ["c\u{FFFD}", "23"],
-                    // ["d\u{1234}", "foo"]
-                    ["c\xEF\xBF\xBD", "23"],
-                    ["d\xE1\x88\xB4", "foo"]
+                    ["c\u{FFFD}", "23"],
+                    ["d\u{1234}", "foo"]
                 ]
             ]
         ];

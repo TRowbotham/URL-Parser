@@ -23,17 +23,11 @@ class URLSearchParamsSortTest extends TestCase
                 ]
             ],
             [
-                // 'input' => "\u{FFFD}=x&\u{FFFC}&\u{FFFD}=a",
-                // 'output' => [
-                //     ["\u{FFFC}", ''],
-                //     ["\u{FFFD}", 'x'],
-                //     ["\u{FFFD}", 'a']
-                // ]
-                'input' => "\xEF\xBF\xBD=x&\xEF\xBF\xBC&\xEF\xBF\xBD=a",
+                'input' => "\u{FFFD}=x&\u{FFFC}&\u{FFFD}=a",
                 'output' => [
-                    ["\xEF\xBF\xBC", ''],
-                    ["\xEF\xBF\xBD", 'x'],
-                    ["\xEF\xBF\xBD", 'a']
+                    ["\u{FFFC}", ''],
+                    ["\u{FFFD}", 'x'],
+                    ["\u{FFFD}", 'a']
                 ]
             ],
             [
@@ -41,16 +35,10 @@ class URLSearchParamsSortTest extends TestCase
                 'output' => [["🌈", ""], ["ﬃ", ""]]
             ],
             [
-                // 'input' => "é&e\u{FFFD}&e\u{0301}",
-                // 'output' => [
-                //     ["e\u{0301}", ""],
-                //     ["e\u{FFFD}", ""],
-                //     ["é", ""]
-                // ]
-                'input' => "é&e\xEF\xBF\xBD&e\xCC\x81",
+                'input' => "é&e\u{FFFD}&e\u{0301}",
                 'output' => [
-                    ["e\xCC\x81", ""],
-                    ["e\xEF\xBF\xBD", ""],
+                    ["e\u{0301}", ""],
+                    ["e\u{FFFD}", ""],
                     ["é", ""]
                 ]
             ],
