@@ -20,6 +20,7 @@ use function preg_replace;
 use function rawurlencode;
 use function strlen;
 use function strtolower;
+use function substr;
 
 class BasicURLParser
 {
@@ -1251,18 +1252,12 @@ class BasicURLParser
                 // Validation error.
             }
 
-            $bytes = mb_convert_encoding($c, $this->encoding);
+            $bytes = mb_convert_encoding($c, $this->encoding, 'utf-8');
 
             // This can happen when encoding code points using a non-UTF-8
             // encoding.
-            if (
-                mb_substr($bytes, 0, 2, $this->encoding) === '&#'
-                && mb_substr($bytes, -1, null, $this->encoding) === ';'
-            ) {
-                $length = mb_strlen($bytes, $this->encoding);
-                $bytes = '%26%23'
-                    . mb_substr($bytes, 2, $length - 1, $this->encoding)
-                    . '%3B';
+            if (substr($bytes, 0, 2) === '&#' && substr($bytes, -1) === ';') {
+                $bytes = '%26%23' . substr($bytes, 2, -1) . '%3B';
                 $this->url->query .= $bytes;
             } else {
                 $length = strlen($bytes);
