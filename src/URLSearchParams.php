@@ -8,6 +8,8 @@ use ArrayAccess;
 use Countable;
 use InvalidArgumentException;
 use Iterator;
+use ReflectionObject;
+use ReflectionProperty;
 use Rowbot\URL\Exception\TypeError;
 use UConverter;
 
@@ -266,10 +268,12 @@ class URLSearchParams implements Iterator
      */
     private function initObject($input): void
     {
-        foreach ($input as $name => $value) {
+        $reflection = new ReflectionObject($input);
+
+        foreach ($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
             $this->append(
-                UConverter::transcode($name, 'utf-8', 'utf-8'),
-                UConverter::transcode($value, 'utf-8', 'utf-8')
+                UConverter::transcode($property->getName(), 'utf-8', 'utf-8'),
+                UConverter::transcode((string) $property->getValue($input), 'utf-8', 'utf-8')
             );
         }
     }
