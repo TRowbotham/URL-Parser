@@ -5,25 +5,12 @@ parameters:
         - src
 
     ignoreErrors:
-        # This is occuring because we are using the result of mb_strlen() with numeric operators.
-        # See https://github.com/phpstan/phpstan/issues/1322
-        - '#Only numeric types are allowed in [-+], int\|(false|null) given on the (left|right) side\.#'
-
-        # This is occuring because we are using the result of mb_strlen() with numeric operators.
-        # See https://github.com/phpstan/phpstan/issues/1306
-        - '#Variable \$bufferIsSpecialScheme might not be defined\.#'
-
         # See https://github.com/phpstan/phpstan/issues/1311
         - '#Property Rowbot\\URL\\QueryList::\$list \(array<int, array<string, string>>\) does not accept array<int, array<int, array<string, string>\|int>>\.#'
 
         # See https://github.com/phpstan/phpstan/issues/1254
         - '#Result of && is always false\.#'
         - '#Strict comparison using !== between null and null will always evaluate to false\.#'
-
-        # This is an unfortunate circumstance. PHPStan can't tell that we only enter some functions in the
-        # BasicURLParser based on the condition that the base URL will be non-null. I should consider null checking in
-        # those cases just so that we don't miss a valid case of this occuring.
-        - '#Cannot access property \$[a-z]+ on Rowbot\\URL\\URLRecord\|null\.#'
 
         # I plan to handle this at a later date. Though, this should only happen if someone tries to json encode a URL
         # object that failed to parse its input.
@@ -37,3 +24,7 @@ parameters:
         -
             message: "#Strict comparison using === between \\*NEVER\\* and '\\S+' will always evaluate to false\\.#"
             path: %currentWorkingDirectory%/src/String/CodePoint.php
+
+        -
+            message: '#Variable property access on Rowbot\\URL\\URLRecord\.#'
+            path: %currentWorkingDirectory%/src/State/AuthorityState.php

@@ -123,7 +123,8 @@ class URLRecord
     public function getOrigin(): Origin
     {
         if ($this->scheme->isBlob()) {
-            $url = BasicURLParser::parseBasicUrl((string) $this->path->first());
+            $parser = new BasicURLParser();
+            $url = $parser->parse($this->path->first()->toUtf8String());
 
             if ($url === false) {
                 // Return a new opaque origin

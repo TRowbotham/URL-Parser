@@ -22,6 +22,13 @@ class Utf8String extends AbstractString implements USVStringInterface
         return new self($this->string . $string);
     }
 
+    public static function fromString(string $input, string $encoding): USVStringInterface
+    {
+        $utf8String = self::transcode($input, 'utf-8', $encoding);
+
+        return new self($utf8String);
+    }
+
     public function matches(string $pattern, int $flags = 0, int $offset = 0): array
     {
         if (preg_match($pattern, $this->string, $matches, $flags, $offset) === false) {

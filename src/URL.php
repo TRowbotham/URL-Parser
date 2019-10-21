@@ -8,10 +8,18 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Exception\TypeError;
-use UConverter;
+use Rowbot\URL\State\FragmentState;
+use Rowbot\URL\State\HostnameState;
+use Rowbot\URL\State\HostState;
+use Rowbot\URL\State\PathStartState;
+use Rowbot\URL\State\PortState;
+use Rowbot\URL\State\QueryState;
+use Rowbot\URL\State\SchemeStartState;
+use Rowbot\URL\String\CodePoint;
+use Rowbot\URL\String\USVStringInterface;
+use Rowbot\URL\String\Utf8String;
 
 use function json_encode;
-use function mb_substr;
 
 use const JSON_UNESCAPED_SLASHES;
 
@@ -54,23 +62,17 @@ class URL implements JsonSerializable
     public function __construct(string $url, string $base = null)
     {
         $parsedBase = null;
+        $parser = new BasicURLParser();
 
         if ($base !== null) {
-            $parsedBase = BasicURLParser::parseBasicUrl(UConverter::transcode(
-                $base,
-                'utf-8',
-                'utf-8'
-            ));
+            $parsedBase = $parser->parse(Utf8String::fromString($base, 'utf-8'));
 
             if ($parsedBase === false) {
                 throw new TypeError($base . ' is not a valid URL.');
             }
         }
 
-        $parsedURL = BasicURLParser::parseBasicUrl(
-            UConverter::transcode($url, 'utf-8', 'utf-8'),
-            $parsedBase
-        );
+        $parsedURL = $parser->parse(Utf8String::fromString($url, 'utf-8'), $parsedBase);
 
         if ($parsedURL === false) {
             throw new TypeError($url . ' is not a valid URL.');
@@ -188,58 +190,39 @@ class URL implements JsonSerializable
             throw new TypeError();
         }
 
-        $value = UConverter::transcode($value, 'utf-8', 'utf-8');
+        $input = Utf8String::fromString($value, 'utf-8');
+        $parser = new BasicURLParser();
 
         if ($name === 'hash') {
-            if ($value === '') {
+            if ($input->isEmpty()) {
                 $this->url->fragment = null;
 
                 // Terminate these steps
                 return;
             }
 
-            $input = $value;
-
-            if (mb_substr($input, 0, 1, 'utf-8') === '#') {
-                $input = mb_substr($input, 1, null, 'utf-8');
+            if ($input->startsWith('#')) {
+                $input = $input->substr(1);
             }
 
             $this->url->fragment = '';
-            BasicURLParser::parseBasicUrl(
-                $input,
-                null,
-                null,
-                $this->url,
-                BasicURLParser::FRAGMENT_STATE
-            );
+            $parser->parse($input, null, null, $this->url, new FragmentState());
         } elseif ($name === 'host') {
             if ($this->url->cannotBeABaseUrl) {
                 // Terminate these steps
                 return;
             }
 
-            BasicURLParser::parseBasicUrl(
-                $value,
-                null,
-                null,
-                $this->url,
-                BasicURLParser::HOST_STATE
-            );
+            $parser->parse($input, null, null, $this->url, new HostState());
         } elseif ($name === 'hostname') {
             if ($this->url->cannotBeABaseUrl) {
                 // Terminate these steps
                 return;
             }
 
-            BasicURLParser::parseBasicUrl(
-                $value,
-                null,
-                null,
-                $this->url,
-                BasicURLParser::HOSTNAME_STATE
-            );
+            $parser->parse($input, null, null, $this->url, new HostnameState());
         } elseif ($name === 'href') {
-            $parsedURL = BasicURLParser::parseBasicUrl($value);
+            $parsedURL = $parser->parse($input);
 
             if ($parsedURL === false) {
                 throw new TypeError($value . ' is not a valid URL.');
@@ -250,16 +233,14 @@ class URL implements JsonSerializable
             $this->queryObject->clear();
 
             if ($this->url->query !== null) {
-                $this->queryObject->modify($this->urldecodeString(
-                    $this->url->query
-                ));
+                $this->queryObject->modify($this->urldecodeString($this->url->query));
             }
         } elseif ($name === 'password') {
             if ($this->url->cannotHaveUsernamePasswordPort()) {
                 return;
             }
 
-            $this->setUrlPassword($value);
+            $this->setUrlPassword($input);
         } elseif ($name === 'pathname') {
             if ($this->url->cannotBeABaseUrl) {
                 // Terminate these steps
@@ -267,13 +248,7 @@ class URL implements JsonSerializable
             }
 
             $this->url->path = new PathList();
-            BasicURLParser::parseBasicUrl(
-                $value,
-                null,
-                null,
-                $this->url,
-                BasicURLParser::PATH_START_STATE
-            );
+            $parser->parse($input, null, null, $this->url, new PathStartState());
         } elseif ($name === 'port') {
             if ($this->url->cannotHaveUsernamePasswordPort()) {
                 return;
@@ -285,21 +260,9 @@ class URL implements JsonSerializable
                 return;
             }
 
-            BasicURLParser::parseBasicUrl(
-                $value,
-                null,
-                null,
-                $this->url,
-                BasicURLParser::PORT_STATE
-            );
+            $parser->parse($input, null, null, $this->url, new PortState());
         } elseif ($name === 'protocol') {
-            BasicURLParser::parseBasicUrl(
-                $value . ':',
-                null,
-                null,
-                $this->url,
-                BasicURLParser::SCHEME_START_STATE
-            );
+            $parser->parse($input->append(':'), null, null, $this->url, new SchemeStartState());
         } elseif ($name === 'search') {
             if ($value === '') {
                 $this->url->query = null;
@@ -308,63 +271,51 @@ class URL implements JsonSerializable
                 return;
             }
 
-            $input = $value;
-
-            if (mb_substr($input, 0, 1, 'utf-8') === '?') {
-                $input = mb_substr($input, 1, null, 'utf-8');
+            if ($input->startsWith('?')) {
+                $input = $input->substr(1);
             }
 
             $this->url->query = '';
-            BasicURLParser::parseBasicUrl(
-                $input,
-                null,
-                null,
-                $this->url,
-                BasicURLParser::QUERY_STATE
-            );
-            $this->queryObject->modify($this->urldecodeString($input));
+            $parser->parse($input, null, null, $this->url, new QueryState());
+            $this->queryObject->modify($this->urldecodeString((string) $input));
         } elseif ($name === 'username') {
             if ($this->url->cannotHaveUsernamePasswordPort()) {
                 return;
             }
 
-            $this->setUrlUsername($value);
+            $this->setUrlUsername($input);
         } else {
-            throw new InvalidArgumentException(
-                $name . ' is not a valid property.'
-            );
+            throw new InvalidArgumentException($name . ' is not a valid property.');
         }
     }
 
     /**
      * @see https://url.spec.whatwg.org/#set-the-password
      */
-    private function setUrlPassword(string $password): void
+    private function setUrlPassword(USVStringInterface $input): void
     {
         $this->url->password = '';
 
-        while (($codePoint = mb_substr($password, 0, 1, 'utf-8')) !== '') {
-            $this->url->password .= URLUtils::utf8PercentEncode(
+        foreach ($input as $codePoint) {
+            $this->url->password .= CodePoint::utf8PercentEncode(
                 $codePoint,
-                URLUtils::USERINFO_PERCENT_ENCODE_SET
+                CodePoint::USERINFO_PERCENT_ENCODE_SET
             );
-            $password = mb_substr($password, 1, null, 'utf-8');
         }
     }
 
     /**
      * @see https://url.spec.whatwg.org/#set-the-username
      */
-    private function setUrlUsername(string $username): void
+    private function setUrlUsername(USVStringInterface $input): void
     {
         $this->url->username = '';
 
-        while (($codePoint = mb_substr($username, 0, 1, 'utf-8')) !== '') {
-            $this->url->username .= URLUtils::utf8PercentEncode(
+        foreach ($input as $codePoint) {
+            $this->url->username .= CodePoint::utf8PercentEncode(
                 $codePoint,
-                URLUtils::USERINFO_PERCENT_ENCODE_SET
+                CodePoint::USERINFO_PERCENT_ENCODE_SET
             );
-            $username = mb_substr($username, 1, null, 'utf-8');
         }
     }
 

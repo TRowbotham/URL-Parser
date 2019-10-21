@@ -25,6 +25,7 @@ class Utf8StringIterator implements StringIteratorInterface
         $iter = IntlBreakIterator::createCodePointInstance();
         $iter->setText($string);
         $this->codePoints = iterator_to_array($iter->getPartsIterator());
+        $this->cursor = 0;
     }
 
     public function current(): string
@@ -45,7 +46,7 @@ class Utf8StringIterator implements StringIteratorInterface
     public function peek(int $count = 1): string
     {
         if ($count === 1) {
-            return '';
+            return $this->codePoints[$this->cursor + 1] ?? '';
         }
 
         $output = '';
