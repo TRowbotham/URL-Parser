@@ -14,7 +14,6 @@ class Scheme
     private const SPECIAL_SCHEMES = [
         'ftp'    => 21,
         'file'   => null,
-        'gopher' => 70,
         'http'   => 80,
         'https'  => 443,
         'ws'     => 80,
