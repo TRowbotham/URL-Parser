@@ -110,11 +110,13 @@ class URL implements JsonSerializable
                 return '';
             }
 
+            $serializer = $this->url->host->getSerializer();
+
             if ($this->url->port === null) {
-                return (string) $this->url->host;
+                return $serializer->toFormattedString();
             }
 
-            return $this->url->host . ':' . $this->url->port;
+            return $serializer->toFormattedString() . ':' . $this->url->port;
         }
 
         if ($name === 'hostname') {
@@ -122,7 +124,7 @@ class URL implements JsonSerializable
                 return '';
             }
 
-            return (string) $this->url->host;
+            return $this->url->host->getSerializer()->toFormattedString();
         }
 
         if ($name === 'href') {

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\Host;
+use Rowbot\URL\Component\Host\Exception\HostException;
+use Rowbot\URL\Component\Host\HostParser;
+use Rowbot\URL\Component\Host\StringHost;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringBufferInterface;
 use Rowbot\URL\String\StringIteratorInterface;
@@ -45,7 +47,7 @@ class FileHostState implements State
             // This is a (platform-independent) Windows drive letter quirk. $buffer is not reset
             // here and instead used in the path state.
             if ($buffer->isEmpty()) {
-                $url->host->setHost('');
+                $url->host = new StringHost();
 
                 if ($parser->isStateOverridden()) {
                     return self::RETURN_BREAK;
@@ -56,15 +58,17 @@ class FileHostState implements State
                 return self::RETURN_OK;
             }
 
-            $host = Host::parse((string) $buffer, !$url->scheme->isSpecial());
+            $hostParser = new HostParser();
 
-            if ($host === false) {
+            try {
+                $host = $hostParser->parse($buffer->toUtf8String(), !$url->scheme->isSpecial());
+            } catch (HostException $e) {
                 // Return failure.
                 return self::RETURN_FAILURE;
             }
 
-            if ($host->equals('localhost')) {
-                $host->setHost('');
+            if ($host->isLocalHost()) {
+                $host = new StringHost();
             }
 
             $url->host = $host;

@@ -8,10 +8,6 @@ parameters:
         # See https://github.com/phpstan/phpstan/issues/1311
         - '#Property Rowbot\\URL\\QueryList::\$list \(array<int, array<string, string>>\) does not accept array<int, array<int, array<string, string>\|int>>\.#'
 
-        # See https://github.com/phpstan/phpstan/issues/1254
-        - '#Result of && is always false\.#'
-        - '#Strict comparison using !== between null and null will always evaluate to false\.#'
-
         # I plan to handle this at a later date. Though, this should only happen if someone tries to json encode a URL
         # object that failed to parse its input.
         - '#Method Rowbot\\URL\\URL::toJSON\(\) should return string but returns string\|false\.#'
@@ -28,3 +24,15 @@ parameters:
         -
             message: '#Variable property access on Rowbot\\URL\\URLRecord\.#'
             path: %currentWorkingDirectory%/src/State/AuthorityState.php
+
+        -
+            message: '#Strict comparison using === between 0 and 0 will always evaluate to true\.#'
+            path: %currentWorkingDirectory%/src/Component/Host/Serializer/IPv6AddressSerializer.php
+
+        # These are false positives since the GMP object supports using Arithmetic, Bitwise, and Comparison operators since PHP 5.6.
+        -
+            message: '#Comparison operation ">" between GMP and 255 results in an error\.#'
+            path: %currentWorkingDirectory%/src/Component/Host/IPv4AddressParser.php
+        -
+            message: '#(Binary|Comparison) operation "(>=|\*)" between GMP and \(float\|int\) results in an error\.#'
+            path: %currentWorkingDirectory%/src/Component/Host/IPv4AddressParser.php

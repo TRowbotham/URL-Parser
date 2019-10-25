@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
+use Rowbot\URL\Component\Host\NullHost;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\Scheme;
 
@@ -31,7 +32,7 @@ class URLRecord
     public $password;
 
     /**
-     * @var \Rowbot\URL\Host
+     * @var \Rowbot\URL\Component\Host\HostInterface
      */
     public $host;
 
@@ -75,7 +76,7 @@ class URLRecord
         $this->scheme = new Scheme();
         $this->username = '';
         $this->password = '';
-        $this->host = Host::createNullHost();
+        $this->host = new NullHost();
         $this->port = null;
         $this->path = new PathList();
         $this->query = null;
@@ -98,7 +99,7 @@ class URLRecord
     public function cannotHaveUsernamePasswordPort(): bool
     {
         return $this->host->isNull()
-            || $this->host->equals('')
+            || $this->host->isEmpty()
             || $this->cannotBeABaseUrl
             || $this->scheme->isFile();
     }
@@ -191,12 +192,12 @@ class URLRecord
                 $output .= '@';
             }
 
-            $output .= $this->host;
+            $output .= $this->host->getSerializer()->toFormattedString();
 
             if ($this->port !== null) {
                 $output .= ':' . $this->port;
             }
-        } elseif ($this->host->isNull() && $this->scheme->isFile()) {
+        } elseif ($this->scheme->isFile()) {
             $output .= '//';
         }
 

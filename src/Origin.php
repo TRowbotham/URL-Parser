@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
+use Rowbot\URL\Component\Host\HostInterface;
+
 /**
  * @see https://html.spec.whatwg.org/multipage/browsers.html#origin
  */
@@ -15,7 +17,7 @@ class Origin
     private $domain;
 
     /**
-     * @var \Rowbot\URL\Host
+     * @var \Rowbot\URL\Component\Host\HostInterface
      */
     private $host;
 
@@ -47,7 +49,7 @@ class Origin
      */
     public static function createTupleOrigin(
         string $scheme,
-        Host $host,
+        HostInterface $host,
         ?int $port,
         string $domain = null
     ): self {
@@ -83,7 +85,7 @@ class Origin
             return $this->domain;
         }
 
-        return (string) $this->host;
+        return $this->host->getSerializer()->toFormattedString();
     }
 
     /**
@@ -168,7 +170,7 @@ class Origin
 
         $result = $this->scheme;
         $result .= '://';
-        $result .= $this->host;
+        $result .= $this->host->getSerializer()->toFormattedString();
 
         if ($this->port !== null) {
             $result .= ':' . $this->port;

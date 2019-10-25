@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
+use Rowbot\URL\Component\Host\StringHost;
 use Rowbot\URL\Component\Path;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringBufferInterface;
@@ -82,7 +83,7 @@ class PathState implements State
                 ) {
                     if (!$url->host->isEmpty() && !$url->host->isNull()) {
                         // Validation error.
-                        $url->host->setHost('');
+                        $url->host = new StringHost();
                     }
 
                     // This is a (platform-independent) Windows drive letter quirk.
