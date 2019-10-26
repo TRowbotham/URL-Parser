@@ -270,7 +270,7 @@ class URLSearchParams implements Iterator
         $reflection = new ReflectionObject($input);
 
         foreach ($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
-            $this->append(
+            $this->list->append(
                 UConverter::transcode($property->getName(), 'utf-8', 'utf-8'),
                 UConverter::transcode((string) $property->getValue($input), 'utf-8', 'utf-8')
             );
