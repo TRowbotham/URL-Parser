@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+
+### Added
+
+- Installation requirement of ICU >= 4.6 to assist with [#6](https://github.com/TRowbotham/URL-Parser/issues/6)
+
 ### Changed
 - "gopher" was removed from the list of special schemes per [whatwg/url#453](https://github.com/whatwg/url/pull/453) and [whatwg/url#454](https://github.com/whatwg/url/pull/454).
 - Coding style has been updated for PSR-12.
