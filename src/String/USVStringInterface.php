@@ -8,6 +8,9 @@ interface USVStringInterface extends StringInterface
 {
     public function append(string $string): self;
 
+    /**
+     * @return array<int, string>
+     */
     public function matches(string $pattern): array;
 
     public function replaceRegex(

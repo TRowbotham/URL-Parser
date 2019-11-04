@@ -191,7 +191,7 @@ class URLSearchParams implements Iterator
     /**
      * @internal
      *
-     * @param self|iterable<mixed, iterable<mixed, scalar>>|object|string $input
+     * @param self|iterable<mixed, iterable<mixed, scalar>>|object|string|mixed $input
      *
      * @throws \InvalidArgumentException
      * @throws \Rowbot\URL\Exception\TypeError
@@ -215,6 +215,9 @@ class URLSearchParams implements Iterator
         }
     }
 
+    /**
+     * @param iterable<mixed, mixed> $input
+     */
     private function initIterator(iterable $input): void
     {
         foreach ($input as $pair) {
