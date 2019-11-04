@@ -28,6 +28,11 @@ matrix:
         - RUN_PHPSTAN=false
         - IGNORE_PLATFORMS=false
         - CODE_COVERAGE=true
+    - php: 7.4snapshot
+      env:
+        - RUN_PHPSTAN=false
+        - IGNORE_PLATFORMS=false
+        - CODE_COVERAGE=true
     - php: nightly
       env:
         - RUN_PHPSTAN=false
