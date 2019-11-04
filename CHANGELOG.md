@@ -16,6 +16,7 @@
 
 ### Fixed
 - Documentaion errors.
+- Restores expected string conversion behavior on systems using an ICU version >= 60.1 ([#7](https://github.com/TRowbotham/URL-Parser/issues/6)).
 
 ### Removed
 - PHPStan is no longer a dev dependency and is now only run in CI.

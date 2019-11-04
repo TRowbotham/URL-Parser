@@ -10,7 +10,7 @@ use Iterator;
 use ReflectionObject;
 use ReflectionProperty;
 use Rowbot\URL\Exception\TypeError;
-use UConverter;
+use Rowbot\URL\IDLStringPreprocessor;
 
 use function array_column;
 use function count;
@@ -21,8 +21,8 @@ use function is_iterable;
 use function is_object;
 use function is_scalar;
 use function is_string;
-use function mb_substr;
 use function method_exists;
+use function substr;
 
 /**
  * An object containing a list of all URL query parameters. This allows you to manipulate a URL's
@@ -55,19 +55,20 @@ class URLSearchParams implements Iterator
         $this->list = new QueryList();
         $this->url = null;
 
-        // If $init is given, is a string, and starts with "?", remove the
-        // first code point from $init.
-        if (func_num_args() > 0) {
-            if (is_scalar($init) || is_object($init) && method_exists($init, '__toString')) {
-                $init = UConverter::transcode((string) $init, 'utf-8', 'utf-8');
-            }
-
-            if (is_string($init) && mb_substr($init, 0, 1, 'utf-8') === '?') {
-                $init = mb_substr($init, 1, null, 'utf-8');
-            }
-
-            $this->init($init);
+        if (func_num_args() < 1) {
+            return;
         }
+
+        if (is_scalar($init) || is_object($init) && method_exists($init, '__toString')) {
+            $idl = new IDLStringPreprocessor();
+            $init = $idl->process((string) $init);
+
+            if ($init !== '' && $init[0] === '?') {
+                $init = substr($init, 1);
+            }
+        }
+
+        $this->init($init);
     }
 
     /**
@@ -80,10 +81,8 @@ class URLSearchParams implements Iterator
      */
     public function append(string $name, string $value): void
     {
-        $this->list->append(
-            UConverter::transcode($name, 'utf-8', 'utf-8'),
-            UConverter::transcode($value, 'utf-8', 'utf-8')
-        );
+        $idl = new IDLStringPreprocessor();
+        $this->list->append($idl->process($name), $idl->process($value));
         $this->update();
     }
 
@@ -133,7 +132,8 @@ class URLSearchParams implements Iterator
      */
     public function delete(string $name): void
     {
-        $this->list->remove(UConverter::transcode($name, 'utf-8', 'utf-8'));
+        $idl = new IDLStringPreprocessor();
+        $this->list->remove($idl->process($name));
         $this->update();
     }
 
@@ -148,7 +148,9 @@ class URLSearchParams implements Iterator
      */
     public function get(string $name): ?string
     {
-        return $this->list->first(UConverter::transcode($name, 'utf-8', 'utf-8'));
+        $idl = new IDLStringPreprocessor();
+
+        return $this->list->first($idl->process($name));
     }
 
     /**
@@ -162,7 +164,8 @@ class URLSearchParams implements Iterator
      */
     public function getAll(string $name): array
     {
-        $name = UConverter::transcode($name, 'utf-8', 'utf-8');
+        $idl = new IDLStringPreprocessor();
+        $name = $idl->process($name);
 
         return array_column($this->list->filter(static function (array $pair) use ($name): bool {
             return $pair['name'] === $name;
@@ -180,7 +183,9 @@ class URLSearchParams implements Iterator
      */
     public function has(string $name): bool
     {
-        return $this->list->contains(UConverter::transcode($name, 'utf-8', 'utf-8'));
+        $idl = new IDLStringPreprocessor();
+
+        return $this->list->contains($idl->process($name));
     }
 
     /**
@@ -251,11 +256,13 @@ class URLSearchParams implements Iterator
             }
         }
 
+        $idl = new IDLStringPreprocessor();
+
         foreach ($input as $pair) {
             $parts = [];
 
             foreach ($pair as $part) {
-                $parts[] = UConverter::transcode((string) $part, 'utf-8', 'utf-8');
+                $parts[] = $idl->process((string) $part);
             }
 
             $this->list->append(...$parts);
@@ -268,11 +275,12 @@ class URLSearchParams implements Iterator
     private function initObject($input): void
     {
         $reflection = new ReflectionObject($input);
+        $idl = new IDLStringPreprocessor();
 
         foreach ($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
             $this->list->append(
-                UConverter::transcode($property->getName(), 'utf-8', 'utf-8'),
-                UConverter::transcode((string) $property->getValue($input), 'utf-8', 'utf-8')
+                $idl->process($property->getName()),
+                $idl->process((string) $property->getValue($input))
             );
         }
     }
@@ -328,8 +336,9 @@ class URLSearchParams implements Iterator
      */
     public function set(string $name, string $value): void
     {
-        $name = UConverter::transcode($name, 'utf-8', 'utf-8');
-        $value = UConverter::transcode($value, 'utf-8', 'utf-8');
+        $idl = new IDLStringPreprocessor();
+        $name = $idl->process($name);
+        $value = $idl->process($value);
 
         if ($this->list->contains($name)) {
             $this->list->set($name, $value);

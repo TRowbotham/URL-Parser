@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Exception\TypeError;
+use Rowbot\URL\IDLStringPreprocessor;
 use Rowbot\URL\State\FragmentState;
 use Rowbot\URL\State\HostnameState;
 use Rowbot\URL\State\HostState;
@@ -63,16 +64,19 @@ class URL implements JsonSerializable
     {
         $parsedBase = null;
         $parser = new BasicURLParser();
+        $idl = new IDLStringPreprocessor();
 
         if ($base !== null) {
-            $parsedBase = $parser->parse(Utf8String::fromString($base, 'utf-8'));
+            $input = new Utf8String($idl->process($base));
+            $parsedBase = $parser->parse($input);
 
             if ($parsedBase === false) {
                 throw new TypeError($base . ' is not a valid URL.');
             }
         }
 
-        $parsedURL = $parser->parse(Utf8String::fromString($url, 'utf-8'), $parsedBase);
+        $input = new Utf8String($idl->process($url));
+        $parsedURL = $parser->parse($input, $parsedBase);
 
         if ($parsedURL === false) {
             throw new TypeError($url . ' is not a valid URL.');
@@ -192,7 +196,8 @@ class URL implements JsonSerializable
             throw new TypeError();
         }
 
-        $input = Utf8String::fromString($value, 'utf-8');
+        $idl = new IDLStringPreprocessor();
+        $input = new Utf8String($idl->process($value));
         $parser = new BasicURLParser();
 
         if ($name === 'hash') {
