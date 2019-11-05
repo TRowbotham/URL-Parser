@@ -1,6 +1,6 @@
 <?php
 
-namespace Rowbot\URL\Tests;
+namespace Rowbot\URL\Tests\WhatWg;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\UriResolver;

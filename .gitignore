@@ -2,3 +2,4 @@
 /composer.lock
 .vscode
 /build/
+/tests/WhatWg/data/

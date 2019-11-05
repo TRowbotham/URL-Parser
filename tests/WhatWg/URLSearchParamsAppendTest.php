@@ -1,5 +1,5 @@
 <?php
-namespace Rowbot\URL\Tests;
+namespace Rowbot\URL\Tests\WhatWg;
 
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\URLSearchParams;
