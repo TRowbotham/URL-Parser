@@ -8,6 +8,7 @@ env:
   global:
     - COMPOSER_ARGS="--no-suggest --no-interaction --prefer-source"
     - PHPSTAN_PACKAGES="phpstan/phpstan:^0.12-dev phpstan/extension-installer:^1.0.2 phpstan/phpstan-strict-rules:^0.12-dev phpstan/phpstan-deprecation-rules:^0.12-dev"
+    - COVERALLS_PARALLEL=true
 
 matrix:
   include:
@@ -56,5 +57,8 @@ script:
   - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then composer phpunit; fi
   - if [[ $TRAVIS_PHP_VERSION == nightly ]]; then phpdbg -qrr vendor/bin/phpunit --coverage-text; fi
 
-after_script:
+after_success:
   - if [ "$CODE_COVERAGE" == "true" ]; then travis_retry php vendor/bin/php-coveralls; fi
+
+notifications:
+  webhooks: https://coveralls.io/webhook
