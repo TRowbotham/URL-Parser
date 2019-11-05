@@ -47,11 +47,13 @@ before_install:
   - travis_retry composer self-update
 
 install:
+  - composer require --dev squizlabs/php_codesniffer:^3.5.1
   - if [ "$RUN_PHPSTAN" == "true" ]; then travis_retry composer require --dev $PHPSTAN_PACKAGES; fi
   - if [ "$IGNORE_PLATFORMS" == "false" ]; then travis_retry composer update $COMPOSER_ARGS; fi
   - if [ "$IGNORE_PLATFORMS" == "true" ]; then travis_retry composer update $COMPOSER_ARGS --ignore-platform-reqs; fi
 
 script:
+  - vendor/bin/phpcs
   - if [ "$RUN_PHPSTAN" == "true" ]; then vendor/bin/phpstan analyse; fi
   - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then composer phpunit; fi
   - if [[ $TRAVIS_PHP_VERSION == nightly ]]; then phpdbg -qrr vendor/bin/phpunit --coverage-text; fi

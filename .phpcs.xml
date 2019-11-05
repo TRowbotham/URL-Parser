@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="Selective Standard">
+    <file>src</file>
+    <arg name="colors" />
+    <arg value="p" />
+    <rule ref="PSR12" />
+    <rule ref="Generic.ControlStructures.DisallowYodaConditions" />
+</ruleset>
