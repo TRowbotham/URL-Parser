@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use IntlChar;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringBufferInterface;
 use Rowbot\URL\String\StringIteratorInterface;
@@ -54,7 +53,7 @@ class QueryState implements State
             }
 
             $encoding = $parser->getOutputEncoding();
-            $bytes = mb_convert_encoding(IntlChar::chr($codePoint), $encoding, 'utf-8');
+            $bytes = mb_convert_encoding($codePoint, $encoding, 'utf-8');
 
             // This can happen when encoding code points using a non-UTF-8 encoding.
             if (substr($bytes, 0, 2) === '&#' && substr($bytes, -1) === ';') {
