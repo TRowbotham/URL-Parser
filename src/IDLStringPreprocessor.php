@@ -38,6 +38,7 @@ class IDLStringPreprocessor
                 if ($bytes >= "\u{D800}" && $bytes <= "\u{DFFF}" && !isset($surrogates[$bytes])) {
                     $surrogates[$bytes] = $bytes;
                     $this->iter->next(2);
+                    $offset += 2;
                 }
             }
 
