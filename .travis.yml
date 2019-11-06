@@ -8,34 +8,19 @@ env:
   global:
     - COMPOSER_ARGS="--no-suggest --no-interaction --prefer-source"
     - PHPSTAN_PACKAGES="phpstan/phpstan:^0.12-dev phpstan/extension-installer:^1.0.2 phpstan/phpstan-strict-rules:^0.12-dev phpstan/phpstan-deprecation-rules:^0.12-dev"
+    - RUN_PHPSTAN=false
 
 matrix:
   include:
     - php: 7.1
-      env:
-        - RUN_PHPSTAN=false
-        - IGNORE_PLATFORMS=false
-        - CODE_COVERAGE=true
     - php: 7.2
       env:
         - RUN_PHPSTAN=true
-        - IGNORE_PLATFORMS=false
-        - CODE_COVERAGE=true
     - php: 7.3
-      env:
-        - RUN_PHPSTAN=false
-        - IGNORE_PLATFORMS=false
-        - CODE_COVERAGE=true
     - php: 7.4snapshot
-      env:
-        - RUN_PHPSTAN=false
-        - IGNORE_PLATFORMS=false
-        - CODE_COVERAGE=true
     - php: nightly
       env:
-        - RUN_PHPSTAN=false
-        - IGNORE_PLATFORMS=true
-        - CODE_COVERAGE=false
+        - COMPOSER_ARGS="--no-suggest --no-interaction --prefer-source --ignore-platform-reqs"
   allow_failures:
     - php: nightly
   fast_finish: true
@@ -45,16 +30,19 @@ before_install:
   - travis_retry composer self-update
 
 install:
-  - composer require --dev squizlabs/php_codesniffer:^3.5.1
-  - if [ "$RUN_PHPSTAN" == "true" ]; then travis_retry composer require --dev $PHPSTAN_PACKAGES; fi
-  - if [ "$IGNORE_PLATFORMS" == "false" ]; then travis_retry composer update $COMPOSER_ARGS; fi
-  - if [ "$IGNORE_PLATFORMS" == "true" ]; then travis_retry composer update $COMPOSER_ARGS --ignore-platform-reqs; fi
+  - pecl install pcov
+  - composer require squizlabs/php_codesniffer:^3.5.1 pcov/clobber --dev $COMPOSER_ARGS
+  - if [ "$RUN_PHPSTAN" == "true" ]; then composer require $PHPSTAN_PACKAGES --dev $COMPOSER_ARGS; fi
+  - composer update $COMPOSER_ARGS
+
+before_script:
+  - if php -v | grep -q 'Xdebug'; then phpenv config-rm xdebug.ini; fi
 
 script:
   - vendor/bin/phpcs
   - if [ "$RUN_PHPSTAN" == "true" ]; then vendor/bin/phpstan analyse; fi
-  - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then composer phpunit; fi
-  - if [[ $TRAVIS_PHP_VERSION == nightly ]]; then phpdbg -qrr vendor/bin/phpunit --coverage-text; fi
+  - vendor/bin/pcov clobber
+  - vendor/bin/phpunit
 
 after_success:
-  - if [ "$CODE_COVERAGE" == "true" ]; then bash <(curl -s https://codecov.io/bash) || echo 'Codecov failed to upload'; fi
+  - bash <(curl -s https://codecov.io/bash) || echo 'Codecov failed to upload'
