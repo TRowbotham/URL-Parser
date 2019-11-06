@@ -29,6 +29,12 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('', $params->toString());
     }
 
+    public function testRemovingLeadingQuestionMark(): void
+    {
+        $params = new URLSearchParams('?a=b');
+        $this->assertSame('a=b', $params->toString());
+    }
+
     public function testConstructorEmptyObject(): void
     {
         $params = new URLSearchParams(new stdClass());
@@ -77,6 +83,18 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertEquals('b c', $params->get('a'));
         $params = new URLSearchParams('a+b=c');
         $this->assertEquals('c', $params->get('a b'));
+    }
+
+    public function testParsePlusSignPercentEncoded(): void
+    {
+        $testValue = '+15555555555';
+        $params = new URLSearchParams();
+        $params->set('query', $testValue);
+
+        $newParams = new URLSearchParams($params->toString());
+        $this->assertSame('query=%2B15555555555', $params->toString());
+        $this->assertSame($testValue, $params->get('query'));
+        $this->assertSame($testValue, $newParams->get('query'));
     }
 
     public function testParseSpace(): void
