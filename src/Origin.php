@@ -75,10 +75,10 @@ class Origin
     /**
      * @see https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-effective-domain
      */
-    public function getEffectiveDomain(): string
+    public function getEffectiveDomain(): ?string
     {
         if ($this->isOpaque) {
-            return 'null';
+            return null;
         }
 
         if ($this->domain !== null) {
