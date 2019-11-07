@@ -27,7 +27,7 @@ class IPv6Address extends AbstractHost implements HostInterface
 
     public function equals(HostInterface $other): bool
     {
-        return $other instanceof self && $this->address === $this->address;
+        return $other instanceof self && $this->address === $other->address;
     }
 
     public function getSerializer(): HostSerializerInterface
