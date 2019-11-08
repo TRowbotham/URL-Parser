@@ -5,6 +5,8 @@
 ### Added
 
 - Installation requirement of ICU >= 4.6 to assist with [#6](https://github.com/TRowbotham/URL-Parser/issues/6)
+- Support for PHPUnit ^8.0.
+- More test coverage.
 
 ### Changed
 - "gopher" was removed from the list of special schemes per [whatwg/url#453](https://github.com/whatwg/url/pull/453) and [whatwg/url#454](https://github.com/whatwg/url/pull/454).
@@ -17,10 +19,13 @@
 ### Fixed
 - Documentaion errors.
 - Restores expected string conversion behavior on systems using an ICU version >= 60.1 ([#7](https://github.com/TRowbotham/URL-Parser/issues/6)).
+- `Origin::getEffectiveDomain()` was incorrectly returning the string `"null"` instead of the actual value `null` when the origin was an opaque origin.
 
 ### Removed
-- PHPStan is no longer a dev dependency and is now only run in CI.
-- No longer depends on ext-ctype, which was an unlisted dependency.
+- `phpstan/phpstan` and associated packages are no longer a dev dependency and is now only run in CI.
+- No longer depends on `ext-ctype`, which was an unlisted dependency.
+- `php-coveralls/php-coveralls` is no longer a dev dependency. The project has moved to Codecov instead.
+- `squizlabs/php_codesniffer` is no longer a dev dependency and is only run in CI now.
 
 ## [2.0.3] - 2019-08-13
 ### Fixed
