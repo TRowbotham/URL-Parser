@@ -31,4 +31,14 @@ class FailureTest extends WhatwgTestCase
         $this->expectException(TypeError::class);
         new URL("about:blank", $test->input);
     }
+
+    /**
+     * @dataProvider urlTestDataFailureProvider
+     */
+    public function testUrlHrefSetterThrows(stdClass $test): void
+    {
+        $this->expectException(TypeError::class);
+        $url = new URL('about:blank');
+        $url->href = $test->input;
+    }
 }
