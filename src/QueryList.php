@@ -137,10 +137,8 @@ class QueryList implements Countable, Iterator
         }
 
         // Gasp! What is this black magic?
-        $breakIterator1 = IntlBreakIterator::createCodePointInstance();
-        $breakIterator2 = IntlBreakIterator::createCodePointInstance();
-        $iterator1 = $breakIterator1->getPartsIterator();
-        $iterator2 = $breakIterator2->getPartsIterator();
+        $iter1 = IntlBreakIterator::createCodePointInstance();
+        $iter2 = IntlBreakIterator::createCodePointInstance();
 
         // Sorting priority overview:
         //
@@ -156,23 +154,13 @@ class QueryList implements Countable, Iterator
         // 3) If the code points of the two characters are different, then the
         //    first string with a character with a lower code point will be
         //    moved up in the array (ex. "bba" will come before "bbb").
-        usort($temp, static function (
-            array $a,
-            array $b
-        ) use (
-            $breakIterator1,
-            $breakIterator2,
-            $iterator1,
-            $iterator2
-        ): int {
-            $breakIterator1->setText($a[1]['name']);
-            $breakIterator2->setText($b[1]['name']);
-            $iterator1->rewind();
-            $iterator2->rewind();
+        usort($temp, static function (array $a, array $b) use ($iter1, $iter2): int {
+            $iter1->setText($a[1]['name']);
+            $iter2->setText($b[1]['name']);
 
             while (true) {
-                $aIsValid = $iterator1->valid();
-                $bIsValid = $iterator2->valid();
+                $aIsValid = $iter1->next() !== IntlBreakIterator::DONE;
+                $bIsValid = $iter2->next() !== IntlBreakIterator::DONE;
 
                 if (!$aIsValid && !$bIsValid) {
                     // If we have reached this point then there are 2
@@ -214,8 +202,8 @@ class QueryList implements Countable, Iterator
                     return 1;
                 }
 
-                $aCodePoint = $breakIterator1->getLastCodePoint();
-                $bCodePoint = $breakIterator2->getLastCodePoint();
+                $aCodePoint = $iter1->getLastCodePoint();
+                $bCodePoint = $iter2->getLastCodePoint();
 
                 // JavaScript likes to be fancy by using UTF-16 encoded strings.
                 // In UTF-16, all code points in the Basic Multilingual Plane
@@ -234,9 +222,6 @@ class QueryList implements Countable, Iterator
                 } elseif ($aCodePoint < $bCodePoint) {
                     return -1;
                 }
-
-                $iterator1->next();
-                $iterator2->next();
             }
 
             // Finally, if all else is equal, sort by relative position.
