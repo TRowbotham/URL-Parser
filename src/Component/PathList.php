@@ -10,6 +10,9 @@ use function array_pop;
 use function count;
 use function implode;
 
+/**
+ * @extends \Rowbot\URL\String\AbstractStringList<\Rowbot\URL\Component\Path>
+ */
 class PathList extends AbstractStringList implements PathListInterface
 {
     public function shorten(Scheme $scheme): void

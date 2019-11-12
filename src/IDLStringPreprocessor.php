@@ -13,7 +13,7 @@ use function substr;
 class IDLStringPreprocessor
 {
     /**
-     * @var \IntlCodePointBreakIterator
+     * @var \IntlCodePointBreakIterator<int>
      */
     private $iter;
 

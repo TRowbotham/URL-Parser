@@ -9,6 +9,7 @@ use Iterator;
 
 /**
  * @template T
+ * @extends \Iterator<int, T>
  */
 interface StringListInterface extends Countable, Iterator
 {

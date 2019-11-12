@@ -83,7 +83,7 @@ class URL implements JsonSerializable
         }
 
         $this->url = $parsedURL;
-        $query = $this->url->query ?: '';
+        $query = $this->url->query ?? '';
         $this->queryObject = URLSearchParams::create($query, $parsedURL);
     }
 

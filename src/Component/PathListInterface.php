@@ -7,7 +7,7 @@ namespace Rowbot\URL\Component;
 use Rowbot\URL\String\StringListInterface;
 
 /**
- * @extends StringListInterface<Path>
+ * @extends \Rowbot\URL\String\StringListInterface<\Rowbot\URL\Component\Path>
  */
 interface PathListInterface extends StringListInterface
 {

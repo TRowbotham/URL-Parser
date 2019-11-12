@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
-use IteratorAggregate;
 use Rowbot\URL\String\Exception\UConverterException;
 use UConverter;
 
@@ -16,7 +15,7 @@ use function substr;
 
 use const U_ZERO_ERROR;
 
-abstract class AbstractString implements IteratorAggregate
+abstract class AbstractString
 {
     /**
      * @var string

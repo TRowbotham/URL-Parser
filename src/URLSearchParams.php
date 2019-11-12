@@ -30,6 +30,8 @@ use function substr;
  *
  * @see https://url.spec.whatwg.org/#urlsearchparams
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+ *
+ * @implements \Iterator<int, array{0: string, 1: string}>
  */
 class URLSearchParams implements Iterator
 {

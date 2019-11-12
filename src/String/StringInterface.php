@@ -6,6 +6,9 @@ namespace Rowbot\URL\String;
 
 use IteratorAggregate;
 
+/**
+ * @extends \IteratorAggregate<int, \Rowbot\URL\String\USVStringInterface>
+ */
 interface StringInterface extends IteratorAggregate
 {
     public function endsWith(string $string): bool;

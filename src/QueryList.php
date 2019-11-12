@@ -13,6 +13,9 @@ use function array_splice;
 use function count;
 use function usort;
 
+/**
+ * @implements \Iterator<int, array{name: string, value: string}>
+ */
 class QueryList implements Countable, Iterator
 {
     /**
@@ -276,7 +279,7 @@ class QueryList implements Countable, Iterator
     /**
      * Returns the current name-value pair.
      *
-     * @return array<string, string>
+     * @return array{name: string, value: string}
      */
     public function current(): array
     {
