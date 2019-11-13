@@ -5,12 +5,13 @@ parameters:
         - src
 
     ignoreErrors:
-        # See https://github.com/phpstan/phpstan/issues/1311
-        - '#Property Rowbot\\URL\\QueryList::\$list \(array<int, array<string, string>>\) does not accept array<int, array<int, array<string, string>\|int>>\.#'
-
         # I plan to handle this at a later date. Though, this should only happen if someone tries to json encode a URL
         # object that failed to parse its input.
         - '#Method Rowbot\\URL\\URL::toJSON\(\) should return string but returns string\|false\.#'
+
+        -
+            message: '#Call to function is_object\(\) with object will always evaluate to true\.#'
+            path: %currentWorkingDirectory%/src/URLSearchParams.php
 
         -
             message: '#Strict comparison using !== between 0 and 0 will always evaluate to false\.#'

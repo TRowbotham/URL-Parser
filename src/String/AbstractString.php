@@ -57,7 +57,7 @@ abstract class AbstractString
         return intval($this->string, $base);
     }
 
-    protected static function transcode(
+    public static function transcode(
         string $string,
         string $toEncoding,
         string $fromEncoding

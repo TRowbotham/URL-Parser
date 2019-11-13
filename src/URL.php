@@ -7,6 +7,7 @@ namespace Rowbot\URL;
 use InvalidArgumentException;
 use JsonSerializable;
 use Rowbot\URL\Component\PathList;
+use Rowbot\URL\Component\QueryList;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\IDLStringPreprocessor;
 use Rowbot\URL\State\FragmentState;
@@ -45,8 +46,6 @@ use const JSON_UNESCAPED_SLASHES;
  */
 class URL implements JsonSerializable
 {
-    use URLFormEncoded;
-
     /**
      * @var \Rowbot\URL\URLSearchParams
      */
@@ -83,8 +82,14 @@ class URL implements JsonSerializable
         }
 
         $this->url = $parsedURL;
-        $query = $this->url->query ?? '';
-        $this->queryObject = URLSearchParams::create($query, $parsedURL);
+        $this->queryObject = new URLSearchParams();
+        $this->queryObject->setUrl($parsedURL);
+
+        if ($this->url->query === null) {
+            return;
+        }
+
+        $this->queryObject->setList(QueryList::fromString($this->url->query));
     }
 
     public function __clone()
@@ -237,11 +242,12 @@ class URL implements JsonSerializable
 
             $this->url = $parsedURL;
             $this->queryObject->setUrl($this->url);
-            $this->queryObject->clear();
 
-            if ($this->url->query !== null) {
-                $this->queryObject->modify($this->urldecodeString($this->url->query));
+            if ($this->url->query === null) {
+                return;
             }
+
+            $this->queryObject->setList(QueryList::fromString($this->url->query));
         } elseif ($name === 'password') {
             if ($this->url->cannotHaveUsernamePasswordPort()) {
                 return;
@@ -273,7 +279,7 @@ class URL implements JsonSerializable
         } elseif ($name === 'search') {
             if ($value === '') {
                 $this->url->query = null;
-                $this->queryObject->clear();
+                $this->queryObject->setList(new QueryList());
 
                 return;
             }
@@ -284,7 +290,7 @@ class URL implements JsonSerializable
 
             $this->url->query = '';
             $parser->parse($input, null, null, $this->url, new QueryState());
-            $this->queryObject->modify($this->urldecodeString((string) $input));
+            $this->queryObject->setList(QueryList::fromString((string) $input));
         } elseif ($name === 'username') {
             if ($this->url->cannotHaveUsernamePasswordPort()) {
                 return;

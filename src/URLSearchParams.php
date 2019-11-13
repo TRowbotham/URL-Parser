@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Iterator;
 use ReflectionObject;
 use ReflectionProperty;
+use Rowbot\URL\Component\QueryList;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\IDLStringPreprocessor;
 
@@ -20,7 +21,6 @@ use function is_array;
 use function is_iterable;
 use function is_object;
 use function is_scalar;
-use function is_string;
 use function method_exists;
 use function substr;
 
@@ -31,14 +31,17 @@ use function substr;
  * @see https://url.spec.whatwg.org/#urlsearchparams
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
  *
- * @implements \Iterator<int, array{0: string, 1: string}>
+ * @implements \Iterator<int, array{0: string, 1: string}|null>
  */
 class URLSearchParams implements Iterator
 {
-    use URLFormEncoded;
+    /**
+     * @var int
+     */
+    private $cursor;
 
     /**
-     * @var \Rowbot\URL\QueryList
+     * @var \Rowbot\URL\Component\QueryList
      */
     private $list;
 
@@ -56,6 +59,7 @@ class URLSearchParams implements Iterator
     {
         $this->list = new QueryList();
         $this->url = null;
+        $this->cursor = 0;
 
         if (func_num_args() < 1) {
             return;
@@ -68,9 +72,23 @@ class URLSearchParams implements Iterator
             if ($init !== '' && $init[0] === '?') {
                 $init = substr($init, 1);
             }
+
+            $this->list = QueryList::fromString($init);
+
+            return;
         }
 
-        $this->init($init);
+        if (is_iterable($init)) {
+            $this->initIterator($init);
+
+            return;
+        }
+
+        if (is_object($init)) {
+            $this->initObject($init);
+
+            return;
+        }
     }
 
     /**
@@ -89,40 +107,17 @@ class URLSearchParams implements Iterator
     }
 
     /**
-     * Clears the list of search params.
-     *
-     * @internal
+     * @return array{0: string, 1: string}|null
      */
-    public function clear(): void
+    public function current(): ?array
     {
-        $this->list->clear();
-    }
+        $tuple = $this->list->getTupleAt($this->cursor);
 
-    /**
-     * @see https://url.spec.whatwg.org/#concept-urlsearchparams-new
-     *
-     * @internal
-     *
-     * @param string                $init The query string or another URLSearchParams object.
-     * @param \Rowbot\URL\URLRecord $url  The associated URLRecord object.
-     */
-    public static function create($init, URLRecord $url): self
-    {
-        $query = new self();
-        $query->url = $url;
-        $query->init($init);
+        if ($tuple === null) {
+            return $tuple;
+        }
 
-        return $query;
-    }
-
-    /**
-     * @return array{0: string, 1: string}
-     */
-    public function current(): array
-    {
-        $current = $this->list->current();
-
-        return [$current['name'], $current['value']];
+        return [$tuple['name'], $tuple['value']];
     }
 
     /**
@@ -191,34 +186,10 @@ class URLSearchParams implements Iterator
     }
 
     /**
-     * @internal
-     *
-     * @param self|iterable<mixed, iterable<mixed, scalar>>|object|string|mixed $input
+     * @param iterable<mixed, mixed> $input
      *
      * @throws \InvalidArgumentException
      * @throws \Rowbot\URL\Exception\TypeError
-     */
-    private function init($input): void
-    {
-        if (is_iterable($input)) {
-            $this->initIterator($input);
-
-            return;
-        }
-
-        if (is_object($input)) {
-            $this->initObject($input);
-
-            return;
-        }
-
-        if (is_string($input)) {
-            $this->initString($input);
-        }
-    }
-
-    /**
-     * @param iterable<mixed, mixed> $input
      */
     private function initIterator(iterable $input): void
     {
@@ -290,42 +261,19 @@ class URLSearchParams implements Iterator
         }
     }
 
-    private function initString(string $input): void
-    {
-        $pairs = $this->urldecodeString($input);
-
-        foreach ($pairs as $pair) {
-            $this->list->append($pair['name'], $pair['value']);
-        }
-    }
-
     public function key(): int
     {
-        return $this->list->key();
-    }
-
-    /**
-     * Mutates the the list of query parameters without going through the
-     * public API.
-     *
-     * @internal
-     *
-     * @param array<int, array{name: string, value: string}> $list A list of name-value pairs to be
-     *                                                             added to the list.
-     */
-    public function modify(array $list): void
-    {
-        $this->list->update($list);
+        return $this->cursor;
     }
 
     public function next(): void
     {
-        $this->list->next();
+        ++$this->cursor;
     }
 
     public function rewind(): void
     {
-        $this->list->rewind();
+        $this->cursor = 0;
     }
 
     /**
@@ -355,6 +303,14 @@ class URLSearchParams implements Iterator
     }
 
     /**
+     * @internal
+     */
+    public function setList(QueryList $list): void
+    {
+        $this->list = $list;
+    }
+
+    /**
      * Sets the associated url record.
      *
      * @internal
@@ -380,7 +336,7 @@ class URLSearchParams implements Iterator
 
     public function toString(): string
     {
-        return $this->urlencodeList($this->list->all());
+        return $this->list->toUrlencodedString();
     }
 
     /**
@@ -396,7 +352,7 @@ class URLSearchParams implements Iterator
             return;
         }
 
-        $query = $this->urlencodeList($this->list->all());
+        $query = $this->list->toUrlencodedString();
 
         if ($query === '') {
             $query = null;
@@ -407,7 +363,7 @@ class URLSearchParams implements Iterator
 
     public function valid(): bool
     {
-        return $this->list->valid();
+        return $this->list->getTupleAt($this->cursor) !== null;
     }
 
     public function __clone()
@@ -426,6 +382,6 @@ class URLSearchParams implements Iterator
      */
     public function __toString(): string
     {
-        return $this->urlencodeList($this->list->all());
+        return $this->list->toUrlencodedString();
     }
 }
