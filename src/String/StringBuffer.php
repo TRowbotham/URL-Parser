@@ -17,11 +17,6 @@ class StringBuffer extends AbstractAppendableString implements StringBufferInter
         $this->string = '';
     }
 
-    public function equals(string $string): bool
-    {
-        return $this->string === $string;
-    }
-
     public function isWindowsDriveLetter(): bool
     {
         return preg_match('/^[A-Za-z][:|]$/u', $this->string) === 1;
