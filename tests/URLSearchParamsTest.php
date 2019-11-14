@@ -61,4 +61,33 @@ class URLSearchParamsTest extends TestCase
         $this->expectException($exception);
         $query = new URLSearchParams($input);
     }
+
+    public function unhandledInputProvider(): array
+    {
+        $resource = \fopen('php://memory', 'r');
+        \fclose($resource);
+
+        return [
+            [\gmp_init(10)],
+            [null],
+            [function () { return; }],
+            [$resource],
+        ];
+    }
+
+    /**
+     * @dataProvider unhandledInputProvider
+     */
+    public function testUnhandledInputDoesNothing($input): void
+    {
+        $params = new URLSearchParams($input);
+        $this->assertFalse($params->valid());
+    }
+
+    public function testInvalidIteratorReturnsNull(): void
+    {
+        $params = new URLSearchParams();
+        $this->assertNull($params->current());
+        $this->assertFalse($params->valid());
+    }
 }

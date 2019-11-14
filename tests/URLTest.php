@@ -65,4 +65,11 @@ class URLTest extends TestCase
         $this->assertSame('http://example.com/', (string) $url);
         $this->assertSame('http://example.com/', $url->toString());
     }
+
+    public function testHrefSetterWithNoQueryString(): void
+    {
+        $url = new URL('http://example.com');
+        $url->href = 'ssh://example.org';
+        $this->assertSame('ssh://example.org', $url->href);
+    }
 }
