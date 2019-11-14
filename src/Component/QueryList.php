@@ -40,6 +40,7 @@ class QueryList implements IteratorAggregate
     public function __construct(array $list = [])
     {
         $this->list = $list;
+        $this->cache = [];
     }
 
     /**
