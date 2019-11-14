@@ -13,8 +13,6 @@ interface StringBufferInterface extends StringInterface
 
     public function clear(): void;
 
-    public function equals(string $string): bool;
-
     /**
      * @see https://url.spec.whatwg.org/#windows-drive-letter
      */
