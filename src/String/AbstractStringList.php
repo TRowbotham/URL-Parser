@@ -7,7 +7,6 @@ namespace Rowbot\URL\String;
 use Rowbot\URL\String\Exception\UndefinedIndexException;
 
 use function array_pop;
-use function array_shift;
 use function count;
 
 /**
@@ -107,14 +106,6 @@ abstract class AbstractStringList
     public function rewind(): void
     {
         $this->cursor = 0;
-    }
-
-    /**
-     * @return T|null
-     */
-    public function shift()
-    {
-        return array_shift($this->list);
     }
 
     public function valid(): bool

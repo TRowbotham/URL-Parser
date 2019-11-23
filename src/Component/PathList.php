@@ -7,6 +7,7 @@ namespace Rowbot\URL\Component;
 use Rowbot\URL\String\AbstractStringList;
 
 use function array_pop;
+use function array_shift;
 use function count;
 use function implode;
 
@@ -15,6 +16,11 @@ use function implode;
  */
 class PathList extends AbstractStringList implements PathListInterface
 {
+    public function shift(): ?Path
+    {
+        return array_shift($this->list);
+    }
+
     public function shorten(Scheme $scheme): void
     {
         $size = count($this->list);
