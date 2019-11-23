@@ -10,7 +10,7 @@ use function array_pop;
 use function count;
 
 /**
- * @template T
+ * @template T of object
  */
 abstract class AbstractStringList
 {
