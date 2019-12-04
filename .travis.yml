@@ -7,7 +7,7 @@ cache:
 env:
   global:
     - COMPOSER_ARGS="--no-suggest --no-interaction --prefer-source"
-    - PHPSTAN_PACKAGES="phpstan/phpstan:^0.12-dev phpstan/extension-installer:^1.0.2 phpstan/phpstan-strict-rules:^0.12-dev phpstan/phpstan-deprecation-rules:^0.12-dev"
+    - PHPSTAN_PACKAGES="phpstan/phpstan:^0.12 phpstan/extension-installer:^1.0.2 phpstan/phpstan-strict-rules:^0.12 phpstan/phpstan-deprecation-rules:^0.12"
     - RUN_PHPSTAN=false
 
 matrix:
