@@ -135,7 +135,8 @@ The URLSearchParams object allows you to work with query strings when you don't 
 #### URLSearchParams constructor throws
 
 * `\Rowbot\URL\Exception\TypeError`
-    * When passed an iterable that contains invalid sequences, such as strings or objects that do not implement the `\ArrayAccess` and `\Countable` interfaces.
+    * When an iterable is passed and one if its values is not iterable.
+    * When an iterable is passed and one of its values is not countable, such as an object that implements `\Iterator`, but not `\Countable`.
     * When an iterable is passed and one of its sequences does not contain exactly 2 items, such as an array that contains only 1 string.
 
 ```php

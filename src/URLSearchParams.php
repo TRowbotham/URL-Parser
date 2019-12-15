@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Rowbot\URL;
 
 use Countable;
-use InvalidArgumentException;
 use Iterator;
 use ReflectionObject;
 use ReflectionProperty;
@@ -188,7 +187,6 @@ class URLSearchParams implements Iterator
     /**
      * @param iterable<mixed, mixed> $input
      *
-     * @throws \InvalidArgumentException
      * @throws \Rowbot\URL\Exception\TypeError
      */
     private function initIterator(iterable $input): void
@@ -217,7 +215,7 @@ class URLSearchParams implements Iterator
             // $a = new \ArrayObject(new \ArrayObject(['x', 'y']));
             // $s = new \Rowbot\URL\URLSearchParams($a);'
             if (!is_array($pair) && (!is_iterable($pair) || !$pair instanceof Countable)) {
-                throw new InvalidArgumentException(sprintf(
+                throw new TypeError(sprintf(
                     'Expected a valid sequence such as an Array or iterable Object that implements '
                     . 'the \Countable interface. %s found instead.',
                     gettype($pair)
