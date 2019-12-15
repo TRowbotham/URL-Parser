@@ -1,4 +1,5 @@
 # URL-Parser
+
 [![GitHub](https://img.shields.io/github/license/TRowbotham/URL-Parser.svg?style=flat-square)](https://github.com/TRowbotham/URL-Parser/blob/master/LICENSE)
 [![Travis (.com)](https://img.shields.io/travis/com/TRowbotham/URL-Parser.svg?style=flat-square)](https://travis-ci.com/TRowbotham/URL-Parser)
 [![Codecov](https://img.shields.io/codecov/c/github/TRowbotham/URL-Parser/master?logo=Codecov&style=flat-square&token=8120eff1e06e46c78736b29502c34eb5)](https://codecov.io/gh/TRowbotham/URL-Parser)
@@ -19,14 +20,14 @@ composer require rowbot/url
 
 The URL object is the primary object for working with a URL.
 
-### The constructor
+### The URL constructor
 
 `URL(self|string $url[, self|string $base])`
 
-#### Throws:
+#### URL constructor throws
 
-*   `\Rowbot\URL\Exception\TypeError`
-    *   When the URL parser determines that the given input is not a valid URL.
+* `\Rowbot\URL\Exception\TypeError`
+    * When the URL parser determines that the given input is not a valid URL.
 
 ```php
 use Rowbot\URL\URL;
@@ -51,7 +52,7 @@ try {
 }
 ```
 
-### Members
+### URL Members
 
 Note: As a convience, both the `__get()` and `__set()` methods will throw an `\InvalidArgumentException` if you try to get or set an invalid property.
 
@@ -127,19 +128,15 @@ See [URL::toString()](#string-urltostring)
 
 The URLSearchParams object allows you to work with query strings when you don't need a full URL. The URLSearchParams object implements the `Iterator` interface so that you may iterate over the list of search parameters. The iterator will return an array containing exactly 2 items. The first item is the parameter name and the second item is the parameter value.
 
-### The constructor
+### The URLSearchParams constructor
 
 `URLSearchParams([self|iterable<mixed, iterable<mixed, scalar>>|object|string $init])`
 
-#### Throws:
+#### URLSearchParams constructor throws
 
-*   `\InvalidArgumentException`
-
-    *   When passed an iterable that contains invalid sequences, such as strings or objects that do not implement the `\ArrayAccess` and `\Countable` interfaces.
-
-*   `\Rowbot\URL\Exception\TypeError`
-
-    *   When an iterable is passed and one of its sequences does not contain exactly 2 items, such as an array that contains only 1 string.
+* `\Rowbot\URL\Exception\TypeError`
+    * When passed an iterable that contains invalid sequences, such as strings or objects that do not implement the `\ArrayAccess` and `\Countable` interfaces.
+    * When an iterable is passed and one of its sequences does not contain exactly 2 items, such as an array that contains only 1 string.
 
 ```php
 use Rowbot\URL\URLSearchParams;
@@ -179,7 +176,7 @@ $params = new URLSearchParams($obj);
 $params1 = new URLSearchParams($params);
 ```
 
-### Members
+### URLSearchParams Members
 
 #### `void URLSearchParams::append(string $name, string $value)`
 
