@@ -92,6 +92,8 @@ class QueryList implements IteratorAggregate
      * is not described here as only UTF-8' is conforming.
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-parser
+     *
+     * @return self<int, array{name: string, value: string}>
      */
     public static function fromString(string $input): self
     {
@@ -135,6 +137,9 @@ class QueryList implements IteratorAggregate
         return $output;
     }
 
+    /**
+     * @return \ArrayIterator<int, array{name: string, value: string}>
+     */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->list);

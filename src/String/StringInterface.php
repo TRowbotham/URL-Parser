@@ -7,12 +7,15 @@ namespace Rowbot\URL\String;
 use IteratorAggregate;
 
 /**
- * @extends \IteratorAggregate<int, \Rowbot\URL\String\USVStringInterface>
+ * @extends \IteratorAggregate<int, string>
  */
 interface StringInterface extends IteratorAggregate
 {
     public function endsWith(string $string): bool;
 
+    /**
+     * @return StringIteratorInterface<int, string>
+     */
     public function getIterator(): StringIteratorInterface;
 
     public function isEmpty(): bool;

@@ -6,6 +6,9 @@ namespace Rowbot\URL\String;
 
 use SeekableIterator;
 
+/**
+ * @extends \SeekableIterator<int, string>
+ */
 interface StringIteratorInterface extends SeekableIterator
 {
     public function current(): string;

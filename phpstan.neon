@@ -17,6 +17,10 @@ parameters:
             message: '#Strict comparison using !== between 0 and 0 will always evaluate to false\.#'
             path: %currentWorkingDirectory%/src/String/AbstractString.php
 
+        -
+            message: '#Method Rowbot\\URL\\Component\\QueryList::getIterator\(\) should return ArrayIterator<int, array<string, string>> but returns ArrayIterator<int, array<string, string>>\.#'
+            path: src/Component/QueryList.php
+
         # Note to self: You can't escape single quotes in neon. Another possible alternative would be to replace single quotes with \x27.
         -
             message: "#Strict comparison using === between \\*NEVER\\* and '\\S+' will always evaluate to false\\.#"
