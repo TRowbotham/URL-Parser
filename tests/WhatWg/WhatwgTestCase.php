@@ -60,7 +60,6 @@ abstract class WhatwgTestCase extends TestCase
 
         $json = array_filter($json, 'is_array');
         $testData->set(json_encode($json));
-        $testData->expiresAfter(self::CACHE_TTL);
         $cache->save($testData);
 
         return $json;
