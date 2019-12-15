@@ -30,7 +30,7 @@ use function substr;
  * @see https://url.spec.whatwg.org/#urlsearchparams
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
  *
- * @implements \Iterator<int, array{0: string, 1: string}|null>
+ * @implements \Iterator<int, array{0: string, 1: string}>
  */
 class URLSearchParams implements Iterator
 {
@@ -106,14 +106,14 @@ class URLSearchParams implements Iterator
     }
 
     /**
-     * @return array{0: string, 1: string}|null
+     * @return array{0: string, 1: string}
      */
-    public function current(): ?array
+    public function current(): array
     {
         $tuple = $this->list->getTupleAt($this->cursor);
 
         if ($tuple === null) {
-            return $tuple;
+            return ['', ''];
         }
 
         return [$tuple['name'], $tuple['value']];
