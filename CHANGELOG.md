@@ -16,6 +16,7 @@
 - Removed artificial limitation when passing a sequence of sequences to the `URLSearchParams` constructor that required the non-array sub-sequences to implement the `\ArrayAccess` interface.
     - Note that sub-sequences must still be countable and only contain exactly 2 items.
     - This broadens the type of sequences that can be supplied from `iterable<mixed, array{0: string, 1: string}>` to `iterable<mixed, iterable<mixed, stringable>>`, where `stringable` is a scalar value or an object with the `__toString()` method.
+- `URLSearchParams` now throws a `\Rowbot\URL\Exception\TypeError` instead of a `\InvalidArgument` exception to match browsers when passed an iterable that does not solely contain other iterables that are countable.
 
 ### Fixed
 
