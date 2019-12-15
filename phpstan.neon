@@ -11,11 +11,11 @@ parameters:
 
         -
             message: '#Call to function is_object\(\) with object will always evaluate to true\.#'
-            path: %currentWorkingDirectory%/src/URLSearchParams.php
+            path: src/URLSearchParams.php
 
         -
             message: '#Strict comparison using !== between 0 and 0 will always evaluate to false\.#'
-            path: %currentWorkingDirectory%/src/String/AbstractString.php
+            path: src/String/AbstractString.php
 
         -
             message: '#Method Rowbot\\URL\\Component\\QueryList::getIterator\(\) should return ArrayIterator<int, array<string, string>> but returns ArrayIterator<int, array<string, string>>\.#'
@@ -24,20 +24,20 @@ parameters:
         # Note to self: You can't escape single quotes in neon. Another possible alternative would be to replace single quotes with \x27.
         -
             message: "#Strict comparison using === between \\*NEVER\\* and '\\S+' will always evaluate to false\\.#"
-            path: %currentWorkingDirectory%/src/String/CodePoint.php
+            path: src/String/CodePoint.php
 
         -
             message: '#Variable property access on Rowbot\\URL\\URLRecord\.#'
-            path: %currentWorkingDirectory%/src/State/AuthorityState.php
+            path: src/State/AuthorityState.php
 
         -
             message: '#Strict comparison using === between 0 and 0 will always evaluate to true\.#'
-            path: %currentWorkingDirectory%/src/Component/Host/Serializer/IPv6AddressSerializer.php
+            path: src/Component/Host/Serializer/IPv6AddressSerializer.php
 
         # These are false positives since the GMP object supports using Arithmetic, Bitwise, and Comparison operators since PHP 5.6.
         -
             message: '#Comparison operation ">" between GMP and 255 results in an error\.#'
-            path: %currentWorkingDirectory%/src/Component/Host/IPv4AddressParser.php
+            path: src/Component/Host/IPv4AddressParser.php
         -
             message: '#(Binary|Comparison) operation "(>=|\*)" between GMP and \(float\|int\) results in an error\.#'
-            path: %currentWorkingDirectory%/src/Component/Host/IPv4AddressParser.php
+            path: src/Component/Host/IPv4AddressParser.php
