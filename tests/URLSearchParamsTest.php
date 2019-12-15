@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests;
 
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
@@ -48,17 +47,17 @@ class URLSearchParamsTest extends TestCase
     public function getInvalidIteratorInput(): array
     {
         return [
-            'sequences not equal to 2' => [[['foo', 'bar'], ['baz']], TypeError::class],
-            'non-iterable'             => [[new stdClass()], InvalidArgumentException::class],
+            'sequences not equal to 2' => [[['foo', 'bar'], ['baz']]],
+            'non-iterable'             => [[new stdClass()]],
         ];
     }
 
     /**
      * @dataProvider getInvalidIteratorInput
      */
-    public function testInvalidIteratorInput(iterable $input, string $exception): void
+    public function testInvalidIteratorInput(iterable $input): void
     {
-        $this->expectException($exception);
+        $this->expectException(TypeError::class);
         $query = new URLSearchParams($input);
     }
 
@@ -84,10 +83,10 @@ class URLSearchParamsTest extends TestCase
         $this->assertFalse($params->valid());
     }
 
-    public function testInvalidIteratorReturnsNull(): void
+    public function testInvalidIteratorReturnsArrayWithEmptyStrings(): void
     {
         $params = new URLSearchParams();
-        $this->assertNull($params->current());
+        $this->assertEquals(['', ''], $params->current());
         $this->assertFalse($params->valid());
     }
 }
