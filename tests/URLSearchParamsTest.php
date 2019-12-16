@@ -69,7 +69,9 @@ class URLSearchParamsTest extends TestCase
         return [
             [\gmp_init(10)],
             [null],
-            [function () { return; }],
+            [static function (): void {
+                return;
+            }],
             [$resource],
         ];
     }

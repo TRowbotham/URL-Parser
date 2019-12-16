@@ -1,9 +1,11 @@
 <?php
+
 namespace Rowbot\URL\Tests\WhatWg;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
 use stdClass;
+
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/toascii.window.js
  */
@@ -34,6 +36,7 @@ class ToASCIIWindowTest extends WhatwgTestCase
             $this->assertEquals($hostTest->output, $url->hostname);
             $this->assertEquals('/x', $url->pathname);
             $this->assertEquals('https://' . $hostTest->output . '/x', $url->href);
+
             return;
         }
 

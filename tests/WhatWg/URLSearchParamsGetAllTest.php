@@ -1,8 +1,9 @@
 <?php
+
 namespace Rowbot\URL\Tests\WhatWg;
 
-use Rowbot\URL\URLSearchParams;
 use PHPUnit\Framework\TestCase;
+use Rowbot\URL\URLSearchParams;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-getall.html
@@ -28,12 +29,12 @@ class URLSearchParamsGetAllTest extends TestCase
         $params = new URLSearchParams('a=1&a=2&a=3&a');
         $this->assertTrue($params->has('a'));
         $matches = $params->getAll('a');
-        $this->assertTrue($matches && count($matches) == 4);
+        $this->assertTrue($matches && count($matches) === 4);
         $this->assertEquals(['1', '2', '3', ''], $matches);
         $params->set('a', 'one');
         $this->assertEquals('one', $params->get('a'));
         $matches = $params->getAll('a');
-        $this->assertTrue($matches && count($matches) == 1);
+        $this->assertTrue($matches && count($matches) === 1);
         $this->assertEquals(['one'], $matches);
     }
 }

@@ -1,9 +1,10 @@
 <?php
+
 namespace Rowbot\URL\Tests\WhatWg;
 
+use PHPUnit\Framework\TestCase;
 use Rowbot\URL\URL;
 use Rowbot\URL\URLSearchParams;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-sort.html
@@ -19,66 +20,66 @@ class URLSearchParamsSortTest extends TestCase
                     ['a', 'b'],
                     ['a', 'a'],
                     ['z', 'b'],
-                    ['z', 'a']
-                ]
+                    ['z', 'a'],
+                ],
             ],
             [
                 'input' => "\u{FFFD}=x&\u{FFFC}&\u{FFFD}=a",
                 'output' => [
                     ["\u{FFFC}", ''],
                     ["\u{FFFD}", 'x'],
-                    ["\u{FFFD}", 'a']
-                ]
+                    ["\u{FFFD}", 'a'],
+                ],
             ],
             [
                 'input' => 'ﬃ&🌈',
-                'output' => [["🌈", ""], ["ﬃ", ""]]
+                'output' => [['🌈', ''], ['ﬃ', '']],
             ],
             [
                 'input' => "é&e\u{FFFD}&e\u{0301}",
                 'output' => [
-                    ["e\u{0301}", ""],
-                    ["e\u{FFFD}", ""],
-                    ["é", ""]
-                ]
+                    ["e\u{0301}", ''],
+                    ["e\u{FFFD}", ''],
+                    ['é', ''],
+                ],
             ],
             [
-                "input" => "z=z&a=a&z=y&a=b&z=x&a=c&z=w&a=d&z=v&a=e&z=u&a=f&z=t&a=g",
-                "output" => [
-                    ["a", "a"],
-                    ["a", "b"],
-                    ["a", "c"],
-                    ["a", "d"],
-                    ["a", "e"],
-                    ["a", "f"],
-                    ["a", "g"],
-                    ["z", "z"],
-                    ["z", "y"],
-                    ["z", "x"],
-                    ["z", "w"],
-                    ["z", "v"],
-                    ["z", "u"],
-                    ["z", "t"]
-                ]
+                'input' => 'z=z&a=a&z=y&a=b&z=x&a=c&z=w&a=d&z=v&a=e&z=u&a=f&z=t&a=g',
+                'output' => [
+                    ['a', 'a'],
+                    ['a', 'b'],
+                    ['a', 'c'],
+                    ['a', 'd'],
+                    ['a', 'e'],
+                    ['a', 'f'],
+                    ['a', 'g'],
+                    ['z', 'z'],
+                    ['z', 'y'],
+                    ['z', 'x'],
+                    ['z', 'w'],
+                    ['z', 'v'],
+                    ['z', 'u'],
+                    ['z', 't'],
+                ],
             ],
             [
-                "input" => "bbb&bb&aaa&aa=x&aa=y",
-                "output" => [
-                    ["aa", "x"],
-                    ["aa", "y"],
-                    ["aaa", ""],
-                    ["bb", ""],
-                    ["bbb", ""]
-                ]
+                'input' => 'bbb&bb&aaa&aa=x&aa=y',
+                'output' => [
+                    ['aa', 'x'],
+                    ['aa', 'y'],
+                    ['aaa', ''],
+                    ['bb', ''],
+                    ['bbb', ''],
+                ],
             ],
             [
-                "input" => "z=z&=f&=t&=x",
-                "output" => [["", "f"], ["", "t"], ["", "x"], ["z", "z"]]
+                'input' => 'z=z&=f&=t&=x',
+                'output' => [['', 'f'], ['', 't'], ['', 'x'], ['z', 'z']],
             ],
             [
-                "input" => "a🌈&a💩",
-                "output" => [["a🌈", ""], ["a💩", ""]]
-            ]
+                'input' => 'a🌈&a💩',
+                'output' => [['a🌈', ''], ['a💩', '']],
+            ],
         ];
     }
 
@@ -94,8 +95,7 @@ class URLSearchParamsSortTest extends TestCase
         $i = 0;
 
         foreach ($params as $param) {
-            $this->assertEquals($output[$i], $param);
-            $i++;
+            $this->assertEquals($output[$i++], $param);
         }
     }
 

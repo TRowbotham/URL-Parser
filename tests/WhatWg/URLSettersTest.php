@@ -1,9 +1,8 @@
 <?php
+
 namespace Rowbot\URL\Tests\WhatWg;
 
-use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
-use Rowbot\URL\URLSearchParams;
 use stdClass;
 
 /**
@@ -14,7 +13,7 @@ class URLSettersTest extends WhatwgTestCase
     public function urlSetterGetterDataProvider(): iterable
     {
         foreach ($this->loadTestData('setters_tests.json') as $key => $tests) {
-            if ('comment' === $key) {
+            if ($key === 'comment') {
                 continue;
             }
 

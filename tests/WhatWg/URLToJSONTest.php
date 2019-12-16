@@ -1,8 +1,12 @@
 <?php
+
 namespace Rowbot\URL\Tests\WhatWg;
 
-use Rowbot\URL\URL;
 use PHPUnit\Framework\TestCase;
+use Rowbot\URL\URL;
+
+use function json_encode;
+use function str_replace;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-tojson.html

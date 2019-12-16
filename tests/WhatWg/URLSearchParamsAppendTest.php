@@ -1,4 +1,5 @@
 <?php
+
 namespace Rowbot\URL\Tests\WhatWg;
 
 use PHPUnit\Framework\TestCase;

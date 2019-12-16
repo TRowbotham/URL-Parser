@@ -1,9 +1,10 @@
 <?php
+
 namespace Rowbot\URL\Tests\WhatWg;
 
+use PHPUnit\Framework\TestCase;
 use Rowbot\URL\URL;
 use Rowbot\URL\URLSearchParams;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-stringifier.html

@@ -1,9 +1,10 @@
 <?php
+
 namespace Rowbot\URL\Tests\WhatWg;
 
+use PHPUnit\Framework\TestCase;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URLSearchParams;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 /**
@@ -139,9 +140,9 @@ class URLSearchParamsConstructorTest extends TestCase
 
     public function testParseUnicodeCompositionSymbolPercentEncoded(): void
     {
-        $params = new URLSearchParams("a=b%E2%8E%84");
+        $params = new URLSearchParams('a=b%E2%8E%84');
         $this->assertEquals("b\u{2384}", $params->get('a'));
-        $params = new URLSearchParams("a%E2%8E%84=c");
+        $params = new URLSearchParams('a%E2%8E%84=c');
         $this->assertEquals('c', $params->get("a\u{2384}"));
     }
 
@@ -155,9 +156,9 @@ class URLSearchParamsConstructorTest extends TestCase
 
     public function testParseUnicodePileOfPooPercentEncoded(): void
     {
-        $params = new URLSearchParams("a=b%f0%9f%92%a9c");
+        $params = new URLSearchParams('a=b%f0%9f%92%a9c');
         $this->assertEquals("b\u{1F4A9}c", $params->get('a'));
-        $params = new URLSearchParams("a%f0%9f%92%a9b=c");
+        $params = new URLSearchParams('a%f0%9f%92%a9b=c');
         $this->assertEquals('c', $params->get("a\u{1F4A9}b"));
     }
 
@@ -187,44 +188,44 @@ class URLSearchParamsConstructorTest extends TestCase
     public function getTestData(): array
     {
         $obj = new stdClass();
-        $obj->{"+"} = '%C2';
+        $obj->{'+'} = '%C2';
 
         $obj2 = new stdClass();
         $obj2->c = 'x';
         $obj2->a = '?';
 
         $obj3 = new stdClass();
-        $obj3->{"a\0b"} = "42";
-        $obj3->{"c\u{D83D}"} = "23";
-        $obj3->{"d\u{1234}"} = "foo";
+        $obj3->{"a\0b"} = '42';
+        $obj3->{"c\u{D83D}"} = '23';
+        $obj3->{"d\u{1234}"} = 'foo';
 
         return [
-            ['input' => $obj, 'output' => [['+', "%C2"]]],
+            ['input' => $obj, 'output' => [['+', '%C2']]],
             [
                 'input' => $obj2,
                 'output' => [
                     ['c', 'x'],
-                    ['a', '?']
-                ]
+                    ['a', '?'],
+                ],
             ],
             [
                 'input' => [
                     ['c', 'x'],
-                    ['a', '?']
+                    ['a', '?'],
                 ],
                 'output' => [
                     ['c', 'x'],
-                    ['a', '?']
-                ]
+                    ['a', '?'],
+                ],
             ],
             [
                 'input' => $obj3,
                 'output' => [
-                    ["a\0b", "42"],
-                    ["c\u{FFFD}", "23"],
-                    ["d\u{1234}", "foo"]
-                ]
-            ]
+                    ["a\0b", '42'],
+                    ["c\u{FFFD}", '23'],
+                    ["d\u{1234}", 'foo'],
+                ],
+            ],
         ];
     }
 

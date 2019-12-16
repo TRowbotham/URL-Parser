@@ -1,4 +1,5 @@
 <?php
+
 namespace Rowbot\URL\Tests\WhatWg;
 
 use Rowbot\URL\Exception\TypeError;
@@ -29,7 +30,7 @@ class FailureTest extends WhatwgTestCase
     public function testURLContructor(stdClass $test): void
     {
         $this->expectException(TypeError::class);
-        new URL("about:blank", $test->input);
+        new URL('about:blank', $test->input);
     }
 
     /**

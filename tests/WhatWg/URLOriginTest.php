@@ -1,4 +1,5 @@
 <?php
+
 namespace Rowbot\URL\Tests\WhatWg;
 
 use Rowbot\URL\URL;
