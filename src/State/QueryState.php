@@ -41,7 +41,7 @@ class QueryState implements State
             $url->fragment = '';
             $parser->setState(new FragmentState());
         } elseif ($codePoint !== CodePoint::EOF) {
-            if (CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
+            if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
                 // Validation error.
             }
 

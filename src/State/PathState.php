@@ -118,7 +118,7 @@ class PathState implements State
             return self::RETURN_OK;
         }
 
-        if (CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
+        if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
             // Validation error
         }
 

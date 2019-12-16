@@ -41,7 +41,7 @@ class CannotBeABaseUrlPathState implements State
 
         if (
             $codePoint !== CodePoint::EOF
-            && CodePoint::isUrlCodePoint($codePoint)
+            && !CodePoint::isUrlCodePoint($codePoint)
             && $codePoint !== '%'
         ) {
             // Validation error.
