@@ -30,7 +30,7 @@ class QueryList implements IteratorAggregate
     private $cache;
 
     /**
-     * @var array<int, array{name: string, value: string}> $list
+     * @var array<int, array{name: string, value: string}>
      */
     private $list;
 

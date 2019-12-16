@@ -10,5 +10,6 @@ namespace Rowbot\URL\Component\Host\Serializer;
 interface HostSerializerInterface
 {
     public function toFormattedString(): string;
+
     public function toString(): string;
 }
