@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Rowbot\URL\URLSearchParams;
 
 /**
- * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-getall.html
+ * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-getall.any.js
  */
 class URLSearchParamsGetAllTest extends TestCase
 {

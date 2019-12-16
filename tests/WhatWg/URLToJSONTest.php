@@ -9,7 +9,7 @@ use function json_encode;
 use function str_replace;
 
 /**
- * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-tojson.html
+ * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-tojson.any.js
  */
 class URLToJSONTest extends TestCase
 {

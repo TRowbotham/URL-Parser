@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Rowbot\URL\URLSearchParams;
 
 /**
- * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlencoded-parser.html
+ * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlencoded-parser.any.js
  */
 class URLEncodedParserTest extends TestCase
 {

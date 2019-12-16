@@ -8,7 +8,7 @@ use Rowbot\URL\URLSearchParams;
 use stdClass;
 
 /**
- * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-constructor.html
+ * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-constructor.any.js
  */
 class URLSearchParamsConstructorTest extends TestCase
 {

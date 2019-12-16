@@ -7,7 +7,7 @@ use Rowbot\URL\URL;
 use Rowbot\URL\URLSearchParams;
 
 /**
- * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-stringifier.html
+ * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-stringifier.any.js
  */
 class URLSearchParamsStringifierTest extends TestCase
 {
