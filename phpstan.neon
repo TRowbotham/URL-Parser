@@ -30,10 +30,6 @@ parameters:
             message: '#Variable property access on Rowbot\\URL\\URLRecord\.#'
             path: src/State/AuthorityState.php
 
-        -
-            message: '#Strict comparison using === between 0 and 0 will always evaluate to true\.#'
-            path: src/Component/Host/Serializer/IPv6AddressSerializer.php
-
         # These are false positives since the GMP object supports using Arithmetic, Bitwise, and Comparison operators since PHP 5.6.
         -
             message: '#Comparison operation ">" between GMP and 255 results in an error\.#'
