@@ -6,6 +6,8 @@ use Rowbot\URL\State\HostnameState;
 use Rowbot\URL\State\SchemeStartState;
 use Rowbot\URL\State\State;
 
+use function strtolower;
+
 class ParserConfig implements ParserConfigInterface
 {
     /**
