@@ -3,3 +3,4 @@
 .vscode
 /build/
 /tests/WhatWg/data/
+.phpunit.result.cache
