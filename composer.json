@@ -19,7 +19,7 @@
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^6.3",
-        "phpunit/phpunit": "^7.0 || ^8.0",
+        "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0",
         "symfony/cache": "^4.1"
     },
     "autoload": {
