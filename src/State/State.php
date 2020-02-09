@@ -7,7 +7,7 @@ namespace Rowbot\URL\State;
 use Rowbot\URL\String\StringBufferInterface;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLParserInterface;
+use Rowbot\URL\ParserConfigInterface;
 use Rowbot\URL\URLRecord;
 
 interface State
@@ -18,7 +18,7 @@ interface State
     public const RETURN_FAILURE  = 3;
 
     public function handle(
-        URLParserInterface $parser,
+        ParserConfigInterface $parser,
         USVStringInterface $input,
         StringIteratorInterface $iter,
         StringBufferInterface $buffer,

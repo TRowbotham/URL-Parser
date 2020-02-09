@@ -9,12 +9,6 @@ use Rowbot\URL\String\USVStringInterface;
 
 interface URLParserInterface
 {
-    public function getOutputEncoding(): string;
-
-    public function isOverrideStateHostname(): bool;
-
-    public function isStateOverridden(): bool;
-
     /**
      * The parser can parse both absolute and relative URLs. If a relative URL is given, a base URL must also be given
      * so that an absolute URL can be resolved. It can also parse individual parts of a URL when the default starting
@@ -50,8 +44,4 @@ interface URLParserInterface
         URLRecord $url = null,
         State $stateOverride = null
     );
-
-    public function setOutputEncoding(string $encoding): void;
-
-    public function setState(State $state): void;
 }

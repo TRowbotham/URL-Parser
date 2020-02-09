@@ -9,7 +9,7 @@ use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringBufferInterface;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLParserInterface;
+use Rowbot\URL\ParserConfigInterface;
 use Rowbot\URL\URLRecord;
 
 /**
@@ -18,7 +18,7 @@ use Rowbot\URL\URLRecord;
 class FileState implements State
 {
     public function handle(
-        URLParserInterface $parser,
+        ParserConfigInterface $parser,
         USVStringInterface $input,
         StringIteratorInterface $iter,
         StringBufferInterface $buffer,
