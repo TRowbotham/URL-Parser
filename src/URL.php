@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\QueryList;
+use Rowbot\URL\Exception\JsonException;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\IDLStringPreprocessor;
 use Rowbot\URL\State\FragmentState;
@@ -22,7 +23,10 @@ use Rowbot\URL\String\USVStringInterface;
 use Rowbot\URL\String\Utf8String;
 
 use function json_encode;
+use function json_last_error;
+use function json_last_error_msg;
 
+use const JSON_ERROR_NONE;
 use const JSON_UNESCAPED_SLASHES;
 
 /**
@@ -353,7 +357,14 @@ class URL implements JsonSerializable
     {
         // Use JSON_UNESCAPED_SLASHES here since JavaScript's JSON.stringify()
         // method does not escape forward slashes by default.
-        return json_encode($this->url->serializeURL(), JSON_UNESCAPED_SLASHES);
+        $result = json_encode($this->url->serializeURL(), JSON_UNESCAPED_SLASHES);
+
+
+        if ($result === false || json_last_error() !== JSON_ERROR_NONE) {
+            throw new JsonException(json_last_error_msg(), json_last_error());
+        }
+
+        return $result;
     }
 
     /**

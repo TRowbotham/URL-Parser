@@ -5,10 +5,6 @@ parameters:
         - src
 
     ignoreErrors:
-        # I plan to handle this at a later date. Though, this should only happen if someone tries to json encode a URL
-        # object that failed to parse its input.
-        - '#Method Rowbot\\URL\\URL::toJSON\(\) should return string but returns string\|false\.#'
-
         -
             message: '#Call to function is_object\(\) with object will always evaluate to true\.#'
             path: src/URLSearchParams.php
