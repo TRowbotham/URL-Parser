@@ -40,11 +40,11 @@ install:
 
 before_script:
   - if php -v | grep -q 'Xdebug'; then phpenv config-rm xdebug.ini; fi
+  - if vendor/bin/phpunit --version | grep -q 'PHPUnit 7'; then vendor/bin/pcov clobber; fi
 
 script:
   - vendor/bin/phpcs
   - if [ "$RUN_PHPSTAN" == "true" ]; then vendor/bin/phpstan analyse; fi
-  - if vendor/bin/phpunit --version | grep -q 'PHPUnit 7'; then vendor/bin/pcov clobber; fi
   - vendor/bin/phpunit
 
 after_success:
