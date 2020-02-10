@@ -48,4 +48,4 @@ script:
   - vendor/bin/phpunit
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash) || echo 'Codecov failed to upload'
+  - if [[ $TRAVIS_PHP_VERSION != nightly ]]; then bash <(curl -s https://codecov.io/bash) || echo 'Codecov failed to upload'; fi
