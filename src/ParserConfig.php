@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rowbot\URL;
 
 use Rowbot\URL\State\HostnameState;
