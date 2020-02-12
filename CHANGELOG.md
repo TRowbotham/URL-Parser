@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0]
+## [3.0.0] - 2020-02-11
 
 The majority of this library was rewritten in this update, but the public API has remain unchanged. This should make for a relatively painless upgrade.
 
