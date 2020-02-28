@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host\Serializer;
 
-use GMP;
-
-use function gmp_div_q;
-
-use const GMP_ROUND_MINUSINF;
+use Rowbot\URL\Component\Host\Math\NumberInterface;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-ipv4-serializer
@@ -16,11 +12,11 @@ use const GMP_ROUND_MINUSINF;
 class IPv4AddressSerializer implements HostSerializerInterface
 {
     /**
-     * @var \GMP
+     * @var \Rowbot\URL\Component\Host\Math\NumberInterface;
      */
     private $address;
 
-    public function __construct(GMP $address)
+    public function __construct(NumberInterface $address)
     {
         $this->address = $address;
     }
@@ -36,13 +32,13 @@ class IPv4AddressSerializer implements HostSerializerInterface
         $number = $this->address;
 
         for ($i = 0; $i < 4; ++$i) {
-            $output = ($number % 256) . $output;
+            $output = $number->mod(256) . $output;
 
             if ($i < 3) {
                 $output = '.' . $output;
             }
 
-            $number = gmp_div_q($number, 256, GMP_ROUND_MINUSINF);
+            $number = $number->intdiv(256);
         }
 
         return $output;

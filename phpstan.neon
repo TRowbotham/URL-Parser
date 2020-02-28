@@ -25,11 +25,3 @@ parameters:
         -
             message: '#Variable property access on Rowbot\\URL\\URLRecord\.#'
             path: src/State/AuthorityState.php
-
-        # These are false positives since the GMP object supports using Arithmetic, Bitwise, and Comparison operators since PHP 5.6.
-        -
-            message: '#Comparison operation ">" between GMP and 255 results in an error\.#'
-            path: src/Component/Host/IPv4AddressParser.php
-        -
-            message: '#(Binary|Comparison) operation "(>=|\*)" between GMP and \(float\|int\) results in an error\.#'
-            path: src/Component/Host/IPv4AddressParser.php

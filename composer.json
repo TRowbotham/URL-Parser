@@ -12,10 +12,10 @@
     ],
     "require": {
         "php": ">=7.1",
-        "ext-gmp": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "lib-ICU": ">=4.6"
+        "lib-ICU": ">=4.6",
+        "brick/math": "^0.8.13"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^6.3",

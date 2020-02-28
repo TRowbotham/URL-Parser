@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host;
 
-use GMP;
+use Rowbot\URL\Component\Host\Math\NumberInterface;
 use Rowbot\URL\Component\Host\Serializer\HostSerializerInterface;
 use Rowbot\URL\Component\Host\Serializer\IPv4AddressSerializer;
-
-use function gmp_cmp;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-ipv4
@@ -16,18 +14,18 @@ use function gmp_cmp;
 class IPv4Address extends AbstractHost implements HostInterface
 {
     /**
-     * @var \GMP
+     * @var \Rowbot\URL\Component\Host\Math\NumberInterface
      */
     private $address;
 
-    public function __construct(GMP $address)
+    public function __construct(NumberInterface $address)
     {
         $this->address = $address;
     }
 
     public function equals(HostInterface $other): bool
     {
-        return $other instanceof self && gmp_cmp($this->address, $other->address) === 0;
+        return $other instanceof self && $this->address->isEqualTo($other->address);
     }
 
     public function getSerializer(): HostSerializerInterface

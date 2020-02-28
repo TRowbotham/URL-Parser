@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Dependency on `brick/math` to support 32-bit versions of PHP.
+
+### Removed
+
+- Removed `ext-gmp` as a dependency.
+
 ## [3.0.0] - 2020-02-11
 
 The majority of this library was rewritten in this update, but the public API has remain unchanged. This should make for a relatively painless upgrade.
