@@ -6,6 +6,7 @@ namespace Rowbot\URL\Component\Host\Math;
 
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
+use Rowbot\URL\Component\Host\Math\Exception\MathException;
 
 use function is_string;
 
@@ -30,11 +31,6 @@ class BrickMathAdapter implements NumberInterface
         $this->number = BigInteger::of($number);
     }
 
-    public function add(NumberInterface $number): NumberInterface
-    {
-        return new self($this->number->plus($number->toInt()));
-    }
-
     public function intdiv(int $number): NumberInterface
     {
         return new self($this->number->dividedBy($number, RoundingMode::FLOOR));
@@ -42,7 +38,11 @@ class BrickMathAdapter implements NumberInterface
 
     public function isEqualTo(NumberInterface $number): bool
     {
-        return $this->number->isEqualTo((string) $number);
+        if (!$number instanceof self) {
+            throw new MathException('Must be given an instance of itself.');
+        }
+
+        return $this->number->isEqualTo($number->number);
     }
 
     public function isGreaterThan(int $number): bool
@@ -50,9 +50,13 @@ class BrickMathAdapter implements NumberInterface
         return $this->number->isGreaterThan($number);
     }
 
-    public function isGreaterThanOrEqualTo(int $number): bool
+    public function isGreaterThanOrEqualTo(NumberInterface $number): bool
     {
-        return $this->number->isGreaterThanOrEqualTo($number);
+        if (!$number instanceof self) {
+            throw new MathException('Must be given an instance of itself.');
+        }
+
+        return $this->number->isGreaterThanOrEqualTo($number->number);
     }
 
     public function mod(int $number): NumberInterface
@@ -65,9 +69,18 @@ class BrickMathAdapter implements NumberInterface
         return new self($this->number->multipliedBy($number));
     }
 
-    public function toInt(): int
+    public function plus(NumberInterface $number): NumberInterface
     {
-        return $this->number->toInt();
+        if (!$number instanceof self) {
+            throw new MathException('Must be given an instance of itself.');
+        }
+
+        return new self($this->number->plus($number->number));
+    }
+
+    public function pow(int $number): NumberInterface
+    {
+        return new self($this->number->power($number));
     }
 
     public function __toString(): string

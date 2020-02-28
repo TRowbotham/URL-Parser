@@ -6,8 +6,7 @@ namespace Rowbot\URL\Component\Host;
 
 use Rowbot\URL\Component\Host\Exception\InvalidIPv4AddressException;
 use Rowbot\URL\Component\Host\Exception\InvalidIPv4NumberException;
-use Rowbot\URL\Component\Host\Math\BrickMathAdapter;
-use Rowbot\URL\Component\Host\Math\NativeIntAdapter;
+use Rowbot\URL\Component\Host\Math\Number;
 use Rowbot\URL\Component\Host\Math\NumberInterface;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\USVStringInterface;
@@ -15,8 +14,6 @@ use Rowbot\URL\String\USVStringInterface;
 use function array_pop;
 use function count;
 use function sprintf;
-
-use const PHP_INT_SIZE;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-ipv4-parser
@@ -31,25 +28,6 @@ class IPv4AddressParser
     public function __construct()
     {
         $this->validationError = false;
-    }
-
-    /**
-     * Creates a number object based on the platform we are operating on. In the case of 32-bit PHP,
-     * we must use a BigInt library since the stored representation of an IPv4 address can overflow
-     * a 32-bit integer as it expects to be stored as an unsigned 32-bit integer, but PHP only
-     * supports signed integers.
-     *
-     * @param int|string $number
-     */
-    private function createNumber($number, int $base): NumberInterface
-    {
-        // PHP_INT_SIZE returns the number of bytes that can fit in to an integer on the given
-        // platform. If the size is 4, then we know we are operating on a 32-bit platform.
-        if (PHP_INT_SIZE === 4) {
-            return new BrickMathAdapter($number, $base);
-        }
-
-        return new NativeIntAdapter($number, $base);
     }
 
     public function parse(USVStringInterface $input): IPv4Address
@@ -107,12 +85,14 @@ class IPv4AddressParser
             }
         }
 
-        if ($numbers[$size - 1]->isGreaterThanOrEqualTo(256 ** (5 - $size))) {
+        $limit = (new Number(256, 10))->pow(5 - $size);
+
+        if ($numbers[$size - 1]->isGreaterThanOrEqualTo($limit)) {
             // Validation error.
             throw new InvalidIPv4NumberException(sprintf(
                 'The last octet had a value of %d, which exceeded the maximum valid size of %s.',
                 (string) $numbers[$size - 1],
-                256 ** (5 - $size)
+                (string) $limit
             ));
         }
 
@@ -121,11 +101,11 @@ class IPv4AddressParser
         $counter = 0;
 
         foreach ($numbers as $number) {
-            $ipv4 = $ipv4->add($number->multipliedBy(256 ** (3 - $counter)));
+            $ipv4 = $ipv4->plus($number->multipliedBy(256 ** (3 - $counter)));
             ++$counter;
         }
 
-        return new IPv4Address($ipv4);
+        return new IPv4Address((string) $ipv4);
     }
 
     /**
@@ -148,7 +128,7 @@ class IPv4AddressParser
         }
 
         if ($input->isEmpty()) {
-            return $this->createNumber(0, 10);
+            return new Number(0, 10);
         }
 
         if (
@@ -163,7 +143,7 @@ class IPv4AddressParser
             ));
         }
 
-        return $this->createNumber((string) $input, $radix);
+        return new Number((string) $input, $radix);
     }
 
     /**

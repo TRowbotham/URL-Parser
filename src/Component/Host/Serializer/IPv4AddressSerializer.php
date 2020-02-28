@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host\Serializer;
 
-use Rowbot\URL\Component\Host\Math\NumberInterface;
+use Rowbot\URL\Component\Host\Math\Number;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-ipv4-serializer
@@ -12,11 +12,11 @@ use Rowbot\URL\Component\Host\Math\NumberInterface;
 class IPv4AddressSerializer implements HostSerializerInterface
 {
     /**
-     * @var \Rowbot\URL\Component\Host\Math\NumberInterface;
+     * @var string
      */
     private $address;
 
-    public function __construct(NumberInterface $address)
+    public function __construct(string $address)
     {
         $this->address = $address;
     }
@@ -29,7 +29,7 @@ class IPv4AddressSerializer implements HostSerializerInterface
     public function toString(): string
     {
         $output = '';
-        $number = $this->address;
+        $number = new Number($this->address, 10);
 
         for ($i = 0; $i < 4; ++$i) {
             $output = $number->mod(256) . $output;
@@ -42,10 +42,5 @@ class IPv4AddressSerializer implements HostSerializerInterface
         }
 
         return $output;
-    }
-
-    public function __clone()
-    {
-        $this->address = clone $this->address;
     }
 }

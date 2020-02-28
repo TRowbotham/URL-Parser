@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host\Math;
 
+use Rowbot\URL\Component\Host\Math\Exception\MathException;
+
 use function floor;
 use function intval;
 
@@ -22,15 +24,6 @@ class NativeIntAdapter implements NumberInterface
         $this->number = intval($number, $base);
     }
 
-    public function add(NumberInterface $number): NumberInterface
-    {
-        if ($number instanceof self) {
-            return new self($this->number + $number->number);
-        }
-
-        return new self($this->number + $number->toInt());
-    }
-
     public function intdiv(int $number): NumberInterface
     {
         return new self((int) floor($this->number / $number));
@@ -38,11 +31,11 @@ class NativeIntAdapter implements NumberInterface
 
     public function isEqualTo(NumberInterface $number): bool
     {
-        if ($number instanceof self) {
-            return $this->number === $number->number;
+        if (!$number instanceof self) {
+            throw new MathException('Must be given an instance of itself.');
         }
 
-        return (string) $this->number === (string) $number;
+        return $this->number === $number->number;
     }
 
     public function isGreaterThan(int $number): bool
@@ -50,9 +43,13 @@ class NativeIntAdapter implements NumberInterface
         return $this->number > $number;
     }
 
-    public function isGreaterThanOrEqualTo(int $number): bool
+    public function isGreaterThanOrEqualTo(NumberInterface $number): bool
     {
-        return $this->number >= $number;
+        if (!$number instanceof self) {
+            throw new MathException('Must be given an instance of itself.');
+        }
+
+        return $this->number >= $number->number;
     }
 
     public function mod(int $number): NumberInterface
@@ -65,9 +62,18 @@ class NativeIntAdapter implements NumberInterface
         return new self($this->number * $number);
     }
 
-    public function toInt(): int
+    public function plus(NumberInterface $number): NumberInterface
     {
-        return $this->number;
+        if (!$number instanceof self) {
+            throw new MathException('Must be given an instance of itself.');
+        }
+
+        return new self($this->number + $number->number);
+    }
+
+    public function pow(int $number): NumberInterface
+    {
+        return new self($this->number ** $number);
     }
 
     public function __toString(): string
