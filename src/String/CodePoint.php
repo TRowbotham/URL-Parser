@@ -20,6 +20,9 @@ final class CodePoint
 
     public const EOF = '';
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function __construct()
     {
     }

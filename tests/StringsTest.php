@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Rowbot\URL\String\Exception\RegexException;
 use Rowbot\URL\String\Exception\UConverterException;
 use Rowbot\URL\String\Utf8String;
 
@@ -66,5 +67,12 @@ class StringsTest extends TestCase
     {
         $s = new Utf8String($input);
         self::assertSame($expected, $s->startsWithWindowsDriveLetter());
+    }
+
+    public function testMatchesThrowsWhenOffsetExceedsLength(): void
+    {
+        $this->expectException(RegexException::class);
+        $s = new Utf8String('');
+        $s->matches('/[A-Z]/', 0, 1);
     }
 }

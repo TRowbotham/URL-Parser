@@ -58,6 +58,9 @@ final class IDNA
         | IDNA_ERROR_BIDI
         | IDNA_ERROR_CONTEXTJ;
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function __construct()
     {
     }
