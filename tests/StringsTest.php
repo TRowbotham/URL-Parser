@@ -75,4 +75,18 @@ class StringsTest extends TestCase
         $s = new Utf8String('');
         $s->matches('/[A-Z]/', 0, 1);
     }
+
+    public function testMatchesThrowsOnInvalidUtf8Text(): void
+    {
+        $this->expectException(RegexException::class);
+        $s = new Utf8String("\xC3\x7F");
+        $s->matches('/[A-Z]/u');
+    }
+
+    public function testReplaceRegexThrowsOnInvalidUtf8Text(): void
+    {
+        $this->expectException(RegexException::class);
+        $s = new Utf8String("\xC3\x7F");
+        $s->replaceRegex('/[A-Z]/u', 'foo');
+    }
 }
