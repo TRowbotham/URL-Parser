@@ -1,9 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [3.0.1] - 2020-02-29
 
 ### Added
 
+- Improved portability and 32-bit PHP support.
 - Dependency on `brick/math` to support 32-bit versions of PHP.
 
 ### Removed
