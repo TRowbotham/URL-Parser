@@ -64,7 +64,7 @@ class URLSearchParams implements Iterator
             return;
         }
 
-        if (is_scalar($init) || is_object($init) && method_exists($init, '__toString')) {
+        if (is_scalar($init) || (is_object($init) && method_exists($init, '__toString'))) {
             $init = IDLString::scrub((string) $init);
 
             if ($init !== '' && $init[0] === '?') {
