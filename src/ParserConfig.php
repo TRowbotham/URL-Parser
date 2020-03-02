@@ -18,11 +18,6 @@ class ParserConfig implements ParserConfigInterface
     private $encoding;
 
     /**
-     * @var string|null
-     */
-    private $encodingOverride;
-
-    /**
      * @var \Rowbot\URL\State\State
      */
     private $state;
@@ -35,7 +30,6 @@ class ParserConfig implements ParserConfigInterface
     public function __construct(?State $stateOverride, ?string $encodingOverride)
     {
         $this->encoding = $encodingOverride ?? 'utf-8';
-        $this->encodingOverride = $encodingOverride;
         $this->state = $stateOverride ?? new SchemeStartState();
         $this->stateOverride = $stateOverride;
     }
