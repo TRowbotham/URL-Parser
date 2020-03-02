@@ -14,7 +14,7 @@ interface StringInterface extends IteratorAggregate
     public function endsWith(string $string): bool;
 
     /**
-     * @return StringIteratorInterface<int, string>
+     * @return StringIteratorInterface
      */
     public function getIterator(): StringIteratorInterface;
 

@@ -93,7 +93,7 @@ class QueryList implements IteratorAggregate
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-parser
      *
-     * @return self<int, array{name: string, value: string}>
+     * @return self
      */
     public static function fromString(string $input): self
     {

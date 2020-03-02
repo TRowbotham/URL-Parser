@@ -40,7 +40,7 @@ class URLSearchParams implements Iterator
     private $cursor;
 
     /**
-     * @var \Rowbot\URL\Component\QueryList<array{name: string, value: string}>
+     * @var \Rowbot\URL\Component\QueryList
      */
     private $list;
 
@@ -303,7 +303,7 @@ class URLSearchParams implements Iterator
     /**
      * @internal
      *
-     * @param \Rowbot\URL\Component\QueryList<array{name: string, value: string}> $list
+     * @param \Rowbot\URL\Component\QueryList $list
      */
     public function setList(QueryList $list): void
     {

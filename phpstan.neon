@@ -29,3 +29,7 @@ parameters:
         -
             message: '#Property Rowbot\\URL\\String\\Utf8StringIterator::\$codePoints \(array<int, string>\) does not accept array<string, mixed>\.#'
             path: src/String/Utf8StringIterator.php
+
+        -
+            message: '#Property Rowbot\\URL\\IDLStringPreprocessor::\$iter type has no value type specified in iterable type IntlCodePointBreakIterator\.#'
+            path: src/IDLStringPreprocessor.php

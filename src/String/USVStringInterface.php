@@ -21,7 +21,7 @@ interface USVStringInterface extends StringInterface
     ): self;
 
     /**
-     * @return \Rowbot\URL\String\StringListInterface<self>
+     * @return \Rowbot\URL\String\StringListInterface
      */
     public function split(string $delimiter, int $limit = null): StringListInterface;
 
