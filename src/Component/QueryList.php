@@ -185,6 +185,10 @@ class QueryList implements IteratorAggregate
             }
         }
 
+        if ($prevIndex === null) {
+            return;
+        }
+
         $this->list[$prevIndex]['value'] = $value;
     }
 
