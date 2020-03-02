@@ -8,6 +8,7 @@ use ArrayIterator;
 use IntlBreakIterator;
 use IteratorAggregate;
 use Rowbot\URL\String\Utf8String;
+use Rowbot\URL\Support\EncodingHelper;
 
 use function array_filter;
 use function array_splice;
@@ -347,12 +348,7 @@ class QueryList implements IteratorAggregate
      */
     public function toUrlencodedString(string $encodingOverride = null): string
     {
-        $encoding = 'utf-8';
-
-        if ($encodingOverride !== null) {
-            $encoding = $encodingOverride;
-        }
-
+        $encoding = EncodingHelper::getOutputEncoding($encodingOverride) ?? 'utf-8';
         $output = '';
 
         foreach ($this->list as $key => $tuple) {

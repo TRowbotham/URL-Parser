@@ -7,8 +7,7 @@ namespace Rowbot\URL;
 use Rowbot\URL\State\HostnameState;
 use Rowbot\URL\State\SchemeStartState;
 use Rowbot\URL\State\State;
-
-use function strtolower;
+use Rowbot\URL\Support\EncodingHelper;
 
 class ParserConfig implements ParserConfigInterface
 {
@@ -29,7 +28,7 @@ class ParserConfig implements ParserConfigInterface
 
     public function __construct(?State $stateOverride, ?string $encodingOverride)
     {
-        $this->encoding = $encodingOverride ?? 'utf-8';
+        $this->encoding = EncodingHelper::getOutputEncoding($encodingOverride) ?? 'utf-8';
         $this->state = $stateOverride ?? new SchemeStartState();
         $this->stateOverride = $stateOverride;
     }
@@ -51,7 +50,7 @@ class ParserConfig implements ParserConfigInterface
 
     public function setOutputEncoding(string $encoding): void
     {
-        $this->encoding = strtolower($encoding);
+        $this->encoding = EncodingHelper::getOutputEncoding($encoding) ?? 'utf-8';
     }
 
     public function getState(): State

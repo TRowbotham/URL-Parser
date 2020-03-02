@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Incorrect output encoding used when encoding was overriden to be "replacement", "utf-16", "utf-16le", "utf-16be".
+
 ## [3.0.1] - 2020-02-29
 
 ### Added
