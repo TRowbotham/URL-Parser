@@ -94,13 +94,27 @@ class StringsTest extends TestCase
         $s->replaceRegex('/[A-Z]/u', 'foo');
     }
 
+    /**
+     * @requires PHP < 8
+     */
     public function testSplitReturnsEmptyListWithEmptyDelimiter(): void
     {
         $s = new Utf8String('');
-        // PHP warns when passing an empty delimiter to \explode(), so we must silence the warning
-        // to test return value of ::split().
+        // PHP warns when passing an empty delimiter to \explode(), the underlying function, so we
+        // must silence the warning to test return value of ::split(). In PHP 8+ the warning becomes
+        // an error and explode no longer returns false.
         $list = @$s->split('');
         $this->assertTrue($list->isEmpty());
+    }
+
+    /**
+     * @requires PHP > 7
+     */
+    public function testSplitErrorsWithEmptyDelimiter(): void
+    {
+        $this->expectError();
+        $s = new Utf8String('');
+        $s->split('');
     }
 
     public function testStringListFirstThrowsWithEmptyList(): void
