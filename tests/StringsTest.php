@@ -108,7 +108,7 @@ class StringsTest extends TestCase
     }
 
     /**
-     * @requires PHP > 7
+     * @requires PHP >= 8
      */
     public function testSplitErrorsWithEmptyDelimiter(): void
     {
