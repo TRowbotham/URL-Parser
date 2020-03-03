@@ -7,6 +7,8 @@ namespace Rowbot\URL\Tests;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\String\Exception\RegexException;
 use Rowbot\URL\String\Exception\UConverterException;
+use Rowbot\URL\String\Exception\UndefinedIndexException;
+use Rowbot\URL\String\StringList;
 use Rowbot\URL\String\Utf8String;
 
 class StringsTest extends TestCase
@@ -88,5 +90,36 @@ class StringsTest extends TestCase
         $this->expectException(RegexException::class);
         $s = new Utf8String("\xC3\x7F");
         $s->replaceRegex('/[A-Z]/u', 'foo');
+    }
+
+    public function testSplitReturnsEmptyListWithEmptyDelimiter(): void
+    {
+        $s = new Utf8String('');
+        // PHP warns when passing an empty delimiter to \explode(), so we must silence the warning
+        // to test return value of ::split().
+        $this->assertTrue(@$s->split('')->isEmpty());
+    }
+
+    public function testStringListFirstThrowsWithEmptyList(): void
+    {
+        $this->expectException(UndefinedIndexException::class);
+        $list = new StringList();
+        $list->first();
+    }
+
+    public function testStringListLastThrowsWithEmptyList(): void
+    {
+        $this->expectException(UndefinedIndexException::class);
+        $list = new StringList();
+        $list->last();
+    }
+
+    public function testStringListKeyReturnsInteger(): void
+    {
+        $s = new Utf8String('a=b=c=d');
+
+        foreach ($s->split('=') as $key => $string) {
+            $this->assertIsInt($key);
+        }
     }
 }
