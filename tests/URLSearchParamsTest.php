@@ -90,4 +90,11 @@ class URLSearchParamsTest extends TestCase
         $this->assertEquals(['', ''], $params->current());
         $this->assertFalse($params->valid());
     }
+
+    public function testSortingPairWithEmptyName(): void
+    {
+        $params = new URLSearchParams('=foo&x=bar&c=bar');
+        $params->sort();
+        $this->assertSame('=foo&c=bar&x=bar', $params->toString());
+    }
 }

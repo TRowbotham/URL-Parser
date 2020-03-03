@@ -25,6 +25,8 @@ use function str_replace;
  */
 class QueryList implements IteratorAggregate
 {
+    private const LEAD_OFFSET = 0xD800 - (0x10000 >> 10);
+
     /**
      * @var array<string, bool>
      */
@@ -51,6 +53,23 @@ class QueryList implements IteratorAggregate
     {
         $this->list[] = ['name' => $name, 'value' => $value];
         $this->cache[$name] = true;
+    }
+
+    /**
+     * @see https://www.unicode.org/faq/utf_bom.html?source=post_page---------------------------#utf16-4
+     *
+     * @return array{0: int, 1: int}
+     */
+    private function computeCodeUnits(int $codePoint): array
+    {
+        // Code points less than 0x10000 are part of the Basic Multilingual Plane and are
+        // represented by a single code unit that is equal to its code point. Use 0 as the low
+        // surrogate as the <=> operator compares array size first and values second.
+        if ($codePoint < 0x10000) {
+            return [$codePoint, 0];
+        }
+
+        return [self::LEAD_OFFSET + ($codePoint >> 10), 0xDC00 + ($codePoint & 0x3FF)];
     }
 
     /**
@@ -225,7 +244,7 @@ class QueryList implements IteratorAggregate
         // 3) If the code points of the two characters are different, then the
         //    first string with a character with a lower code point will be
         //    moved up in the array (ex. "bba" will come before "bbb").
-        usort($temp, static function (array $a, array $b) use ($iter1, $iter2): int {
+        usort($temp, function (array $a, array $b) use ($iter1, $iter2): int {
             $iter1->setText($a[1]['name']);
             $iter2->setText($b[1]['name']);
 
@@ -273,25 +292,14 @@ class QueryList implements IteratorAggregate
                     return 1;
                 }
 
-                $aCodePoint = $iter1->getLastCodePoint();
-                $bCodePoint = $iter2->getLastCodePoint();
+                $aCodeUnits = $this->computeCodeUnits($iter1->getLastCodePoint());
+                $bCodeUnits = $this->computeCodeUnits($iter2->getLastCodePoint());
+                $cmp = $aCodeUnits <=> $bCodeUnits;
 
-                // JavaScript likes to be fancy by using UTF-16 encoded strings.
-                // In UTF-16, all code points in the Basic Multilingual Plane
-                // (BMP) are represented by a single code unit. Code points
-                // outside of the BMP (> 0xFFFF) are represented by 2 code
-                // units.
-                $aCodeUnits = $aCodePoint > 0xFFFF ? 2 : 1;
-                $bCodeUnits = $bCodePoint > 0xFFFF ? 2 : 1;
-
-                if ($aCodeUnits > $bCodeUnits) {
-                    return -1;
-                } elseif ($aCodeUnits < $bCodeUnits) {
-                    return 1;
-                } elseif ($aCodePoint > $bCodePoint) {
-                    return 1;
-                } elseif ($aCodePoint < $bCodePoint) {
-                    return -1;
+                // We only want to return if the result is not equal, as equal results must be
+                // sorted by relative position.
+                if ($cmp !== 0) {
+                    return $cmp;
                 }
             }
 
