@@ -11,6 +11,8 @@ use Rowbot\URL\String\Exception\UndefinedIndexException;
 use Rowbot\URL\String\StringList;
 use Rowbot\URL\String\Utf8String;
 
+use function is_int;
+
 class StringsTest extends TestCase
 {
     public function testTranscodeUnknownEncoding(): void
@@ -97,7 +99,8 @@ class StringsTest extends TestCase
         $s = new Utf8String('');
         // PHP warns when passing an empty delimiter to \explode(), so we must silence the warning
         // to test return value of ::split().
-        $this->assertTrue(@$s->split('')->isEmpty());
+        $list = @$s->split('');
+        $this->assertTrue($list->isEmpty());
     }
 
     public function testStringListFirstThrowsWithEmptyList(): void
@@ -119,7 +122,8 @@ class StringsTest extends TestCase
         $s = new Utf8String('a=b=c=d');
 
         foreach ($s->split('=') as $key => $string) {
-            $this->assertIsInt($key);
+            // ::assertIsInt() isn't available on PHPUnit 7
+            $this->assertTrue(is_int($key));
         }
     }
 }
