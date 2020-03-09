@@ -234,16 +234,17 @@ class QueryList implements IteratorAggregate
         //
         // Each string is compared character by character against each other.
         //
-        // 1) If the two strings have different lengths, and the strings are
-        //    equal up to the end of the shortest string, then the shorter of
-        //    the two strings will be moved up in the array (ex. "aa" will come
-        //    before "aaa").
-        // 2) If the number of code units differ between the two characters,
-        //    then the character with more code units will be moved up in the
-        //    array (ex. "🌈" will come before "ﬃ").
-        // 3) If the code points of the two characters are different, then the
-        //    first string with a character with a lower code point will be
-        //    moved up in the array (ex. "bba" will come before "bbb").
+        // 1) If the two strings have different lengths, and the strings are equal up to the end of
+        //    the shortest string, then the shorter of the two strings will be moved up in the
+        //    array. (e.g. The string "aa" will come before the string "aaa".)
+        // 2) If the value of the code units differ, the character with the lower code unit will be
+        //    moved up in the array. (e.g. "🌈" will come before "ﬃ". Although "🌈" has a code
+        //    point value of 127,752 that is greater than the "ﬃ" code point value of 64,259, "🌈"
+        //    is split in to 2 code units and it's first code unit has a value of 55,356, which is
+        //    less than the "ﬃ" single code unit value of 64,259.)
+        // 3) If the two strings are considered equal, then they are sorted by the relative
+        //    position in which they appeared in the array. (e.g. The string "b=c&a=c&b=a&a=a"
+        //    becomes "a=c&a=a&b=c&b=a".)
         usort($temp, function (array $a, array $b) use ($iter1, $iter2): int {
             $iter1->setText($a[1]['name']);
             $iter2->setText($b[1]['name']);
