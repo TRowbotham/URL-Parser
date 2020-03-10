@@ -2,9 +2,13 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `URLSearchParams::sort()` now correctly sorts by code units instead of trying to fake it using code points.
+
 ### Fixed
 
-- Incorrect output encoding used when encoding was overriden to be "replacement", "utf-16", "utf-16le", "utf-16be".
+- Incorrect output encoding used when encoding was overriden to be "replacement", "utf-16", "utf-16le", or "utf-16be".
 
 ## [3.0.1] - 2020-02-29
 
