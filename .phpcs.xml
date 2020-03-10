@@ -5,4 +5,5 @@
     <arg value="p" />
     <rule ref="PSR12" />
     <rule ref="Generic.ControlStructures.DisallowYodaConditions" />
+    <rule ref="Generic.PHP.RequireStrictTypes" />
 </ruleset>
