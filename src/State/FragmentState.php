@@ -30,11 +30,6 @@ class FragmentState implements State
             return self::RETURN_OK;
         }
 
-        if ($codePoint === "\0") {
-            // Validation error.
-            return self::RETURN_OK;
-        }
-
         if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
             // Validation error.
         }

@@ -5,6 +5,7 @@
 ### Changed
 
 - `URLSearchParams::sort()` now correctly sorts by code units instead of trying to fake it using code points.
+- Null bytes are now percent encoded in fragments instead of being ignored per [whatwg/url#440](https://github.com/whatwg/url/issues/440).
 
 ### Fixed
 
