@@ -37,7 +37,14 @@ class HostParser
         }
 
         try {
-            return new StringHost(IDNA::toAscii($domain, $flags));
+            $result = IDNA::toAscii($domain, $flags);
+
+            if ($result === '') {
+                // Validation error.
+                throw new IDNATransformException();
+            }
+
+            return new StringHost($result);
         } catch (IDNATransformException $e) {
             // Validation error.
             throw $e;
