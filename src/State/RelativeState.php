@@ -29,44 +29,8 @@ class RelativeState implements State
 
         $url->scheme = clone $base->scheme;
 
-        if ($codePoint === CodePoint::EOF) {
-            $url->username = $base->username;
-            $url->password = $base->password;
-            $url->host = clone $base->host;
-            $url->port = $base->port;
-            $url->path = clone $base->path;
-            $url->query = $base->query;
-
-            return self::RETURN_OK;
-        }
-
         if ($codePoint === '/') {
             $parser->setState(new RelativeSlashState());
-
-            return self::RETURN_OK;
-        }
-
-        if ($codePoint === '?') {
-            $url->username = $base->username;
-            $url->password = $base->password;
-            $url->host = clone $base->host;
-            $url->port = $base->port;
-            $url->path = clone $base->path;
-            $url->query = '';
-            $parser->setState(new QueryState());
-
-            return self::RETURN_OK;
-        }
-
-        if ($codePoint === '#') {
-            $url->username = $base->username;
-            $url->password = $base->password;
-            $url->host = clone $base->host;
-            $url->port = $base->port;
-            $url->path = clone $base->path;
-            $url->query = $base->query;
-            $url->fragment = '';
-            $parser->setState(new FragmentState());
 
             return self::RETURN_OK;
         }
@@ -83,6 +47,27 @@ class RelativeState implements State
         $url->host = clone $base->host;
         $url->port = $base->port;
         $url->path = clone $base->path;
+        $url->query = $base->query;
+
+        if ($codePoint === '?') {
+            $url->query = '';
+            $parser->setState(new QueryState());
+
+            return self::RETURN_OK;
+        }
+
+        if ($codePoint === '#') {
+            $url->fragment = '';
+            $parser->setState(new FragmentState());
+
+            return self::RETURN_OK;
+        }
+
+        if ($codePoint === CodePoint::EOF) {
+            return self::RETURN_OK;
+        }
+
+        $url->query = null;
 
         if (!$url->path->isEmpty()) {
             $url->path->pop();
