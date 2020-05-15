@@ -13,6 +13,7 @@
     "require": {
         "php": ">=7.1",
         "ext-intl": "*",
+        "ext-json": "*",
         "ext-mbstring": "*",
         "lib-ICU": ">=4.6",
         "brick/math": "^0.8.13"
