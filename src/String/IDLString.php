@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rowbot\URL;
+namespace Rowbot\URL\String;
 
 use IntlBreakIterator;
 use UConverter;
@@ -10,30 +10,26 @@ use UConverter;
 use function str_replace;
 use function substr;
 
-class IDLStringPreprocessor
+class IDLString extends AbstractUSVString
 {
-    /**
-     * @var \IntlCodePointBreakIterator
-     */
-    private $iter;
-
-    public function __construct()
+    public function __construct(string $string = '')
     {
-        $this->iter = IntlBreakIterator::createCodePointInstance();
+        parent::__construct(self::scrub($string));
     }
 
     /**
      * See {@link https://github.com/TRowbotham/URL-Parser/issues/7} for why this is necessary.
      */
-    public function process(string $input): string
+    public static function scrub(string $input): string
     {
-        $this->iter->setText($input);
+        $iter = IntlBreakIterator::createCodePointInstance();
+        $iter->setText($input);
         $byteOffset = 0;
         $surrogates = [];
 
         // IntlCodePointBreakIterator::next() returns the starting byte offset of the last code code point it passed.
         // It only implements \Traversable, so there is no rewind method.
-        while (($offset = $this->iter->next()) !== IntlBreakIterator::DONE) {
+        while (($offset = $iter->next()) !== IntlBreakIterator::DONE) {
             // Assume you have the following string "Hello\u{D800}World". A lone surrogate separates the words and is
             // not valid UTF-8. When looking at it byte wise, you get the string "Hello\xED\xA0\x80World".
             //
@@ -50,12 +46,12 @@ class IDLStringPreprocessor
             // a surrogate. If it does, we skip over the next 2 bytes, thus treating all three bytes a single unit. We
             // store each unique surrogate that we encounter in an array, then perform a simple string replacement
             // replacing each surrogate found with a single U+FFFD character.
-            if ($offset - $byteOffset === 1 && $this->iter->getLastCodePoint() === 0xFFFD) {
+            if ($offset - $byteOffset === 1 && $iter->getLastCodePoint() === 0xFFFD) {
                 $bytes = substr($input, $byteOffset, 3);
 
                 if ($bytes >= "\u{D800}" && $bytes <= "\u{DFFF}" && !isset($surrogates[$bytes])) {
                     $surrogates[$bytes] = $bytes;
-                    $this->iter->next(2);
+                    $iter->next(2);
                     $offset += 2;
                 }
             }

@@ -10,7 +10,7 @@ use ReflectionObject;
 use ReflectionProperty;
 use Rowbot\URL\Component\QueryList;
 use Rowbot\URL\Exception\TypeError;
-use Rowbot\URL\IDLStringPreprocessor;
+use Rowbot\URL\String\IDLString;
 
 use function array_column;
 use function count;
@@ -65,8 +65,7 @@ class URLSearchParams implements Iterator
         }
 
         if (is_scalar($init) || is_object($init) && method_exists($init, '__toString')) {
-            $idl = new IDLStringPreprocessor();
-            $init = $idl->process((string) $init);
+            $init = IDLString::scrub((string) $init);
 
             if ($init !== '' && $init[0] === '?') {
                 $init = substr($init, 1);
@@ -100,8 +99,7 @@ class URLSearchParams implements Iterator
      */
     public function append(string $name, string $value): void
     {
-        $idl = new IDLStringPreprocessor();
-        $this->list->append($idl->process($name), $idl->process($value));
+        $this->list->append(IDLString::scrub($name), IDLString::scrub($value));
         $this->update();
     }
 
@@ -128,8 +126,7 @@ class URLSearchParams implements Iterator
      */
     public function delete(string $name): void
     {
-        $idl = new IDLStringPreprocessor();
-        $this->list->remove($idl->process($name));
+        $this->list->remove(IDLString::scrub($name));
         $this->update();
     }
 
@@ -144,9 +141,7 @@ class URLSearchParams implements Iterator
      */
     public function get(string $name): ?string
     {
-        $idl = new IDLStringPreprocessor();
-
-        return $this->list->first($idl->process($name));
+        return $this->list->first(IDLString::scrub($name));
     }
 
     /**
@@ -160,8 +155,7 @@ class URLSearchParams implements Iterator
      */
     public function getAll(string $name): array
     {
-        $idl = new IDLStringPreprocessor();
-        $name = $idl->process($name);
+        $name = IDLString::scrub($name);
 
         return array_column($this->list->filter(static function (array $pair) use ($name): bool {
             return $pair['name'] === $name;
@@ -179,9 +173,7 @@ class URLSearchParams implements Iterator
      */
     public function has(string $name): bool
     {
-        $idl = new IDLStringPreprocessor();
-
-        return $this->list->contains($idl->process($name));
+        return $this->list->contains(IDLString::scrub($name));
     }
 
     /**
@@ -230,13 +222,11 @@ class URLSearchParams implements Iterator
             }
         }
 
-        $idl = new IDLStringPreprocessor();
-
         foreach ($input as $pair) {
             $parts = [];
 
             foreach ($pair as $part) {
-                $parts[] = $idl->process((string) $part);
+                $parts[] = IDLString::scrub((string) $part);
             }
 
             $this->list->append(...$parts);
@@ -249,12 +239,11 @@ class URLSearchParams implements Iterator
     private function initObject($input): void
     {
         $reflection = new ReflectionObject($input);
-        $idl = new IDLStringPreprocessor();
 
         foreach ($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
             $this->list->append(
-                $idl->process($property->getName()),
-                $idl->process((string) $property->getValue($input))
+                IDLString::scrub($property->getName()),
+                IDLString::scrub((string) $property->getValue($input))
             );
         }
     }
@@ -287,9 +276,8 @@ class URLSearchParams implements Iterator
      */
     public function set(string $name, string $value): void
     {
-        $idl = new IDLStringPreprocessor();
-        $name = $idl->process($name);
-        $value = $idl->process($value);
+        $name = IDLString::scrub($name);
+        $value = IDLString::scrub($value);
 
         if ($this->list->contains($name)) {
             $this->list->set($name, $value);

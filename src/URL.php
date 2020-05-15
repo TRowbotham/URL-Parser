@@ -10,7 +10,6 @@ use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\QueryList;
 use Rowbot\URL\Exception\JsonException;
 use Rowbot\URL\Exception\TypeError;
-use Rowbot\URL\IDLStringPreprocessor;
 use Rowbot\URL\State\FragmentState;
 use Rowbot\URL\State\HostnameState;
 use Rowbot\URL\State\HostState;
@@ -19,8 +18,8 @@ use Rowbot\URL\State\PortState;
 use Rowbot\URL\State\QueryState;
 use Rowbot\URL\State\SchemeStartState;
 use Rowbot\URL\String\CodePoint;
+use Rowbot\URL\String\IDLString;
 use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\String\Utf8String;
 
 use function json_encode;
 use function json_last_error;
@@ -67,19 +66,16 @@ class URL implements JsonSerializable
     {
         $parsedBase = null;
         $parser = new BasicURLParser();
-        $idl = new IDLStringPreprocessor();
 
         if ($base !== null) {
-            $input = new Utf8String($idl->process($base));
-            $parsedBase = $parser->parse($input);
+            $parsedBase = $parser->parse(new IDLString($base));
 
             if ($parsedBase === false) {
                 throw new TypeError($base . ' is not a valid URL.');
             }
         }
 
-        $input = new Utf8String($idl->process($url));
-        $parsedURL = $parser->parse($input, $parsedBase);
+        $parsedURL = $parser->parse(new IDLString($url), $parsedBase);
 
         if ($parsedURL === false) {
             throw new TypeError($url . ' is not a valid URL.');
@@ -205,8 +201,7 @@ class URL implements JsonSerializable
             throw new TypeError();
         }
 
-        $idl = new IDLStringPreprocessor();
-        $input = new Utf8String($idl->process($value));
+        $input = new IDLString($value);
         $parser = new BasicURLParser();
 
         if ($name === 'hash') {
