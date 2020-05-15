@@ -7,7 +7,7 @@ namespace Rowbot\URL\State;
 use Rowbot\URL\Component\Host\StringHost;
 use Rowbot\URL\Component\Path;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
+use Rowbot\URL\String\StringBuilderInterface;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
 use Rowbot\URL\ParserConfigInterface;
@@ -46,7 +46,7 @@ class PathState implements State
         ParserConfigInterface $parser,
         USVStringInterface $input,
         StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
+        StringBuilderInterface $buffer,
         string $codePoint,
         URLRecord $url,
         ?URLRecord $base
@@ -137,12 +137,12 @@ class PathState implements State
         return self::RETURN_OK;
     }
 
-    private function isDoubleDotPathSegment(StringBufferInterface $buffer): bool
+    private function isDoubleDotPathSegment(StringBuilderInterface $buffer): bool
     {
         return isset(self::DOUBLE_DOT_SEGMENT[(string) $buffer]);
     }
 
-    private function isSingleDotPathSegment(StringBufferInterface $buffer): bool
+    private function isSingleDotPathSegment(StringBuilderInterface $buffer): bool
     {
         return isset(self::SINGLE_DOT_SEGMENT[(string) $buffer]);
     }

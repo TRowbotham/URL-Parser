@@ -8,7 +8,7 @@ use Rowbot\URL\Component\Host\Exception\HostException;
 use Rowbot\URL\Component\Host\HostParser;
 use Rowbot\URL\Component\Host\StringHost;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
+use Rowbot\URL\String\StringBuilderInterface;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
 use Rowbot\URL\ParserConfigInterface;
@@ -23,7 +23,7 @@ class FileHostState implements State
         ParserConfigInterface $parser,
         USVStringInterface $input,
         StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
+        StringBuilderInterface $buffer,
         string $codePoint,
         URLRecord $url,
         ?URLRecord $base

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL;
 
 use Rowbot\URL\State\State;
-use Rowbot\URL\String\StringBuffer;
+use Rowbot\URL\String\StringBuilder;
 use Rowbot\URL\String\USVStringInterface;
 
 class BasicURLParser
@@ -63,7 +63,7 @@ class BasicURLParser
         }
 
         $config = new ParserConfig($stateOverride, $encodingOverride);
-        $buffer = new StringBuffer();
+        $buffer = new StringBuilder();
         $iter = $input->getIterator();
         $length = $input->length();
         $iter->rewind();
