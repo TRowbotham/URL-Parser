@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
+use Rowbot\URL\Component\Host\NullHost;
+use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\Scheme;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringBufferInterface;
@@ -39,17 +41,11 @@ class FileState implements State
         }
 
         if ($base !== null && $base->scheme->isFile()) {
-            if ($codePoint === CodePoint::EOF) {
-                $url->host = clone $base->host;
-                $url->path = clone $base->path;
-                $url->query = $base->query;
-
-                return self::RETURN_OK;
-            }
+            $url->host = clone $base->host;
+            $url->path = clone $base->path;
+            $url->query = $base->query;
 
             if ($codePoint === '?') {
-                $url->host = clone $base->host;
-                $url->path = clone $base->path;
                 $url->query = '';
                 $parser->setState(new QueryState());
 
@@ -57,22 +53,25 @@ class FileState implements State
             }
 
             if ($codePoint === '#') {
-                $url->host = clone $base->host;
-                $url->path = clone $base->path;
-                $url->query = $base->query;
                 $url->fragment = '';
                 $parser->setState(new FragmentState());
 
                 return self::RETURN_OK;
             }
 
+            if ($codePoint === CodePoint::EOF) {
+                return self::RETURN_OK;
+            }
+
+            $url->query = null;
+
             // This is a (platform-independent) Windows drive letter quirk.
             if (!$input->substr($iter->key())->startsWithWindowsDriveLetter()) {
-                $url->host = clone $base->host;
-                $url->path = clone $base->path;
                 $url->path->shorten($url->scheme);
             } else {
                 // Validation error.
+                $url->host = new NullHost();
+                $url->path = new PathList();
             }
 
             $parser->setState(new PathState());
