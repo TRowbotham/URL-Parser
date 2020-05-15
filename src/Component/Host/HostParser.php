@@ -78,6 +78,10 @@ class HostParser
             return $this->parseOpaqueHost($input);
         }
 
+        if ($input->isEmpty()) {
+            throw new InvalidHostException('The domain must not be an empty string.');
+        }
+
         $domain = rawurldecode((string) $input);
 
         try {
