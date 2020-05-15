@@ -7,7 +7,6 @@ cache:
 env:
   global:
     - COMPOSER_ARGS="--no-suggest --no-interaction --prefer-source"
-    - PHPSTAN_PACKAGES="phpstan/phpstan:^0.12.20 phpstan/extension-installer:^1.0.4 phpstan/phpstan-strict-rules:^0.12.2 phpstan/phpstan-deprecation-rules:^0.12.2"
     - RUN_PHPSTAN=false
 
 matrix:
@@ -34,8 +33,6 @@ before_install:
 
 install:
   - pecl install pcov
-  - composer require squizlabs/php_codesniffer:^3.5.1 pcov/clobber --dev $COMPOSER_ARGS
-  - if [ "$RUN_PHPSTAN" == "true" ]; then composer require $PHPSTAN_PACKAGES --dev $COMPOSER_ARGS; fi
   - composer update $COMPOSER_ARGS
 
 before_script:
