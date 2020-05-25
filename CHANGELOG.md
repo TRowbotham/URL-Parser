@@ -12,6 +12,7 @@
 ### Fixed
 
 - Incorrect output encoding used when encoding was overriden to be "replacement", "utf-16", "utf-16le", or "utf-16be".
+- `ext-json` is now correctly listed as a dependency.
 
 ## [3.0.1] - 2020-02-29
 
