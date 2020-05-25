@@ -85,7 +85,7 @@ class IPv4AddressParser
             }
         }
 
-        $limit = (new Number(256, 10))->pow(5 - $size);
+        $limit = Number::createInstance(256, 10)->pow(5 - $size);
 
         if ($numbers[$size - 1]->isGreaterThanOrEqualTo($limit)) {
             // Validation error.
@@ -128,7 +128,7 @@ class IPv4AddressParser
         }
 
         if ($input->isEmpty()) {
-            return new Number(0, 10);
+            return Number::createInstance(0, 10);
         }
 
         if (
@@ -143,7 +143,7 @@ class IPv4AddressParser
             ));
         }
 
-        return new Number((string) $input, $radix);
+        return Number::createInstance((string) $input, $radix);
     }
 
     /**

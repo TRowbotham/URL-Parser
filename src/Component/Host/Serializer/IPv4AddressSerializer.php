@@ -29,7 +29,7 @@ class IPv4AddressSerializer implements HostSerializerInterface
     public function toString(): string
     {
         $output = '';
-        $number = new Number($this->address, 10);
+        $number = Number::createInstance($this->address, 10);
 
         for ($i = 0; $i < 4; ++$i) {
             $output = $number->mod(256) . $output;

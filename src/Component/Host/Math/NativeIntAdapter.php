@@ -9,7 +9,7 @@ use Rowbot\URL\Component\Host\Math\Exception\MathException;
 use function floor;
 use function intval;
 
-class NativeIntAdapter implements NumberInterface
+class NativeIntAdapter extends Number implements NumberInterface
 {
     /**
      * @var int

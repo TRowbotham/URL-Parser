@@ -10,7 +10,7 @@ use Rowbot\URL\Component\Host\Math\Exception\MathException;
 
 use function is_string;
 
-class BrickMathAdapter implements NumberInterface
+class BrickMathAdapter extends Number implements NumberInterface
 {
     /**
      * @var \Brick\Math\BigInteger
