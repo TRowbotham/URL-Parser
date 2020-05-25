@@ -10,7 +10,7 @@ use Rowbot\URL\Component\Scheme;
 use function intval;
 use function preg_match;
 
-class StringBuilder extends AbstractStringBuilder implements StringBuilderInterface
+class StringBuffer extends AbstractStringBuffer implements StringBufferInterface
 {
     public function isWindowsDriveLetter(): bool
     {

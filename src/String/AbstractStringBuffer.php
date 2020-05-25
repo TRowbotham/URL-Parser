@@ -12,7 +12,7 @@ use function mb_substr;
 /**
  * @implements \IteratorAggregate<int, string>
  */
-abstract class AbstractStringBuilder implements IteratorAggregate
+abstract class AbstractStringBuffer implements IteratorAggregate
 {
     /**
      * @var string

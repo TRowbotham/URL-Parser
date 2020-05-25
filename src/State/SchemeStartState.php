@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBuilderInterface;
+use Rowbot\URL\String\StringBufferInterface;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
 use Rowbot\URL\ParserConfigInterface;
@@ -22,7 +22,7 @@ class SchemeStartState implements State
         ParserConfigInterface $parser,
         USVStringInterface $input,
         StringIteratorInterface $iter,
-        StringBuilderInterface $buffer,
+        StringBufferInterface $buffer,
         string $codePoint,
         URLRecord $url,
         ?URLRecord $base

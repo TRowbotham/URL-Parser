@@ -7,7 +7,7 @@ namespace Rowbot\URL\State;
 use Rowbot\URL\Component\Host\Exception\HostException;
 use Rowbot\URL\Component\Host\HostParser;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBuilderInterface;
+use Rowbot\URL\String\StringBufferInterface;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
 use Rowbot\URL\ParserConfigInterface;
@@ -32,7 +32,7 @@ abstract class AbstractHostState implements State
         ParserConfigInterface $parser,
         USVStringInterface $input,
         StringIteratorInterface $iter,
-        StringBuilderInterface $buffer,
+        StringBufferInterface $buffer,
         string $codePoint,
         URLRecord $url,
         ?URLRecord $base

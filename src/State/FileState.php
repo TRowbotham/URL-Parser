@@ -8,7 +8,7 @@ use Rowbot\URL\Component\Host\NullHost;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\Scheme;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBuilderInterface;
+use Rowbot\URL\String\StringBufferInterface;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
 use Rowbot\URL\ParserConfigInterface;
@@ -23,7 +23,7 @@ class FileState implements State
         ParserConfigInterface $parser,
         USVStringInterface $input,
         StringIteratorInterface $iter,
-        StringBuilderInterface $buffer,
+        StringBufferInterface $buffer,
         string $codePoint,
         URLRecord $url,
         ?URLRecord $base

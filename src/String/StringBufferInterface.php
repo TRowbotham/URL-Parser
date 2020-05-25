@@ -11,7 +11,7 @@ use Rowbot\URL\Component\Scheme;
 /**
  * @extends \IteratorAggregate<int, string>
  */
-interface StringBuilderInterface extends IteratorAggregate
+interface StringBufferInterface extends IteratorAggregate
 {
     public function append(string $string): void;
 
