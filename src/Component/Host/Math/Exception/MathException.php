@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host\Math\Exception;
 
-use Rowbot\URL\Component\Host\Exception\HostException;
+use Rowbot\URL\Exception\URLException;
 
-class MathException extends HostException
+class MathException extends URLException
 {
 }
