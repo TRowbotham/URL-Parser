@@ -135,7 +135,15 @@ class HostParser
 
         $output = '';
 
-        foreach ($input as $codePoint) {
+        foreach ($input as $i => $codePoint) {
+            if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
+                // Validation error.
+            }
+
+            if ($codePoint === '%' && !$input->substr($i + 1)->startsWithTwoAsciiHexDigits()) {
+                // Validation error.
+            }
+
             $output .= CodePoint::utf8PercentEncode($codePoint);
         }
 
