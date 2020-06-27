@@ -131,6 +131,15 @@ class URLSearchParamsStringifierTest extends TestCase
         // The lone '=' _does_ survive the roundtrip.
         $params = new URLSearchParams('a=&a=b');
         $this->assertEquals('a=&a=b', $params->toString());
+
+        $params = new URLSearchParams('b=%2sf%2a');
+        $this->assertSame('b=%252sf*', $params->toString());
+
+        $params = new URLSearchParams('b=%2%2af%2a');
+        $this->assertSame('b=%252*f*', $params->toString());
+
+        $params = new URLSearchParams('b=%%2a');
+        $this->assertSame('b=%25*', $params->toString());
     }
 
     public function testURLSearchParamsConnectedToURL(): void

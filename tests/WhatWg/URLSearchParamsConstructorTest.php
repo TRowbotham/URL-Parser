@@ -60,6 +60,28 @@ class URLSearchParamsConstructorTest extends TestCase
         $this->assertFalse($params->has('c'));
         $this->assertTrue($params->has(' c'));
         $this->assertTrue($params->has('møø'));
+
+        $params = new URLSearchParams('id=0&value=%');
+        $this->assertNotNull($params);
+        $this->assertTrue($params->has('id'));
+        $this->assertTrue($params->has('value'));
+        $this->assertSame('0', $params->get('id'));
+        $this->assertSame('%', $params->get('value'));
+
+        $params = new URLSearchParams('b=%2sf%2a');
+        $this->assertNotNull($params);
+        $this->assertTrue($params->has('b'));
+        $this->assertSame('%2sf*', $params->get('b'));
+
+        $params = new URLSearchParams('b=%2%2af%2a');
+        $this->assertNotNull($params);
+        $this->assertTrue($params->has('b'));
+        $this->assertSame('%2*f*', $params->get('b'));
+
+        $params = new URLSearchParams('b=%%2a');
+        $this->assertNotNull($params);
+        $this->assertTrue($params->has('b'));
+        $this->assertSame('%*', $params->get('b'));
     }
 
     public function testConstructorObject(): void
