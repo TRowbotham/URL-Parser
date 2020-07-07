@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added test coverage on Windows 32-bit.
+
 ### Changed
 
 - `URLSearchParams::sort()` now correctly sorts by code units instead of trying to fake it using code points.
