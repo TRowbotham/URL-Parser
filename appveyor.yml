@@ -13,7 +13,7 @@ init:
 
 install:
   - IF EXIST C:\php (SET PHP=0)
-  - IF %PHP%==1 appveyor DownloadFile https://windows.php.net/downloads/releases/archives/php-7.1.33-Win32-VC14-x86.zip -FileName php.zip
+  - IF %PHP%==1 curl -fsSL -o php.zip https://windows.php.net/downloads/releases/archives/php-7.1.33-Win32-VC14-x86.zip
   - IF %PHP%==1 7z x php.zip -y -oC:\php
   - IF %PHP%==1 del /Q php.zip
   - cd C:\php
@@ -23,10 +23,10 @@ install:
   - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
   - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
   - IF %PHP%==1 echo extension=php_intl.dll >> php.ini
-  - IF %PHP%==1 appveyor DownloadFile https://curl.haxx.se/ca/cacert.pem
+  - IF %PHP%==1 curl -fsSLO https://curl.haxx.se/ca/cacert.pem
   - IF %PHP%==1 echo extension=php_curl.dll >> php.ini
   - IF %PHP%==1 echo curl.cainfo="C:\php\cacert.pem"
-  - appveyor DownloadFile https://getcomposer.org/composer-stable.phar -FileName composer.phar
+  - curl -fsSL -o composer.phar https://getcomposer.org/composer-stable.phar
   - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
   - cd C:\projects\url-parser
   - composer update --no-suggest --no-interaction --prefer-lowest --ansi
