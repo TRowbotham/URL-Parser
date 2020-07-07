@@ -32,7 +32,7 @@ install:
   - composer update --no-suggest --no-interaction --prefer-lowest --no-progress --ansi
 
 before_test:
-  - mkdir build/logs
+  - mkdir build\logs
 
 test_script:
   - vendor\bin\phpunit
