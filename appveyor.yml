@@ -29,7 +29,7 @@ install:
   - curl -fsSL -o composer.phar https://getcomposer.org/composer-stable.phar
   - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
   - cd C:\projects\url-parser
-  - composer update --no-suggest --no-interaction --prefer-lowest --ansi
+  - composer update --no-suggest --no-interaction --prefer-lowest
 
 test_script:
-  - php vendor\bin\phpunit
+  - vendor\bin\phpunit
