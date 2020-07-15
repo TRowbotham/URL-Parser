@@ -6,7 +6,7 @@ namespace Rowbot\URL\Component\Host;
 
 use Rowbot\URL\Component\Host\Exception\InvalidIPv4AddressException;
 use Rowbot\URL\Component\Host\Exception\InvalidIPv4NumberException;
-use Rowbot\URL\Component\Host\Math\Number;
+use Rowbot\URL\Component\Host\Math\NumberFactory;
 use Rowbot\URL\Component\Host\Math\NumberInterface;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\USVStringInterface;
@@ -85,7 +85,7 @@ class IPv4AddressParser
             }
         }
 
-        $limit = Number::createInstance(256, 10)->pow(5 - $size);
+        $limit = NumberFactory::createNumber(256, 10)->pow(5 - $size);
 
         if ($numbers[$size - 1]->isGreaterThanOrEqualTo($limit)) {
             // Validation error.
@@ -128,7 +128,7 @@ class IPv4AddressParser
         }
 
         if ($input->isEmpty()) {
-            return Number::createInstance(0, 10);
+            return NumberFactory::createNumber(0, 10);
         }
 
         if (
@@ -143,7 +143,7 @@ class IPv4AddressParser
             ));
         }
 
-        return Number::createInstance((string) $input, $radix);
+        return NumberFactory::createNumber((string) $input, $radix);
     }
 
     /**

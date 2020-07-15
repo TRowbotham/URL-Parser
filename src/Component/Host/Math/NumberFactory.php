@@ -12,12 +12,12 @@ use const PHP_INT_SIZE;
  * a 32-bit integer as it expects to be stored as an unsigned 32-bit integer, but PHP only
  * supports signed integers.
  */
-abstract class Number
+final class NumberFactory
 {
     /**
      * @param int|string $number
      */
-    public static function createInstance($number, int $base): NumberInterface
+    public static function createNumber($number, int $base): NumberInterface
     {
         // PHP_INT_SIZE returns the number of bytes that can fit in to an integer on the given
         // platform. If the size is 4, then we know we are operating on a 32-bit platform.

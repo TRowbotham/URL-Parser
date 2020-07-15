@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host\Serializer;
 
-use Rowbot\URL\Component\Host\Math\Number;
+use Rowbot\URL\Component\Host\Math\NumberFactory;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-ipv4-serializer
@@ -29,7 +29,7 @@ class IPv4AddressSerializer implements HostSerializerInterface
     public function toString(): string
     {
         $output = '';
-        $number = Number::createInstance($this->address, 10);
+        $number = NumberFactory::createNumber($this->address, 10);
 
         for ($i = 0; $i < 4; ++$i) {
             $output = $number->mod(256) . $output;
