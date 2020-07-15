@@ -12,7 +12,6 @@ use function explode;
 use function intval;
 use function mb_strlen;
 use function mb_substr;
-use function preg_last_error;
 use function preg_match;
 use function preg_replace;
 use function sprintf;
@@ -69,8 +68,8 @@ abstract class AbstractUSVString implements USVStringInterface
     {
         if (preg_match($pattern, $this->string, $matches, $flags, $offset) === false) {
             throw new RegexException(sprintf(
-                'preg_match encountered an error with code %d trying to match "%s" against "%s".',
-                preg_last_error(),
+                'preg_match encountered an error with message %s trying to match "%s" against "%s".',
+                RegexException::getNameFromLastCode(),
                 $this->string,
                 $pattern
             ));
@@ -89,8 +88,8 @@ abstract class AbstractUSVString implements USVStringInterface
 
         if ($result === null) {
             throw new RegexException(sprintf(
-                'preg_replace encountered an error with code %d and pattern %s.',
-                preg_last_error(),
+                'preg_replace encountered an error with message %s and pattern %s.',
+                RegexException::getNameFromLastCode(),
                 $pattern
             ));
         }
