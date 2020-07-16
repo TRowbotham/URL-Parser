@@ -14,7 +14,7 @@ parameters:
             path: src/URLSearchParams.php
 
         -
-            message: '#Strict comparison using !== between 0 and 0 will always evaluate to false\.#'
+            message: '#Strict comparison using === between string and false will always evaluate to false\.#'
             path: src/String/AbstractUSVString.php
 
         -
@@ -29,7 +29,3 @@ parameters:
         -
             message: '#Variable property access on Rowbot\\URL\\URLRecord\.#'
             path: src/State/AuthorityState.php
-
-        -
-            message: '#Property Rowbot\\URL\\String\\Utf8StringIterator::\$codePoints \(array<int, string>\) does not accept array<string, mixed>\.#'
-            path: src/String/Utf8StringIterator.php

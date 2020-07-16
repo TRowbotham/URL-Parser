@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Rowbot\URL\Component;
 
 use ArrayIterator;
-use IntlBreakIterator;
 use IteratorAggregate;
 use Rowbot\URL\String\Utf8String;
 use Rowbot\URL\Support\EncodingHelper;
@@ -14,6 +13,7 @@ use function array_filter;
 use function array_splice;
 use function count;
 use function explode;
+use function ord;
 use function rawurldecode;
 use function rawurlencode;
 use function strlen;
@@ -226,10 +226,6 @@ class QueryList implements IteratorAggregate
             $temp[] = [$i++, $pair];
         }
 
-        // Gasp! What is this black magic?
-        $iter1 = IntlBreakIterator::createCodePointInstance();
-        $iter2 = IntlBreakIterator::createCodePointInstance();
-
         // Sorting priority overview:
         //
         // Each string is compared character by character against each other.
@@ -245,13 +241,14 @@ class QueryList implements IteratorAggregate
         // 3) If the two strings are considered equal, then they are sorted by the relative
         //    position in which they appeared in the array. (e.g. The string "b=c&a=c&b=a&a=a"
         //    becomes "a=c&a=a&b=c&b=a".)
-        usort($temp, function (array $a, array $b) use ($iter1, $iter2): int {
-            $iter1->setText($a[1]['name']);
-            $iter2->setText($b[1]['name']);
+        usort($temp, function (array $a, array $b): int {
+            $iter1 = $this->utf8Decode($a[1]['name']);
+            $iter2 = $this->utf8Decode($b[1]['name']);
+            $i = 0;
 
             while (true) {
-                $aIsValid = $iter1->next() !== IntlBreakIterator::DONE;
-                $bIsValid = $iter2->next() !== IntlBreakIterator::DONE;
+                $aIsValid = isset($iter1[$i]);
+                $bIsValid = isset($iter2[$i]);
 
                 if (!$aIsValid && !$bIsValid) {
                     // If we have reached this point then there are 2
@@ -293,8 +290,8 @@ class QueryList implements IteratorAggregate
                     return 1;
                 }
 
-                $aCodeUnits = $this->computeCodeUnits($iter1->getLastCodePoint());
-                $bCodeUnits = $this->computeCodeUnits($iter2->getLastCodePoint());
+                $aCodeUnits = $this->computeCodeUnits($iter1[$i]);
+                $bCodeUnits = $this->computeCodeUnits($iter2[$i]);
                 $cmp = $aCodeUnits <=> $bCodeUnits;
 
                 // We only want to return if the result is not equal, as equal results must be
@@ -302,6 +299,8 @@ class QueryList implements IteratorAggregate
                 if ($cmp !== 0) {
                     return $cmp;
                 }
+
+                ++$i;
             }
 
             // Finally, if all else is equal, sort by relative position.
@@ -372,5 +371,95 @@ class QueryList implements IteratorAggregate
         }
 
         return $output;
+    }
+
+    /**
+     * Takes a UTF-8 encoded string and converts it into a series of integer code points. Any
+     * invalid byte sequences will be replaced by a U+FFFD replacement code point.
+     *
+     * @see https://encoding.spec.whatwg.org/#utf-8-decoder
+     *
+     * @return list<int>
+     */
+    private function utf8Decode(string $input): array
+    {
+        $bytesSeen = 0;
+        $bytesNeeded = 0;
+        $lowerBoundary = 0x80;
+        $upperBoundary = 0xBF;
+        $codePoint = 0;
+        $codePoints = [];
+        $length = strlen($input);
+
+        for ($i = 0; $i < $length; ++$i) {
+            $byte = ord($input[$i]);
+
+            if ($bytesNeeded === 0) {
+                if ($byte >= 0x00 && $byte <= 0x7F) {
+                    $codePoints[] = $byte;
+
+                    continue;
+                }
+
+                if ($byte >= 0xC2 && $byte <= 0xDF) {
+                    $bytesNeeded = 1;
+                    $codePoint = $byte & 0x1F;
+                } elseif ($byte >= 0xE0 && $byte <= 0xEF) {
+                    if ($byte === 0xE0) {
+                        $lowerBoundary = 0xA0;
+                    } elseif ($byte === 0xED) {
+                        $upperBoundary = 0x9F;
+                    }
+
+                    $bytesNeeded = 2;
+                    $codePoint = $byte & 0xF;
+                } elseif ($byte >= 0xF0 && $byte <= 0xF4) {
+                    if ($byte === 0xF0) {
+                        $lowerBoundary = 0x90;
+                    } elseif ($byte === 0xF4) {
+                        $upperBoundary = 0x8F;
+                    }
+
+                    $bytesNeeded = 3;
+                    $codePoint = $byte & 0x7;
+                } else {
+                    $codePoints[] = 0xFFFD;
+                }
+
+                continue;
+            }
+
+            if ($byte < $lowerBoundary || $byte > $upperBoundary) {
+                $codePoint = 0;
+                $bytesNeeded = 0;
+                $bytesSeen = 0;
+                $lowerBoundary = 0x80;
+                $upperBoundary = 0xBF;
+                --$i;
+                $codePoints[] = 0xFFFD;
+
+                continue;
+            }
+
+            $lowerBoundary = 0x80;
+            $upperBoundary = 0xBF;
+            $codePoint = ($codePoint << 6) | ($byte & 0x3F);
+
+            if (++$bytesSeen !== $bytesNeeded) {
+                continue;
+            }
+
+            $codePoints[] = $codePoint;
+            $codePoint = 0;
+            $bytesNeeded = 0;
+            $bytesSeen = 0;
+        }
+
+        // String unexpectedly ended, so append a U+FFFD code point.
+        if ($bytesNeeded !== 0) {
+            $codePoints[] = 0xFFFD;
+        }
+
+        return $codePoints;
     }
 }

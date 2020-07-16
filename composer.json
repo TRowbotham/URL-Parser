@@ -6,17 +6,16 @@
     "authors": [
         {
             "name": "Trevor Rowbotham",
-            "homepage": "http://trowbotham.com",
+            "homepage": "https://trowbotham.com",
             "role": "Developer"
         }
     ],
     "require": {
         "php": ">=7.1",
-        "ext-intl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "lib-ICU": ">=4.6",
-        "brick/math": "^0.8.13"
+        "brick/math": "^0.8.13",
+        "rowbot/idna": "^0.1.2"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^6.3",

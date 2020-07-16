@@ -6,11 +6,12 @@ namespace Rowbot\URL\String;
 
 use Rowbot\URL\String\Exception\RegexException;
 use Rowbot\URL\String\Exception\UConverterException;
-use UConverter;
 
 use function explode;
 use function intval;
+use function mb_convert_encoding;
 use function mb_strlen;
+use function mb_substitute_character;
 use function mb_substr;
 use function preg_match;
 use function preg_replace;
@@ -19,7 +20,6 @@ use function strlen;
 use function substr;
 
 use const PHP_INT_MAX;
-use const U_ZERO_ERROR;
 
 abstract class AbstractUSVString implements USVStringInterface
 {
@@ -160,29 +160,20 @@ abstract class AbstractUSVString implements USVStringInterface
         string $toEncoding,
         string $fromEncoding
     ): string {
-        $converter = new UConverter($toEncoding, $fromEncoding);
+        $sub = mb_substitute_character();
+        mb_substitute_character(0xFFFD);
+        $result = mb_convert_encoding($string, $toEncoding, $fromEncoding);
+        mb_substitute_character($sub);
 
-        if ($converter->getErrorCode() !== U_ZERO_ERROR) {
+        if ($result === false) {
             throw new UConverterException(sprintf(
-                'Attempting to create the UConverter object with encodings "%s" and "%s" failed with message "%s".',
-                $toEncoding,
+                'Attempting to transcode from "%s" to "%s" failed.',
                 $fromEncoding,
-                $converter->getErrorMessage()
-            ), $converter->getErrorCode());
+                $toEncoding
+            ));
         }
 
-        $transcodedString = $converter->convert($string);
-
-        if ($converter->getErrorCode() !== U_ZERO_ERROR) {
-            throw new UConverterException(sprintf(
-                'Attempting to transcode from "%s" to "%s" failed with message "%s".',
-                $fromEncoding,
-                $toEncoding,
-                $converter->getErrorMessage()
-            ), $converter->getErrorCode());
-        }
-
-        return $transcodedString;
+        return $result;
     }
 
     public function __toString(): string

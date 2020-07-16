@@ -17,7 +17,7 @@ class StringsTest extends TestCase
 {
     public function testTranscodeUnknownEncoding(): void
     {
-        $this->expectException(UConverterException::class);
+        $this->expectWarning();
         Utf8String::transcode('stuff', 'gallifreyan', 'utf-8');
     }
 

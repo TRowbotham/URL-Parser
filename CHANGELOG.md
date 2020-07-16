@@ -5,6 +5,7 @@
 ### Added
 
 - Added test coverage on Windows 32-bit.
+- Dependency on `rowbot/idna` to support international domain names without `ext-intl`.
 
 ### Changed
 
@@ -17,6 +18,10 @@
 
 - Incorrect output encoding used when encoding was overriden to be "replacement", "utf-16", "utf-16le", or "utf-16be".
 - `ext-json` is now correctly listed as a dependency.
+
+### Removed
+
+- Dependency on `ext-intl` and `lib-ICU`.
 
 ## [3.0.1] - 2020-02-29
 

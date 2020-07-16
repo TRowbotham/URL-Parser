@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
-use IntlBreakIterator;
+use Rowbot\URL\String\Exception\RegexException;
 
-use function iterator_to_array;
+use function preg_split;
+use function sprintf;
+
+use const PREG_SPLIT_NO_EMPTY;
 
 class Utf8StringIterator implements StringIteratorInterface
 {
@@ -22,9 +25,18 @@ class Utf8StringIterator implements StringIteratorInterface
 
     public function __construct(string $string)
     {
-        $iter = IntlBreakIterator::createCodePointInstance();
-        $iter->setText($string);
-        $this->codePoints = iterator_to_array($iter->getPartsIterator());
+        // This shouldn't fail if the input string is valid utf-8.
+        $codePoints = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
+
+        if ($codePoints === false) {
+            throw new RegexException(sprintf(
+                'preg_split encountered an error with message %s trying to split a string into '
+                . 'code points.',
+                RegexException::getNameFromLastCode()
+            ));
+        }
+
+        $this->codePoints = $codePoints;
         $this->cursor = 0;
     }
 

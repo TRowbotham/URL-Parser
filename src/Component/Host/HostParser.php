@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host;
 
+use Rowbot\Idna\Idna;
 use Rowbot\URL\Component\Host\Exception\IDNATransformException;
 use Rowbot\URL\Component\Host\Exception\InvalidHostException;
 use Rowbot\URL\Component\Host\Exception\InvalidIPv4AddressException;
@@ -28,27 +29,32 @@ class HostParser
     private const FORBIDDEN_OPAQUE_HOST_CODEPOINTS = '\x00\x09\x0A\x0D\x20#\/:<>?@[\\\\\]^';
     private const FORBIDDEN_HOST_CODEPOINTS = self::FORBIDDEN_OPAQUE_HOST_CODEPOINTS . '%';
 
+    /**
+     * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
+     */
     private function domainToAscii(string $domain, bool $beStrict = false): StringHost
     {
-        $flags = IDNA::CHECK_BIDI | IDNA::CHECK_JOINERS | IDNA::NONTRANSITIONAL_PROCESSING;
+        $result = Idna::toAscii($domain, [
+            'CheckHyphens'            => false,
+            'CheckBidi'               => true,
+            'CheckJoiners'            => true,
+            'UseSTD3ASCIIRules'       => $beStrict,
+            'Transitional_Processing' => false,
+            'VerifyDnsLength'         => $beStrict,
+        ]);
+        $convertedDomain = $result->getDomain();
 
-        if ($beStrict) {
-            $flags |= IDNA::USE_STD3_ASCII_RULES | IDNA::VERIFY_DNS_LENGTH;
-        }
-
-        try {
-            $result = IDNA::toAscii($domain, $flags);
-
-            if ($result === '') {
-                // Validation error.
-                throw new IDNATransformException();
-            }
-
-            return new StringHost($result);
-        } catch (IDNATransformException $e) {
+        if ($convertedDomain === '') {
             // Validation error.
-            throw $e;
+            throw new IDNATransformException();
         }
+
+        if ($result->hasErrors()) {
+            // Validation error.
+            throw new IDNATransformException();
+        }
+
+        return new StringHost($convertedDomain);
     }
 
     /**
