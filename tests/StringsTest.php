@@ -5,19 +5,25 @@ declare(strict_types=1);
 namespace Rowbot\URL\Tests;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Runner\Version;
 use Rowbot\URL\String\Exception\RegexException;
-use Rowbot\URL\String\Exception\UConverterException;
 use Rowbot\URL\String\Exception\UndefinedIndexException;
 use Rowbot\URL\String\StringList;
 use Rowbot\URL\String\Utf8String;
 
 use function is_int;
+use function version_compare;
 
 class StringsTest extends TestCase
 {
     public function testTranscodeUnknownEncoding(): void
     {
-        $this->expectWarning();
+        if (version_compare(Version::series(), '9', '>=')) {
+            $this->expectWarning();
+        } else {
+            $this->expectException(\PHPUnit\Framework\Error\Warning::class);
+        }
+
         Utf8String::transcode('stuff', 'gallifreyan', 'utf-8');
     }
 
