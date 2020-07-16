@@ -16,7 +16,7 @@ use const ARRAY_FILTER_USE_KEY;
 
 class RegexException extends URLException
 {
-    public static function getNameFromLastCode()
+    public static function getNameFromLastCode(): string
     {
         $code = preg_last_error();
         $constants = get_defined_constants(true)['pcre'];
