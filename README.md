@@ -10,6 +10,14 @@ A [WHATWG URL](https://url.spec.whatwg.org/) spec compliant URL parser for worki
 
 This API offers 2 objects that you can use to help you work with URLs; [URL](#url) and [URLSearchParams](#urlsearchparams).
 
+## Requirements
+
+* PHP >= 7.1
+* `ext-json`
+* `ext-mbstring`
+* `brick/math`
+* `rowbot/idna`
+
 ## Installation
 
 ```bash
