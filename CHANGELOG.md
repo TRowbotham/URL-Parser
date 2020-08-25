@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Serializing non-special URLs is now idempotent per [whatwg/url#505](https://github.com/whatwg/url/pull/505)
+
 ## [3.1.0] - 2020-07-15
 
 ### Added

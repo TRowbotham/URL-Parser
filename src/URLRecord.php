@@ -178,8 +178,9 @@ class URLRecord
     public function serializeURL(bool $excludeFragment = false): string
     {
         $output = $this->scheme . ':';
+        $isNullHost = $this->host->isNull();
 
-        if (!$this->host->isNull()) {
+        if (!$isNullHost) {
             $output .= '//';
 
             if ($this->username !== '' || $this->password !== '') {
@@ -204,7 +205,14 @@ class URLRecord
         if ($this->cannotBeABaseUrl) {
             $output .= $this->path->first();
         } else {
-            if (!$this->path->isEmpty()) {
+            $pathCount = $this->path->count();
+
+            if ($isNullHost && $pathCount > 1 && $this->path->first()->isEmpty()) {
+                $output .= '/.';
+            }
+
+            // Needed since implode() doesn't add a starting "/" when there is only one path segment.
+            if ($pathCount > 0) {
                 $output .= '/';
             }
 
