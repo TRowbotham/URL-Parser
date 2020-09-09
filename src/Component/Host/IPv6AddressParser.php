@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host;
 
-use Rowbot\URL\Component\Host\Exception\InvalidIPv6AddressException;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
 
 use function intval;
-use function sprintf;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-ipv6-parser
@@ -18,25 +16,12 @@ use function sprintf;
 class IPv6AddressParser
 {
     /**
-     * @var array<int, int>
+     * @return \Rowbot\URL\Component\Host\IPv6Address|false
      */
-    private $address;
-
-    /**
-     * @var int
-     */
-    private $pieceIndex;
-
-    public function __construct()
+    public static function parse(USVStringInterface $input)
     {
-        $this->address = [];
-        $this->pieceIndex = 0;
-    }
-
-    public function parse(USVStringInterface $input): IPv6Address
-    {
-        $this->address = [0, 0, 0, 0, 0, 0, 0, 0];
-        $this->pieceIndex = 0;
+        $address = [0, 0, 0, 0, 0, 0, 0, 0];
+        $pieceIndex = 0;
         $compress = null;
         $iter = $input->getIterator();
         $iter->rewind();
@@ -44,32 +29,27 @@ class IPv6AddressParser
         if ($iter->current() === ':') {
             if ($iter->peek() !== ':') {
                 // Validation error.
-                throw new InvalidIPv6AddressException(sprintf(
-                    'Invalid compressed IPv6 address. Expected ":", but found "%s".',
-                    $iter->current()
-                ));
+                return false;
             }
 
             $iter->seek(2);
-            $compress = ++$this->pieceIndex;
+            $compress = ++$pieceIndex;
         }
 
         while ($iter->valid()) {
-            if ($this->pieceIndex === 8) {
+            if ($pieceIndex === 8) {
                 // Validation error.
-                throw new InvalidIPv6AddressException('IPv6 address contained more than 8 pieces.');
+                return false;
             }
 
             if ($iter->current() === ':') {
                 if ($compress !== null) {
                     // Validation error.
-                    throw new InvalidIPv6AddressException(
-                        'IPv6 address contained multiple compressions.'
-                    );
+                    return false;
                 }
 
                 $iter->next();
-                $compress = ++$this->pieceIndex;
+                $compress = ++$pieceIndex;
 
                 continue;
             }
@@ -86,21 +66,23 @@ class IPv6AddressParser
             if ($iter->current() === '.') {
                 if ($length === 0) {
                     // Validation error.
-                    throw new InvalidIPv6AddressException(
-                        'IPv4 address in IPv6 address contained an empty octet.'
-                    );
+                    return false;
                 }
 
                 $iter->seek(-$length);
 
-                if ($this->pieceIndex > 6) {
+                if ($pieceIndex > 6) {
                     // Validation error.
-                    throw new InvalidIPv6AddressException(
-                        'IPv6 address must not have more than 6 pieces when it also contains an IPv4 address.'
-                    );
+                    return false;
                 }
 
-                $this->parseIPv4Address($iter);
+                $result = self::parseIPv4Address($iter, $address, $pieceIndex);
+
+                if ($result === false) {
+                    return false;
+                }
+
+                [$address, $pieceIndex] = $result;
 
                 break;
             }
@@ -110,45 +92,45 @@ class IPv6AddressParser
 
                 if (!$iter->valid()) {
                     // Validation error.
-                    throw new InvalidIPv6AddressException(
-                        'IPv6 address ended prematurely. Expected to find a number, but found nothing.'
-                    );
+                    return false;
                 }
             } elseif ($iter->valid()) {
                 // Validation error.
-                throw new InvalidIPv6AddressException(sprintf(
-                    'Invalid IPv6 delimiter. Expected ":", but found "%s".',
-                    $iter->current()
-                ));
+                return false;
             }
 
-            $this->address[$this->pieceIndex++] = $value;
+            $address[$pieceIndex++] = $value;
         }
 
         if ($compress !== null) {
-            $swaps = $this->pieceIndex - $compress;
-            $this->pieceIndex = 7;
+            $swaps = $pieceIndex - $compress;
+            $pieceIndex = 7;
 
-            while ($this->pieceIndex !== 0 && $swaps > 0) {
-                $temp = $this->address[$this->pieceIndex];
-                $this->address[$this->pieceIndex] = $this->address[$compress + $swaps - 1];
-                $this->address[$compress + $swaps - 1] = $temp;
-                --$this->pieceIndex;
+            while ($pieceIndex !== 0 && $swaps > 0) {
+                $temp = $address[$pieceIndex];
+                $address[$pieceIndex] = $address[$compress + $swaps - 1];
+                $address[$compress + $swaps - 1] = $temp;
+                --$pieceIndex;
                 --$swaps;
             }
-        } elseif ($this->pieceIndex !== 8) {
+        } elseif ($pieceIndex !== 8) {
             // Validation error.
-            throw new InvalidIPv6AddressException(sprintf(
-                'A non-compressed IPv6 address must contain 8 pieces, but the address only contained %d pieces.',
-                $this->pieceIndex
-            ));
+            return false;
         }
 
-        return new IPv6Address($this->address);
+        return new IPv6Address($address);
     }
 
-    private function parseIPv4Address(StringIteratorInterface $iter): void
-    {
+    /**
+     * @param list<int> $address
+     *
+     * @return array{0: list<int>, 1: int}|false
+     */
+    private static function parseIPv4Address(
+        StringIteratorInterface $iter,
+        array $address,
+        int $pieceIndex
+    ) {
         $numbersSeen = 0;
 
         do {
@@ -157,10 +139,7 @@ class IPv6AddressParser
             if ($numbersSeen > 0) {
                 if ($iter->current() !== '.' && $numbersSeen >= 4) {
                     // Validation error.
-                    throw new InvalidIPv6AddressException(sprintf(
-                        'IPv4 address must contain 4 octets, but found %d.',
-                        $numbersSeen
-                    ));
+                    return false;
                 }
 
                 $iter->next();
@@ -168,10 +147,7 @@ class IPv6AddressParser
 
             if (!CodePoint::isAsciiDigit($iter->current())) {
                 // Validation error.
-                throw new InvalidIPv6AddressException(sprintf(
-                    'IPv4 address must only contain ASCII digits, but found "%s" instead.',
-                    $iter->current()
-                ));
+                return false;
             }
 
             do {
@@ -181,37 +157,33 @@ class IPv6AddressParser
                     $ipv4Piece = $number;
                 } elseif ($ipv4Piece === 0) {
                     // Validation error.
-                    throw new InvalidIPv6AddressException('The first IPv4 octet must not be 0.');
+                    return false;
                 } else {
                     $ipv4Piece = ($ipv4Piece * 10) + $number;
                 }
 
                 if ($ipv4Piece > 255) {
                     // Validation error.
-                    throw new InvalidIPv6AddressException(sprintf(
-                        'IPv4 octets cannot be greater than 255, %d given.',
-                        $ipv4Piece
-                    ));
+                    return false;
                 }
 
                 $iter->next();
             } while (CodePoint::isAsciiDigit($iter->current()));
 
-            $piece = $this->address[$this->pieceIndex];
-            $this->address[$this->pieceIndex] = ($piece * 0x100) + $ipv4Piece;
+            $piece = $address[$pieceIndex];
+            $address[$pieceIndex] = ($piece * 0x100) + $ipv4Piece;
             ++$numbersSeen;
 
             if ($numbersSeen === 2 || $numbersSeen === 4) {
-                ++$this->pieceIndex;
+                ++$pieceIndex;
             }
         } while ($iter->valid());
 
         if ($numbersSeen !== 4) {
             // Validation error.
-            throw new InvalidIPv6AddressException(sprintf(
-                'IPv4 address must contain 4 octets, but found %d.',
-                $numbersSeen
-            ));
+            return false;
         }
+
+        return [$address, $pieceIndex];
     }
 }

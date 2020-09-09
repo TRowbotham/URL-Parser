@@ -5,17 +5,10 @@ declare(strict_types=1);
 namespace Rowbot\URL\Component\Host;
 
 use Rowbot\Idna\Idna;
-use Rowbot\URL\Component\Host\Exception\IDNATransformException;
-use Rowbot\URL\Component\Host\Exception\InvalidHostException;
-use Rowbot\URL\Component\Host\Exception\InvalidIPv4AddressException;
-use Rowbot\URL\Component\Host\Exception\InvalidIPv4NumberException;
-use Rowbot\URL\Component\Host\Exception\InvalidIPv6AddressException;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\USVStringInterface;
 
-use function ord;
 use function rawurldecode;
-use function sprintf;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-host-parser
@@ -31,8 +24,10 @@ class HostParser
 
     /**
      * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
+     *
+     * @return \Rowbot\URL\Component\Host\StringHost|false
      */
-    private function domainToAscii(string $domain, bool $beStrict = false): StringHost
+    private static function domainToAscii(string $domain, bool $beStrict = false)
     {
         $result = Idna::toAscii($domain, [
             'CheckHyphens'            => false,
@@ -46,12 +41,12 @@ class HostParser
 
         if ($convertedDomain === '') {
             // Validation error.
-            throw new IDNATransformException();
+            return false;
         }
 
         if ($result->hasErrors()) {
             // Validation error.
-            throw new IDNATransformException();
+            return false;
         }
 
         return new StringHost($convertedDomain);
@@ -62,61 +57,46 @@ class HostParser
      *
      * @param bool $isNotSpecial (optional) Whether or not the URL has a special scheme.
      *
-     * @return \Rowbot\URL\Component\Host\HostInterface The returned Host can never be a null host.
+     * @return \Rowbot\URL\Component\Host\HostInterface|false The returned Host can never be a null host.
      */
-    public function parse(USVStringInterface $input, bool $isNotSpecial = false): HostInterface
+    public static function parse(USVStringInterface $input, bool $isNotSpecial = false)
     {
         if ($input->startsWith('[')) {
             if (!$input->endsWith(']')) {
                 // Validation error.
-                throw new InvalidIPv6AddressException(sprintf(
-                    'IPv6 address must end with "]", but found "%s".',
-                    (string) $input->substr(-1)
-                ));
+                return false;
             }
 
-            $ipv6 = new IPv6AddressParser();
-
-            return $ipv6->parse($input->substr(1, -1));
+            return IPv6AddressParser::parse($input->substr(1, -1));
         }
 
         if ($isNotSpecial) {
-            return $this->parseOpaqueHost($input);
+            return self::parseOpaqueHost($input);
         }
 
-        if ($input->isEmpty()) {
-            throw new InvalidHostException('The domain must not be an empty string.');
-        }
-
+        assert(!$input->isEmpty());
         $domain = rawurldecode((string) $input);
+        $asciiDomain = self::domainToAscii($domain);
 
-        try {
-            $asciiDomain = $this->domainToAscii($domain);
-        } catch (IDNATransformException $e) {
+        if ($asciiDomain === false) {
             // Validation error.
-            throw $e;
+            return false;
         }
 
         $matches = $asciiDomain->matches('/[' . self::FORBIDDEN_HOST_CODEPOINTS . ']/u');
 
         if ($matches !== []) {
-            throw new InvalidHostException(sprintf(
-                'The domain contained the forbidden code point U+%04X "%s".',
-                ord($matches[0]),
-                $matches[0]
-            ));
-        }
-
-        $ipv4Host = new IPv4AddressParser();
-
-        try {
-            return $ipv4Host->parse($asciiDomain);
-        } catch (InvalidIPv4AddressException $e) {
-            return $asciiDomain;
-        } catch (InvalidIPv4NumberException $e) {
             // Validation error.
-            throw $e;
+            return false;
         }
+
+        $ipv4Host = IPv4AddressParser::parse($asciiDomain);
+
+        if ($ipv4Host instanceof IPv4Address || $ipv4Host === false) {
+            return $ipv4Host;
+        }
+
+        return $asciiDomain;
     }
 
     /**
@@ -124,19 +104,16 @@ class HostParser
      *
      * @see https://url.spec.whatwg.org/#concept-opaque-host-parser
      *
-     * @return \Rowbot\URL\Component\Host\HostInterface
+     * @return \Rowbot\URL\Component\Host\HostInterface|false
      */
-    private function parseOpaqueHost(USVStringInterface $input): HostInterface
+    private static function parseOpaqueHost(USVStringInterface $input)
     {
         // Match a forbidden host code point, minus the "%" character.
         $matches = $input->matches('/[' . self::FORBIDDEN_OPAQUE_HOST_CODEPOINTS . ']/u');
 
         if ($matches !== []) {
-            throw new InvalidHostException(sprintf(
-                'The domain contained the forbidden code point U+%04X "%s".',
-                ord($matches[0]),
-                $matches[0]
-            ));
+            // Validation error.
+            return false;
         }
 
         $output = '';

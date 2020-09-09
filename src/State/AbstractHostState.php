@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\Component\Host\Exception\HostException;
 use Rowbot\URL\Component\Host\HostParser;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringBufferInterface;
@@ -50,17 +49,13 @@ abstract class AbstractHostState implements State
                 return self::RETURN_FAILURE;
             }
 
-            $hostParser = new HostParser();
+            $host = HostParser::parse($buffer->toUtf8String(), !$url->scheme->isSpecial());
 
-            try {
-                $url->host = $hostParser->parse(
-                    $buffer->toUtf8String(),
-                    !$url->scheme->isSpecial()
-                );
-            } catch (HostException $e) {
+            if ($host === false) {
                 return self::RETURN_FAILURE;
             }
 
+            $url->host = $host;
             $buffer->clear();
             $parser->setState(new PortState());
 
@@ -96,17 +91,13 @@ abstract class AbstractHostState implements State
                 return self::RETURN_BREAK;
             }
 
-            $hostParser = new HostParser();
+            $host = HostParser::parse($buffer->toUtf8String(), !$url->scheme->isSpecial());
 
-            try {
-                $url->host = $hostParser->parse(
-                    $buffer->toUtf8String(),
-                    !$url->scheme->isSpecial()
-                );
-            } catch (HostException $e) {
+            if ($host === false) {
                 return self::RETURN_FAILURE;
             }
 
+            $url->host = $host;
             $buffer->clear();
             $parser->setState(new PathStartState());
 

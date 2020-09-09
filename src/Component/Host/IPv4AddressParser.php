@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host;
 
-use Rowbot\URL\Component\Host\Exception\InvalidIPv4AddressException;
-use Rowbot\URL\Component\Host\Exception\InvalidIPv4NumberException;
 use Rowbot\URL\Component\Host\Math\NumberFactory;
-use Rowbot\URL\Component\Host\Math\NumberInterface;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\USVStringInterface;
 
 use function array_pop;
 use function count;
-use function sprintf;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-ipv4-parser
@@ -21,23 +17,16 @@ use function sprintf;
 class IPv4AddressParser
 {
     /**
-     * @var bool
+     * @return \Rowbot\URL\String\USVStringInterface|\Rowbot\URL\Component\Host\IPv4Address|false
      */
-    private $validationError;
-
-    public function __construct()
+    public static function parse(USVStringInterface $input)
     {
-        $this->validationError = false;
-    }
-
-    public function parse(USVStringInterface $input): IPv4Address
-    {
-        $this->validationError = false;
+        $validationError = false;
         $parts = $input->split('.');
         $count = $parts->count();
 
         if ($parts->last()->isEmpty()) {
-            $this->validationError = true;
+            $validationError = true;
 
             if ($count > 1) {
                 $parts->pop();
@@ -46,23 +35,30 @@ class IPv4AddressParser
         }
 
         if ($count > 4) {
-            throw new InvalidIPv4AddressException(sprintf(
-                'IPv4 address cannot contain more than 4 octets. %d octets were found.',
-                $count
-            ));
+            return $input;
         }
 
         $numbers = [];
 
         foreach ($parts as $part) {
             if ($part->isEmpty()) {
-                throw new InvalidIPv4AddressException('IPv4 octets cannot be an empty string.');
+                return $input;
             }
 
-            $numbers[] = $this->parseIPv4Number($part);
+            $result = self::parseIPv4Number($part);
+
+            if ($result === false) {
+                return $input;
+            }
+
+            if ($result[1] === true) {
+                $validationError = $result[1];
+            }
+
+            $numbers[] = $result[0];
         }
 
-        if ($this->validationError) {
+        if ($validationError) {
             // Validation error.
         }
 
@@ -77,11 +73,7 @@ class IPv4AddressParser
 
         for ($i = 0; $i < $size - 1; ++$i) {
             if ($numbers[$i]->isGreaterThan(255)) {
-                throw new InvalidIPv4NumberException(sprintf(
-                    'Octet number %d had a value of %s, which exceeded the maximum valid size of 255.',
-                    $i + 1,
-                    (string) $numbers[$i]
-                ));
+                return false;
             }
         }
 
@@ -89,11 +81,7 @@ class IPv4AddressParser
 
         if ($numbers[$size - 1]->isGreaterThanOrEqualTo($limit)) {
             // Validation error.
-            throw new InvalidIPv4NumberException(sprintf(
-                'The last octet had a value of %d, which exceeded the maximum valid size of %s.',
-                (string) $numbers[$size - 1],
-                (string) $limit
-            ));
+            return false;
         }
 
         /** @var \Rowbot\URL\Component\Host\Math\NumberInterface $ipv4 */
@@ -110,46 +98,45 @@ class IPv4AddressParser
 
     /**
      * @see https://url.spec.whatwg.org/#ipv4-number-parser
+     *
+     * @return array{0: \Rowbot\URL\Component\Host\Math\NumberInterface, 1: bool}|false
      */
-    private function parseIPv4Number(USVStringInterface $input): NumberInterface
+    private static function parseIPv4Number(USVStringInterface $input)
     {
+        $validationError = false;
         $radix = 10;
 
         if ($input->length() > 1) {
             if ($input->startsWith('0x') || $input->startsWith('0X')) {
-                $this->validationError = true;
+                $validationError = true;
                 $input = $input->substr(2);
                 $radix = 16;
             } elseif ($input->startsWith('0')) {
-                $this->validationError = true;
+                $validationError = true;
                 $input = $input->substr(1);
                 $radix = 8;
             }
         }
 
         if ($input->isEmpty()) {
-            return NumberFactory::createNumber(0, 10);
+            return [NumberFactory::createNumber(0, 10), $validationError];
         }
 
         if (
-            ($radix === 10 && !$this->isDecimal($input))
-            || ($radix === 16 && !$this->isHexadecimal($input))
-            || ($radix === 8 && !$this->isOctal($input))
+            ($radix === 10 && !self::isDecimal($input))
+            || ($radix === 16 && !self::isHexadecimal($input))
+            || ($radix === 8 && !self::isOctal($input))
         ) {
-            throw new InvalidIPv4AddressException(sprintf(
-                '%s is not a valid number in base %d.',
-                (string) $input,
-                $radix
-            ));
+            return false;
         }
 
-        return NumberFactory::createNumber((string) $input, $radix);
+        return [NumberFactory::createNumber((string) $input, $radix), $validationError];
     }
 
     /**
      * Checks if the given input only contains ASCII decimal digits.
      */
-    private function isDecimal(USVStringInterface $input): bool
+    private static function isDecimal(USVStringInterface $input): bool
     {
         foreach ($input as $codePoint) {
             if (!CodePoint::isAsciiDigit($codePoint)) {
@@ -163,7 +150,7 @@ class IPv4AddressParser
     /**
      * Checks if the given input only contains ASCII hex digits.
      */
-    private function isHexadecimal(USVStringInterface $input): bool
+    private static function isHexadecimal(USVStringInterface $input): bool
     {
         foreach ($input as $codePoint) {
             if (!CodePoint::isAsciiHexDigit($codePoint)) {
@@ -177,7 +164,7 @@ class IPv4AddressParser
     /**
      * Checks if the given input contains only octal digits.
      */
-    private function isOctal(USVStringInterface $input): bool
+    private static function isOctal(USVStringInterface $input): bool
     {
         foreach ($input as $codePoint) {
             if (!CodePoint::isAsciiOctalDigit($codePoint)) {

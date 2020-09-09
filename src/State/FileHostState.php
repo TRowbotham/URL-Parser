@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\Component\Host\Exception\HostException;
 use Rowbot\URL\Component\Host\HostParser;
 use Rowbot\URL\Component\Host\StringHost;
 use Rowbot\URL\String\CodePoint;
@@ -58,12 +57,9 @@ class FileHostState implements State
                 return self::RETURN_OK;
             }
 
-            $hostParser = new HostParser();
+            $host = HostParser::parse($buffer->toUtf8String(), !$url->scheme->isSpecial());
 
-            try {
-                $host = $hostParser->parse($buffer->toUtf8String(), !$url->scheme->isSpecial());
-            } catch (HostException $e) {
-                // Return failure.
+            if ($host === false) {
                 return self::RETURN_FAILURE;
             }
 
