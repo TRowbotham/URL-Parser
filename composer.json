@@ -18,7 +18,7 @@
         "rowbot/idna": "^0.1.2"
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/guzzle": "^6.3 || ^7.0",
         "phpstan/phpstan": "^0.12.20",
         "phpstan/phpstan-deprecation-rules": "^0.12.2",
         "phpstan/phpstan-strict-rules": "^0.12.2",
