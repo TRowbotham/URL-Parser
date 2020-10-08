@@ -198,8 +198,6 @@ class URLRecord
             if ($this->port !== null) {
                 $output .= ':' . $this->port;
             }
-        } elseif ($this->scheme->isFile()) {
-            $output .= '//';
         }
 
         if ($this->cannotBeABaseUrl) {

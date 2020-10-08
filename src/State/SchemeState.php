@@ -63,10 +63,7 @@ class SchemeState implements State
                     return self::RETURN_BREAK;
                 }
 
-                if (
-                    $url->scheme->isFile()
-                    && ($url->host->isEmpty() || $url->host->isNull())
-                ) {
+                if ($url->scheme->isFile() && $url->host->isEmpty()) {
                     return self::RETURN_BREAK;
                 }
             }

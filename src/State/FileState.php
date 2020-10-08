@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\Component\Host\NullHost;
+use Rowbot\URL\Component\Host\StringHost;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\Scheme;
 use Rowbot\URL\String\CodePoint;
@@ -29,6 +29,7 @@ class FileState implements State
         ?URLRecord $base
     ): int {
         $url->scheme = new Scheme('file');
+        $url->host = new StringHost();
 
         if ($codePoint === '/' || $codePoint === '\\') {
             if ($codePoint === '\\') {
