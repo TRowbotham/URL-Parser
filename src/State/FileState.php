@@ -70,7 +70,6 @@ class FileState implements State
                 $url->path->shorten($url->scheme);
             } else {
                 // Validation error.
-                $url->host = new NullHost();
                 $url->path = new PathList();
             }
 

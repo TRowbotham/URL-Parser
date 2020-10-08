@@ -34,19 +34,17 @@ class FileSlashState implements State
             return self::RETURN_OK;
         }
 
-        if (
-            $base !== null
-            && $base->scheme->isFile()
-            && !$input->substr($iter->key())->startsWithWindowsDriveLetter()
-        ) {
+        if ($base !== null && $base->scheme->isFile()) {
+            $url->host = clone $base->host;
             $path = $base->path->first();
 
-            if ($path->isNormalizedWindowsDriveLetter()) {
+            if (
+                !$input->substr($iter->key())->startsWithWindowsDriveLetter()
+                && $path->isNormalizedWindowsDriveLetter()
+            ) {
                 // This is a (platform-independent) Windows drive letter quirk. Both url’s and
                 // base’s host are null under these conditions and therefore not copied.
                 $url->path->push($path);
-            } else {
-                $url->host = clone $base->host;
             }
         }
 

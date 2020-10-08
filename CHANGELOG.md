@@ -5,6 +5,7 @@
 ### Changed
 
 - Serializing non-special URLs is now idempotent per [whatwg/url#505](https://github.com/whatwg/url/pull/505)
+- Changes to file URL path normalization per [whatwg/url#544](https://github.com/whatwg/url/pull/544).
 
 ## [3.1.0] - 2020-07-15
 

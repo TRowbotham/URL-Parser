@@ -81,11 +81,6 @@ class PathState implements State
                     && $url->path->isEmpty()
                     && $buffer->isWindowsDriveLetter()
                 ) {
-                    if (!$url->host->isEmpty() && !$url->host->isNull()) {
-                        // Validation error.
-                        $url->host = new StringHost();
-                    }
-
                     // This is a (platform-independent) Windows drive letter quirk.
                     $buffer->setCodePointAt(1, ':');
                 }
@@ -94,18 +89,6 @@ class PathState implements State
             }
 
             $buffer->clear();
-
-            if (
-                $url->scheme->isFile()
-                && ($codePoint === CodePoint::EOF || $codePoint === '?' || $codePoint === '#')
-            ) {
-                $size = $url->path->count();
-
-                while ($size-- > 1 && $url->path->first()->isEmpty()) {
-                    // Validation error.
-                    $url->path->shift();
-                }
-            }
 
             if ($codePoint === '?') {
                 $url->query = '';
