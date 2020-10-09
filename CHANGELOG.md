@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support for `brick/math` ^0.9
+
 ### Changed
 
 - Serializing non-special URLs is now idempotent per [whatwg/url#505](https://github.com/whatwg/url/pull/505)
