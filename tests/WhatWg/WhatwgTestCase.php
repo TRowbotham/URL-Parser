@@ -15,7 +15,7 @@ use function json_encode;
 use function json_last_error_msg;
 use function json_last_error;
 use function preg_match;
-use function preg_replace_callback;
+use function substr_replace;
 
 use const PREG_OFFSET_CAPTURE;
 use const JSON_ERROR_NONE;
@@ -58,57 +58,48 @@ abstract class WhatwgTestCase extends TestCase
         }
 
         $body = (string) $response->getBody();
-        $matchedPair = false;
-        $filteredJson = preg_replace_callback(
-            '/\\\u([[:xdigit:]]{4})/',
-            static function (array $matches) use ($body, &$matchedPair): string {
-                if ($matchedPair) {
-                    $matchedPair = false;
+        $offset = 0;
 
-                    // this was part of the previous matched pair, so leave it untouched
-                    return $matches[0][0];
+        // Replace all unpaired surrogate escape sequences with a \uFFFD escape sequence to avoid
+        // json_decode() having a stroke and emitting a JSON_ERROR_UTF16 error causing the decode
+        // to fail
+        while (preg_match('/\\\u([[:xdigit:]]{4})/', $body, $matches, PREG_OFFSET_CAPTURE, $offset) === 1) {
+            $codePoint1 = hexdec($matches[1][0]);
+            $offset = $matches[0][1] + 6;
+
+            if ($codePoint1 >= 0xD800 && $codePoint1 <= 0xDBFF) {
+                // There is no following code point, so replace it with a \uFFFD
+                if (
+                    preg_match(
+                        '/\G\\\u([[:xdigit:]]{4})/',
+                        $body,
+                        $m,
+                        PREG_OFFSET_CAPTURE,
+                        $matches[1][1] + 4
+                    ) !== 1
+                ) {
+                    $body = substr_replace($body, '\\uFFFD', $matches[0][1], 6);
+
+                    continue;
                 }
 
-                $codePoint1 = hexdec($matches[1][0]);
+                $codePoint2 = hexdec($m[1][0]);
 
-                if ($codePoint1 >= 0xD800 && $codePoint1 <= 0xDBFF) {
-                    // There is no following code point, so replace it with a U+FFFD
-                    if (
-                        preg_match(
-                            '/\G\\\u([[:xdigit:]]{4})/',
-                            $body,
-                            $m,
-                            PREG_OFFSET_CAPTURE,
-                            $matches[1][1] + 4
-                        ) !== 1
-                    ) {
-                        return "\u{FFFD}";
-                    }
+                // If next code point is not a low surrogate, replace it with a \uFFFD
+                if ($codePoint2 < 0xDC00 || $codePoint2 > 0xDFFF) {
+                    $body = substr_replace($body, '\\uFFFD', $matches[0][1], 6);
 
-                    $codePoint2 = hexdec($m[1][0]);
-
-                    // If next code point is not a low surrogate, replace it with a U+FFFD
-                    if ($codePoint2 < 0xDC00 || $codePoint2 > 0xDFFF) {
-                        return "\u{FFFD}";
-                    }
-
-                    $matchedPair = true;
-
-                    return $matches[0][0];
-                } elseif ($codePoint1 >= 0xDC00 && $codePoint1 <= 0xDFFF) {
-                    // lone low surrogate, replace it with a U+FFFD
-                    return "\u{FFFD}";
+                    continue;
                 }
 
-                // json_decode() can handle surrogate pairs, so leave it untouched
-                return $matches[0][0];
-            },
-            $body,
-            -1,
-            $count,
-            PREG_OFFSET_CAPTURE
-        );
-        $json = json_decode($filteredJson, true);
+                $offset += 6;
+            } elseif ($codePoint1 >= 0xDC00 && $codePoint1 <= 0xDFFF) {
+                // lone low surrogate, replace it with a \uFFFD
+                $body = substr_replace($body, '\\uFFFD', $matches[0][1], 6);
+            }
+        }
+
+        $json = json_decode($body, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new RuntimeException(sprintf(
