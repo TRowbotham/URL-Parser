@@ -14,16 +14,15 @@ class OriginTest extends TestCase
 {
     public function originProvider(): array
     {
-        $hostParser = new HostParser();
         $tuple = Origin::createTupleOrigin(
             'https',
-            $hostParser->parse(new Utf8String('example.org'), false),
+            HostParser::parse(new Utf8String('example.org'), false),
             null,
             null
         );
         $tupleDomain = Origin::createTupleOrigin(
             'https',
-            $hostParser->parse(new Utf8String('example.org'), false),
+            HostParser::parse(new Utf8String('example.org'), false),
             null,
             'example.org'
         );
@@ -35,7 +34,7 @@ class OriginTest extends TestCase
                 $tuple,
                 Origin::createTupleOrigin(
                     'https',
-                    $hostParser->parse(new Utf8String('example.org'), false),
+                    HostParser::parse(new Utf8String('example.org'), false),
                     null,
                     null
                 ),
@@ -43,21 +42,21 @@ class OriginTest extends TestCase
                 'same origin-domain' => true,
             ],
             [
-                Origin::createTupleOrigin('https', $hostParser->parse(new Utf8String('example.org'), false), 314, null),
-                Origin::createTupleOrigin('https', $hostParser->parse(new Utf8String('example.org'), false), 420, null),
+                Origin::createTupleOrigin('https', HostParser::parse(new Utf8String('example.org'), false), 314, null),
+                Origin::createTupleOrigin('https', HostParser::parse(new Utf8String('example.org'), false), 420, null),
                 'same origin' => false,
                 'same origin-domain' => false,
             ],
             [
                 Origin::createTupleOrigin(
                     'https',
-                    $hostParser->parse(new Utf8String('example.org'), false),
+                    HostParser::parse(new Utf8String('example.org'), false),
                     314,
                     'example.org'
                 ),
                 Origin::createTupleOrigin(
                     'https',
-                    $hostParser->parse(new Utf8String('example.org'), false),
+                    HostParser::parse(new Utf8String('example.org'), false),
                     420,
                     'example.org'
                 ),
@@ -67,13 +66,13 @@ class OriginTest extends TestCase
             [
                 Origin::createTupleOrigin(
                     'https',
-                    $hostParser->parse(new Utf8String('example.org'), false),
+                    HostParser::parse(new Utf8String('example.org'), false),
                     null,
                     null
                 ),
                 Origin::createTupleOrigin(
                     'https',
-                    $hostParser->parse(new Utf8String('example.org'), false),
+                    HostParser::parse(new Utf8String('example.org'), false),
                     null,
                     'example.org'
                 ),
@@ -83,13 +82,13 @@ class OriginTest extends TestCase
             [
                 Origin::createTupleOrigin(
                     'https',
-                    $hostParser->parse(new Utf8String('example.org'), false),
+                    HostParser::parse(new Utf8String('example.org'), false),
                     null,
                     'example.org'
                 ),
                 Origin::createTupleOrigin(
                     'http',
-                    $hostParser->parse(new Utf8String('example.org'), false),
+                    HostParser::parse(new Utf8String('example.org'), false),
                     null,
                     'example.org'
                 ),
@@ -97,14 +96,14 @@ class OriginTest extends TestCase
                 'same origin-domain' => false,
             ],
             [
-                Origin::createTupleOrigin('https', $hostParser->parse(new Utf8String('127.0.0.1'), false), null, null),
-                Origin::createTupleOrigin('https', $hostParser->parse(new Utf8String('1.1.1.1'), false), null, null),
+                Origin::createTupleOrigin('https', HostParser::parse(new Utf8String('127.0.0.1'), false), null, null),
+                Origin::createTupleOrigin('https', HostParser::parse(new Utf8String('1.1.1.1'), false), null, null),
                 'same origin' => false,
                 'same origin-domain' => false,
             ],
             [
-                Origin::createTupleOrigin('https', $hostParser->parse(new Utf8String('[::1]'), false), null, null),
-                Origin::createTupleOrigin('https', $hostParser->parse(new Utf8String('[1::1]'), false), null, null),
+                Origin::createTupleOrigin('https', HostParser::parse(new Utf8String('[::1]'), false), null, null),
+                Origin::createTupleOrigin('https', HostParser::parse(new Utf8String('[1::1]'), false), null, null),
                 'same origin' => false,
                 'same origin-domain' => false,
             ],
@@ -173,10 +172,9 @@ class OriginTest extends TestCase
         $this->assertNotNull($origin->getEffectiveDomain());
         $this->assertSame('foo.com', $origin->getEffectiveDomain());
 
-        $hostParser = new HostParser();
         $origin = Origin::createTupleOrigin(
             'https',
-            $hostParser->parse(new Utf8String('example.org'), false),
+            HostParser::parse(new Utf8String('example.org'), false),
             314,
             'example.org'
         );
