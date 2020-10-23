@@ -100,6 +100,9 @@ class URLSearchParamsStringifierTest extends TestCase
         $params->delete('a');
         $params->append('a%b', 'c');
         $this->assertEquals('a%25b=c', $params . '');
+
+        $params = new URLSearchParams('id=0&value=%');
+        $this->assertSame('id=0&value=%25', $params . '');
     }
 
     public function testSerializeNullByte(): void
