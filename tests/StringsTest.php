@@ -18,12 +18,7 @@ class StringsTest extends TestCase
 {
     public function testTranscodeUnknownEncoding(): void
     {
-        if (version_compare(Version::series(), '9', '>=')) {
-            $this->expectWarning();
-        } else {
-            $this->expectException(\PHPUnit\Framework\Error\Warning::class);
-        }
-
+        $this->expectPromotedWarning();
         Utf8String::transcode('stuff', 'gallifreyan', 'utf-8');
     }
 
@@ -100,27 +95,11 @@ class StringsTest extends TestCase
         $s->replaceRegex('/[A-Z]/u', 'foo');
     }
 
-    /**
-     * @requires PHP < 8
-     */
     public function testSplitReturnsEmptyListWithEmptyDelimiter(): void
     {
+        $this->expectPromotedWarning();
         $s = new Utf8String('');
-        // PHP warns when passing an empty delimiter to \explode(), the underlying function, so we
-        // must silence the warning to test return value of ::split(). In PHP 8+ the warning becomes
-        // an error and explode no longer returns false.
-        $list = @$s->split('');
-        $this->assertTrue($list->isEmpty());
-    }
-
-    /**
-     * @requires PHP >= 8
-     */
-    public function testSplitErrorsWithEmptyDelimiter(): void
-    {
-        $this->expectError();
-        $s = new Utf8String('');
-        $s->split('');
+        $this->assertTrue($s->split('')->isEmpty());
     }
 
     public function testStringListFirstThrowsWithEmptyList(): void
@@ -145,5 +124,20 @@ class StringsTest extends TestCase
             // ::assertIsInt() isn't available on PHPUnit 7
             $this->assertTrue(is_int($key));
         }
+    }
+
+    protected function expectPromotedWarning(): void
+    {
+        if (PHP_VERSION_ID < 80000) {
+            if (version_compare(Version::series(), '9', '>=')) {
+                $this->expectWarning();
+            } else {
+                $this->expectException(\PHPUnit\Framework\Error\Warning::class);
+            }
+
+            return;
+        }
+
+        $this->expectException(\ValueError::class);
     }
 }
