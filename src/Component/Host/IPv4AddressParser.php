@@ -10,6 +10,8 @@ use Rowbot\URL\String\USVStringInterface;
 
 use function array_pop;
 use function count;
+use function strlen;
+use function strspn;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-ipv4-parser
@@ -122,56 +124,17 @@ class IPv4AddressParser
             return [NumberFactory::createNumber(0, 10), $validationError];
         }
 
+        $s = (string) $input;
+        $length = strlen($s);
+
         if (
-            ($radix === 10 && !self::isDecimal($input))
-            || ($radix === 16 && !self::isHexadecimal($input))
-            || ($radix === 8 && !self::isOctal($input))
+            ($radix === 10 && strspn($s, CodePoint::ASCII_DIGIT_MASK) !== $length)
+            || ($radix === 16 && strspn($s, CodePoint::HEX_DIGIT_MASK) !== $length)
+            || ($radix === 8 && strspn($s, CodePoint::OCTAL_DIGIT_MASK) !== $length)
         ) {
             return false;
         }
 
-        return [NumberFactory::createNumber((string) $input, $radix), $validationError];
-    }
-
-    /**
-     * Checks if the given input only contains ASCII decimal digits.
-     */
-    private static function isDecimal(USVStringInterface $input): bool
-    {
-        foreach ($input as $codePoint) {
-            if (!CodePoint::isAsciiDigit($codePoint)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Checks if the given input only contains ASCII hex digits.
-     */
-    private static function isHexadecimal(USVStringInterface $input): bool
-    {
-        foreach ($input as $codePoint) {
-            if (!CodePoint::isAsciiHexDigit($codePoint)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Checks if the given input contains only octal digits.
-     */
-    private static function isOctal(USVStringInterface $input): bool
-    {
-        foreach ($input as $codePoint) {
-            if (!CodePoint::isAsciiOctalDigit($codePoint)) {
-                return false;
-            }
-        }
-
-        return true;
+        return [NumberFactory::createNumber($s, $radix), $validationError];
     }
 }

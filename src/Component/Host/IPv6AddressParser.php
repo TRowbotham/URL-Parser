@@ -9,6 +9,7 @@ use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
 
 use function intval;
+use function strpbrk;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-ipv6-parser
@@ -56,11 +57,13 @@ class IPv6AddressParser
 
             $value = 0;
             $length = 0;
+            $current = $iter->current();
 
-            while ($length < 4 && CodePoint::isAsciiHexDigit($iter->current())) {
-                $value = ($value * 0x10) + intval($iter->current(), 16);
+            while ($length < 4 && strpbrk($current, CodePoint::HEX_DIGIT_MASK) === $current) {
+                $value = ($value * 0x10) + intval($current, 16);
                 $iter->next();
                 ++$length;
+                $current = $iter->current();
             }
 
             if ($iter->current() === '.') {
@@ -145,13 +148,15 @@ class IPv6AddressParser
                 $iter->next();
             }
 
-            if (!CodePoint::isAsciiDigit($iter->current())) {
+            $current = $iter->current();
+
+            if (strpbrk($current, CodePoint::ASCII_DIGIT_MASK) !== $current) {
                 // Validation error.
                 return false;
             }
 
             do {
-                $number = (int) $iter->current();
+                $number = (int) $current;
 
                 if ($ipv4Piece === null) {
                     $ipv4Piece = $number;
@@ -168,7 +173,8 @@ class IPv6AddressParser
                 }
 
                 $iter->next();
-            } while (CodePoint::isAsciiDigit($iter->current()));
+                $current = $iter->current();
+            } while (strpbrk($current, CodePoint::ASCII_DIGIT_MASK) === $current);
 
             $piece = $address[$pieceIndex];
             $address[$pieceIndex] = ($piece * 0x100) + $ipv4Piece;

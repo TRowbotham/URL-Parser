@@ -27,5 +27,9 @@ parameters:
             path: src/String/CodePoint.php
 
         -
+            message: "#Strict comparison using !== between \\*NEVER\\* and '\\S+' will always evaluate to true\\.#"
+            path: src/String/CodePoint.php
+
+        -
             message: '#Variable property access on Rowbot\\URL\\URLRecord\.#'
             path: src/State/AuthorityState.php

@@ -12,6 +12,7 @@ use Rowbot\URL\String\USVStringInterface;
 use Rowbot\URL\ParserConfigInterface;
 use Rowbot\URL\URLRecord;
 
+use function strpbrk;
 use function strtolower;
 
 /**
@@ -29,7 +30,7 @@ class SchemeState implements State
         ?URLRecord $base
     ): int {
         if (
-            CodePoint::isAsciiAlphaNumeric($codePoint)
+            strpbrk($codePoint, CodePoint::ASCII_ALNUM_MASK) === $codePoint
             || $codePoint === '+'
             || $codePoint === '-'
             || $codePoint === '.'

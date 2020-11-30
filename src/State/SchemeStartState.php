@@ -11,6 +11,7 @@ use Rowbot\URL\String\USVStringInterface;
 use Rowbot\URL\ParserConfigInterface;
 use Rowbot\URL\URLRecord;
 
+use function strpbrk;
 use function strtolower;
 
 /**
@@ -27,7 +28,7 @@ class SchemeStartState implements State
         URLRecord $url,
         ?URLRecord $base
     ): int {
-        if (CodePoint::isAsciiAlpha($codePoint)) {
+        if (strpbrk($codePoint, CodePoint::ASCII_ALPHA_MASK) === $codePoint) {
             $buffer->append(strtolower($codePoint));
             $parser->setState(new SchemeState());
 

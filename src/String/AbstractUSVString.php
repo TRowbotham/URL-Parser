@@ -17,6 +17,7 @@ use function preg_match;
 use function preg_replace;
 use function sprintf;
 use function strlen;
+use function strspn;
 use function substr;
 
 use const PHP_INT_MAX;
@@ -130,8 +131,7 @@ abstract class AbstractUSVString implements USVStringInterface
             return false;
         }
 
-        return CodePoint::isAsciiHexDigit($this->string[0])
-            && CodePoint::isAsciiHexDigit($this->string[1]);
+        return strspn($this->string, CodePoint::HEX_DIGIT_MASK, 0, 2) === 2;
     }
 
     /**

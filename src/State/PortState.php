@@ -25,7 +25,7 @@ class PortState implements State
         URLRecord $url,
         ?URLRecord $base
     ): int {
-        if (CodePoint::isAsciiDigit($codePoint)) {
+        if (strpbrk($codePoint, CodePoint::ASCII_DIGIT_MASK) === $codePoint) {
             $buffer->append($codePoint);
 
             return self::RETURN_OK;
