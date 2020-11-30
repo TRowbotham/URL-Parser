@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Performance improvements
+- Test on PHP 8 release in CI
+
 ## [3.1.1] - 2020-10-17
 
 ### Added
