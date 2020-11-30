@@ -18,7 +18,7 @@ parameters:
             path: src/String/AbstractUSVString.php
 
         -
-            message: '#Method Rowbot\\URL\\Component\\QueryList::getIterator\(\) should return ArrayIterator<int, array\(\x27name\x27 => string, \x27value\x27 => string\)> but returns ArrayIterator<int, array<string, string>>\.#'
+            message: '#Method Rowbot\\URL\\Component\\QueryList::getIterator\(\) should return ArrayIterator<int, array\(\x27name\x27 => string, \x27value\x27 => string\)> but returns ArrayIterator<int, array<string, string>&nonEmpty>\.#'
             path: src/Component/QueryList.php
 
         # Note to self: You can't escape single quotes in neon. Another possible alternative would be to replace single quotes with \x27.
