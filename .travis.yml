@@ -19,6 +19,7 @@ matrix:
         - RUN_PHPSTAN=true
     - php: 7.3
     - php: 7.4
+    - php: 8.0
       dist: bionic
     - php: nightly
       env:
