@@ -63,19 +63,21 @@ class PathState implements State
                 // Validation error.
             }
 
-            if ($this->isDoubleDotPathSegment($buffer)) {
+            $stringBuffer = (string) $buffer;
+
+            if (isset(self::DOUBLE_DOT_SEGMENT[$stringBuffer])) {
                 $url->path->shorten($url->scheme);
 
                 if ($codePoint !== '/' && !($urlIsSpecial && $codePoint === '\\')) {
                     $url->path->push(new Path());
                 }
             } elseif (
-                $this->isSingleDotPathSegment($buffer)
+                isset(self::SINGLE_DOT_SEGMENT[$stringBuffer])
                 && $codePoint !== '/'
                 && !($urlIsSpecial && $codePoint === '\\')
             ) {
                 $url->path->push(new Path());
-            } elseif (!$this->isSingleDotPathSegment($buffer)) {
+            } elseif (!isset(self::SINGLE_DOT_SEGMENT[$stringBuffer])) {
                 if (
                     $url->scheme->isFile()
                     && $url->path->isEmpty()
@@ -118,15 +120,5 @@ class PathState implements State
         ));
 
         return self::RETURN_OK;
-    }
-
-    private function isDoubleDotPathSegment(StringBufferInterface $buffer): bool
-    {
-        return isset(self::DOUBLE_DOT_SEGMENT[(string) $buffer]);
-    }
-
-    private function isSingleDotPathSegment(StringBufferInterface $buffer): bool
-    {
-        return isset(self::SINGLE_DOT_SEGMENT[(string) $buffer]);
     }
 }
