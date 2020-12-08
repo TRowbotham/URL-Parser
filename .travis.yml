@@ -20,7 +20,6 @@ matrix:
     - php: 7.3
     - php: 7.4
     - php: 8.0
-      dist: bionic
     - php: nightly
       env:
         - COMPOSER_ARGS="--no-suggest --no-interaction --ignore-platform-reqs"
