@@ -19,7 +19,7 @@
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^6.3 || ^7.0",
-        "phpstan/phpstan": "^0.12.20",
+        "phpstan/phpstan": "^0.12.66",
         "phpstan/phpstan-deprecation-rules": "^0.12.2",
         "phpstan/phpstan-strict-rules": "^0.12.2",
         "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0",
