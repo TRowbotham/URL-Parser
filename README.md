@@ -1,7 +1,7 @@
 # URL-Parser
 
 [![GitHub](https://img.shields.io/github/license/TRowbotham/URL-Parser.svg?style=flat-square)](https://github.com/TRowbotham/URL-Parser/blob/master/LICENSE)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/TRowbotham/URL-Parser/Test?style=flat-square)](https://github.com/TRowbotham/PHPDOM/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/TRowbotham/URL-Parser/Test%20URL/master?style=flat-square)](https://github.com/TRowbotham/URL-Parser/actions)
 [![Codecov](https://img.shields.io/codecov/c/github/TRowbotham/URL-Parser/master?logo=Codecov&style=flat-square&token=WDWFg8wmjW)](https://codecov.io/gh/TRowbotham/URL-Parser)
 [![Packagist](https://img.shields.io/packagist/v/rowbot/url.svg?style=flat-square)](https://packagist.org/packages/rowbot/url)
 [![Packagist](https://img.shields.io/packagist/dt/rowbot/url.svg?style=flat-square)](https://packagist.org/packages/rowbot/url)
