@@ -93,3 +93,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./build/coverage/clover.xml
+          name: PHP ${{ matrix.php-versions }} ${{ matrix.arch }}
