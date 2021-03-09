@@ -1,0 +1,96 @@
+name: Test URL
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }} ${{ matrix.arch }}
+    runs-on: ${{ matrix.operating-system }}
+    continue-on-error: ${{ matrix.experimental }}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        operating-system: ['ubuntu-latest']
+        php-versions: ['7.1', '7.2', '7.3', '7.4', '8.0']
+        arch: ['amd64']
+        phpunit-flags: ['--prefer-dist --optimize-autoloader']
+        prefer-lowest: [false]
+        experimental: [false]
+        include:
+          - php-versions: '7.1'
+            operating-system: 'ubuntu-latest'
+            arch: 'i386'
+            prefer-lowest: true
+            experimental: false
+
+          - php-versions: '8.1'
+            operating-system: 'ubuntu-latest'
+            arch: 'amd64'
+            phpunit-flags: '--prefer-dist --optimize-autoloader --ignore-platform-reqs'
+            experimental: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: json, mbstring, opcache, pcre, gmp
+          ini-values: zend.assertions=1
+          coverage: pcov
+        env:
+          fail-fast: true
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}-${{ matrix.prefer-lowest }}-
+          restore-keys: ${{ runner.os }}-composer-${{ matrix.prefer-lowest }}-
+
+      - name: Install Composer dependencies
+        run: composer install ${{ matrix.phpunit-flags }}
+
+      - name: Setup PCOV
+        if: ${{ matrix.php-versions == '7.1' }}
+        run: |
+          composer require pcov/clobber
+          vendor/bin/pcov clobber
+
+      - name: Downgrade dependencies to lowest
+        if: ${{ matrix.prefer-lowest }}
+        run: composer update ${{ matrix.phpunit-flags }} --prefer-lowest
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse
+
+      - name: Run PHPCS
+        run: vendor/bin/phpcs
+
+      - name: Run Tests
+        run: |
+          if [[ ${{ !matrix.experimental }} ]]; then
+            vendor/bin/phpunit --coverage-clover ./build/coverage/clover.xml
+          else
+            vendor/bin/phpunit
+          fi
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        if: ${{ !matrix.experimental }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./build/coverage/clover.xml

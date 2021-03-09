@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Switched to GitHub Actions for CI
+
 ## [3.1.2] - 2021-02-11
 
 ### Added

@@ -22,9 +22,7 @@ final class NumberFactory
         // PHP_INT_SIZE returns the number of bytes that can fit in to an integer on the given
         // platform. If the size is 4, then we know we are operating on a 32-bit platform.
         if (PHP_INT_SIZE === 4) {
-            // @codeCoverageIgnoreStart
             return new BrickMathAdapter($number, $base);
-            // @codeCoverageIgnoreEnd
         }
 
         return new NativeIntAdapter($number, $base);
