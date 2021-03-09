@@ -20,20 +20,22 @@ jobs:
         operating-system: ['ubuntu-latest']
         php-versions: ['7.1', '7.2', '7.3', '7.4', '8.0']
         arch: ['amd64']
-        phpunit-flags: ['--prefer-dist --optimize-autoloader']
-        prefer-lowest: [false]
+        composer-options: ['--optimize-autoloader']
+        composer-prefer: ['highest']
         experimental: [false]
         include:
           - php-versions: '7.1'
             operating-system: 'ubuntu-latest'
             arch: 'i386'
-            prefer-lowest: true
+            composer-options: '--optimize-autoloader --prefer-lowest'
+            composer-prefer: 'lowest'
             experimental: false
 
           - php-versions: '8.1'
             operating-system: 'ubuntu-latest'
             arch: 'amd64'
-            phpunit-flags: '--prefer-dist --optimize-autoloader --ignore-platform-reqs'
+            composer-options: '--optimize-autoloader --ignore-platform-reqs'
+            composer-prefer: 'highest'
             experimental: true
 
     steps:
@@ -58,21 +60,17 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}-${{ matrix.prefer-lowest }}-
-          restore-keys: ${{ runner.os }}-composer-${{ matrix.prefer-lowest }}-
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}-${{ matrix.composer-prefer }}-
+          restore-keys: ${{ runner.os }}-composer-${{ matrix.composer-prefer }}-
 
       - name: Install Composer dependencies
-        run: composer install ${{ matrix.phpunit-flags }}
+        run: composer update ${{ matrix.composer-options }}
 
       - name: Setup PCOV
         if: ${{ matrix.php-versions == '7.1' }}
         run: |
           composer require pcov/clobber
           vendor/bin/pcov clobber
-
-      - name: Downgrade dependencies to lowest
-        if: ${{ matrix.prefer-lowest }}
-        run: composer update ${{ matrix.phpunit-flags }} --prefer-lowest
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse
@@ -83,6 +81,7 @@ jobs:
       - name: Run Tests
         run: |
           if [[ ${{ !matrix.experimental }} ]]; then
+            mkdir -p ./build/coverage/
             vendor/bin/phpunit --coverage-clover ./build/coverage/clover.xml
           else
             vendor/bin/phpunit
@@ -90,7 +89,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
-        if: ${{ !matrix.experimental }}
+        if: ${{ !env.ACT && !matrix.experimental }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./build/coverage/clover.xml
