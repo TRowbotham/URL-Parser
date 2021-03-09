@@ -103,12 +103,12 @@ abstract class AbstractUSVString implements USVStringInterface
 
     public function split(string $delimiter, int $limit = null): StringListInterface
     {
-        $list = explode($delimiter, $this->string, $limit ?? PHP_INT_MAX);
-
-        if ($list === false) {
+        if ($delimiter === '') {
             return new StringList();
         }
 
+        /** @var non-empty-list<string> $list */
+        $list = explode($delimiter, $this->string, $limit ?? PHP_INT_MAX);
         $temp = [];
 
         foreach ($list as $string) {
@@ -160,6 +160,7 @@ abstract class AbstractUSVString implements USVStringInterface
         string $toEncoding,
         string $fromEncoding
     ): string {
+        /** @var int|string $sub */
         $sub = mb_substitute_character();
         mb_substitute_character(0xFFFD);
         $result = mb_convert_encoding($string, $toEncoding, $fromEncoding);

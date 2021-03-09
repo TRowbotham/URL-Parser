@@ -97,7 +97,6 @@ class StringsTest extends TestCase
 
     public function testSplitReturnsEmptyListWithEmptyDelimiter(): void
     {
-        $this->expectPromotedWarning();
         $s = new Utf8String('');
         $this->assertTrue($s->split('')->isEmpty());
     }
