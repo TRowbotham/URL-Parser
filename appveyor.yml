@@ -1,0 +1,48 @@
+platform: x86
+clone_folder: C:\projects\url-parser
+shallow_clone: true
+build: off
+
+cache:
+  - C:\php -> appveyor.yml
+  - vendor -> appveyor.yml
+
+init:
+  - set PATH=C:\php;%PATH%
+  - set PHP=1
+
+install:
+  - choco install codecov
+  - IF EXIST C:\php (SET PHP=0)
+  - IF %PHP%==1 curl -fsSL -o php.zip https://windows.php.net/downloads/releases/archives/php-7.1.33-Win32-VC14-x86.zip
+  - IF %PHP%==1 7z x php.zip -y -oC:\php
+  - IF %PHP%==1 del /Q php.zip
+  - IF %PHP%==1 curl -fsSL -o pcov.zip https://windows.php.net/downloads/pecl/releases/pcov/1.0.6/php_pcov-1.0.6-7.1-ts-vc14-x86.zip
+  - IF %PHP%==1 7z x pcov.zip -y -oC:\php\ext php_pcov.dll
+  - cd C:\php
+  - IF %PHP%==1 copy /y php.ini-development php.ini
+  - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
+  - IF %PHP%==1 echo extension_dir=ext >> php.ini
+  - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
+  - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
+  - IF %PHP%==1 echo extension=php_intl.dll >> php.ini
+  - IF %PHP%==1 echo extension=php_pcov.dll >> php.ini
+  - IF %PHP%==1 echo pcov.enabled=1 >> php.ini
+  - IF %PHP%==1 curl -fsSLO https://curl.haxx.se/ca/cacert.pem
+  - IF %PHP%==1 echo extension=php_curl.dll >> php.ini
+  - IF %PHP%==1 echo curl.cainfo="C:\php\cacert.pem" >> php.ini
+  - curl -fsSL -o composer.phar https://getcomposer.org/composer-stable.phar
+  - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
+  - cd C:\projects\url-parser
+  - composer update --prefer-lowest --no-progress --ansi
+  - composer require pcov/clobber
+  - vendor\bin\pcov clobber
+
+before_test:
+  - mkdir build\coverage
+
+test_script:
+  - vendor\bin\phpunit --coverage-clover=build\coverage\clover.xml
+
+on_success:
+  - codecov.exe -f build\coverage\clover.xml -n "PHP 7.1 on Windows x86"
