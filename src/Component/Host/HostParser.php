@@ -19,7 +19,7 @@ class HostParser
      * @see https://url.spec.whatwg.org/#forbidden-host-code-point
      * @see https://url.spec.whatwg.org/#ref-for-forbidden-host-code-point%E2%91%A0
      */
-    private const FORBIDDEN_OPAQUE_HOST_CODEPOINTS = '\x00\x09\x0A\x0D\x20#\/:<>?@[\\\\\]^';
+    private const FORBIDDEN_OPAQUE_HOST_CODEPOINTS = '\x00\x09\x0A\x0D\x20#\/:<>?@[\\\\\]^|';
     private const FORBIDDEN_HOST_CODEPOINTS = self::FORBIDDEN_OPAQUE_HOST_CODEPOINTS . '%';
 
     /**

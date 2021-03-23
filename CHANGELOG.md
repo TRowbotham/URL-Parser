@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- File URL reparse bug with percent encoded windows drive letter [whatwg/url#589](https://github.com/whatwg/url/pull/589)
+
 ### Changed
 
 - Switched to GitHub Actions for CI
