@@ -161,4 +161,15 @@ class URLSearchParamsStringifierTest extends TestCase
         );
         $this->assertEquals('a=b%2Cc&x=y', $params->toString());
     }
+
+    public function testURLSearchParamsMustNotDoNewlineNormalization(): void
+    {
+        $url = new URL('http://www.example.com/');
+        $params = $url->searchParams;
+
+        $params->append("a\nb", "c\rd");
+        $params->append("e\n\rf", "g\r\nh");
+
+        self::assertSame('a%0Ab=c%0Dd&e%0A%0Df=g%0D%0Ah', $params->toString());
+    }
 }
