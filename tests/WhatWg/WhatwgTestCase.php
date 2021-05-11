@@ -8,17 +8,19 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
+use function array_filter;
 use function GuzzleHttp\Psr7\uri_for;
 use function hexdec;
 use function json_decode;
 use function json_encode;
-use function json_last_error_msg;
 use function json_last_error;
+use function json_last_error_msg;
 use function preg_match;
+use function sprintf;
 use function substr_replace;
 
-use const PREG_OFFSET_CAPTURE;
 use const JSON_ERROR_NONE;
+use const PREG_OFFSET_CAPTURE;
 
 abstract class WhatwgTestCase extends TestCase
 {

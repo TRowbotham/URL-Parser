@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests;
 
+use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Version;
 use Rowbot\URL\String\Exception\RegexException;
 use Rowbot\URL\String\Exception\UndefinedIndexException;
 use Rowbot\URL\String\StringList;
 use Rowbot\URL\String\Utf8String;
+use ValueError;
 
 use function is_int;
 use function version_compare;
+
+use const PHP_VERSION_ID;
 
 class StringsTest extends TestCase
 {
@@ -131,12 +135,12 @@ class StringsTest extends TestCase
             if (version_compare(Version::series(), '9', '>=')) {
                 $this->expectWarning();
             } else {
-                $this->expectException(\PHPUnit\Framework\Error\Warning::class);
+                $this->expectException(Warning::class);
             }
 
             return;
         }
 
-        $this->expectException(\ValueError::class);
+        $this->expectException(ValueError::class);
     }
 }

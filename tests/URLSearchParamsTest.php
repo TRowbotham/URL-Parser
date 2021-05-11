@@ -10,6 +10,9 @@ use Rowbot\URL\URL;
 use Rowbot\URL\URLSearchParams;
 use stdClass;
 
+use function fclose;
+use function fopen;
+
 class URLSearchParamsTest extends TestCase
 {
     public function testCloningStandaloneURLSearchParams(): void
@@ -63,8 +66,8 @@ class URLSearchParamsTest extends TestCase
 
     public function unhandledInputProvider(): array
     {
-        $resource = \fopen('php://memory', 'r');
-        \fclose($resource);
+        $resource = fopen('php://memory', 'r');
+        fclose($resource);
 
         return [
             [null],

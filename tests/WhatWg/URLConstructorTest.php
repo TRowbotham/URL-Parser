@@ -6,6 +6,8 @@ use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
 use stdClass;
 
+use function property_exists;
+
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-constructor.html
  */

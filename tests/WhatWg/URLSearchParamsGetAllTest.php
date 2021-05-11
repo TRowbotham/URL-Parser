@@ -5,6 +5,8 @@ namespace Rowbot\URL\Tests\WhatWg;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\URLSearchParams;
 
+use function count;
+
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-getall.any.js
  */

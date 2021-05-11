@@ -7,6 +7,8 @@ namespace Rowbot\URL\Tests\Math;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\Component\Host\Math\NumberInterface;
 
+use const PHP_INT_MAX;
+
 abstract class MathTestCase extends TestCase
 {
     /**
@@ -175,6 +177,7 @@ abstract class MathTestCase extends TestCase
 
     /**
      * @dataProvider equalityNumberProvider
+     *
      * @param int|string $number
      */
     public function testToString($number, int $base, string $result): void
