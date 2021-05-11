@@ -3,13 +3,11 @@
 namespace Rowbot\URL\Tests\WhatWg;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\UriResolver;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 use function array_filter;
-use function GuzzleHttp\Psr7\uri_for;
 use function hexdec;
 use function json_decode;
 use function json_encode;
@@ -31,7 +29,7 @@ abstract class WhatwgTestCase extends TestCase
     {
         $cache = new FilesystemAdapter('whatwg-test-suite', self::CACHE_TTL, __DIR__ . '/data');
         $cacheKey = $url;
-        $uri = UriResolver::resolve(uri_for(self::WHATWG_BASE_URI), uri_for($url));
+        $uri = self::WHATWG_BASE_URI . $url;
         $testData = $cache->getItem($cacheKey);
 
         if ($testData->isHit()) {
@@ -43,7 +41,7 @@ abstract class WhatwgTestCase extends TestCase
 
             throw new RuntimeException(sprintf(
                 'The local copy of %s could not be converted into json : %s',
-                (string) $uri,
+                $uri,
                 json_last_error_msg()
             ));
         }
@@ -55,7 +53,7 @@ abstract class WhatwgTestCase extends TestCase
         if ($response->getStatusCode() >= 400) {
             throw new RuntimeException(sprintf(
                 'Unable to download a fresh copy of the testsuite located at, %s',
-                (string) $uri
+                $uri
             ));
         }
 
