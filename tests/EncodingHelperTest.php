@@ -25,6 +25,6 @@ class EncodingHelperTest extends TestCase
      */
     public function testReplacementAndUtf16EncodingsGetForcedToUtf8($encoding, $outputEncoding): void
     {
-        $this->assertSame($outputEncoding, EncodingHelper::getOutputEncoding($encoding));
+        self::assertSame($outputEncoding, EncodingHelper::getOutputEncoding($encoding));
     }
 }

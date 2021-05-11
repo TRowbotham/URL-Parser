@@ -22,8 +22,8 @@ class URLSearchParamsForeachTest extends TestCase
             $values[] = $param[1];
         }
 
-        $this->assertSame(['a', 'b', 'c'], $keys);
-        $this->assertSame(['1', '2', '3'], $values);
+        self::assertSame(['a', 'b', 'c'], $keys);
+        self::assertSame(['1', '2', '3'], $values);
     }
 
     public function test2(): void
@@ -37,16 +37,16 @@ class URLSearchParamsForeachTest extends TestCase
             $c[] = $i;
         }
 
-        $this->assertSame(['a', '1'], $c[0]);
-        $this->assertSame(['y', '2'], $c[1]);
-        $this->assertSame(['z', '3'], $c[2]);
+        self::assertSame(['a', '1'], $c[0]);
+        self::assertSame(['y', '2'], $c[1]);
+        self::assertSame(['z', '3'], $c[2]);
     }
 
     public function test3(): void
     {
         $a = new URL('http://a.b/c');
         $b = $a->searchParams;
-        $this->assertFalse($b->valid());
+        self::assertFalse($b->valid());
     }
 
     public function testDeleteNextParamDuringIteration(): void
@@ -63,8 +63,8 @@ class URLSearchParamsForeachTest extends TestCase
             $seen[] = $param;
         }
 
-        $this->assertSame(['param0', '0'], $seen[0]);
-        $this->assertSame(['param2', '2'], $seen[1]);
+        self::assertSame(['param0', '0'], $seen[0]);
+        self::assertSame(['param2', '2'], $seen[1]);
     }
 
     public function testDeleteCurrentParamDuringIteration(): void
@@ -82,7 +82,7 @@ class URLSearchParamsForeachTest extends TestCase
             }
         }
 
-        $this->assertSame(['param2', '2'], $seen[0]);
+        self::assertSame(['param2', '2'], $seen[0]);
     }
 
     public function testDeleteEveryParamSeenDuringIteration(): void
@@ -96,7 +96,7 @@ class URLSearchParamsForeachTest extends TestCase
             $searchParams->delete($param[0]);
         }
 
-        $this->assertSame(['param0', 'param2'], $seen);
-        $this->assertSame('param1=1', (string) $searchParams);
+        self::assertSame(['param0', 'param2'], $seen);
+        self::assertSame('param1=1', (string) $searchParams);
     }
 }

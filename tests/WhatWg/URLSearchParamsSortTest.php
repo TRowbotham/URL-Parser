@@ -95,7 +95,7 @@ class URLSearchParamsSortTest extends TestCase
         $i = 0;
 
         foreach ($params as $param) {
-            $this->assertSame($output[$i++], $param);
+            self::assertSame($output[$i++], $param);
         }
     }
 
@@ -103,7 +103,7 @@ class URLSearchParamsSortTest extends TestCase
     {
         $url = new URL('http://example.com/?');
         $url->searchParams->sort();
-        $this->assertSame('http://example.com/', $url->href);
-        $this->assertSame('', $url->search);
+        self::assertSame('http://example.com/', $url->href);
+        self::assertSame('', $url->search);
     }
 }

@@ -21,7 +21,7 @@ class URLSearchParamsTest extends TestCase
         $query2 = clone $query;
         $query2->append('foo', 'bar');
 
-        $this->assertSame('foo=bar', $query->toString());
+        self::assertSame('foo=bar', $query->toString());
     }
 
     public function testCloningAttachedURLSearchParams(): void
@@ -30,8 +30,8 @@ class URLSearchParamsTest extends TestCase
         $query = clone $url->searchParams;
         $query->append('foo', 'bar');
 
-        $this->assertSame('?foo=bar', $url->search);
-        $this->assertSame('foo=bar', $url->searchParams->toString());
+        self::assertSame('?foo=bar', $url->search);
+        self::assertSame('foo=bar', $url->searchParams->toString());
     }
 
     public function testIterationKey(): void
@@ -43,7 +43,7 @@ class URLSearchParamsTest extends TestCase
         ];
 
         foreach ($query as $index => $pair) {
-            $this->assertSame($result[$index], $pair);
+            self::assertSame($result[$index], $pair);
         }
     }
 
@@ -84,20 +84,20 @@ class URLSearchParamsTest extends TestCase
     public function testUnhandledInputDoesNothing($input): void
     {
         $params = new URLSearchParams($input);
-        $this->assertFalse($params->valid());
+        self::assertFalse($params->valid());
     }
 
     public function testInvalidIteratorReturnsArrayWithEmptyStrings(): void
     {
         $params = new URLSearchParams();
-        $this->assertSame(['', ''], $params->current());
-        $this->assertFalse($params->valid());
+        self::assertSame(['', ''], $params->current());
+        self::assertFalse($params->valid());
     }
 
     public function testSortingPairWithEmptyName(): void
     {
         $params = new URLSearchParams('=foo&x=bar&c=bar');
         $params->sort();
-        $this->assertSame('=foo&c=bar&x=bar', $params->toString());
+        self::assertSame('=foo&c=bar&x=bar', $params->toString());
     }
 }

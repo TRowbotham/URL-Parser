@@ -35,7 +35,7 @@ class URLSettersTest extends WhatwgTestCase
         $url->{$input->setter} = $input->new_value;
 
         foreach ($input->expected as $attribute => $value) {
-            $this->assertSame($value, $url->$attribute, $attribute);
+            self::assertSame($value, $url->$attribute, $attribute);
         }
     }
 }

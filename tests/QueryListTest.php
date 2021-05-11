@@ -17,6 +17,6 @@ class QueryListTest extends TestCase
         ];
         $list = new QueryList($input);
         $list->set('Foo', 'Bar');
-        $this->assertSame($input, $list->getIterator()->getArrayCopy());
+        self::assertSame($input, $list->getIterator()->getArrayCopy());
     }
 }

@@ -155,22 +155,22 @@ class OriginTest extends TestCase
         bool $isSameOrigin,
         bool $isSameOriginDomain
     ): void {
-        $this->assertSame($isSameOrigin, $originA->isSameOrigin($originB));
-        $this->assertSame($isSameOriginDomain, $originA->isSameOriginDomain($originB));
+        self::assertSame($isSameOrigin, $originA->isSameOrigin($originB));
+        self::assertSame($isSameOriginDomain, $originA->isSameOriginDomain($originB));
     }
 
     public function testEffectiveDomainConcept(): void
     {
         $origin = Origin::createOpaqueOrigin();
-        $this->assertTrue($origin->isOpaque());
-        $this->assertNull($origin->getEffectiveDomain());
+        self::assertTrue($origin->isOpaque());
+        self::assertNull($origin->getEffectiveDomain());
 
         $parser = new BasicURLParser();
         $record = $parser->parse(new Utf8String('blob:https://foo.com'));
         $origin = $record->getOrigin();
-        $this->assertFalse($origin->isOpaque());
-        $this->assertNotNull($origin->getEffectiveDomain());
-        $this->assertSame('foo.com', $origin->getEffectiveDomain());
+        self::assertFalse($origin->isOpaque());
+        self::assertNotNull($origin->getEffectiveDomain());
+        self::assertSame('foo.com', $origin->getEffectiveDomain());
 
         $origin = Origin::createTupleOrigin(
             'https',
@@ -178,8 +178,8 @@ class OriginTest extends TestCase
             314,
             'example.org'
         );
-        $this->assertFalse($origin->isOpaque());
-        $this->assertNotNull($origin->getEffectiveDomain());
-        $this->assertSame('example.org', $origin->getEffectiveDomain());
+        self::assertFalse($origin->isOpaque());
+        self::assertNotNull($origin->getEffectiveDomain());
+        self::assertSame('example.org', $origin->getEffectiveDomain());
     }
 }

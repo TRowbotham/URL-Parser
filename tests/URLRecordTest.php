@@ -15,8 +15,8 @@ class URLRecordTest extends TestCase
         $parser = new BasicURLParser();
         $record = $parser->parse(new Utf8String('blob:failure'));
         $origin = $record->getOrigin();
-        $this->assertTrue($origin->isOpaque());
-        $this->assertNull($origin->getEffectiveDomain());
+        self::assertTrue($origin->isOpaque());
+        self::assertNull($origin->getEffectiveDomain());
     }
 
     public function testFileSchemeCreatesOpaqueOrigin(): void
@@ -24,8 +24,8 @@ class URLRecordTest extends TestCase
         $parser = new BasicURLParser();
         $record = $parser->parse(new Utf8String('file:///C:/Users/Desktop/'));
         $origin = $record->getOrigin();
-        $this->assertTrue($origin->isOpaque());
-        $this->assertNull($origin->getEffectiveDomain());
+        self::assertTrue($origin->isOpaque());
+        self::assertNull($origin->getEffectiveDomain());
     }
 
     public function urlEqualityProvider(): iterable
@@ -50,7 +50,7 @@ class URLRecordTest extends TestCase
         $recordA = $parser->parse(new Utf8String($urlA));
         $recordB = $parser->parse(new Utf8String($urlB));
 
-        $this->assertSame($isEqualWithHash, $recordA->isEqual($recordB, false));
-        $this->assertSame($isEqualWithoutHash, $recordA->isEqual($recordB, true));
+        self::assertSame($isEqualWithHash, $recordA->isEqual($recordB, false));
+        self::assertSame($isEqualWithoutHash, $recordA->isEqual($recordB, true));
     }
 }

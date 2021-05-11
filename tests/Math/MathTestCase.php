@@ -35,8 +35,8 @@ abstract class MathTestCase extends TestCase
         $dividend = $this->createNumber(42);
         $computedQuotient = $dividend->intdiv($divisor);
 
-        $this->assertTrue($computedQuotient->isEqualTo($this->createNumber($quoient)));
-        $this->assertSame($quoient, (string) $computedQuotient);
+        self::assertTrue($computedQuotient->isEqualTo($this->createNumber($quoient)));
+        self::assertSame($quoient, (string) $computedQuotient);
     }
 
     public function equalityNumberProvider(): array
@@ -56,7 +56,7 @@ abstract class MathTestCase extends TestCase
      */
     public function testIsEqualTo($number, int $base, string $expected): void
     {
-        $this->assertTrue($this->createNumber($number, $base)->isEqualTo($this->createNumber($expected)));
+        self::assertTrue($this->createNumber($number, $base)->isEqualTo($this->createNumber($expected)));
     }
 
     public function greaterThanNumberProvider(): array
@@ -74,7 +74,7 @@ abstract class MathTestCase extends TestCase
      */
     public function testIsGreaterThan(int $number1, int $number2, bool $result): void
     {
-        $this->assertSame($result, $this->createNumber($number1)->isGreaterThan($number2));
+        self::assertSame($result, $this->createNumber($number1)->isGreaterThan($number2));
     }
 
     public function greaterThanOrEqualToNumberProvider(): array
@@ -92,7 +92,7 @@ abstract class MathTestCase extends TestCase
      */
     public function testIsGreaterThanOrEqualTo(int $number1, int $number2, bool $result): void
     {
-        $this->assertSame($result, $this->createNumber($number1)->isGreaterThanOrEqualTo($this->createNumber($number2)));
+        self::assertSame($result, $this->createNumber($number1)->isGreaterThanOrEqualTo($this->createNumber($number2)));
     }
 
     public function modNumberProvider(): array
@@ -111,8 +111,8 @@ abstract class MathTestCase extends TestCase
     {
         $computedRemainder = $this->createNumber($dividend)->mod($divisor);
 
-        $this->assertTrue($computedRemainder->isEqualTo($this->createNumber($remainder)));
-        $this->assertSame((string) $remainder, (string) $computedRemainder);
+        self::assertTrue($computedRemainder->isEqualTo($this->createNumber($remainder)));
+        self::assertSame((string) $remainder, (string) $computedRemainder);
     }
 
     public function multipliedByNumberProvider(): array
@@ -132,8 +132,8 @@ abstract class MathTestCase extends TestCase
     {
         $computedProduct = $this->createNumber($multiplicand)->multipliedBy($multiplier);
 
-        $this->assertTrue($computedProduct->isEqualTo($this->createNumber($product)));
-        $this->assertSame((string) $product, (string) $computedProduct);
+        self::assertTrue($computedProduct->isEqualTo($this->createNumber($product)));
+        self::assertSame((string) $product, (string) $computedProduct);
     }
 
     public function additionNumberProvider(): array
@@ -152,8 +152,8 @@ abstract class MathTestCase extends TestCase
     {
         $computedSum = $this->createNumber($addend1)->plus($this->createNumber($addend2));
 
-        $this->assertTrue($computedSum->isEqualTo($this->createNumber($sum)));
-        $this->assertSame($sum, (string) $computedSum);
+        self::assertTrue($computedSum->isEqualTo($this->createNumber($sum)));
+        self::assertSame($sum, (string) $computedSum);
     }
 
     public function powerNumberProvider(): array
@@ -171,8 +171,8 @@ abstract class MathTestCase extends TestCase
     {
         $computedPower = $this->createNumber($base)->pow($exponent);
 
-        $this->assertTrue($computedPower->isEqualTo($this->createNumber($power)));
-        $this->assertSame($power, (string) $computedPower);
+        self::assertTrue($computedPower->isEqualTo($this->createNumber($power)));
+        self::assertSame($power, (string) $computedPower);
     }
 
     /**
@@ -182,6 +182,6 @@ abstract class MathTestCase extends TestCase
      */
     public function testToString($number, int $base, string $result): void
     {
-        $this->assertSame($result, (string) $this->createNumber($number, $base));
+        self::assertSame($result, (string) $this->createNumber($number, $base));
     }
 }

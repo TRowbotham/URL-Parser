@@ -14,15 +14,15 @@ class NullHostTest extends TestCase
     {
         $host = new NullHost();
         $serializer = $host->getSerializer();
-        $this->assertEmpty($host->getSerializer()->toFormattedString());
-        $this->assertEmpty($host->getSerializer()->toString());
+        self::assertEmpty($host->getSerializer()->toFormattedString());
+        self::assertEmpty($host->getSerializer()->toString());
     }
 
     public function testNullHostIsEqualOnlyToItself(): void
     {
         $host = new NullHost();
-        $this->assertTrue($host->equals($host));
-        $this->assertTrue($host->equals(new NullHost()));
-        $this->assertFalse($host->equals(new StringHost()));
+        self::assertTrue($host->equals($host));
+        self::assertTrue($host->equals(new NullHost()));
+        self::assertFalse($host->equals(new StringHost()));
     }
 }

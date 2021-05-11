@@ -25,10 +25,10 @@ class ToASCIIWindowTest extends WhatwgTestCase
     {
         if ($hostTest->output !== null) {
             $url = new URL('https://' . $hostTest->input . '/x');
-            $this->assertSame($hostTest->output, $url->host);
-            $this->assertSame($hostTest->output, $url->hostname);
-            $this->assertSame('/x', $url->pathname);
-            $this->assertSame('https://' . $hostTest->output . '/x', $url->href);
+            self::assertSame($hostTest->output, $url->host);
+            self::assertSame($hostTest->output, $url->hostname);
+            self::assertSame('/x', $url->pathname);
+            self::assertSame('https://' . $hostTest->output . '/x', $url->href);
 
             return;
         }
@@ -45,7 +45,7 @@ class ToASCIIWindowTest extends WhatwgTestCase
         $url = new URL('https://x/x');
         $url->host = $hostTest->input;
 
-        $this->assertSame($hostTest->output ?? 'x', $url->host);
+        self::assertSame($hostTest->output ?? 'x', $url->host);
     }
 
     /**
@@ -56,6 +56,6 @@ class ToASCIIWindowTest extends WhatwgTestCase
         $url = new URL('https://x/x');
         $url->hostname = $hostTest->input;
 
-        $this->assertSame($hostTest->output ?? 'x', $url->hostname);
+        self::assertSame($hostTest->output ?? 'x', $url->hostname);
     }
 }

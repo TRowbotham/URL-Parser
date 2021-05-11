@@ -14,20 +14,20 @@ class URLSearchParamsAppendTest extends TestCase
     {
         $params = new URLSearchParams();
         $params->append('a', 'b');
-        $this->assertSame('a=b', $params . '');
+        self::assertSame('a=b', $params . '');
         $params->append('a', 'b');
-        $this->assertSame('a=b&a=b', $params . '');
+        self::assertSame('a=b&a=b', $params . '');
         $params->append('a', 'c');
-        $this->assertSame('a=b&a=b&a=c', $params . '');
+        self::assertSame('a=b&a=b&a=c', $params . '');
     }
 
     public function testAppendEmptyString(): void
     {
         $params = new URLSearchParams();
         $params->append('', '');
-        $this->assertSame('=', $params . '');
+        self::assertSame('=', $params . '');
         $params->append('', '');
-        $this->assertSame('=&=', $params . '');
+        self::assertSame('=&=', $params . '');
         $params->append('a', 'c');
     }
 
@@ -38,11 +38,11 @@ class URLSearchParamsAppendTest extends TestCase
         $params->append('second', 2);
         $params->append('third', '');
         $params->append('first', 10);
-        $this->assertTrue($params->has('first'));
-        $this->assertSame('1', $params->get('first'));
-        $this->assertSame('2', $params->get('second'));
-        $this->assertSame('', $params->get('third'));
+        self::assertTrue($params->has('first'));
+        self::assertSame('1', $params->get('first'));
+        self::assertSame('2', $params->get('second'));
+        self::assertSame('', $params->get('third'));
         $params->append('first', 10);
-        $this->assertSame('1', $params->get('first'));
+        self::assertSame('1', $params->get('first'));
     }
 }

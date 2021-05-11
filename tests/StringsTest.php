@@ -101,7 +101,7 @@ class StringsTest extends TestCase
     public function testSplitReturnsEmptyListWithEmptyDelimiter(): void
     {
         $s = new Utf8String('');
-        $this->assertTrue($s->split('')->isEmpty());
+        self::assertTrue($s->split('')->isEmpty());
     }
 
     public function testStringListFirstThrowsWithEmptyList(): void

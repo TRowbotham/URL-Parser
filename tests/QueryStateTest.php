@@ -25,13 +25,13 @@ class QueryStateTest extends TestCase
         $parser = new BasicURLParser();
         $record = $parser->parse($input, null, 'windows-1252');
 
-        $this->assertInstanceOf(URLRecord::class, $record);
-        $this->assertSame('sm%F6rg%E5sbord', $record->query);
+        self::assertInstanceOf(URLRecord::class, $record);
+        self::assertSame('sm%F6rg%E5sbord', $record->query);
 
         $record = $parser->parse($input, null);
 
-        $this->assertInstanceOf(URLRecord::class, $record);
-        $this->assertSame('sm%C3%B6rg%C3%A5sbord', $record->query);
+        self::assertInstanceOf(URLRecord::class, $record);
+        self::assertSame('sm%C3%B6rg%C3%A5sbord', $record->query);
     }
 
     public function testParsingWebsocketForcesUtf8EncodingInQueryString(): void
@@ -41,7 +41,7 @@ class QueryStateTest extends TestCase
         $parser = new BasicURLParser();
         $record = $parser->parse($input, null, 'windows-1252');
 
-        $this->assertInstanceOf(URLRecord::class, $record);
-        $this->assertSame('sm%C3%B6rg%C3%A5sbord', $record->query);
+        self::assertInstanceOf(URLRecord::class, $record);
+        self::assertSame('sm%C3%B6rg%C3%A5sbord', $record->query);
     }
 }

@@ -30,7 +30,7 @@ class SchemeTest extends TestCase
     public function testIsDefaultPortReturnsTrueForNonNullPortSpecialSchemes(string $scheme, int $port): void
     {
         $scheme = new Scheme($scheme);
-        $this->assertTrue($scheme->isDefaultPort($port));
+        self::assertTrue($scheme->isDefaultPort($port));
     }
 
     public function schemeDefaultPortProvider(): array
@@ -49,6 +49,6 @@ class SchemeTest extends TestCase
     public function testIsDefaultPortReturnsFalseForNonSpecialSchemesAndNullPorts(string $scheme, ?int $port): void
     {
         $scheme = new Scheme($scheme);
-        $this->assertFalse($scheme->isDefaultPort($port));
+        self::assertFalse($scheme->isDefaultPort($port));
     }
 }

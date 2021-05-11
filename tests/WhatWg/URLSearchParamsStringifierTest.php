@@ -15,134 +15,134 @@ class URLSearchParamsStringifierTest extends TestCase
     {
         $params = new URLSearchParams();
         $params->append('a', 'b c');
-        $this->assertSame('a=b+c', $params . '');
+        self::assertSame('a=b+c', $params . '');
         $params->delete('a');
         $params->append('a b', 'c');
-        $this->assertSame('a+b=c', $params . '');
+        self::assertSame('a+b=c', $params . '');
     }
 
     public function testSerializeEmptyValue(): void
     {
         $params = new URLSearchParams();
         $params->append('a', '');
-        $this->assertSame('a=', $params . '');
+        self::assertSame('a=', $params . '');
         $params->append('a', '');
-        $this->assertSame('a=&a=', $params . '');
+        self::assertSame('a=&a=', $params . '');
         $params->append('', 'b');
-        $this->assertSame('a=&a=&=b', $params . '');
+        self::assertSame('a=&a=&=b', $params . '');
         $params->append('', '');
-        $this->assertSame('a=&a=&=b&=', $params . '');
+        self::assertSame('a=&a=&=b&=', $params . '');
         $params->append('', '');
-        $this->assertSame('a=&a=&=b&=&=', $params . '');
+        self::assertSame('a=&a=&=b&=&=', $params . '');
     }
 
     public function testSerializeEmptyName(): void
     {
         $params = new URLSearchParams();
         $params->append('', 'b');
-        $this->assertSame('=b', $params . '');
+        self::assertSame('=b', $params . '');
         $params->append('', 'b');
-        $this->assertSame('=b&=b', $params . '');
+        self::assertSame('=b&=b', $params . '');
     }
 
     public function testSerialzieEmptyNameAndValue(): void
     {
         $params = new URLSearchParams();
         $params->append('', '');
-        $this->assertSame('=', $params . '');
+        self::assertSame('=', $params . '');
         $params->append('', '');
-        $this->assertSame('=&=', $params . '');
+        self::assertSame('=&=', $params . '');
     }
 
     public function testSerialziePlusSign(): void
     {
         $params = new URLSearchParams();
         $params->append('a', 'b+c');
-        $this->assertSame('a=b%2Bc', $params . '');
+        self::assertSame('a=b%2Bc', $params . '');
         $params->delete('a');
         $params->append('a+b', 'c');
-        $this->assertSame('a%2Bb=c', $params . '');
+        self::assertSame('a%2Bb=c', $params . '');
     }
 
     public function testSerializeEqualSign(): void
     {
         $params = new URLSearchParams();
         $params->append('=', 'a');
-        $this->assertSame('%3D=a', $params . '');
+        self::assertSame('%3D=a', $params . '');
         $params->append('b', '=');
-        $this->assertSame('%3D=a&b=%3D', $params . '');
+        self::assertSame('%3D=a&b=%3D', $params . '');
     }
 
     public function testSerializeAmpersand(): void
     {
         $params = new URLSearchParams();
         $params->append('&', 'a');
-        $this->assertSame('%26=a', $params . '');
+        self::assertSame('%26=a', $params . '');
         $params->append('b', '&');
-        $this->assertSame('%26=a&b=%26', $params . '');
+        self::assertSame('%26=a&b=%26', $params . '');
     }
 
     public function testSerializeSpecialChars(): void
     {
         $params = new URLSearchParams();
         $params->append('a', '*-._');
-        $this->assertSame('a=*-._', $params . '');
+        self::assertSame('a=*-._', $params . '');
         $params->delete('a');
         $params->append('*-._', 'c');
-        $this->assertSame('*-._=c', $params . '');
+        self::assertSame('*-._=c', $params . '');
     }
 
     public function testSerializePercentSign(): void
     {
         $params = new URLSearchParams();
         $params->append('a', 'b%c');
-        $this->assertSame('a=b%25c', $params . '');
+        self::assertSame('a=b%25c', $params . '');
         $params->delete('a');
         $params->append('a%b', 'c');
-        $this->assertSame('a%25b=c', $params . '');
+        self::assertSame('a%25b=c', $params . '');
 
         $params = new URLSearchParams('id=0&value=%');
-        $this->assertSame('id=0&value=%25', $params . '');
+        self::assertSame('id=0&value=%25', $params . '');
     }
 
     public function testSerializeNullByte(): void
     {
         $params = new URLSearchParams();
         $params->append('a', "b\0c");
-        $this->assertSame('a=b%00c', $params . '');
+        self::assertSame('a=b%00c', $params . '');
         $params->delete('a');
         $params->append("a\0b", 'c');
-        $this->assertSame('a%00b=c', $params . '');
+        self::assertSame('a%00b=c', $params . '');
     }
 
     public function testSerializeUnicodePileOfPoo(): void
     {
         $params = new URLSearchParams();
         $params->append('a', "b\u{1F4A9}c");
-        $this->assertSame('a=b%F0%9F%92%A9c', $params . '');
+        self::assertSame('a=b%F0%9F%92%A9c', $params . '');
         $params->delete('a');
         $params->append("a\u{1F4A9}b", 'c');
-        $this->assertSame('a%F0%9F%92%A9b=c', $params . '');
+        self::assertSame('a%F0%9F%92%A9b=c', $params . '');
     }
 
     public function testStringification(): void
     {
         $params = new URLSearchParams('a=b&c=d&&e&&');
-        $this->assertSame('a=b&c=d&e=', $params->toString());
+        self::assertSame('a=b&c=d&e=', $params->toString());
         $params = new URLSearchParams('a = b &a=b&c=d%20');
-        $this->assertSame('a+=+b+&a=b&c=d+', $params->toString());
+        self::assertSame('a+=+b+&a=b&c=d+', $params->toString());
         // The lone '=' _does_ survive the roundtrip.
         $params = new URLSearchParams('a=&a=b');
-        $this->assertSame('a=&a=b', $params->toString());
+        self::assertSame('a=&a=b', $params->toString());
 
         $params = new URLSearchParams('b=%2sf%2a');
-        $this->assertSame('b=%252sf*', $params->toString());
+        self::assertSame('b=%252sf*', $params->toString());
 
         $params = new URLSearchParams('b=%2%2af%2a');
-        $this->assertSame('b=%252*f*', $params->toString());
+        self::assertSame('b=%252*f*', $params->toString());
 
         $params = new URLSearchParams('b=%%2a');
-        $this->assertSame('b=%25*', $params->toString());
+        self::assertSame('b=%25*', $params->toString());
     }
 
     public function testURLSearchParamsConnectedToURL(): void
@@ -150,16 +150,16 @@ class URLSearchParamsStringifierTest extends TestCase
         $url = new URL('http://www.example.com/?a=b,c');
         $params = $url->searchParams;
 
-        $this->assertSame('http://www.example.com/?a=b,c', $url->toString());
-        $this->assertSame('a=b%2Cc', $params->toString());
+        self::assertSame('http://www.example.com/?a=b,c', $url->toString());
+        self::assertSame('a=b%2Cc', $params->toString());
 
         $params->append('x', 'y');
 
-        $this->assertSame(
+        self::assertSame(
             'http://www.example.com/?a=b%2Cc&x=y',
             $url->toString()
         );
-        $this->assertSame('a=b%2Cc&x=y', $params->toString());
+        self::assertSame('a=b%2Cc&x=y', $params->toString());
     }
 
     public function testURLSearchParamsMustNotDoNewlineNormalization(): void

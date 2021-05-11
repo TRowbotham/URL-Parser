@@ -16,7 +16,7 @@ class URLToJSONTest extends TestCase
     public function testBasicToJSON(): void
     {
         $a = new URL('https://example.com');
-        $this->assertSame('"' . str_replace('/', '\/', $a->href) . '"', json_encode($a));
-        $this->assertSame('"' . $a->href . '"', $a->toJSON());
+        self::assertSame('"' . str_replace('/', '\/', $a->href) . '"', json_encode($a));
+        self::assertSame('"' . $a->href . '"', $a->toJSON());
     }
 }

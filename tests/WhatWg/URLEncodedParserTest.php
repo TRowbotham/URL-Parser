@@ -63,13 +63,13 @@ class URLEncodedParserTest extends TestCase
         $i = 0;
 
         if (in_array($input, ['', '&'], true)) {
-            $this->assertFalse($sp->valid());
+            self::assertFalse($sp->valid());
 
             return;
         }
 
         foreach ($sp as $item) {
-            $this->assertSame($output[$i++], $item);
+            self::assertSame($output[$i++], $item);
         }
     }
 }
