@@ -354,7 +354,6 @@ class URL implements JsonSerializable
         // method does not escape forward slashes by default.
         $result = json_encode($this->url->serializeURL(), JSON_UNESCAPED_SLASHES);
 
-
         if ($result === false || json_last_error() !== JSON_ERROR_NONE) {
             throw new JsonException(json_last_error_msg(), json_last_error());
         }

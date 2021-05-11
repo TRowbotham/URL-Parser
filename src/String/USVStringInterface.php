@@ -33,9 +33,6 @@ interface USVStringInterface extends IteratorAggregate
         int &$count = 0
     ): self;
 
-    /**
-     * @return \Rowbot\URL\String\StringListInterface
-     */
     public function split(string $delimiter, int $limit = null): StringListInterface;
 
     public function startsWith(string $string): bool;

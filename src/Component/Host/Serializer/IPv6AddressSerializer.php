@@ -70,7 +70,6 @@ class IPv6AddressSerializer implements HostSerializerInterface
         return '[' . $this->toString() . ']';
     }
 
-
     public function toString(): string
     {
         $output = '';

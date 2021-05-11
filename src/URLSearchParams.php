@@ -21,6 +21,7 @@ use function is_iterable;
 use function is_object;
 use function is_scalar;
 use function method_exists;
+use function sprintf;
 use function substr;
 
 /**

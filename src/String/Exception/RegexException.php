@@ -6,8 +6,8 @@ namespace Rowbot\URL\String\Exception;
 
 use Rowbot\URL\Exception\URLException;
 
-use function array_flip;
 use function array_filter;
+use function array_flip;
 use function get_defined_constants;
 use function preg_last_error;
 use function substr;
@@ -20,7 +20,7 @@ class RegexException extends URLException
     {
         $code = preg_last_error();
         $constants = get_defined_constants(true)['pcre'];
-        $names = array_flip(array_filter($constants, function (string $value): bool {
+        $names = array_flip(array_filter($constants, static function (string $value): bool {
             return substr($value, -6) === '_ERROR';
         }, ARRAY_FILTER_USE_KEY));
 

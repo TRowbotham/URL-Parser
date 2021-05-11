@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
+use Rowbot\URL\ParserConfigInterface;
 use Rowbot\URL\String\StringBufferInterface;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\ParserConfigInterface;
 use Rowbot\URL\URLRecord;
+
+use function assert;
 
 /**
  * @see https://url.spec.whatwg.org/#relative-slash-state

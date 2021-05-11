@@ -16,9 +16,10 @@ use function explode;
 use function ord;
 use function rawurldecode;
 use function rawurlencode;
+use function str_replace;
 use function strlen;
 use function strpos;
-use function str_replace;
+use function usort;
 
 /**
  * @implements \IteratorAggregate<int, array{name: string, value: string}>

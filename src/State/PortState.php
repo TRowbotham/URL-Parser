@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
+use Rowbot\URL\ParserConfigInterface;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringBufferInterface;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\ParserConfigInterface;
 use Rowbot\URL\URLRecord;
+
+use function strpbrk;
 
 /**
  * @see https://url.spec.whatwg.org/#port-state

@@ -8,6 +8,7 @@ use Rowbot\Idna\Idna;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\USVStringInterface;
 
+use function assert;
 use function rawurldecode;
 
 /**
