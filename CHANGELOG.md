@@ -9,6 +9,7 @@
 ### Changed
 
 - Switched to GitHub Actions for CI
+- Minimum PHPUnit version is now 7.5
 
 ## [3.1.2] - 2021-02-11
 

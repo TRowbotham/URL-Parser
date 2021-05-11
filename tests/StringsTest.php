@@ -13,7 +13,6 @@ use Rowbot\URL\String\StringList;
 use Rowbot\URL\String\Utf8String;
 use ValueError;
 
-use function is_int;
 use function version_compare;
 
 use const PHP_VERSION_ID;
@@ -124,8 +123,7 @@ class StringsTest extends TestCase
         $s = new Utf8String('a=b=c=d');
 
         foreach ($s->split('=') as $key => $string) {
-            // ::assertIsInt() isn't available on PHPUnit 7
-            $this->assertTrue(is_int($key));
+            self::assertIsInt($key);
         }
     }
 
