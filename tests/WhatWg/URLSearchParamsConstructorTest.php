@@ -15,19 +15,19 @@ class URLSearchParamsConstructorTest extends TestCase
     public function testBasicConstruction(): void
     {
         $params = new URLSearchParams();
-        $this->assertEquals('', $params . '');
+        $this->assertSame('', $params . '');
         $params = new URLSearchParams('');
-        $this->assertEquals('', $params . '');
+        $this->assertSame('', $params . '');
         $params = new URLSearchParams('a=b');
-        $this->assertEquals('a=b', $params . '');
+        $this->assertSame('a=b', $params . '');
         $params = new URLSearchParams($params);
-        $this->assertEquals('a=b', $params . '');
+        $this->assertSame('a=b', $params . '');
     }
 
     public function testConstructorNoArguments(): void
     {
         $params = new URLSearchParams();
-        $this->assertEquals('', $params->toString());
+        $this->assertSame('', $params->toString());
     }
 
     public function testRemovingLeadingQuestionMark(): void
@@ -39,7 +39,7 @@ class URLSearchParamsConstructorTest extends TestCase
     public function testConstructorEmptyObject(): void
     {
         $params = new URLSearchParams(new stdClass());
-        $this->assertEquals('', (string) $params);
+        $this->assertSame('', (string) $params);
     }
 
     public function testConstructorString(): void
@@ -89,8 +89,8 @@ class URLSearchParamsConstructorTest extends TestCase
         $seed = new URLSearchParams('a=b&c=d');
         $params = new URLSearchParams($seed);
         $this->assertNotNull($params, 'message');
-        $this->assertEquals('b', $params->get('a'));
-        $this->assertEquals('d', $params->get('c'));
+        $this->assertSame('b', $params->get('a'));
+        $this->assertSame('d', $params->get('c'));
         $this->assertFalse($params->has('d'), 'message');
         // The name-value pairs are copied when  created; later, updates should
         // not be observable.
@@ -103,9 +103,9 @@ class URLSearchParamsConstructorTest extends TestCase
     public function testParsePlusSign(): void
     {
         $params = new URLSearchParams('a=b+c');
-        $this->assertEquals('b c', $params->get('a'));
+        $this->assertSame('b c', $params->get('a'));
         $params = new URLSearchParams('a+b=c');
-        $this->assertEquals('c', $params->get('a b'));
+        $this->assertSame('c', $params->get('a b'));
     }
 
     public function testParsePlusSignPercentEncoded(): void
@@ -123,65 +123,65 @@ class URLSearchParamsConstructorTest extends TestCase
     public function testParseSpace(): void
     {
         $params = new URLSearchParams('a=b c');
-        $this->assertEquals('b c', $params->get('a'));
+        $this->assertSame('b c', $params->get('a'));
         $params = new URLSearchParams('a b=c');
-        $this->assertEquals('c', $params->get('a b'));
+        $this->assertSame('c', $params->get('a b'));
     }
 
     public function testParseSpacePercentEncoded(): void
     {
         $params = new URLSearchParams('a=b%20c');
-        $this->assertEquals('b c', $params->get('a'));
+        $this->assertSame('b c', $params->get('a'));
         $params = new URLSearchParams('a%20b=c');
-        $this->assertEquals('c', $params->get('a b'));
+        $this->assertSame('c', $params->get('a b'));
     }
 
     public function testParseNullByte(): void
     {
         $params = new URLSearchParams("a=b\0c");
-        $this->assertEquals("b\0c", $params->get('a'));
+        $this->assertSame("b\0c", $params->get('a'));
         $params = new URLSearchParams("a\0b=c");
-        $this->assertEquals('c', $params->get("a\0b"));
+        $this->assertSame('c', $params->get("a\0b"));
     }
 
     public function testParseNullBytePercentEncoded(): void
     {
         $params = new URLSearchParams('a=b%00c');
-        $this->assertEquals("b\0c", $params->get('a'));
+        $this->assertSame("b\0c", $params->get('a'));
         $params = new URLSearchParams('a%00b=c');
-        $this->assertEquals('c', $params->get("a\0b"));
+        $this->assertSame('c', $params->get("a\0b"));
     }
 
     public function testParseUnicodeCompositionSymbol(): void
     {
         $params = new URLSearchParams("a=b\u{2384}");
-        $this->assertEquals("b\u{2384}", $params->get('a'));
+        $this->assertSame("b\u{2384}", $params->get('a'));
         $params = new URLSearchParams("a\u{2384}=c");
-        $this->assertEquals('c', $params->get("a\u{2384}"));
+        $this->assertSame('c', $params->get("a\u{2384}"));
     }
 
     public function testParseUnicodeCompositionSymbolPercentEncoded(): void
     {
         $params = new URLSearchParams('a=b%E2%8E%84');
-        $this->assertEquals("b\u{2384}", $params->get('a'));
+        $this->assertSame("b\u{2384}", $params->get('a'));
         $params = new URLSearchParams('a%E2%8E%84=c');
-        $this->assertEquals('c', $params->get("a\u{2384}"));
+        $this->assertSame('c', $params->get("a\u{2384}"));
     }
 
     public function testParseUnicodePileOfPoo(): void
     {
         $params = new URLSearchParams("a=b\u{1F4A9}c");
-        $this->assertEquals("b\u{1F4A9}c", $params->get('a'));
+        $this->assertSame("b\u{1F4A9}c", $params->get('a'));
         $params = new URLSearchParams("a\u{1F4A9}b=c");
-        $this->assertEquals('c', $params->get("a\u{1F4A9}b"));
+        $this->assertSame('c', $params->get("a\u{1F4A9}b"));
     }
 
     public function testParseUnicodePileOfPooPercentEncoded(): void
     {
         $params = new URLSearchParams('a=b%f0%9f%92%a9c');
-        $this->assertEquals("b\u{1F4A9}c", $params->get('a'));
+        $this->assertSame("b\u{1F4A9}c", $params->get('a'));
         $params = new URLSearchParams('a%f0%9f%92%a9b=c');
-        $this->assertEquals('c', $params->get("a\u{1F4A9}b"));
+        $this->assertSame('c', $params->get("a\u{1F4A9}b"));
     }
 
     public function testSequenceOfSequences(): void
@@ -189,8 +189,8 @@ class URLSearchParamsConstructorTest extends TestCase
         $params = new URLSearchParams([]);
         $this->assertNotNull($params);
         $params = new URLSearchParams([['a', 'b'], ['c', 'd']]);
-        $this->assertEquals('b', $params->get('a'));
-        $this->assertEquals('d', $params->get('c'));
+        $this->assertSame('b', $params->get('a'));
+        $this->assertSame('d', $params->get('c'));
 
         try {
             new URLSearchParams([[1]]);
@@ -260,7 +260,7 @@ class URLSearchParamsConstructorTest extends TestCase
         $i = 0;
 
         foreach ($params as $param) {
-            $this->assertEquals($output[$i++], $param);
+            $this->assertSame($output[$i++], $param);
         }
     }
 }

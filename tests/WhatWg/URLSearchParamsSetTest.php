@@ -14,12 +14,12 @@ class URLSearchParamsSetTest extends TestCase
     {
         $params = new URLSearchParams('a=b&c=d');
         $params->set('a', 'B');
-        $this->assertEquals('a=B&c=d', $params . '');
+        $this->assertSame('a=B&c=d', $params . '');
         $params = new URLSearchParams('a=b&c=d&a=e');
         $params->set('a', 'B');
-        $this->assertEquals('a=B&c=d', $params . '');
+        $this->assertSame('a=B&c=d', $params . '');
         $params->set('e', 'f');
-        $this->assertEquals('a=B&c=d&e=f', $params . '');
+        $this->assertSame('a=B&c=d&e=f', $params . '');
     }
 
     public function testURLSearchParamsSet(): void
@@ -30,7 +30,7 @@ class URLSearchParamsSetTest extends TestCase
             $params->has('a'),
             'Search params object has name "a"'
         );
-        $this->assertEquals(
+        $this->assertSame(
             '1',
             $params->get('a'),
             'Search params object has name "a" with a value of "1"'
@@ -42,7 +42,7 @@ class URLSearchParamsSetTest extends TestCase
             $params->has('a'),
             'Search params object has name "a"'
         );
-        $this->assertEquals(
+        $this->assertSame(
             '1',
             $params->get('a'),
             'Search params object has name "a" with value "1"'

@@ -13,15 +13,15 @@ class URLSearchParamsGetTest extends TestCase
     public function testGetBasics(): void
     {
         $params = new URLSearchParams('a=b&c=d');
-        $this->assertEquals('b', $params->get('a'));
-        $this->assertEquals('d', $params->get('c'));
+        $this->assertSame('b', $params->get('a'));
+        $this->assertSame('d', $params->get('c'));
         $this->assertNull($params->get('e'));
         $params = new URLSearchParams('a=b&c=d&a=e');
-        $this->assertEquals('b', $params->get('a'));
+        $this->assertSame('b', $params->get('a'));
         $params = new URLSearchParams('=b&c=d');
-        $this->assertEquals('b', $params->get(''));
+        $this->assertSame('b', $params->get(''));
         $params = new URLSearchParams('a=&c=d&a=e');
-        $this->assertEquals('', $params->get('a'));
+        $this->assertSame('', $params->get('a'));
     }
 
     public function testMoreGetBasics(): void
@@ -30,8 +30,8 @@ class URLSearchParamsGetTest extends TestCase
 
         $this->assertNotNull($params);
         $this->assertTrue($params->has('first'), 'constructor returned non-null value.');
-        $this->assertEquals('second', $params->get('first'), 'Search params object has name "first"');
-        $this->assertEquals('', $params->get('third'), 'Search params object has name "third" with the empty value.');
+        $this->assertSame('second', $params->get('first'), 'Search params object has name "first"');
+        $this->assertSame('', $params->get('third'), 'Search params object has name "third" with the empty value.');
         $this->assertNull($params->get('fourth'), 'Search params object has no "fourth" name and value.');
     }
 }

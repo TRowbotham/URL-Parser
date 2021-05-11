@@ -15,15 +15,15 @@ class URLSearchParamsGetAllTest extends TestCase
     public function testGetAllBasics(): void
     {
         $params = new URLSearchParams('a=b&c=d');
-        $this->assertEquals(['b'], $params->getAll('a'));
-        $this->assertEquals(['d'], $params->getAll('c'));
-        $this->assertEquals([], $params->getAll('e'));
+        $this->assertSame(['b'], $params->getAll('a'));
+        $this->assertSame(['d'], $params->getAll('c'));
+        $this->assertSame([], $params->getAll('e'));
         $params = new URLSearchParams('a=b&c=d&a=e');
-        $this->assertEquals(['b', 'e'], $params->getAll('a'));
+        $this->assertSame(['b', 'e'], $params->getAll('a'));
         $params = new URLSearchParams('=b&c=d');
-        $this->assertEquals(['b'], $params->getAll(''));
+        $this->assertSame(['b'], $params->getAll(''));
         $params = new URLSearchParams('a=&c=d&a=e');
-        $this->assertEquals(['', 'e'], $params->getAll('a'));
+        $this->assertSame(['', 'e'], $params->getAll('a'));
     }
 
     public function testGetAllMultiple(): void
@@ -32,11 +32,11 @@ class URLSearchParamsGetAllTest extends TestCase
         $this->assertTrue($params->has('a'));
         $matches = $params->getAll('a');
         $this->assertTrue($matches && count($matches) === 4);
-        $this->assertEquals(['1', '2', '3', ''], $matches);
+        $this->assertSame(['1', '2', '3', ''], $matches);
         $params->set('a', 'one');
-        $this->assertEquals('one', $params->get('a'));
+        $this->assertSame('one', $params->get('a'));
         $matches = $params->getAll('a');
         $this->assertTrue($matches && count($matches) === 1);
-        $this->assertEquals(['one'], $matches);
+        $this->assertSame(['one'], $matches);
     }
 }

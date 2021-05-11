@@ -15,13 +15,13 @@ class URLSearchParamsDeleteTest extends TestCase
     {
         $params = new URLSearchParams('a=b&c=d');
         $params->delete('a');
-        $this->assertEquals('c=d', $params . '');
+        $this->assertSame('c=d', $params . '');
         $params = new URLSearchParams('a=a&b=b&a=a&c=c');
         $params->delete('a');
-        $this->assertEquals('b=b&c=c', $params . '');
+        $this->assertSame('b=b&c=c', $params . '');
         $params = new URLSearchParams('a=a&=&b=b&c=c');
         $params->delete('');
-        $this->assertEquals('a=a&b=b&c=c', $params . '');
+        $this->assertSame('a=a&b=b&c=c', $params . '');
     }
 
     public function testDeleteAppendMultiple(): void
@@ -29,7 +29,7 @@ class URLSearchParamsDeleteTest extends TestCase
         $params = new URLSearchParams();
         $params->append('first', 1);
         $this->assertTrue($params->has('first'));
-        $this->assertEquals('1', $params->get('first'));
+        $this->assertSame('1', $params->get('first'));
         $params->delete('first');
         $this->assertFalse($params->has('first'));
         $params->append('first', 1);
@@ -43,15 +43,15 @@ class URLSearchParamsDeleteTest extends TestCase
         $url = new URL('http://example.com/?param1&param2');
         $url->searchParams->delete('param1');
         $url->searchParams->delete('param2');
-        $this->assertEquals('http://example.com/', $url->href);
-        $this->assertEquals('', $url->search);
+        $this->assertSame('http://example.com/', $url->href);
+        $this->assertSame('', $url->search);
     }
 
     public function testDeleteNonExistentParamRemovesQuestionMark(): void
     {
         $url = new URL('http://example.com/?');
         $url->searchParams->delete('param1');
-        $this->assertEquals('http://example.com/', $url->href);
-        $this->assertEquals('', $url->search);
+        $this->assertSame('http://example.com/', $url->href);
+        $this->assertSame('', $url->search);
     }
 }

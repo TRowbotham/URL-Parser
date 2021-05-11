@@ -22,8 +22,8 @@ class URLSearchParamsForeachTest extends TestCase
             $values[] = $param[1];
         }
 
-        $this->assertEquals(['a', 'b', 'c'], $keys);
-        $this->assertEquals(['1', '2', '3'], $values);
+        $this->assertSame(['a', 'b', 'c'], $keys);
+        $this->assertSame(['1', '2', '3'], $values);
     }
 
     public function test2(): void
@@ -37,9 +37,9 @@ class URLSearchParamsForeachTest extends TestCase
             $c[] = $i;
         }
 
-        $this->assertEquals(['a', '1'], $c[0]);
-        $this->assertEquals(['y', '2'], $c[1]);
-        $this->assertEquals(['z', '3'], $c[2]);
+        $this->assertSame(['a', '1'], $c[0]);
+        $this->assertSame(['y', '2'], $c[1]);
+        $this->assertSame(['z', '3'], $c[2]);
     }
 
     public function test3(): void
@@ -63,8 +63,8 @@ class URLSearchParamsForeachTest extends TestCase
             $seen[] = $param;
         }
 
-        $this->assertEquals(['param0', '0'], $seen[0]);
-        $this->assertEquals(['param2', '2'], $seen[1]);
+        $this->assertSame(['param0', '0'], $seen[0]);
+        $this->assertSame(['param2', '2'], $seen[1]);
     }
 
     public function testDeleteCurrentParamDuringIteration(): void
@@ -82,7 +82,7 @@ class URLSearchParamsForeachTest extends TestCase
             }
         }
 
-        $this->assertEquals(['param2', '2'], $seen[0]);
+        $this->assertSame(['param2', '2'], $seen[0]);
     }
 
     public function testDeleteEveryParamSeenDuringIteration(): void
@@ -96,7 +96,7 @@ class URLSearchParamsForeachTest extends TestCase
             $searchParams->delete($param[0]);
         }
 
-        $this->assertEquals(['param0', 'param2'], $seen);
-        $this->assertEquals('param1=1', (string) $searchParams);
+        $this->assertSame(['param0', 'param2'], $seen);
+        $this->assertSame('param1=1', (string) $searchParams);
     }
 }

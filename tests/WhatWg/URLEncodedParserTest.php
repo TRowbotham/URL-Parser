@@ -69,7 +69,7 @@ class URLEncodedParserTest extends TestCase
         }
 
         foreach ($sp as $item) {
-            $this->assertEquals($output[$i++], $item);
+            $this->assertSame($output[$i++], $item);
         }
     }
 }

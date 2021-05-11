@@ -26,6 +26,6 @@ class URLOriginTest extends WhatwgTestCase
     {
         $base = $expected->base ? $expected->base : 'about:blank';
         $url = new URL($expected->input, $base);
-        $this->assertEquals($expected->origin, $url->origin);
+        $this->assertSame($expected->origin, $url->origin);
     }
 }

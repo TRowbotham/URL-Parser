@@ -29,22 +29,22 @@ class URLConstructorTest extends WhatwgTestCase
     {
         $base = $expected->base ? $expected->base : 'about:blank';
         $url = new URL($expected->input, $base);
-        $this->assertEquals($expected->href, $url->href, 'href');
-        $this->assertEquals($expected->protocol, $url->protocol, 'protocol');
-        $this->assertEquals($expected->username, $url->username, 'username');
-        $this->assertEquals($expected->password, $url->password, 'password');
-        $this->assertEquals($expected->host, $url->host, 'host');
-        $this->assertEquals($expected->hostname, $url->hostname, 'hostname');
-        $this->assertEquals($expected->port, $url->port, 'port');
-        $this->assertEquals($expected->pathname, $url->pathname, 'pathname');
-        $this->assertEquals($expected->search, $url->search, 'search');
+        $this->assertSame($expected->href, $url->href, 'href');
+        $this->assertSame($expected->protocol, $url->protocol, 'protocol');
+        $this->assertSame($expected->username, $url->username, 'username');
+        $this->assertSame($expected->password, $url->password, 'password');
+        $this->assertSame($expected->host, $url->host, 'host');
+        $this->assertSame($expected->hostname, $url->hostname, 'hostname');
+        $this->assertSame($expected->port, $url->port, 'port');
+        $this->assertSame($expected->pathname, $url->pathname, 'pathname');
+        $this->assertSame($expected->search, $url->search, 'search');
 
         if (property_exists($expected, 'searchParams')) {
             $this->assertTrue((bool) $url->searchParams);
-            $this->assertEquals($expected->searchParams, $url->searchParams->toString(), 'searchParams');
+            $this->assertSame($expected->searchParams, $url->searchParams->toString(), 'searchParams');
         }
 
-        $this->assertEquals($expected->hash, $url->hash, 'hash');
+        $this->assertSame($expected->hash, $url->hash, 'hash');
     }
 
     public function urlTestDataFailureProvider(): iterable

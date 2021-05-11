@@ -90,7 +90,7 @@ class URLSearchParamsTest extends TestCase
     public function testInvalidIteratorReturnsArrayWithEmptyStrings(): void
     {
         $params = new URLSearchParams();
-        $this->assertEquals(['', ''], $params->current());
+        $this->assertSame(['', ''], $params->current());
         $this->assertFalse($params->valid());
     }
 
