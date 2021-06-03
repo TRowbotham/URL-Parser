@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+
+### Changed
+
+- Make the `URL::$hostname` setter do nothing if the host name contains a ":" per [whatwg/url#601](https://github.com/whatwg/url/issues/601) [whatwg/url#604](https://github.com/whatwg/url/pull/604)
+
 ## [3.1.3] - 2021-05-11
 
 ### Fixed

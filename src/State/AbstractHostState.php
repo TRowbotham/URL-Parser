@@ -49,6 +49,10 @@ abstract class AbstractHostState implements State
                 return self::RETURN_FAILURE;
             }
 
+            if ($parser->isOverrideStateHostname()) {
+                return self::RETURN_BREAK;
+            }
+
             $host = HostParser::parse($buffer->toUtf8String(), !$url->scheme->isSpecial());
 
             if ($host === false) {
@@ -58,10 +62,6 @@ abstract class AbstractHostState implements State
             $url->host = $host;
             $buffer->clear();
             $parser->setState(new PortState());
-
-            if ($parser->isOverrideStateHostname()) {
-                return self::RETURN_BREAK;
-            }
 
             return self::RETURN_OK;
         }
