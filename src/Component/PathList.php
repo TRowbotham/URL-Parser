@@ -25,10 +25,6 @@ class PathList extends AbstractStringList implements PathListInterface
     {
         $size = count($this->list);
 
-        if ($size === 0) {
-            return;
-        }
-
         if ($scheme->isFile() && $size === 1 && $this->list[0]->isNormalizedWindowsDriveLetter()) {
             return;
         }

@@ -27,7 +27,7 @@ class RelativeState implements State
         URLRecord $url,
         ?URLRecord $base
     ): int {
-        assert($base !== null);
+        assert($base !== null && !$base->scheme->isFile());
 
         $url->scheme = clone $base->scheme;
 
@@ -70,10 +70,7 @@ class RelativeState implements State
         }
 
         $url->query = null;
-
-        if (!$url->path->isEmpty()) {
-            $url->path->pop();
-        }
+        $url->path->shorten($url->scheme);
 
         $parser->setState(new PathState());
         $iter->prev();
