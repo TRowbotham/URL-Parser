@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
+use Rowbot\URL\Component\Path;
 use Rowbot\URL\ParserConfigInterface;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringBufferInterface;
@@ -59,6 +60,12 @@ class PathStartState implements State
             if ($codePoint !== '/') {
                 $iter->prev();
             }
+
+            return self::RETURN_OK;
+        }
+
+        if ($parser->isStateOverridden() && $url->host->isNull()) {
+            $url->path->push(new Path());
         }
 
         return self::RETURN_OK;

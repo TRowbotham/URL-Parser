@@ -6,6 +6,10 @@
 
 - Make the `URL::$hostname` setter do nothing if the host name contains a ":" per [whatwg/url#601](https://github.com/whatwg/url/issues/601) [whatwg/url#604](https://github.com/whatwg/url/pull/604)
 
+### Fixed
+
+- Prevent the pathname setter from erasing the path of path-only URLs [whatwg/url#581](https://github.com/whatwg/url/issues/581) [whatwg/url#582](https://github.com/whatwg/url/pull/582)
+
 ## [3.1.3] - 2021-05-11
 
 ### Fixed
