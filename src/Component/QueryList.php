@@ -59,6 +59,8 @@ class QueryList implements IteratorAggregate
     /**
      * @see https://www.unicode.org/faq/utf_bom.html?source=post_page---------------------------#utf16-4
      *
+     * @param list<int> $codePoints
+     *
      * @return list<non-empty-list<int>>
      */
     private function computeCodeUnits(array $codePoints): array
