@@ -17,8 +17,9 @@ use function preg_match;
 use function preg_replace;
 use function sprintf;
 use function strlen;
+use function strncmp;
 use function strspn;
-use function substr;
+use function substr_compare;
 
 use const PHP_INT_MAX;
 
@@ -44,7 +45,7 @@ abstract class AbstractUSVString implements USVStringInterface
 
     public function endsWith(string $string): bool
     {
-        return substr($this->string, -strlen($string)) === $string;
+        return substr_compare($this->string, $string, -strlen($string)) === 0;
     }
 
     public function getIterator(): StringIteratorInterface
@@ -122,7 +123,7 @@ abstract class AbstractUSVString implements USVStringInterface
 
     public function startsWith(string $string): bool
     {
-        return substr($this->string, 0, strlen($string)) === $string;
+        return strncmp($this->string, $string, strlen($string)) === 0;
     }
 
     public function startsWithTwoAsciiHexDigits(): bool

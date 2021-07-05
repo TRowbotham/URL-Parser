@@ -14,7 +14,9 @@ use Rowbot\URL\URLRecord;
 use function mb_convert_encoding;
 use function rawurlencode;
 use function strlen;
+use function strncmp;
 use function substr;
+use function substr_compare;
 
 /**
  * @see https://url.spec.whatwg.org/#query-state
@@ -56,7 +58,7 @@ class QueryState implements State
             $bytes = mb_convert_encoding($codePoint, $encoding, 'utf-8');
 
             // This can happen when encoding code points using a non-UTF-8 encoding.
-            if (substr($bytes, 0, 2) === '&#' && substr($bytes, -1) === ';') {
+            if (strncmp($bytes, '&#', 2) === 0  && substr_compare($bytes, ';', -1) === 0) {
                 $url->query .= '%26%23' . substr($bytes, 2, -1) . '%3B';
             } else {
                 $length = strlen($bytes);
