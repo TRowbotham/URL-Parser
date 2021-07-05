@@ -59,18 +59,22 @@ class QueryList implements IteratorAggregate
     /**
      * @see https://www.unicode.org/faq/utf_bom.html?source=post_page---------------------------#utf16-4
      *
-     * @return array{0: int, 1: int}
+     * @return list<non-empty-list<int>>
      */
-    private function computeCodeUnits(int $codePoint): array
+    private function computeCodeUnits(array $codePoints): array
     {
-        // Code points less than 0x10000 are part of the Basic Multilingual Plane and are
-        // represented by a single code unit that is equal to its code point. Use 0 as the low
-        // surrogate as the <=> operator compares array size first and values second.
-        if ($codePoint < 0x10000) {
-            return [$codePoint, 0];
+        $codeUnits = [];
+
+        foreach ($codePoints as $codePoint) {
+            // Code points less than 0x10000 are part of the Basic Multilingual Plane and are
+            // represented by a single code unit that is equal to its code point. Use 0 as the low
+            // surrogate as the <=> operator compares array size first and values second.
+            $codeUnits[] = $codePoint < 0x10000
+                ? [$codePoint, 0]
+                : [self::LEAD_OFFSET + ($codePoint >> 10), 0xDC00 + ($codePoint & 0x3FF)];
         }
 
-        return [self::LEAD_OFFSET + ($codePoint >> 10), 0xDC00 + ($codePoint & 0x3FF)];
+        return $codeUnits;
     }
 
     /**
@@ -224,7 +228,8 @@ class QueryList implements IteratorAggregate
 
         // Add information about the relative position of each name-value pair.
         foreach ($this->list as $pair) {
-            $temp[] = [$i++, $pair];
+            $codeUnits = $this->computeCodeUnits($this->utf8Decode($pair['name']));
+            $temp[] = [$i++, $codeUnits, $pair];
         }
 
         // Sorting priority overview:
@@ -242,14 +247,14 @@ class QueryList implements IteratorAggregate
         // 3) If the two strings are considered equal, then they are sorted by the relative
         //    position in which they appeared in the array. (e.g. The string "b=c&a=c&b=a&a=a"
         //    becomes "a=c&a=a&b=c&b=a".)
-        usort($temp, function (array $a, array $b): int {
-            $iter1 = $this->utf8Decode($a[1]['name']);
-            $iter2 = $this->utf8Decode($b[1]['name']);
+        usort($temp, static function (array $a, array $b): int {
+            $codeUnitsA = $a[1];
+            $codeUnitsB = $b[1];
             $i = 0;
 
             while (true) {
-                $aIsValid = isset($iter1[$i]);
-                $bIsValid = isset($iter2[$i]);
+                $aIsValid = isset($codeUnitsA[$i]);
+                $bIsValid = isset($codeUnitsB[$i]);
 
                 if (!$aIsValid && !$bIsValid) {
                     // If we have reached this point then there are 2
@@ -291,9 +296,7 @@ class QueryList implements IteratorAggregate
                     return 1;
                 }
 
-                $aCodeUnits = $this->computeCodeUnits($iter1[$i]);
-                $bCodeUnits = $this->computeCodeUnits($iter2[$i]);
-                $cmp = $aCodeUnits <=> $bCodeUnits;
+                $cmp = $codeUnitsA[$i] <=> $codeUnitsB[$i];
 
                 // We only want to return if the result is not equal, as equal results must be
                 // sorted by relative position.
@@ -312,7 +315,7 @@ class QueryList implements IteratorAggregate
         // name-value pairs.
         $this->list = [];
 
-        foreach ($temp as [$relativePosition, $tuple]) {
+        foreach ($temp as [$relativePosition, $codeUnits, $tuple]) {
             $this->list[] = $tuple;
         }
     }
