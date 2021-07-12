@@ -6,27 +6,16 @@ namespace Rowbot\URL\State;
 
 use Rowbot\URL\Component\Host\HostParser;
 use Rowbot\URL\Component\Host\StringHost;
-use Rowbot\URL\ParserConfigInterface;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
 
 /**
  * @see https://url.spec.whatwg.org/#file-host-state
  */
 class FileHostState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
+    public function handle(ParserContext $context, string $codePoint): int
+    {
         if (
             $codePoint === CodePoint::EOF
             || $codePoint === '/'
@@ -34,30 +23,30 @@ class FileHostState implements State
             || $codePoint === '?'
             || $codePoint === '#'
         ) {
-            $iter->prev();
+            $context->iter->prev();
 
-            if (!$parser->isStateOverridden() && $buffer->isWindowsDriveLetter()) {
+            if (!$context->isStateOverridden() && $context->buffer->isWindowsDriveLetter()) {
                 // Validation error
-                $parser->setState(new PathState());
+                $context->state = new PathState();
 
                 return self::RETURN_OK;
             }
 
-            // This is a (platform-independent) Windows drive letter quirk. $buffer is not reset
+            // This is a (platform-independent) Windows drive letter quirk. $context->buffer is not reset
             // here and instead used in the path state.
-            if ($buffer->isEmpty()) {
-                $url->host = new StringHost();
+            if ($context->buffer->isEmpty()) {
+                $context->url->host = new StringHost();
 
-                if ($parser->isStateOverridden()) {
+                if ($context->isStateOverridden()) {
                     return self::RETURN_BREAK;
                 }
 
-                $parser->setState(new PathStartState());
+                $context->state = new PathStartState();
 
                 return self::RETURN_OK;
             }
 
-            $host = HostParser::parse($buffer->toUtf8String(), !$url->scheme->isSpecial());
+            $host = HostParser::parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
 
             if ($host === false) {
                 return self::RETURN_FAILURE;
@@ -67,19 +56,19 @@ class FileHostState implements State
                 $host = new StringHost();
             }
 
-            $url->host = $host;
+            $context->url->host = $host;
 
-            if ($parser->isStateOverridden()) {
+            if ($context->isStateOverridden()) {
                 return self::RETURN_BREAK;
             }
 
-            $buffer->clear();
-            $parser->setState(new PathStartState());
+            $context->buffer->clear();
+            $context->state = new PathStartState();
 
             return self::RETURN_OK;
         }
 
-        $buffer->append($codePoint);
+        $context->buffer->append($codePoint);
 
         return self::RETURN_OK;
     }

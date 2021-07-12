@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\ParserConfigInterface;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
+use Rowbot\URL\ParserContext;
 
 use function assert;
 
@@ -17,39 +13,32 @@ use function assert;
  */
 class RelativeSlashState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
-        assert($base !== null);
+    public function handle(ParserContext $context, string $codePoint): int
+    {
+        assert($context->base !== null);
 
-        if ($url->scheme->isSpecial() && ($codePoint === '/' || $codePoint === '\\')) {
+        if ($context->url->scheme->isSpecial() && ($codePoint === '/' || $codePoint === '\\')) {
             if ($codePoint === '\\') {
                 // Validation error.
             }
 
-            $parser->setState(new SpecialAuthorityIgnoreSlashesState());
+            $context->state = new SpecialAuthorityIgnoreSlashesState();
 
             return self::RETURN_OK;
         }
 
         if ($codePoint === '/') {
-            $parser->setState(new AuthorityState());
+            $context->state = new AuthorityState();
 
             return self::RETURN_OK;
         }
 
-        $url->username = $base->username;
-        $url->password = $base->password;
-        $url->host = clone $base->host;
-        $url->port = $base->port;
-        $parser->setState(new PathState());
-        $iter->prev();
+        $context->url->username = $context->base->username;
+        $context->url->password = $context->base->password;
+        $context->url->host = clone $context->base->host;
+        $context->url->port = $context->base->port;
+        $context->state = new PathState();
+        $context->iter->prev();
 
         return self::RETURN_OK;
     }

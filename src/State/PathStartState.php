@@ -5,67 +5,56 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\Component\Path;
-use Rowbot\URL\ParserConfigInterface;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
 
 /**
  * @see https://url.spec.whatwg.org/#path-start-state
  */
 class PathStartState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
-        if ($url->scheme->isSpecial()) {
+    public function handle(ParserContext $context, string $codePoint): int
+    {
+        if ($context->url->scheme->isSpecial()) {
             if ($codePoint === '\\') {
                 // Validation error.
             }
 
-            $parser->setState(new PathState());
+            $context->state = new PathState();
 
             if ($codePoint !== '/' && $codePoint !== '\\') {
-                $iter->prev();
+                $context->iter->prev();
             }
 
             return self::RETURN_OK;
         }
 
-        if (!$parser->isStateOverridden() && $codePoint === '?') {
-            $url->query = '';
-            $parser->setState(new QueryState());
+        if (!$context->isStateOverridden() && $codePoint === '?') {
+            $context->url->query = '';
+            $context->state = new QueryState();
 
             return self::RETURN_OK;
         }
 
-        if (!$parser->isStateOverridden() && $codePoint === '#') {
-            $url->fragment = '';
-            $parser->setState(new FragmentState());
+        if (!$context->isStateOverridden() && $codePoint === '#') {
+            $context->url->fragment = '';
+            $context->state = new FragmentState();
 
             return self::RETURN_OK;
         }
 
         if ($codePoint !== CodePoint::EOF) {
-            $parser->setState(new PathState());
+            $context->state = new PathState();
 
             if ($codePoint !== '/') {
-                $iter->prev();
+                $context->iter->prev();
             }
 
             return self::RETURN_OK;
         }
 
-        if ($parser->isStateOverridden() && $url->host->isNull()) {
-            $url->path->push(new Path());
+        if ($context->isStateOverridden() && $context->url->host->isNull()) {
+            $context->url->path->push(new Path());
         }
 
         return self::RETURN_OK;

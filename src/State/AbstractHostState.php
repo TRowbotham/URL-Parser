@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\Component\Host\HostParser;
-use Rowbot\URL\ParserConfigInterface;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
 
 /**
  * @see https://url.spec.whatwg.org/#host-state
@@ -27,41 +23,34 @@ abstract class AbstractHostState implements State
         $this->isBracketOpen = false;
     }
 
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
-        if ($parser->isStateOverridden() && $url->scheme->isFile()) {
-            $iter->prev();
-            $parser->setState(new FileHostState());
+    public function handle(ParserContext $context, string $codePoint): int
+    {
+        if ($context->isStateOverridden() && $context->url->scheme->isFile()) {
+            $context->iter->prev();
+            $context->state = new FileHostState();
 
             return self::RETURN_OK;
         }
 
         if ($codePoint === ':' && !$this->isBracketOpen) {
-            if ($buffer->isEmpty()) {
+            if ($context->buffer->isEmpty()) {
                 // Validation error. Return failure.
                 return self::RETURN_FAILURE;
             }
 
-            if ($parser->isOverrideStateHostname()) {
+            if ($context->isOverrideStateHostname()) {
                 return self::RETURN_BREAK;
             }
 
-            $host = HostParser::parse($buffer->toUtf8String(), !$url->scheme->isSpecial());
+            $host = HostParser::parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
 
             if ($host === false) {
                 return self::RETURN_FAILURE;
             }
 
-            $url->host = $host;
-            $buffer->clear();
-            $parser->setState(new PortState());
+            $context->url->host = $host;
+            $context->buffer->clear();
+            $context->state = new PortState();
 
             return self::RETURN_OK;
         }
@@ -73,35 +62,35 @@ abstract class AbstractHostState implements State
                 || $codePoint === '?'
                 || $codePoint === '#'
             )
-            || ($url->scheme->isSpecial() && $codePoint === '\\')
+            || ($context->url->scheme->isSpecial() && $codePoint === '\\')
         ) {
-            $iter->prev();
+            $context->iter->prev();
 
-            if ($url->scheme->isSpecial() && $buffer->isEmpty()) {
+            if ($context->url->scheme->isSpecial() && $context->buffer->isEmpty()) {
                 // Validation error. Return failure.
                 return self::RETURN_FAILURE;
             }
 
             if (
-                $parser->isStateOverridden()
-                && $buffer->isEmpty()
-                && ($url->includesCredentials() || $url->port !== null)
+                $context->isStateOverridden()
+                && $context->buffer->isEmpty()
+                && ($context->url->includesCredentials() || $context->url->port !== null)
             ) {
                 // Validation error.
                 return self::RETURN_BREAK;
             }
 
-            $host = HostParser::parse($buffer->toUtf8String(), !$url->scheme->isSpecial());
+            $host = HostParser::parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
 
             if ($host === false) {
                 return self::RETURN_FAILURE;
             }
 
-            $url->host = $host;
-            $buffer->clear();
-            $parser->setState(new PathStartState());
+            $context->url->host = $host;
+            $context->buffer->clear();
+            $context->state = new PathStartState();
 
-            if ($parser->isStateOverridden()) {
+            if ($context->isStateOverridden()) {
                 return self::RETURN_BREAK;
             }
 
@@ -114,7 +103,7 @@ abstract class AbstractHostState implements State
             $this->isBracketOpen = false;
         }
 
-        $buffer->append($codePoint);
+        $context->buffer->append($codePoint);
 
         return self::RETURN_OK;
     }

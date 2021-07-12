@@ -62,22 +62,14 @@ class BasicURLParser
             // Validation error.
         }
 
-        $config = new ParserConfig($stateOverride, $encodingOverride);
-        $buffer = new StringBuffer();
         $iter = $input->getIterator();
-        $length = $input->length();
         $iter->rewind();
+        $length = $input->length();
+        $buffer = new StringBuffer();
+        $context = new ParserContext($input, $iter, $buffer, $url, $base, $stateOverride, $encodingOverride);
 
         while (true) {
-            $status = $config->getState()->handle(
-                $config,
-                $input,
-                $iter,
-                $buffer,
-                $iter->current(),
-                $url,
-                $base
-            );
+            $status = $context->state->handle($context, $iter->current());
 
             if ($status === State::RETURN_CONTINUE) {
                 continue;

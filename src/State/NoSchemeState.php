@@ -4,51 +4,40 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\ParserConfigInterface;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
+use Rowbot\URL\ParserContext;
 
 /**
  * @see https://url.spec.whatwg.org/#no-scheme-state
  */
 class NoSchemeState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
-        if ($base === null || ($base->cannotBeABaseUrl && $codePoint !== '#')) {
+    public function handle(ParserContext $context, string $codePoint): int
+    {
+        if ($context->base === null || ($context->base->cannotBeABaseUrl && $codePoint !== '#')) {
             // Validation error. Return failure.
             return self::RETURN_FAILURE;
         }
 
-        if ($base->cannotBeABaseUrl && $codePoint === '#') {
-            $url->scheme = clone $base->scheme;
-            $url->path = clone $base->path;
-            $url->query = $base->query;
-            $url->fragment = '';
-            $url->cannotBeABaseUrl = true;
-            $parser->setState(new FragmentState());
+        if ($context->base->cannotBeABaseUrl && $codePoint === '#') {
+            $context->url->scheme = clone $context->base->scheme;
+            $context->url->path = clone $context->base->path;
+            $context->url->query = $context->base->query;
+            $context->url->fragment = '';
+            $context->url->cannotBeABaseUrl = true;
+            $context->state = new FragmentState();
 
             return self::RETURN_OK;
         }
 
-        if (!$base->scheme->isFile()) {
-            $parser->setState(new RelativeState());
-            $iter->prev();
+        if (!$context->base->scheme->isFile()) {
+            $context->state = new RelativeState();
+            $context->iter->prev();
 
             return self::RETURN_OK;
         }
 
-        $parser->setState(new FileState());
-        $iter->prev();
+        $context->state = new FileState();
+        $context->iter->prev();
 
         return self::RETURN_OK;
     }

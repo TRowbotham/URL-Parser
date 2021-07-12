@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\Component\Path;
-use Rowbot\URL\ParserConfigInterface;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
 
 /**
  * @see https://url.spec.whatwg.org/#path-state
@@ -41,62 +37,55 @@ class PathState implements State
         '%2E' => '',
     ];
 
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
+    public function handle(ParserContext $context, string $codePoint): int
+    {
         if (
             $codePoint === CodePoint::EOF
             || $codePoint === '/'
-            || ($url->scheme->isSpecial() && $codePoint === '\\')
-            || (!$parser->isStateOverridden() && ($codePoint === '?' || $codePoint === '#'))
+            || ($context->url->scheme->isSpecial() && $codePoint === '\\')
+            || (!$context->isStateOverridden() && ($codePoint === '?' || $codePoint === '#'))
         ) {
-            $urlIsSpecial = $url->scheme->isSpecial();
+            $urlIsSpecial = $context->url->scheme->isSpecial();
 
             if ($urlIsSpecial && $codePoint === '\\') {
                 // Validation error.
             }
 
-            $stringBuffer = (string) $buffer;
+            $stringBuffer = (string) $context->buffer;
 
             if (isset(self::DOUBLE_DOT_SEGMENT[$stringBuffer])) {
-                $url->path->shorten($url->scheme);
+                $context->url->path->shorten($context->url->scheme);
 
                 if ($codePoint !== '/' && !($urlIsSpecial && $codePoint === '\\')) {
-                    $url->path->push(new Path());
+                    $context->url->path->push(new Path());
                 }
             } elseif (
                 isset(self::SINGLE_DOT_SEGMENT[$stringBuffer])
                 && $codePoint !== '/'
                 && !($urlIsSpecial && $codePoint === '\\')
             ) {
-                $url->path->push(new Path());
+                $context->url->path->push(new Path());
             } elseif (!isset(self::SINGLE_DOT_SEGMENT[$stringBuffer])) {
                 if (
-                    $url->scheme->isFile()
-                    && $url->path->isEmpty()
-                    && $buffer->isWindowsDriveLetter()
+                    $context->url->scheme->isFile()
+                    && $context->url->path->isEmpty()
+                    && $context->buffer->isWindowsDriveLetter()
                 ) {
                     // This is a (platform-independent) Windows drive letter quirk.
-                    $buffer->setCodePointAt(1, ':');
+                    $context->buffer->setCodePointAt(1, ':');
                 }
 
-                $url->path->push($buffer->toPath());
+                $context->url->path->push($context->buffer->toPath());
             }
 
-            $buffer->clear();
+            $context->buffer->clear();
 
             if ($codePoint === '?') {
-                $url->query = '';
-                $parser->setState(new QueryState());
+                $context->url->query = '';
+                $context->state = new QueryState();
             } elseif ($codePoint === '#') {
-                $url->fragment = '';
-                $parser->setState(new FragmentState());
+                $context->url->fragment = '';
+                $context->state = new FragmentState();
             }
 
             return self::RETURN_OK;
@@ -108,12 +97,12 @@ class PathState implements State
 
         if (
             $codePoint === '%'
-            && !$input->substr($iter->key() + 1)->startsWithTwoAsciiHexDigits()
+            && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
         ) {
             // Validation error
         }
 
-        $buffer->append(CodePoint::utf8PercentEncode(
+        $context->buffer->append(CodePoint::utf8PercentEncode(
             $codePoint,
             CodePoint::PATH_PERCENT_ENCODE_SET
         ));

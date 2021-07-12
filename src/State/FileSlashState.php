@@ -4,52 +4,41 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\ParserConfigInterface;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
+use Rowbot\URL\ParserContext;
 
 /**
  * @see https://url.spec.whatwg.org/#file-slash-state
  */
 class FileSlashState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
+    public function handle(ParserContext $context, string $codePoint): int
+    {
         if ($codePoint === '/' || $codePoint === '\\') {
             if ($codePoint === '\\') {
                 // Validation error.
             }
 
-            $parser->setState(new FileHostState());
+            $context->state = new FileHostState();
 
             return self::RETURN_OK;
         }
 
-        if ($base !== null && $base->scheme->isFile()) {
-            $url->host = clone $base->host;
-            $path = $base->path->first();
+        if ($context->base !== null && $context->base->scheme->isFile()) {
+            $context->url->host = clone $context->base->host;
+            $path = $context->base->path->first();
 
             if (
-                !$input->substr($iter->key())->startsWithWindowsDriveLetter()
+                !$context->input->substr($context->iter->key())->startsWithWindowsDriveLetter()
                 && $path->isNormalizedWindowsDriveLetter()
             ) {
                 // This is a (platform-independent) Windows drive letter quirk. Both url’s and
                 // base’s host are null under these conditions and therefore not copied.
-                $url->path->push($path);
+                $context->url->path->push($path);
             }
         }
 
-        $parser->setState(new PathState());
-        $iter->prev();
+        $context->state = new PathState();
+        $context->iter->prev();
 
         return self::RETURN_OK;
     }

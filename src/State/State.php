@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\ParserConfigInterface;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
+use Rowbot\URL\ParserContext;
 
 interface State
 {
@@ -17,13 +13,5 @@ interface State
     public const RETURN_BREAK    = 2;
     public const RETURN_FAILURE  = 3;
 
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int;
+    public function handle(ParserContext $context, string $codePoint): int;
 }

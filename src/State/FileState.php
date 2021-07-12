@@ -7,55 +7,44 @@ namespace Rowbot\URL\State;
 use Rowbot\URL\Component\Host\StringHost;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\Scheme;
-use Rowbot\URL\ParserConfigInterface;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
 
 /**
  * @see https://url.spec.whatwg.org/#file-state
  */
 class FileState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
-        $url->scheme = new Scheme('file');
-        $url->host = new StringHost();
+    public function handle(ParserContext $context, string $codePoint): int
+    {
+        $context->url->scheme = new Scheme('file');
+        $context->url->host = new StringHost();
 
         if ($codePoint === '/' || $codePoint === '\\') {
             if ($codePoint === '\\') {
                 // Validation error
             }
 
-            $parser->setState(new FileSlashState());
+            $context->state = new FileSlashState();
 
             return self::RETURN_OK;
         }
 
-        if ($base !== null && $base->scheme->isFile()) {
-            $url->host = clone $base->host;
-            $url->path = clone $base->path;
-            $url->query = $base->query;
+        if ($context->base !== null && $context->base->scheme->isFile()) {
+            $context->url->host = clone $context->base->host;
+            $context->url->path = clone $context->base->path;
+            $context->url->query = $context->base->query;
 
             if ($codePoint === '?') {
-                $url->query = '';
-                $parser->setState(new QueryState());
+                $context->url->query = '';
+                $context->state = new QueryState();
 
                 return self::RETURN_OK;
             }
 
             if ($codePoint === '#') {
-                $url->fragment = '';
-                $parser->setState(new FragmentState());
+                $context->url->fragment = '';
+                $context->state = new FragmentState();
 
                 return self::RETURN_OK;
             }
@@ -64,24 +53,24 @@ class FileState implements State
                 return self::RETURN_OK;
             }
 
-            $url->query = null;
+            $context->url->query = null;
 
             // This is a (platform-independent) Windows drive letter quirk.
-            if (!$input->substr($iter->key())->startsWithWindowsDriveLetter()) {
-                $url->path->shorten($url->scheme);
+            if (!$context->input->substr($context->iter->key())->startsWithWindowsDriveLetter()) {
+                $context->url->path->shorten($context->url->scheme);
             } else {
                 // Validation error.
-                $url->path = new PathList();
+                $context->url->path = new PathList();
             }
 
-            $parser->setState(new PathState());
-            $iter->prev();
+            $context->state = new PathState();
+            $context->iter->prev();
 
             return self::RETURN_OK;
         }
 
-        $parser->setState(new PathState());
-        $iter->prev();
+        $context->state = new PathState();
+        $context->iter->prev();
 
         return self::RETURN_OK;
     }

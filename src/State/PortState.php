@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\ParserConfigInterface;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
 
 use function strpbrk;
 
@@ -18,17 +14,10 @@ use function strpbrk;
  */
 class PortState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
+    public function handle(ParserContext $context, string $codePoint): int
+    {
         if (strpbrk($codePoint, CodePoint::ASCII_DIGIT_MASK) === $codePoint) {
-            $buffer->append($codePoint);
+            $context->buffer->append($codePoint);
 
             return self::RETURN_OK;
         }
@@ -40,32 +29,32 @@ class PortState implements State
                 || $codePoint === '?'
                 || $codePoint === '#'
             )
-            || ($url->scheme->isSpecial() && $codePoint === '\\')
-            || $parser->isStateOverridden()
+            || ($context->url->scheme->isSpecial() && $codePoint === '\\')
+            || $context->isStateOverridden()
         ) {
-            if (!$buffer->isEmpty()) {
-                $port = $buffer->toInt();
+            if (!$context->buffer->isEmpty()) {
+                $port = $context->buffer->toInt();
 
                 if ($port > 2 ** 16 - 1) {
                     // Validation error. Return failure.
                     return self::RETURN_FAILURE;
                 }
 
-                if ($url->scheme->isSpecial() && $url->scheme->isDefaultPort($port)) {
-                    $url->port = null;
+                if ($context->url->scheme->isSpecial() && $context->url->scheme->isDefaultPort($port)) {
+                    $context->url->port = null;
                 } else {
-                    $url->port = $port;
+                    $context->url->port = $port;
                 }
 
-                $buffer->clear();
+                $context->buffer->clear();
             }
 
-            if ($parser->isStateOverridden()) {
+            if ($context->isStateOverridden()) {
                 return self::RETURN_BREAK;
             }
 
-            $parser->setState(new PathStartState());
-            $iter->prev();
+            $context->state = new PathStartState();
+            $context->iter->prev();
 
             return self::RETURN_OK;
         }

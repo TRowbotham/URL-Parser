@@ -4,29 +4,18 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\ParserConfigInterface;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
+use Rowbot\URL\ParserContext;
 
 /**
  * @see https://url.spec.whatwg.org/#special-authority-ignore-slashes-state
  */
 class SpecialAuthorityIgnoreSlashesState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
+    public function handle(ParserContext $context, string $codePoint): int
+    {
         if ($codePoint !== '/' && $codePoint !== '\\') {
-            $parser->setState(new AuthorityState());
-            $iter->prev();
+            $context->state = new AuthorityState();
+            $context->iter->prev();
 
             return self::RETURN_OK;
         }

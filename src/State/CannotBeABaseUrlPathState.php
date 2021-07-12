@@ -4,37 +4,26 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\ParserConfigInterface;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
 
 /**
  * @see https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
  */
 class CannotBeABaseUrlPathState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
+    public function handle(ParserContext $context, string $codePoint): int
+    {
         if ($codePoint === '?') {
-            $url->query = '';
-            $parser->setState(new QueryState());
+            $context->url->query = '';
+            $context->state = new QueryState();
 
             return self::RETURN_OK;
         }
 
         if ($codePoint === '#') {
-            $url->fragment = '';
-            $parser->setState(new FragmentState());
+            $context->url->fragment = '';
+            $context->state = new FragmentState();
 
             return self::RETURN_OK;
         }
@@ -49,13 +38,13 @@ class CannotBeABaseUrlPathState implements State
 
         if (
             $codePoint === '%'
-            && !$input->substr($iter->key() + 1)->startsWithTwoAsciiHexDigits()
+            && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
         ) {
             // Validation error.
         }
 
         if ($codePoint !== CodePoint::EOF) {
-            $url->path->first()->append(CodePoint::utf8PercentEncode($codePoint));
+            $context->url->path->first()->append(CodePoint::utf8PercentEncode($codePoint));
         }
 
         return self::RETURN_OK;

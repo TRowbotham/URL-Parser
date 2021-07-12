@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\ParserConfigInterface;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
 
 use function strpbrk;
 use function strtolower;
@@ -19,25 +15,18 @@ use function strtolower;
  */
 class SchemeStartState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
+    public function handle(ParserContext $context, string $codePoint): int
+    {
         if (strpbrk($codePoint, CodePoint::ASCII_ALPHA_MASK) === $codePoint) {
-            $buffer->append(strtolower($codePoint));
-            $parser->setState(new SchemeState());
+            $context->buffer->append(strtolower($codePoint));
+            $context->state = new SchemeState();
 
             return self::RETURN_OK;
         }
 
-        if (!$parser->isStateOverridden()) {
-            $parser->setState(new NoSchemeState());
-            $iter->prev();
+        if (!$context->isStateOverridden()) {
+            $context->state = new NoSchemeState();
+            $context->iter->prev();
 
             return self::RETURN_OK;
         }

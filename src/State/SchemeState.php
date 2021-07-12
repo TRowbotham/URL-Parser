@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\Component\Path;
-use Rowbot\URL\ParserConfigInterface;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
 
 use function strpbrk;
 use function strtolower;
@@ -20,34 +16,27 @@ use function strtolower;
  */
 class SchemeState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
+    public function handle(ParserContext $context, string $codePoint): int
+    {
         if (
             strpbrk($codePoint, CodePoint::ASCII_ALNUM_MASK) === $codePoint
             || $codePoint === '+'
             || $codePoint === '-'
             || $codePoint === '.'
         ) {
-            $buffer->append(strtolower($codePoint));
+            $context->buffer->append(strtolower($codePoint));
 
             return self::RETURN_OK;
         }
 
         if ($codePoint === ':') {
-            $stateIsOverridden = $parser->isStateOverridden();
+            $stateIsOverridden = $context->isStateOverridden();
             $bufferIsSpecialScheme = false;
-            $candidateScheme = $buffer->toScheme();
+            $candidateScheme = $context->buffer->toScheme();
 
             if ($stateIsOverridden) {
                 $bufferIsSpecialScheme = $candidateScheme->isSpecial();
-                $urlIsSpecial = $url->scheme->isSpecial();
+                $urlIsSpecial = $context->url->scheme->isSpecial();
 
                 if ($urlIsSpecial && !$bufferIsSpecialScheme) {
                     return self::RETURN_BREAK;
@@ -58,59 +47,63 @@ class SchemeState implements State
                 }
 
                 if (
-                    $url->includesCredentials()
-                    || ($url->port !== null && $candidateScheme->isFile())
+                    $context->url->includesCredentials()
+                    || ($context->url->port !== null && $candidateScheme->isFile())
                 ) {
                     return self::RETURN_BREAK;
                 }
 
-                if ($url->scheme->isFile() && $url->host->isEmpty()) {
+                if ($context->url->scheme->isFile() && $context->url->host->isEmpty()) {
                     return self::RETURN_BREAK;
                 }
             }
 
-            $url->scheme = $candidateScheme;
+            $context->url->scheme = $candidateScheme;
 
             if ($stateIsOverridden) {
-                if ($bufferIsSpecialScheme && $url->scheme->isDefaultPort($url->port)) {
-                    $url->port = null;
+                if ($bufferIsSpecialScheme && $context->url->scheme->isDefaultPort($context->url->port)) {
+                    $context->url->port = null;
                 }
 
                 return self::RETURN_BREAK;
             }
 
-            $buffer->clear();
-            $urlIsSpecial = $url->scheme->isSpecial();
+            $context->buffer->clear();
+            $urlIsSpecial = $context->url->scheme->isSpecial();
 
-            if ($url->scheme->isFile()) {
-                if ($iter->peek(2) !== '//') {
+            if ($context->url->scheme->isFile()) {
+                if ($context->iter->peek(2) !== '//') {
                     // Validation error.
                 }
 
-                $parser->setState(new FileState());
-            } elseif ($urlIsSpecial && $base !== null && $base->scheme->equals($url->scheme)) {
+                $context->state = new FileState();
+            } elseif (
+                $urlIsSpecial
+                && $context->base !== null
+                && $context->base->scheme->equals($context->url->scheme)
+            ) {
                 // This means that base's cannot-be-a-base-URL flag is unset.
-                $parser->setState(new SpecialRelativeOrAuthorityState());
+                $context->state = new SpecialRelativeOrAuthorityState();
             } elseif ($urlIsSpecial) {
-                $parser->setState(new SpecialAuthoritySlashesState());
-            } elseif ($iter->peek() === '/') {
-                $parser->setState(new PathOrAuthorityState());
-                $iter->next();
+                $context->state = new SpecialAuthoritySlashesState();
+            } elseif ($context->iter->peek() === '/') {
+                $context->state = new PathOrAuthorityState();
+                $context->iter->next();
             } else {
-                $url->cannotBeABaseUrl = true;
-                $url->path->push(new Path());
-                $parser->setState(new CannotBeABaseUrlPathState());
+                $context->url->cannotBeABaseUrl = true;
+                $context->url->path->push(new Path());
+                $context->state = new CannotBeABaseUrlPathState();
             }
 
             return self::RETURN_OK;
         }
 
-        if (!$parser->isStateOverridden()) {
-            $buffer->clear();
-            $parser->setState(new NoSchemeState());
+        if (!$context->isStateOverridden()) {
+            $context->buffer->clear();
+            $context->state = new NoSchemeState();
 
             // Reset the pointer to point at the first code point.
-            $iter->rewind();
+            $context->iter->rewind();
 
             return self::RETURN_CONTINUE;
         }

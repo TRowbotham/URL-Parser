@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\ParserConfigInterface;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-use Rowbot\URL\String\StringBufferInterface;
-use Rowbot\URL\String\StringIteratorInterface;
-use Rowbot\URL\String\USVStringInterface;
-use Rowbot\URL\URLRecord;
 
 use function assert;
 
@@ -18,49 +14,42 @@ use function assert;
  */
 class RelativeState implements State
 {
-    public function handle(
-        ParserConfigInterface $parser,
-        USVStringInterface $input,
-        StringIteratorInterface $iter,
-        StringBufferInterface $buffer,
-        string $codePoint,
-        URLRecord $url,
-        ?URLRecord $base
-    ): int {
-        assert($base !== null && !$base->scheme->isFile());
+    public function handle(ParserContext $context, string $codePoint): int
+    {
+        assert($context->base !== null && !$context->base->scheme->isFile());
 
-        $url->scheme = clone $base->scheme;
+        $context->url->scheme = clone $context->base->scheme;
 
         if ($codePoint === '/') {
-            $parser->setState(new RelativeSlashState());
+            $context->state = new RelativeSlashState();
 
             return self::RETURN_OK;
         }
 
-        if ($url->scheme->isSpecial() && $codePoint === '\\') {
+        if ($context->url->scheme->isSpecial() && $codePoint === '\\') {
             // Validation error
-            $parser->setState(new RelativeSlashState());
+            $context->state = new RelativeSlashState();
 
             return self::RETURN_OK;
         }
 
-        $url->username = $base->username;
-        $url->password = $base->password;
-        $url->host = clone $base->host;
-        $url->port = $base->port;
-        $url->path = clone $base->path;
-        $url->query = $base->query;
+        $context->url->username = $context->base->username;
+        $context->url->password = $context->base->password;
+        $context->url->host = clone $context->base->host;
+        $context->url->port = $context->base->port;
+        $context->url->path = clone $context->base->path;
+        $context->url->query = $context->base->query;
 
         if ($codePoint === '?') {
-            $url->query = '';
-            $parser->setState(new QueryState());
+            $context->url->query = '';
+            $context->state = new QueryState();
 
             return self::RETURN_OK;
         }
 
         if ($codePoint === '#') {
-            $url->fragment = '';
-            $parser->setState(new FragmentState());
+            $context->url->fragment = '';
+            $context->state = new FragmentState();
 
             return self::RETURN_OK;
         }
@@ -69,11 +58,11 @@ class RelativeState implements State
             return self::RETURN_OK;
         }
 
-        $url->query = null;
-        $url->path->shorten($url->scheme);
+        $context->url->query = null;
+        $context->url->path->shorten($context->url->scheme);
 
-        $parser->setState(new PathState());
-        $iter->prev();
+        $context->state = new PathState();
+        $context->iter->prev();
 
         return self::RETURN_OK;
     }
