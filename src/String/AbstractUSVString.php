@@ -63,12 +63,11 @@ abstract class AbstractUSVString implements USVStringInterface
         return mb_strlen($this->string, 'utf-8');
     }
 
-    /**
-     * @return array<int, string>
-     */
-    public function matches(string $pattern, int $flags = 0, int $offset = 0): array
+    public function matches(string $pattern, ?array &$matches = null, int $flags = 0, int $offset = 0): bool
     {
-        if (preg_match($pattern, $this->string, $matches, $flags, $offset) === false) {
+        $result = preg_match($pattern, $this->string, $matches, $flags, $offset);
+
+        if ($result === false) {
             throw new RegexException(sprintf(
                 'preg_match encountered an error with message %s trying to match "%s" against "%s".',
                 RegexException::getNameFromLastCode(),
@@ -77,7 +76,7 @@ abstract class AbstractUSVString implements USVStringInterface
             ));
         }
 
-        return $matches;
+        return $result === 1;
     }
 
     public function replaceRegex(

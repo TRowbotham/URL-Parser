@@ -81,7 +81,7 @@ class StringsTest extends TestCase
     {
         $this->expectException(RegexException::class);
         $s = new Utf8String('');
-        $s->matches('/[A-Z]/', 0, 1);
+        $s->matches('/[A-Z]/', $matches, 0, 1);
     }
 
     public function testMatchesThrowsOnInvalidUtf8Text(): void

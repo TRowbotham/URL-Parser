@@ -84,9 +84,7 @@ class HostParser
             return false;
         }
 
-        $matches = $asciiDomain->matches('/[' . self::FORBIDDEN_HOST_CODEPOINTS . ']/u');
-
-        if ($matches !== []) {
+        if ($asciiDomain->matches('/[' . self::FORBIDDEN_HOST_CODEPOINTS . ']/u')) {
             // Validation error.
             return false;
         }
@@ -110,9 +108,7 @@ class HostParser
     private static function parseOpaqueHost(USVStringInterface $input)
     {
         // Match a forbidden host code point, minus the "%" character.
-        $matches = $input->matches('/[' . self::FORBIDDEN_OPAQUE_HOST_CODEPOINTS . ']/u');
-
-        if ($matches !== []) {
+        if ($input->matches('/[' . self::FORBIDDEN_OPAQUE_HOST_CODEPOINTS . ']/u')) {
             // Validation error.
             return false;
         }

@@ -22,9 +22,9 @@ interface USVStringInterface extends IteratorAggregate
     public function length(): int;
 
     /**
-     * @return array<int, string>
+     * @param array<int, string> $matches
      */
-    public function matches(string $pattern): array;
+    public function matches(string $pattern, ?array &$matches = null, int $flags = 0, int $offset = 0): bool;
 
     public function replaceRegex(
         string $pattern,
