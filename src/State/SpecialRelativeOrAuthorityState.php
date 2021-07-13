@@ -13,6 +13,8 @@ class SpecialRelativeOrAuthorityState implements State
 {
     public function handle(ParserContext $context, string $codePoint): int
     {
+        // 1. If c is U+002F (/) and remaining starts with U+002F (/), then set state to special authority ignore
+        // slashes state and increase pointer by 1.
         if ($codePoint === '/' && $context->iter->peek() === '/') {
             $context->state = new SpecialAuthorityIgnoreSlashesState();
             $context->iter->next();
@@ -20,7 +22,7 @@ class SpecialRelativeOrAuthorityState implements State
             return self::RETURN_OK;
         }
 
-        // Validation error.
+        // 2. Otherwise, validation error, set state to relative state and decrease pointer by 1.
         $context->state = new RelativeState();
         $context->iter->prev();
 
