@@ -38,7 +38,8 @@ class FileState implements State
 
         // 4. Otherwise, if base is non-null and base’s scheme is "file":
         if ($context->base !== null && $context->base->scheme->isFile()) {
-            // 4.1. Set url’s host to base’s host, url’s path to a clone of base’s path, and url’s query to base’s query.
+            // 4.1. Set url’s host to base’s host, url’s path to a clone of base’s path, and url’s query to base’s
+            // query.
             $context->url->host = clone $context->base->host;
             $context->url->path = clone $context->base->path;
             $context->url->query = $context->base->query;

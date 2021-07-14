@@ -96,7 +96,6 @@ class SchemeState implements State
                 && $context->base !== null
                 && $context->base->scheme->equals($context->url->scheme)
             ) {
-
                 // This means that base's cannot-be-a-base-URL flag is unset.
                 $context->state = new SpecialRelativeOrAuthorityState();
 
