@@ -72,14 +72,27 @@ class IPv6AddressSerializer implements HostSerializerInterface
 
     public function toString(): string
     {
+        // 1. Let output be the empty string.
         $output = '';
+
+        // 2. Let compress be an index to the first IPv6 piece in the first longest sequences of address’s IPv6 pieces
+        // that are 0.
+        // 3. If there is no sequence of address’s IPv6 pieces that are 0 that is longer than 1, then set compress to
+        // null.
+        // 4. Let ignore0 be false.
         [$compress, $longestSequence] = $this->getCompressLocation();
         $pieceIndex = 0;
 
+        // 5. For each pieceIndex in the range 0 to 7, inclusive:
         do {
+            // 5.3. If compress is pieceIndex, then:
             if ($compress === $pieceIndex) {
+                // 5.3.1. Let separator be "::" if pieceIndex is 0, and U+003A (:) otherwise.
+                // 5.3.2. Append separator to output.
                 $output .= $pieceIndex === 0 ? '::' : ':';
 
+                // 5.3.3. Set ignore0 to true and continue.
+                //
                 // Advance the pointer to $compress + $longestSequence
                 // to skip over all 16-bit pieces that are 0 that immediately
                 // follow the piece at $compress.
@@ -88,9 +101,13 @@ class IPv6AddressSerializer implements HostSerializerInterface
                 continue;
             }
 
+            // 5.4. Append address[pieceIndex], represented as the shortest possible lowercase hexadecimal number, to
+            // output.
+            //
             // Is it safe to assume this always returns lowercase letters?
             $output .= dechex($this->address[$pieceIndex]);
 
+            // 5.5. If pieceIndex is not 7, then append U+003A (:) to output.
             if ($pieceIndex < self::MAX_SIZE - 1) {
                 $output .= ':';
             }
@@ -98,6 +115,7 @@ class IPv6AddressSerializer implements HostSerializerInterface
             ++$pieceIndex;
         } while ($pieceIndex < self::MAX_SIZE);
 
+        // 6. Return output.
         return $output;
     }
 }
