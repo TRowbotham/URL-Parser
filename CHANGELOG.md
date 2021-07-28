@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support for PHP 8.1
+
 ### Changed
 
 - Make the `URL::$hostname` setter do nothing if the host name contains a ":" per [whatwg/url#601](https://github.com/whatwg/url/issues/601) [whatwg/url#604](https://github.com/whatwg/url/pull/604)
