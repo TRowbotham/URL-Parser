@@ -62,6 +62,6 @@ class URLConstructorTest extends WhatwgTestCase
     public function testUrlConstructorFailed(stdClass $expected): void
     {
         $this->expectException(TypeError::class);
-        new URL($expected->input, $expected->base);
+        isset($expected->base) ? new URL($expected->input, $expected->base) : new URL($expected->input);
     }
 }

@@ -24,8 +24,7 @@ class URLOriginTest extends WhatwgTestCase
      */
     public function testOrigin(stdClass $expected): void
     {
-        $base = $expected->base ? $expected->base : 'about:blank';
-        $url = new URL($expected->input, $base);
+        $url = isset($expected->base) ? new URL($expected->input, $expected->base) : new URL($expected->input);
         self::assertSame($expected->origin, $url->origin);
     }
 }
