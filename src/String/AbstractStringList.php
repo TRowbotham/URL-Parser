@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
+use ReturnTypeWillChange;
 use Rowbot\URL\String\Exception\UndefinedIndexException;
 
 use function array_pop;
@@ -41,7 +42,7 @@ abstract class AbstractStringList
     /**
      * @return T
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->list[$this->cursor];
