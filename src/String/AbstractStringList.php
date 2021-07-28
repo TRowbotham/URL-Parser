@@ -41,7 +41,8 @@ abstract class AbstractStringList
     /**
      * @return T
      */
-    public function current(): USVStringInterface
+    #[\ReturnTypeWillChange]
+    public function current()
     {
         return $this->list[$this->cursor];
     }
