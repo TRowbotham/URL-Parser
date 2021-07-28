@@ -9,6 +9,7 @@
 ### Changed
 
 - Make the `URL::$hostname` setter do nothing if the host name contains a ":" per [whatwg/url#601](https://github.com/whatwg/url/issues/601) [whatwg/url#604](https://github.com/whatwg/url/pull/604)
+- Reject non-IPv4 hostnames that end in numbers per [whatwg/url#560](https://github.com/whatwg/url/issues/560) [whatwg/url#619](https://github.com/whatwg/url/pull/619)
 
 ### Fixed
 

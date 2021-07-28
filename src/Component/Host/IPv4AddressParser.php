@@ -19,7 +19,7 @@ use function strspn;
 class IPv4AddressParser
 {
     /**
-     * @return \Rowbot\URL\String\USVStringInterface|\Rowbot\URL\Component\Host\IPv4Address|false
+     * @return \Rowbot\URL\Component\Host\IPv4Address|false
      */
     public static function parse(USVStringInterface $input)
     {
@@ -45,9 +45,9 @@ class IPv4AddressParser
             }
         }
 
-        // 4. If parts’s size is greater than 4, then return input.
+        // 4. If parts’s size is greater than 4, validation error, return failure.
         if ($count > 4) {
-            return $input;
+            return false;
         }
 
         // 5. Let numbers be an empty list.
@@ -55,25 +55,20 @@ class IPv4AddressParser
 
         // 6. For each part of parts:
         foreach ($parts as $part) {
-            // 6.1. If part is the empty string, then return input.
-            if ($part->isEmpty()) {
-                return $input;
-            }
-
-            // 6.2. Let result be the result of parsing part.
+            // 6.1. Let result be the result of parsing part.
             $result = self::parseIPv4Number($part);
 
-            // 6.3. If result is failure, then return input.
+            // 6.2. If result is failure, validation error, return failure.
             if ($result === false) {
-                return $input;
+                return false;
             }
 
-            // 6.4. If result[1] is true, then set validationError to true.
+            // 6.3. If result[1] is true, then set validationError to true.
             if ($result[1] === true) {
                 $validationError = $result[1];
             }
 
-            // 6.5. Append result[0] to numbers.
+            // 6.4. Append result[0] to numbers.
             $numbers[] = $result[0];
         }
 
@@ -133,6 +128,35 @@ class IPv4AddressParser
         return new IPv4Address((string) $ipv4);
     }
 
+    public static function endsInIPv4Number(USVStringInterface $input): bool
+    {
+        // 1. Let parts be the result of strictly splitting input on U+002E (.).
+        $parts = $input->split('.');
+
+        // 2. If the last item in parts is the empty string, then:
+        if ($parts->last()->isEmpty()) {
+            // 2.1. If parts’s size is 1, then return false.
+            if ($parts->count() === 1) {
+                return false;
+            }
+
+            // 3.1. Remove the last item from parts.
+            $parts->pop();
+        }
+
+        // 3. Let last be the last item in parts.
+        $last = $parts->last();
+
+        // 4. If parsing last as an IPv4 number does not return failure, then return true.
+        if (self::parseIPv4Number($last) !== false) {
+            return true;
+        }
+
+        // 5. If last is non-empty and contains only ASCII digits, then return true.
+        // 6. Return false.
+        return !$last->isEmpty() && strspn((string) $last, CodePoint::ASCII_DIGIT_MASK) === $last->length();
+    }
+
     /**
      * @see https://url.spec.whatwg.org/#ipv4-number-parser
      *
@@ -140,39 +164,44 @@ class IPv4AddressParser
      */
     private static function parseIPv4Number(USVStringInterface $input)
     {
-        // 1. Let validationError be false.
+        // 1. If input is the empty string, then return failure.
+        if ($input->isEmpty()) {
+            return false;
+        }
+
+        // 2. Let validationError be false.
         $validationError = false;
 
-        // 2. Let R be 10.
+        // 3. Let R be 10.
         $radix = 10;
 
         if ($input->length() > 1) {
-            // 3. If input contains at least two code points and the first two code points are either "0x" or "0X",
+            // 4. If input contains at least two code points and the first two code points are either "0x" or "0X",
             // then:
             if ($input->startsWith('0x') || $input->startsWith('0X')) {
-                // 3.1. Set validationError to true.
-                $validationError = true;
-
-                // 3.2. Remove the first two code points from input.
-                $input = $input->substr(2);
-
-                // 3.3. Set R to 16.
-                $radix = 16;
-
-            // 4. Otherwise, if input contains at least two code points and the first code point is U+0030 (0), then:
-            } elseif ($input->startsWith('0')) {
                 // 4.1. Set validationError to true.
                 $validationError = true;
 
-                // 4.2. Remove the first code point from input.
+                // 4.2. Remove the first two code points from input.
+                $input = $input->substr(2);
+
+                // 4.3. Set R to 16.
+                $radix = 16;
+
+            // 5. Otherwise, if input contains at least two code points and the first code point is U+0030 (0), then:
+            } elseif ($input->startsWith('0')) {
+                // 5.1. Set validationError to true.
+                $validationError = true;
+
+                // 5.2. Remove the first code point from input.
                 $input = $input->substr(1);
 
-                // 4.3. Set R to 8.
+                // 5.3. Set R to 8.
                 $radix = 8;
             }
         }
 
-        // 5. If input is the empty string, then return 0.
+        // 6. If input is the empty string, then return 0.
         if ($input->isEmpty()) {
             return [NumberFactory::createNumber(0, 10), $validationError];
         }
@@ -180,7 +209,7 @@ class IPv4AddressParser
         $s = (string) $input;
         $length = strlen($s);
 
-        // 6. If input contains a code point that is not a radix-R digit, then return failure.
+        // 7. If input contains a code point that is not a radix-R digit, then return failure.
         if (
             ($radix === 10 && strspn($s, CodePoint::ASCII_DIGIT_MASK) !== $length)
             || ($radix === 16 && strspn($s, CodePoint::HEX_DIGIT_MASK) !== $length)
@@ -189,9 +218,9 @@ class IPv4AddressParser
             return false;
         }
 
-        // 7. Let output be the mathematical integer value that is represented by input in radix-R notation, using ASCII
+        // 8. Let output be the mathematical integer value that is represented by input in radix-R notation, using ASCII
         // hex digits for digits with values 0 through 15.
-        // 8. Return (output, validationError).
+        // 9. Return (output, validationError).
         return [NumberFactory::createNumber($s, $radix), $validationError];
     }
 }

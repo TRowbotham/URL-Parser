@@ -89,10 +89,8 @@ class HostParser
             return false;
         }
 
-        $ipv4Host = IPv4AddressParser::parse($asciiDomain);
-
-        if ($ipv4Host instanceof IPv4Address || $ipv4Host === false) {
-            return $ipv4Host;
+        if (IPv4AddressParser::endsInIPv4Number($asciiDomain)) {
+            return IPv4AddressParser::parse($asciiDomain);
         }
 
         return $asciiDomain;
