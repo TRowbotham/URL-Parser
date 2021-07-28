@@ -16,6 +16,11 @@ use function implode;
  */
 class PathList extends AbstractStringList implements PathListInterface
 {
+    public function current(): Path
+    {
+        return $this->list[$this->cursor];
+    }
+
     public function shift(): ?Path
     {
         return array_shift($this->list);

@@ -9,4 +9,8 @@ namespace Rowbot\URL\String;
  */
 class StringList extends AbstractStringList implements StringListInterface
 {
+    public function current(): USVStringInterface
+    {
+        return $this->list[$this->cursor];
+    }
 }
