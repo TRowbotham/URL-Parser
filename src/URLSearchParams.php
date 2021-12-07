@@ -11,6 +11,7 @@ use ReflectionProperty;
 use Rowbot\URL\Component\QueryList;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\String\IDLString;
+use Stringable;
 
 use function array_column;
 use function count;
@@ -53,7 +54,7 @@ class URLSearchParams implements Iterator
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
-     * @param self|iterable<mixed, iterable<mixed, scalar>>|object|string $init (optional)
+     * @param self|iterable<int|string, iterable<int|string, scalar|\Stringable>>|object|string $init (optional)
      */
     public function __construct($init = '')
     {
@@ -65,8 +66,10 @@ class URLSearchParams implements Iterator
             return;
         }
 
-        if (is_scalar($init) || (is_object($init) && method_exists($init, '__toString'))) {
-            $init = IDLString::scrub((string) $init);
+        $str = $this->getStringValue($init);
+
+        if ($str !== false) {
+            $init = IDLString::scrub($str);
 
             if ($init !== '' && $init[0] === '?') {
                 $init = substr($init, 1);
@@ -178,13 +181,13 @@ class URLSearchParams implements Iterator
     }
 
     /**
-     * @param iterable<mixed, mixed> $input
+     * @param iterable<int|string, iterable<int|string, scalar|\Stringable>> $input
      *
      * @throws \Rowbot\URL\Exception\TypeError
      */
     private function initIterator(iterable $input): void
     {
-        foreach ($input as $pair) {
+        foreach ($input as $key => $pair) {
             // Try to catch cases where $pair isn't countable or $pair is
             // countable, but isn't a valid sequence, such as:
             //
@@ -221,16 +224,30 @@ class URLSearchParams implements Iterator
                     count($pair)
                 ));
             }
-        }
 
-        foreach ($input as $pair) {
             $parts = [];
 
             foreach ($pair as $part) {
-                $parts[] = IDLString::scrub((string) $part);
+                $parts[] = $this->getStringValue($part);
             }
 
-            $this->list->append(...$parts);
+            [$name, $value] = $parts;
+
+            if ($name === false) {
+                throw new TypeError(sprintf(
+                    'The name of the name-value pair at index %s must be a scalar value or stringable.',
+                    $key
+                ));
+            }
+
+            if ($value === false) {
+                throw new TypeError(sprintf(
+                    'The value of the name-value pair at index %s must be a scalar value or stringable.',
+                    $key
+                ));
+            }
+
+            $this->list->append(IDLString::scrub($name), IDLString::scrub($value));
         }
     }
 
@@ -242,10 +259,16 @@ class URLSearchParams implements Iterator
         $reflection = new ReflectionObject($input);
 
         foreach ($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
-            $this->list->append(
-                IDLString::scrub($property->getName()),
-                IDLString::scrub((string) $property->getValue($input))
-            );
+            $value = $this->getStringValue($property->getValue($input));
+
+            if ($value === false) {
+                throw new TypeError(sprintf(
+                    'The value of property %s must be a scalar value or stringable.',
+                    $reflection->getName()
+                ));
+            }
+
+            $this->list->append(IDLString::scrub($property->getName()), IDLString::scrub($value));
         }
     }
 
@@ -372,5 +395,23 @@ class URLSearchParams implements Iterator
     public function __toString(): string
     {
         return $this->list->toUrlencodedString();
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return string|false
+     */
+    private function getStringValue($value)
+    {
+        if (
+            $value instanceof Stringable
+            || is_scalar($value)
+            || (is_object($value) && method_exists($value, '__toString'))
+        ) {
+            return (string) $value;
+        }
+
+        return false;
     }
 }
