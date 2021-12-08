@@ -18,11 +18,11 @@ jobs:
       fail-fast: true
       matrix:
         operating-system: ['ubuntu-latest']
-        php-versions: ['7.1', '7.2', '7.3', '7.4', '8.0']
+        php-versions: ['7.1', '7.2', '7.3', '7.4', '8.0', '8.1']
         composer-options: ['--optimize-autoloader']
         experimental: [false]
         include:
-          - php-versions: '8.1'
+          - php-versions: 'nightly'
             operating-system: 'ubuntu-latest'
             composer-options: '--optimize-autoloader --ignore-platform-reqs'
             experimental: true
