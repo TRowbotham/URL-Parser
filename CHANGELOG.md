@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+## [3.1.5] - 2022-01-10
+
+## Changed
+
+ - Upgraded to PHPStan 1.0
+
+## Fixed
+
+- Initialization of `URLSearchParams` using an object now behaves the same as when using and iterator or string
+
 ## [3.1.4] - 2021-07-27
 
 ### Added
