@@ -31,7 +31,7 @@ install:
   - IF %PHP%==1 curl -fsSLO https://curl.haxx.se/ca/cacert.pem
   - IF %PHP%==1 echo extension=php_curl.dll >> php.ini
   - IF %PHP%==1 echo curl.cainfo="C:\php\cacert.pem" >> php.ini
-  - curl -fsSL -o composer.phar https://getcomposer.org/composer-stable.phar
+  - curl -fsSL -o composer.phar https://getcomposer.org/download/latest-2.2.x/composer.phar
   - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
   - cd C:\projects\url-parser
   - composer update --prefer-lowest --no-progress --ansi
