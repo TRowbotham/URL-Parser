@@ -18,10 +18,10 @@ class HostParser
 {
     /**
      * @see https://url.spec.whatwg.org/#forbidden-host-code-point
-     * @see https://url.spec.whatwg.org/#ref-for-forbidden-host-code-point%E2%91%A0
+     * @see https://url.spec.whatwg.org/#forbidden-domain-code-point
      */
-    private const FORBIDDEN_OPAQUE_HOST_CODEPOINTS = '\x00\x09\x0A\x0D\x20#\/:<>?@[\\\\\]^|';
-    private const FORBIDDEN_HOST_CODEPOINTS = self::FORBIDDEN_OPAQUE_HOST_CODEPOINTS . '%';
+    private const FORBIDDEN_HOST_CODEPOINTS = '\x00\x09\x0A\x0D\x20#\/:<>?@[\\\\\]^|';
+    private const FORBIDDEN_DOMAIN_CODEPOINTS = self::FORBIDDEN_HOST_CODEPOINTS . '\x01-\x1F%\x7F';
 
     /**
      * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
@@ -84,7 +84,7 @@ class HostParser
             return false;
         }
 
-        if ($asciiDomain->matches('/[' . self::FORBIDDEN_HOST_CODEPOINTS . ']/u')) {
+        if ($asciiDomain->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u')) {
             // Validation error.
             return false;
         }
@@ -105,8 +105,7 @@ class HostParser
      */
     private static function parseOpaqueHost(USVStringInterface $input)
     {
-        // Match a forbidden host code point, minus the "%" character.
-        if ($input->matches('/[' . self::FORBIDDEN_OPAQUE_HOST_CODEPOINTS . ']/u')) {
+        if ($input->matches('/[' . self::FORBIDDEN_HOST_CODEPOINTS . ']/u')) {
             // Validation error.
             return false;
         }
