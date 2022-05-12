@@ -24,36 +24,6 @@ class HostParser
     private const FORBIDDEN_DOMAIN_CODEPOINTS = self::FORBIDDEN_HOST_CODEPOINTS . '\x01-\x1F%\x7F';
 
     /**
-     * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
-     *
-     * @return \Rowbot\URL\Component\Host\StringHost|false
-     */
-    private static function domainToAscii(string $domain, bool $beStrict = false)
-    {
-        $result = Idna::toAscii($domain, [
-            'CheckHyphens'            => false,
-            'CheckBidi'               => true,
-            'CheckJoiners'            => true,
-            'UseSTD3ASCIIRules'       => $beStrict,
-            'Transitional_Processing' => false,
-            'VerifyDnsLength'         => $beStrict,
-        ]);
-        $convertedDomain = $result->getDomain();
-
-        if ($convertedDomain === '') {
-            // Validation error.
-            return false;
-        }
-
-        if ($result->hasErrors()) {
-            // Validation error.
-            return false;
-        }
-
-        return new StringHost($convertedDomain);
-    }
-
-    /**
      * Parses a host string. The string could represent a domain, IPv4 or IPv6 address, or an opaque host.
      *
      * @param bool $isNotSpecial (optional) Whether or not the URL has a special scheme.
@@ -94,6 +64,36 @@ class HostParser
         }
 
         return $asciiDomain;
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
+     *
+     * @return \Rowbot\URL\Component\Host\StringHost|false
+     */
+    private static function domainToAscii(string $domain, bool $beStrict = false)
+    {
+        $result = Idna::toAscii($domain, [
+            'CheckHyphens'            => false,
+            'CheckBidi'               => true,
+            'CheckJoiners'            => true,
+            'UseSTD3ASCIIRules'       => $beStrict,
+            'Transitional_Processing' => false,
+            'VerifyDnsLength'         => $beStrict,
+        ]);
+        $convertedDomain = $result->getDomain();
+
+        if ($convertedDomain === '') {
+            // Validation error.
+            return false;
+        }
+
+        if ($result->hasErrors()) {
+            // Validation error.
+            return false;
+        }
+
+        return new StringHost($convertedDomain);
     }
 
     /**

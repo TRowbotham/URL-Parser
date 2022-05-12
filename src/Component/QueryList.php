@@ -48,70 +48,6 @@ class QueryList implements IteratorAggregate
     }
 
     /**
-     * Appends a new name-value pair to the list.
-     */
-    public function append(string $name, string $value): void
-    {
-        $this->list[] = ['name' => $name, 'value' => $value];
-        $this->cache[$name] = true;
-    }
-
-    /**
-     * @see https://www.unicode.org/faq/utf_bom.html?source=post_page---------------------------#utf16-4
-     *
-     * @param list<int> $codePoints
-     *
-     * @return list<non-empty-list<int>>
-     */
-    private function computeCodeUnits(array $codePoints): array
-    {
-        $codeUnits = [];
-
-        foreach ($codePoints as $codePoint) {
-            // Code points less than 0x10000 are part of the Basic Multilingual Plane and are
-            // represented by a single code unit that is equal to its code point. Use 0 as the low
-            // surrogate as the <=> operator compares array size first and values second.
-            $codeUnits[] = $codePoint < 0x10000
-                ? [$codePoint, 0]
-                : [self::LEAD_OFFSET + ($codePoint >> 10), 0xDC00 + ($codePoint & 0x3FF)];
-        }
-
-        return $codeUnits;
-    }
-
-    /**
-     * Determines if a name-value pair with name $name exists in the collection.
-     */
-    public function contains(string $name): bool
-    {
-        return isset($this->cache[$name]);
-    }
-
-    /**
-     * Returns a filtered array based on the given callback.
-     *
-     * @return array<int, array<string, string>>
-     */
-    public function filter(callable $callback): array
-    {
-        return array_filter($this->list, $callback);
-    }
-
-    /**
-     * Returns the first name-value pair in the list whose name is $name.
-     */
-    public function first(string $name): ?string
-    {
-        foreach ($this->list as $pair) {
-            if ($pair['name'] === $name) {
-                return $pair['value'];
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Decodes a application/x-www-form-urlencoded string and returns the decoded pairs as a list.
      *
      * Note: A legacy server-oriented implementation might have to support encodings other than
@@ -162,6 +98,47 @@ class QueryList implements IteratorAggregate
         }
 
         return $output;
+    }
+
+    /**
+     * Appends a new name-value pair to the list.
+     */
+    public function append(string $name, string $value): void
+    {
+        $this->list[] = ['name' => $name, 'value' => $value];
+        $this->cache[$name] = true;
+    }
+
+    /**
+     * Determines if a name-value pair with name $name exists in the collection.
+     */
+    public function contains(string $name): bool
+    {
+        return isset($this->cache[$name]);
+    }
+
+    /**
+     * Returns a filtered array based on the given callback.
+     *
+     * @return array<int, array<string, string>>
+     */
+    public function filter(callable $callback): array
+    {
+        return array_filter($this->list, $callback);
+    }
+
+    /**
+     * Returns the first name-value pair in the list whose name is $name.
+     */
+    public function first(string $name): ?string
+    {
+        foreach ($this->list as $pair) {
+            if ($pair['name'] === $name) {
+                return $pair['value'];
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -323,6 +300,55 @@ class QueryList implements IteratorAggregate
     }
 
     /**
+     * Encodes the list of tuples as a valid application/x-www-form-urlencoded string.
+     *
+     * @see https://url.spec.whatwg.org/#concept-urlencoded-serializer
+     *
+     * @param string|null $encodingOverride (optional)
+     */
+    public function toUrlencodedString(string $encodingOverride = null): string
+    {
+        $encoding = EncodingHelper::getOutputEncoding($encodingOverride) ?? 'utf-8';
+        $output = '';
+
+        foreach ($this->list as $key => $tuple) {
+            $name = $this->urlencode(Utf8String::transcode($tuple['name'], $encoding, 'utf-8'));
+            $value = $this->urlencode(Utf8String::transcode($tuple['value'], $encoding, 'utf-8'));
+
+            if ($key > 0) {
+                $output .= '&';
+            }
+
+            $output .= $name . '=' . $value;
+        }
+
+        return $output;
+    }
+
+    /**
+     * @see https://www.unicode.org/faq/utf_bom.html?source=post_page---------------------------#utf16-4
+     *
+     * @param list<int> $codePoints
+     *
+     * @return list<non-empty-list<int>>
+     */
+    private function computeCodeUnits(array $codePoints): array
+    {
+        $codeUnits = [];
+
+        foreach ($codePoints as $codePoint) {
+            // Code points less than 0x10000 are part of the Basic Multilingual Plane and are
+            // represented by a single code unit that is equal to its code point. Use 0 as the low
+            // surrogate as the <=> operator compares array size first and values second.
+            $codeUnits[] = $codePoint < 0x10000
+                ? [$codePoint, 0]
+                : [self::LEAD_OFFSET + ($codePoint >> 10), 0xDC00 + ($codePoint & 0x3FF)];
+        }
+
+        return $codeUnits;
+    }
+
+    /**
      * Encodes a string to be a valid application/x-www-form-urlencoded string.
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-byte-serializer
@@ -348,32 +374,6 @@ class QueryList implements IteratorAggregate
             } else {
                 $output .= rawurlencode($input[$i]);
             }
-        }
-
-        return $output;
-    }
-
-    /**
-     * Encodes the list of tuples as a valid application/x-www-form-urlencoded string.
-     *
-     * @see https://url.spec.whatwg.org/#concept-urlencoded-serializer
-     *
-     * @param string|null $encodingOverride (optional)
-     */
-    public function toUrlencodedString(string $encodingOverride = null): string
-    {
-        $encoding = EncodingHelper::getOutputEncoding($encodingOverride) ?? 'utf-8';
-        $output = '';
-
-        foreach ($this->list as $key => $tuple) {
-            $name = $this->urlencode(Utf8String::transcode($tuple['name'], $encoding, 'utf-8'));
-            $value = $this->urlencode(Utf8String::transcode($tuple['value'], $encoding, 'utf-8'));
-
-            if ($key > 0) {
-                $output .= '&';
-            }
-
-            $output .= $name . '=' . $value;
         }
 
         return $output;

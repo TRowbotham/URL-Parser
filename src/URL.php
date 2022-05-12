@@ -92,6 +92,71 @@ class URL implements JsonSerializable
         $this->queryObject->setList(QueryList::fromString($this->url->query));
     }
 
+    public function toString(): string
+    {
+        return $this->url->serializeURL();
+    }
+
+    /**
+     * Returns a JSON encoded string without escaping forward slashes. If you
+     * need forward slashes to be escaped, pass the URL object to json_encode()
+     * instead of calling this method.
+     *
+     * @see https://url.spec.whatwg.org/#dom-url-tojson
+     */
+    public function toJSON(): string
+    {
+        // Use JSON_UNESCAPED_SLASHES here since JavaScript's JSON.stringify()
+        // method does not escape forward slashes by default.
+        $result = json_encode($this->url->serializeURL(), JSON_UNESCAPED_SLASHES);
+
+        if ($result === false || json_last_error() !== JSON_ERROR_NONE) {
+            throw new JsonException(json_last_error_msg(), json_last_error());
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns the serialized URL for consumption by json_encode(). To match
+     * JavaScript's behavior, you should pass the JSON_UNESCAPED_SLASHES option
+     * to json_encode().
+     */
+    public function jsonSerialize(): string
+    {
+        return $this->url->serializeURL();
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#set-the-password
+     */
+    private function setUrlPassword(USVStringInterface $input): void
+    {
+        $this->url->password = '';
+
+        foreach ($input as $codePoint) {
+            $this->url->password .= CodePoint::utf8PercentEncode(
+                $codePoint,
+                CodePoint::USERINFO_PERCENT_ENCODE_SET
+            );
+        }
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#set-the-username
+     */
+    private function setUrlUsername(USVStringInterface $input): void
+    {
+        $this->url->username = '';
+
+        foreach ($input as $codePoint) {
+            $this->url->username .= CodePoint::utf8PercentEncode(
+                $codePoint,
+                CodePoint::USERINFO_PERCENT_ENCODE_SET
+            );
+        }
+    }
+
     public function __clone()
     {
         $this->url = clone $this->url;
@@ -301,72 +366,7 @@ class URL implements JsonSerializable
         }
     }
 
-    /**
-     * @see https://url.spec.whatwg.org/#set-the-password
-     */
-    private function setUrlPassword(USVStringInterface $input): void
-    {
-        $this->url->password = '';
-
-        foreach ($input as $codePoint) {
-            $this->url->password .= CodePoint::utf8PercentEncode(
-                $codePoint,
-                CodePoint::USERINFO_PERCENT_ENCODE_SET
-            );
-        }
-    }
-
-    /**
-     * @see https://url.spec.whatwg.org/#set-the-username
-     */
-    private function setUrlUsername(USVStringInterface $input): void
-    {
-        $this->url->username = '';
-
-        foreach ($input as $codePoint) {
-            $this->url->username .= CodePoint::utf8PercentEncode(
-                $codePoint,
-                CodePoint::USERINFO_PERCENT_ENCODE_SET
-            );
-        }
-    }
-
     public function __toString(): string
-    {
-        return $this->url->serializeURL();
-    }
-
-    public function toString(): string
-    {
-        return $this->url->serializeURL();
-    }
-
-    /**
-     * Returns a JSON encoded string without escaping forward slashes. If you
-     * need forward slashes to be escaped, pass the URL object to json_encode()
-     * instead of calling this method.
-     *
-     * @see https://url.spec.whatwg.org/#dom-url-tojson
-     */
-    public function toJSON(): string
-    {
-        // Use JSON_UNESCAPED_SLASHES here since JavaScript's JSON.stringify()
-        // method does not escape forward slashes by default.
-        $result = json_encode($this->url->serializeURL(), JSON_UNESCAPED_SLASHES);
-
-        if ($result === false || json_last_error() !== JSON_ERROR_NONE) {
-            throw new JsonException(json_last_error_msg(), json_last_error());
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns the serialized URL for consumption by json_encode(). To match
-     * JavaScript's behavior, you should pass the JSON_UNESCAPED_SLASHES option
-     * to json_encode().
-     */
-    public function jsonSerialize(): string
     {
         return $this->url->serializeURL();
     }

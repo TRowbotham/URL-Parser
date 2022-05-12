@@ -84,13 +84,6 @@ class URLRecord
         $this->cannotBeABaseUrl = false;
     }
 
-    public function __clone()
-    {
-        $this->scheme = clone $this->scheme;
-        $this->host = clone $this->host;
-        $this->path = clone $this->path;
-    }
-
     /**
      * Whether or not a URL can have a username, password, or port set.
      *
@@ -226,5 +219,12 @@ class URLRecord
         }
 
         return $output;
+    }
+
+    public function __clone()
+    {
+        $this->scheme = clone $this->scheme;
+        $this->host = clone $this->host;
+        $this->path = clone $this->path;
     }
 }

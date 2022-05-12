@@ -180,6 +180,112 @@ class URLSearchParams implements Iterator
         return $this->list->contains(IDLString::scrub($name));
     }
 
+    public function key(): int
+    {
+        return $this->cursor;
+    }
+
+    public function next(): void
+    {
+        ++$this->cursor;
+    }
+
+    public function rewind(): void
+    {
+        $this->cursor = 0;
+    }
+
+    /**
+     * Sets the value of the specified key name. If multiple pairs exist with the same key name it
+     * will set the value for the first occurance of the key in the query string and all other
+     * occurances will be removed from the query string.  If the key does not already exist in the
+     * query string, it will be added to the end of the query string.
+     *
+     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-set
+     *
+     * @param string $name  The name of the key you want to modify the value of.
+     * @param string $value The value you want to associate with the key name.
+     */
+    public function set(string $name, string $value): void
+    {
+        $name = IDLString::scrub($name);
+        $value = IDLString::scrub($value);
+
+        if ($this->list->contains($name)) {
+            $this->list->set($name, $value);
+        } else {
+            $this->list->append($name, $value);
+        }
+
+        $this->update();
+    }
+
+    /**
+     * @internal
+     *
+     * @param \Rowbot\URL\Component\QueryList $list
+     */
+    public function setList(QueryList $list): void
+    {
+        $this->list = $list;
+    }
+
+    /**
+     * Sets the associated url record.
+     *
+     * @internal
+     *
+     * @param \Rowbot\URL\URLRecord $url
+     */
+    public function setUrl(URLRecord $url): void
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * Sorts the list of search params by their names by comparing their code unit values,
+     * preserving the relative order between pairs with the same name.
+     *
+     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-sort
+     */
+    public function sort(): void
+    {
+        $this->list->sort();
+        $this->update();
+    }
+
+    public function toString(): string
+    {
+        return $this->list->toUrlencodedString();
+    }
+
+    public function valid(): bool
+    {
+        return $this->list->getTupleAt($this->cursor) !== null;
+    }
+
+    /**
+     * Set's the associated URL object's query to the serialization of URLSearchParams.
+     *
+     * @see https://url.spec.whatwg.org/#concept-urlsearchparams-update
+     *
+     * @internal
+     */
+    protected function update(): void
+    {
+        if ($this->url === null) {
+            return;
+        }
+
+        $query = $this->list->toUrlencodedString();
+
+        if ($query === '') {
+            $query = null;
+        }
+
+        $this->url->query = $query;
+    }
+
     /**
      * @param iterable<int|string, iterable<int|string, scalar|\Stringable>> $input
      *
@@ -272,110 +378,22 @@ class URLSearchParams implements Iterator
         }
     }
 
-    public function key(): int
-    {
-        return $this->cursor;
-    }
-
-    public function next(): void
-    {
-        ++$this->cursor;
-    }
-
-    public function rewind(): void
-    {
-        $this->cursor = 0;
-    }
-
     /**
-     * Sets the value of the specified key name. If multiple pairs exist with the same key name it
-     * will set the value for the first occurance of the key in the query string and all other
-     * occurances will be removed from the query string.  If the key does not already exist in the
-     * query string, it will be added to the end of the query string.
+     * @param mixed $value
      *
-     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-set
-     *
-     * @param string $name  The name of the key you want to modify the value of.
-     * @param string $value The value you want to associate with the key name.
+     * @return string|false
      */
-    public function set(string $name, string $value): void
+    private function getStringValue($value)
     {
-        $name = IDLString::scrub($name);
-        $value = IDLString::scrub($value);
-
-        if ($this->list->contains($name)) {
-            $this->list->set($name, $value);
-        } else {
-            $this->list->append($name, $value);
+        if (
+            $value instanceof Stringable
+            || is_scalar($value)
+            || (is_object($value) && method_exists($value, '__toString'))
+        ) {
+            return (string) $value;
         }
 
-        $this->update();
-    }
-
-    /**
-     * @internal
-     *
-     * @param \Rowbot\URL\Component\QueryList $list
-     */
-    public function setList(QueryList $list): void
-    {
-        $this->list = $list;
-    }
-
-    /**
-     * Sets the associated url record.
-     *
-     * @internal
-     *
-     * @param \Rowbot\URL\URLRecord $url
-     */
-    public function setUrl(URLRecord $url): void
-    {
-        $this->url = $url;
-    }
-
-    /**
-     * Sorts the list of search params by their names by comparing their code unit values,
-     * preserving the relative order between pairs with the same name.
-     *
-     * @see https://url.spec.whatwg.org/#dom-urlsearchparams-sort
-     */
-    public function sort(): void
-    {
-        $this->list->sort();
-        $this->update();
-    }
-
-    public function toString(): string
-    {
-        return $this->list->toUrlencodedString();
-    }
-
-    /**
-     * Set's the associated URL object's query to the serialization of URLSearchParams.
-     *
-     * @see https://url.spec.whatwg.org/#concept-urlsearchparams-update
-     *
-     * @internal
-     */
-    protected function update(): void
-    {
-        if ($this->url === null) {
-            return;
-        }
-
-        $query = $this->list->toUrlencodedString();
-
-        if ($query === '') {
-            $query = null;
-        }
-
-        $this->url->query = $query;
-    }
-
-    public function valid(): bool
-    {
-        return $this->list->getTupleAt($this->cursor) !== null;
+        return false;
     }
 
     public function __clone()
@@ -395,23 +413,5 @@ class URLSearchParams implements Iterator
     public function __toString(): string
     {
         return $this->list->toUrlencodedString();
-    }
-
-    /**
-     * @param mixed $value
-     *
-     * @return string|false
-     */
-    private function getStringValue($value)
-    {
-        if (
-            $value instanceof Stringable
-            || is_scalar($value)
-            || (is_object($value) && method_exists($value, '__toString'))
-        ) {
-            return (string) $value;
-        }
-
-        return false;
     }
 }

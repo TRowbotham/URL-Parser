@@ -158,4 +158,32 @@
     <rule ref="SlevomatCodingStandard.Commenting.UselessFunctionDocComment" />
     <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment" />
     <rule ref="SlevomatCodingStandard.ControlStructures.UselessIfConditionWithReturn" />
+    <rule ref="SlevomatCodingStandard.Classes.ClassStructure">
+        <properties>
+            <property name="groups" type="array">
+                <element value="uses"/>
+
+                <element value="public constants"/>
+                <element value="protected constants"/>
+                <element value="private constants"/>
+
+                <element value="public properties, public static properties"/>
+                <element value="protected properties, protected static properties"/>
+                <element value="private properties, private static properties"/>
+
+                <element value="constructor"/>
+                <element value="destructor" />
+
+                <element value="static constructors" />
+
+                <element value="public abstract methods"/>
+                <element value="all public methods"/>
+                <element value="protected abstract methods"/>
+                <element value="all protected methods"/>
+                <element value="all private methods"/>
+
+                <element value="magic methods"/>
+            </property>
+        </properties>
+    </rule>
 </ruleset>
