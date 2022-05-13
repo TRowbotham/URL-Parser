@@ -108,11 +108,11 @@ final class CodePoint
         string $codePoint,
         int $percentEncodeSet = self::C0_CONTROL_PERCENT_ENCODE_SET
     ): string {
-        $result = false;
+        $inEncodeSet = false;
 
         switch ($percentEncodeSet) {
             case self::USERINFO_PERCENT_ENCODE_SET:
-                $result = $codePoint === '/'
+                $inEncodeSet = $codePoint === '/'
                     || $codePoint === ':'
                     || $codePoint === ';'
                     || $codePoint === '='
@@ -123,44 +123,44 @@ final class CodePoint
                     || $codePoint === '^'
                     || $codePoint === '|';
 
-                if ($result) {
+                if ($inEncodeSet) {
                     break;
                 }
 
                 // No break.
 
             case self::PATH_PERCENT_ENCODE_SET:
-                $result = $codePoint === '#'
+                $inEncodeSet = $codePoint === '#'
                     || $codePoint === '?'
                     || $codePoint === '{'
                     || $codePoint === '}';
 
-                if ($result) {
+                if ($inEncodeSet) {
                     break;
                 }
 
                 // No break.
 
             case self::FRAGMENT_PERCENT_ENCODE_SET:
-                $result = $codePoint === ' '
+                $inEncodeSet = $codePoint === ' '
                     || $codePoint === '"'
                     || $codePoint === '<'
                     || $codePoint === '>'
                     || $codePoint === '`';
 
-                if ($result) {
+                if ($inEncodeSet) {
                     break;
                 }
 
                 // No break.
 
             case self::C0_CONTROL_PERCENT_ENCODE_SET:
-                $result = ($codePoint >= "\0" && $codePoint <= "\x1F") || $codePoint >= "\x7E";
+                $inEncodeSet = ($codePoint >= "\0" && $codePoint <= "\x1F") || $codePoint >= "\x7E";
 
                 break;
         }
 
-        if (!$result) {
+        if (!$inEncodeSet) {
             return $codePoint;
         }
 
