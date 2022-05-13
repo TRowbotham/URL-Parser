@@ -10,7 +10,7 @@ parameters:
 
     ignoreErrors:
         -
-            message: '#Call to function is_iterable\(\) with Traversable<int\|string, bool\|float\|int\|string\|Stringable> will always evaluate to true\.#'
+            message: '#Call to function is_countable\(\) with Countable&iterable<int\|string, bool\|float\|int\|string\|Stringable> will always evaluate to true\.#'
             path: src/URLSearchParams.php
 
         -

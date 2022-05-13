@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
-use Countable;
 use Iterator;
 use ReflectionObject;
 use ReflectionProperty;
@@ -16,8 +15,8 @@ use Stringable;
 use function array_column;
 use function count;
 use function func_num_args;
-use function gettype;
-use function is_array;
+use function get_debug_type;
+use function is_countable;
 use function is_iterable;
 use function is_object;
 use function is_scalar;
@@ -54,7 +53,7 @@ class URLSearchParams implements Iterator
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
-     * @param self|iterable<int|string, iterable<int|string, scalar|\Stringable>>|object|string $init (optional)
+     * @param self|iterable<int|string, iterable<int|string, scalar|\Stringable>&\Countable>|object|string $init (optional)
      */
     public function __construct($init = '')
     {
@@ -287,7 +286,7 @@ class URLSearchParams implements Iterator
     }
 
     /**
-     * @param iterable<int|string, iterable<int|string, scalar|\Stringable>> $input
+     * @param iterable<int|string, iterable<int|string, scalar|\Stringable>&\Countable> $input
      *
      * @throws \Rowbot\URL\Exception\TypeError
      */
@@ -316,11 +315,11 @@ class URLSearchParams implements Iterator
             //
             // $a = new \ArrayObject(new \ArrayObject(['x', 'y']));
             // $s = new \Rowbot\URL\URLSearchParams($a);'
-            if (!is_array($pair) && (!is_iterable($pair) || !$pair instanceof Countable)) {
+            if (!is_countable($pair)) {
                 throw new TypeError(sprintf(
                     'Expected a valid sequence such as an Array or iterable Object that implements '
                     . 'the \Countable interface. %s found instead.',
-                    gettype($pair)
+                    get_debug_type($pair)
                 ));
             }
 
