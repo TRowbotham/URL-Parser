@@ -326,7 +326,7 @@ class URLSearchParams implements Iterator
 
             if (count($pair) !== 2) {
                 throw new TypeError(sprintf(
-                    'Expected sequence with excatly 2 items. Sequence contained %d items.',
+                    'Expected sequence with exactly 2 items. Sequence contained %d items.',
                     count($pair)
                 ));
             }
