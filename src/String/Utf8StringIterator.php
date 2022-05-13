@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
-use Rowbot\URL\String\Exception\RegexException;
-
-use function preg_split;
-use function sprintf;
-
-use const PREG_SPLIT_NO_EMPTY;
+use function mb_str_split;
 
 class Utf8StringIterator implements StringIteratorInterface
 {
     /**
-     * @var array<int, string>
+     * @var list<string>
      */
     private $codePoints;
 
@@ -25,18 +20,7 @@ class Utf8StringIterator implements StringIteratorInterface
 
     public function __construct(string $string)
     {
-        // This shouldn't fail if the input string is valid utf-8.
-        $codePoints = preg_split('//u', $string, -1, PREG_SPLIT_NO_EMPTY);
-
-        if ($codePoints === false) {
-            throw new RegexException(sprintf(
-                'preg_split encountered an error with message %s trying to split a string into '
-                . 'code points.',
-                RegexException::getNameFromLastCode()
-            ));
-        }
-
-        $this->codePoints = $codePoints;
+        $this->codePoints = mb_str_split($string, 1, 'utf-8');
         $this->cursor = 0;
     }
 

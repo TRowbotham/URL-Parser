@@ -13,7 +13,8 @@ use function array_filter;
 use function array_splice;
 use function count;
 use function explode;
-use function ord;
+use function mb_ord;
+use function mb_str_split;
 use function rawurldecode;
 use function rawurlencode;
 use function str_replace;
@@ -207,8 +208,7 @@ class QueryList implements IteratorAggregate
 
         // Add information about the relative position of each name-value pair.
         foreach ($this->list as $pair) {
-            $codeUnits = $this->computeCodeUnits($this->utf8Decode($pair['name']));
-            $temp[] = [$i++, $codeUnits, $pair];
+            $temp[] = [$i++, $this->convertToCodeUnits($pair['name']), $pair];
         }
 
         // Sorting priority overview:
@@ -328,15 +328,17 @@ class QueryList implements IteratorAggregate
     /**
      * @see https://www.unicode.org/faq/utf_bom.html?source=post_page---------------------------#utf16-4
      *
-     * @param list<int> $codePoints
+     * @param string $input
      *
-     * @return list<non-empty-list<int>>
+     * @return list<list<int>>
      */
-    private function computeCodeUnits(array $codePoints): array
+    private function convertToCodeUnits(string $input): array
     {
         $codeUnits = [];
 
-        foreach ($codePoints as $codePoint) {
+        foreach (mb_str_split($input, 1, 'utf-8') as $strCodePoint) {
+            $codePoint = mb_ord($strCodePoint, 'utf-8');
+
             // Code points less than 0x10000 are part of the Basic Multilingual Plane and are
             // represented by a single code unit that is equal to its code point. Use 0 as the low
             // surrogate as the <=> operator compares array size first and values second.
@@ -377,95 +379,5 @@ class QueryList implements IteratorAggregate
         }
 
         return $output;
-    }
-
-    /**
-     * Takes a UTF-8 encoded string and converts it into a series of integer code points. Any
-     * invalid byte sequences will be replaced by a U+FFFD replacement code point.
-     *
-     * @see https://encoding.spec.whatwg.org/#utf-8-decoder
-     *
-     * @return list<int>
-     */
-    private function utf8Decode(string $input): array
-    {
-        $bytesSeen = 0;
-        $bytesNeeded = 0;
-        $lowerBoundary = 0x80;
-        $upperBoundary = 0xBF;
-        $codePoint = 0;
-        $codePoints = [];
-        $length = strlen($input);
-
-        for ($i = 0; $i < $length; ++$i) {
-            $byte = ord($input[$i]);
-
-            if ($bytesNeeded === 0) {
-                if ($byte >= 0x00 && $byte <= 0x7F) {
-                    $codePoints[] = $byte;
-
-                    continue;
-                }
-
-                if ($byte >= 0xC2 && $byte <= 0xDF) {
-                    $bytesNeeded = 1;
-                    $codePoint = $byte & 0x1F;
-                } elseif ($byte >= 0xE0 && $byte <= 0xEF) {
-                    if ($byte === 0xE0) {
-                        $lowerBoundary = 0xA0;
-                    } elseif ($byte === 0xED) {
-                        $upperBoundary = 0x9F;
-                    }
-
-                    $bytesNeeded = 2;
-                    $codePoint = $byte & 0xF;
-                } elseif ($byte >= 0xF0 && $byte <= 0xF4) {
-                    if ($byte === 0xF0) {
-                        $lowerBoundary = 0x90;
-                    } elseif ($byte === 0xF4) {
-                        $upperBoundary = 0x8F;
-                    }
-
-                    $bytesNeeded = 3;
-                    $codePoint = $byte & 0x7;
-                } else {
-                    $codePoints[] = 0xFFFD;
-                }
-
-                continue;
-            }
-
-            if ($byte < $lowerBoundary || $byte > $upperBoundary) {
-                $codePoint = 0;
-                $bytesNeeded = 0;
-                $bytesSeen = 0;
-                $lowerBoundary = 0x80;
-                $upperBoundary = 0xBF;
-                --$i;
-                $codePoints[] = 0xFFFD;
-
-                continue;
-            }
-
-            $lowerBoundary = 0x80;
-            $upperBoundary = 0xBF;
-            $codePoint = ($codePoint << 6) | ($byte & 0x3F);
-
-            if (++$bytesSeen !== $bytesNeeded) {
-                continue;
-            }
-
-            $codePoints[] = $codePoint;
-            $codePoint = 0;
-            $bytesNeeded = 0;
-            $bytesSeen = 0;
-        }
-
-        // String unexpectedly ended, so append a U+FFFD code point.
-        if ($bytesNeeded !== 0) {
-            $codePoints[] = 0xFFFD;
-        }
-
-        return $codePoints;
     }
 }
