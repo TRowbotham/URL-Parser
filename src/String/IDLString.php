@@ -8,6 +8,7 @@ use Rowbot\URL\String\Exception\RegexException;
 
 use function mb_convert_encoding;
 use function mb_substitute_character;
+use function preg_last_error_msg;
 use function preg_replace;
 use function sprintf;
 
@@ -38,8 +39,8 @@ class IDLString extends AbstractUSVString
 
         if ($result === null) {
             throw new RegexException(sprintf(
-                'preg_replace encountered an error with message %s trying to clean the input string.',
-                RegexException::getNameFromLastCode()
+                'preg_replace encountered an error with message "%s" trying to clean the input string.',
+                preg_last_error_msg()
             ));
         }
 

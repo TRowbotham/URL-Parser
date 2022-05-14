@@ -9,10 +9,10 @@ use Rowbot\URL\String\CodePoint;
 
 use function mb_convert_encoding;
 use function rawurlencode;
+use function str_ends_with;
+use function str_starts_with;
 use function strlen;
-use function strncmp;
 use function substr;
-use function substr_compare;
 
 /**
  * @see https://url.spec.whatwg.org/#query-state
@@ -60,7 +60,7 @@ class QueryState implements State
             // This can happen when encoding code points using a non-UTF-8 encoding.
             //
             // 3.4. If bytes starts with `&#` and ends with 0x3B (;), then:
-            if (strncmp($bytes, '&#', 2) === 0  && substr_compare($bytes, ';', -1) === 0) {
+            if (str_starts_with($bytes, '&#') && str_ends_with($bytes, ';')) {
                 // 3.4.1. Replace `&#` at the start of bytes with `%26%23`.
                 // 3.4.2. Replace 0x3B (;) at the end of bytes with `%3B`.
                 // 3.4.3. Append bytes, isomorphic decoded, to url’s query.

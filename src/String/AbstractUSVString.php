@@ -13,13 +13,13 @@ use function mb_convert_encoding;
 use function mb_strlen;
 use function mb_substitute_character;
 use function mb_substr;
+use function preg_last_error_msg;
 use function preg_match;
 use function preg_replace;
 use function sprintf;
-use function strlen;
-use function strncmp;
+use function str_ends_with;
+use function str_starts_with;
 use function strspn;
-use function substr_compare;
 
 use const PHP_INT_MAX;
 
@@ -45,7 +45,7 @@ abstract class AbstractUSVString implements USVStringInterface
 
     public function endsWith(string $string): bool
     {
-        return substr_compare($this->string, $string, -strlen($string)) === 0;
+        return str_ends_with($this->string, $string);
     }
 
     public function getIterator(): StringIteratorInterface
@@ -69,8 +69,8 @@ abstract class AbstractUSVString implements USVStringInterface
 
         if ($result === false) {
             throw new RegexException(sprintf(
-                'preg_match encountered an error with message %s trying to match "%s" against "%s".',
-                RegexException::getNameFromLastCode(),
+                'preg_match encountered an error with message "%s" trying to match "%s" against "%s".',
+                preg_last_error_msg(),
                 $this->string,
                 $pattern
             ));
@@ -89,8 +89,8 @@ abstract class AbstractUSVString implements USVStringInterface
 
         if ($result === null) {
             throw new RegexException(sprintf(
-                'preg_replace encountered an error with message %s and pattern %s.',
-                RegexException::getNameFromLastCode(),
+                'preg_replace encountered an error with message "%s" and pattern %s.',
+                preg_last_error_msg(),
                 $pattern
             ));
         }
@@ -122,7 +122,7 @@ abstract class AbstractUSVString implements USVStringInterface
 
     public function startsWith(string $string): bool
     {
-        return strncmp($this->string, $string, strlen($string)) === 0;
+        return str_starts_with($this->string, $string);
     }
 
     public function startsWithTwoAsciiHexDigits(): bool

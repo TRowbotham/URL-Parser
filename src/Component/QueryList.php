@@ -18,9 +18,9 @@ use function mb_ord;
 use function mb_str_split;
 use function rawurldecode;
 use function rawurlencode;
+use function str_contains;
 use function str_replace;
 use function strlen;
-use function strpos;
 use function usort;
 
 /**
@@ -83,7 +83,7 @@ class QueryList implements IteratorAggregate
             $name = $bytes;
             $value = '';
 
-            if (strpos($bytes, '=') !== false) {
+            if (str_contains($bytes, '=')) {
                 [$name, $value] = explode('=', $bytes, 2);
             }
 
