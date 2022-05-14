@@ -9,6 +9,7 @@ use IteratorAggregate;
 use Rowbot\URL\String\Utf8String;
 use Rowbot\URL\Support\EncodingHelper;
 
+use function array_column;
 use function array_filter;
 use function array_splice;
 use function count;
@@ -204,16 +205,16 @@ class QueryList implements IteratorAggregate
     public function sort(): void
     {
         $temp = [];
-        $i = 0;
 
         // Add information about the relative position of each name-value pair.
         foreach ($this->list as $pair) {
-            $temp[] = [$i++, $this->convertToCodeUnits($pair['name']), $pair];
+            $codeUnits = $this->convertToCodeUnits($pair['name']);
+            $temp[] = ['original' => $pair, 'codeUnits' => $codeUnits, 'length' => count($codeUnits)];
         }
 
         // Sorting priority overview:
         //
-        // Each string is compared character by character against each other.
+        // Each string is compared code unit by code unit against each other.
         //
         // 1) If the two strings have different lengths, and the strings are equal up to the end of
         //    the shortest string, then the shorter of the two strings will be moved up in the
@@ -227,29 +228,17 @@ class QueryList implements IteratorAggregate
         //    position in which they appeared in the array. (e.g. The string "b=c&a=c&b=a&a=a"
         //    becomes "a=c&a=a&b=c&b=a".)
         usort($temp, static function (array $a, array $b): int {
-            $codeUnitsA = $a[1];
-            $codeUnitsB = $b[1];
+            if ($a['length'] === $b['length']) {
+                return $a['codeUnits'] <=> $b['codeUnits'];
+            }
+
             $i = 0;
+            $comparison = 0;
+            $aCodeUnits = $a['codeUnits'];
+            $bCodeUnits = $b['codeUnits'];
 
-            while (true) {
-                $aIsValid = isset($codeUnitsA[$i]);
-                $bIsValid = isset($codeUnitsB[$i]);
-
-                if (!$aIsValid && !$bIsValid) {
-                    // If we have reached this point then there are 2
-                    // possibilities:
-                    //
-                    // 1) Both $a and $b are an empty string.
-                    // 2) Both $a and $b have the same length and are considered
-                    //    equal to each other.
-                    //
-                    // In either case, break out of the loop as we now need to
-                    // compare the relative position of $a and $b to each other
-                    // to settle the tie.
-                    break;
-                }
-
-                if (!$aIsValid) {
+            do {
+                if (!isset($aCodeUnits[$i])) {
                     // If we have reached this point then there are 2
                     // possibilities:
                     //
@@ -262,7 +251,7 @@ class QueryList implements IteratorAggregate
                     return -1;
                 }
 
-                if (!$bIsValid) {
+                if (!isset($bCodeUnits[$i])) {
                     // If we have reached this point then there are 2
                     // possibilities:
                     //
@@ -275,28 +264,14 @@ class QueryList implements IteratorAggregate
                     return 1;
                 }
 
-                $cmp = $codeUnitsA[$i] <=> $codeUnitsB[$i];
-
-                // We only want to return if the result is not equal, as equal results must be
-                // sorted by relative position.
-                if ($cmp !== 0) {
-                    return $cmp;
-                }
-
+                $comparison = $aCodeUnits[$i] <=> $bCodeUnits[$i];
                 ++$i;
-            }
+            } while ($comparison === 0);
 
-            // Finally, if all else is equal, sort by relative position.
-            return $a[0] - $b[0];
+            return $comparison;
         });
 
-        // Remove the relative positioning information so that $temp only contains the sorted
-        // name-value pairs.
-        $this->list = [];
-
-        foreach ($temp as [$relativePosition, $codeUnits, $tuple]) {
-            $this->list[] = $tuple;
-        }
+        $this->list = array_column($temp, 'original');
     }
 
     /**
