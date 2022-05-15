@@ -16,10 +16,7 @@ use function strpbrk;
  */
 class IPv6AddressParser
 {
-    /**
-     * @return \Rowbot\URL\Component\Host\IPv6Address|false
-     */
-    public static function parse(USVStringInterface $input)
+    public static function parse(USVStringInterface $input): IPv6Address|false
     {
         // 1. Let address be a new IPv6 address whose IPv6 pieces are all 0.
         $address = [0, 0, 0, 0, 0, 0, 0, 0];
@@ -166,7 +163,7 @@ class IPv6AddressParser
         StringIteratorInterface $iter,
         array $address,
         int $pieceIndex
-    ) {
+    ): array|false {
         // 6.5.4. Let numbersSeen be 0.
         $numbersSeen = 0;
 

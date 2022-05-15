@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\Component;
 
 use Rowbot\URL\String\AbstractStringList;
+use Stringable;
 
 use function array_pop;
 use function array_shift;
@@ -14,7 +15,7 @@ use function implode;
 /**
  * @extends \Rowbot\URL\String\AbstractStringList<\Rowbot\URL\Component\Path>
  */
-class PathList extends AbstractStringList implements PathListInterface
+class PathList extends AbstractStringList implements PathListInterface, Stringable
 {
     public function current(): Path
     {

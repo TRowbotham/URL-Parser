@@ -34,9 +34,6 @@ class BasicURLParser
      *                                                                \Rowbot\URL\State interface that overrides the
      *                                                                default start state, which is the Scheme Start
      *                                                                State. Default is null.
-     *
-     * @return \Rowbot\URL\URLRecord|false Returns a URL object upon successfully parsing the input or false if parsing
-     *                                     input failed.
      */
     public function parse(
         USVStringInterface $input,
@@ -44,7 +41,7 @@ class BasicURLParser
         string $encodingOverride = null,
         URLRecord $url = null,
         State $stateOverride = null
-    ) {
+    ): URLRecord|false {
         $count = 0;
 
         if ($url === null) {

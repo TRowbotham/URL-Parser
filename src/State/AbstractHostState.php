@@ -13,10 +13,7 @@ use Rowbot\URL\String\CodePoint;
  */
 abstract class AbstractHostState implements State
 {
-    /**
-     * @var bool
-     */
-    private $isBracketOpen;
+    private bool $isBracketOpen;
 
     public function __construct()
     {

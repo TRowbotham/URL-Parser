@@ -18,10 +18,7 @@ use function strspn;
  */
 class IPv4AddressParser
 {
-    /**
-     * @return \Rowbot\URL\Component\Host\IPv4Address|false
-     */
-    public static function parse(USVStringInterface $input)
+    public static function parse(USVStringInterface $input): IPv4Address|false
     {
         // 1. Let validationError be false.
         //
@@ -162,7 +159,7 @@ class IPv4AddressParser
      *
      * @return array{0: \Rowbot\URL\Component\Host\Math\NumberInterface, 1: bool}|false
      */
-    private static function parseIPv4Number(USVStringInterface $input)
+    private static function parseIPv4Number(USVStringInterface $input): array|false
     {
         // 1. If input is the empty string, then return failure.
         if ($input->isEmpty()) {

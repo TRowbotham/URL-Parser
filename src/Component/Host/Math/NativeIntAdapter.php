@@ -5,21 +5,16 @@ declare(strict_types=1);
 namespace Rowbot\URL\Component\Host\Math;
 
 use Rowbot\URL\Component\Host\Math\Exception\MathException;
+use Stringable;
 
 use function floor;
 use function intval;
 
-class NativeIntAdapter implements NumberInterface
+class NativeIntAdapter implements NumberInterface, Stringable
 {
-    /**
-     * @var int
-     */
-    private $number;
+    private int $number;
 
-    /**
-     * @param string|int $number
-     */
-    public function __construct($number, int $base = 10)
+    public function __construct(int|string $number, int $base = 10)
     {
         $this->number = intval($number, $base);
     }
@@ -76,6 +71,9 @@ class NativeIntAdapter implements NumberInterface
         return new self($this->number ** $number);
     }
 
+    /**
+     * @return numeric-string
+     */
     public function __toString(): string
     {
         return (string) $this->number;

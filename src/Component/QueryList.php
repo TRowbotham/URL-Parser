@@ -33,12 +33,12 @@ class QueryList implements IteratorAggregate
     /**
      * @var array<string, bool>
      */
-    private $cache;
+    private array $cache;
 
     /**
      * @var array<int, array{name: string, value: string}>
      */
-    private $list;
+    private array $list;
 
     /**
      * @param array<int, array{name: string, value: string}> $list
@@ -57,8 +57,6 @@ class QueryList implements IteratorAggregate
      * is not described here as only UTF-8' is conforming.
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-parser
-     *
-     * @return self
      */
     public static function fromString(string $input): self
     {
@@ -302,8 +300,6 @@ class QueryList implements IteratorAggregate
 
     /**
      * @see https://www.unicode.org/faq/utf_bom.html?source=post_page---------------------------#utf16-4
-     *
-     * @param string $input
      *
      * @return list<list<int>>
      */

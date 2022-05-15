@@ -37,5 +37,8 @@ interface NumberInterface
 
     public function pow(int $number): self;
 
+    /**
+     * @return numeric-string
+     */
     public function __toString(): string;
 }

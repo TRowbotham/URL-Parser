@@ -5,40 +5,23 @@ declare(strict_types=1);
 namespace Rowbot\URL;
 
 use Rowbot\URL\Component\Host\HostInterface;
+use Stringable;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/browsers.html#origin
  */
-class Origin
+class Origin implements Stringable
 {
-    /**
-     * @var string|null
-     */
-    private $domain;
+    private ?string $domain;
 
-    /**
-     * @var \Rowbot\URL\Component\Host\HostInterface
-     */
-    private $host;
+    private HostInterface $host;
 
-    /**
-     * @var bool
-     */
-    private $isOpaque;
+    private bool $isOpaque;
 
-    /**
-     * @var int|null
-     */
-    private $port;
+    private ?int $port;
 
-    /**
-     * @var string
-     */
-    private $scheme;
+    private string $scheme;
 
-    /**
-     * Constructor.
-     */
     private function __construct()
     {
         $this->isOpaque = true;

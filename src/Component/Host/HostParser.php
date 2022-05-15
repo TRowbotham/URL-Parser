@@ -30,7 +30,7 @@ class HostParser
      *
      * @return \Rowbot\URL\Component\Host\HostInterface|false The returned Host can never be a null host.
      */
-    public static function parse(USVStringInterface $input, bool $isNotSpecial = false)
+    public static function parse(USVStringInterface $input, bool $isNotSpecial = false): HostInterface|false
     {
         if ($input->startsWith('[')) {
             if (!$input->endsWith(']')) {
@@ -68,10 +68,8 @@ class HostParser
 
     /**
      * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
-     *
-     * @return \Rowbot\URL\Component\Host\StringHost|false
      */
-    private static function domainToAscii(string $domain, bool $beStrict = false)
+    private static function domainToAscii(string $domain, bool $beStrict = false): StringHost|false
     {
         $result = Idna::toAscii($domain, [
             'CheckHyphens'            => false,
@@ -100,10 +98,8 @@ class HostParser
      * Parses an opaque host.
      *
      * @see https://url.spec.whatwg.org/#concept-opaque-host-parser
-     *
-     * @return \Rowbot\URL\Component\Host\HostInterface|false
      */
-    private static function parseOpaqueHost(USVStringInterface $input)
+    private static function parseOpaqueHost(USVStringInterface $input): HostInterface|false
     {
         if ($input->matches('/[' . self::FORBIDDEN_HOST_CODEPOINTS . ']/u')) {
             // Validation error.

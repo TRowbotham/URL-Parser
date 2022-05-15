@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component;
 
+use Stringable;
+
 use function array_key_exists;
 
-class Scheme
+class Scheme implements Stringable
 {
     /**
      * @see https://url.spec.whatwg.org/#special-scheme
@@ -20,10 +22,7 @@ class Scheme
         'wss'    => 443,
     ];
 
-    /**
-     * @var string
-     */
-    private $scheme;
+    private string $scheme;
 
     public function __construct(string $scheme = '')
     {

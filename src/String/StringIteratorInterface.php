@@ -24,7 +24,7 @@ interface StringIteratorInterface extends SeekableIterator
     /**
      * @param int $position The position to seek to relative to the current position.
      */
-    public function seek($position): void;
+    public function seek(int $position): void;
 
     public function rewind(): void;
 

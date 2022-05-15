@@ -66,15 +66,10 @@ class URLSearchParamsTest extends TestCase
 
     public function unhandledInputProvider(): array
     {
-        $resource = fopen('php://memory', 'r');
-        fclose($resource);
-
         return [
-            [null],
             [static function (): void {
                 return;
             }],
-            [$resource],
         ];
     }
 

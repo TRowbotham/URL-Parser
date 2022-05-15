@@ -44,7 +44,6 @@ class IDLString extends AbstractUSVString
             ));
         }
 
-        /** @var int|string $sub */
         $sub = mb_substitute_character();
         mb_substitute_character(0xFFFD);
 

@@ -16,7 +16,7 @@ class IPv6AddressSerializer implements HostSerializerInterface
     /**
      * @var array<int, int>
      */
-    private $address;
+    private array $address;
 
     /**
      * @param array<int, int> $address

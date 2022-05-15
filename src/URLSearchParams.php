@@ -20,7 +20,6 @@ use function is_countable;
 use function is_iterable;
 use function is_object;
 use function is_scalar;
-use function method_exists;
 use function sprintf;
 use function substr;
 
@@ -33,29 +32,29 @@ use function substr;
  *
  * @implements \Iterator<int, array{0: string, 1: string}>
  */
-class URLSearchParams implements Iterator
+class URLSearchParams implements Iterator, Stringable
 {
     /**
-     * @var int
+     * @var 0|positive-int
      */
-    private $cursor;
+    private int $cursor;
 
     /**
      * @var \Rowbot\URL\Component\QueryList
      */
-    private $list;
+    private QueryList $list;
 
     /**
      * @var \Rowbot\URL\URLRecord|null
      */
-    private $url;
+    private ?URLRecord $url;
 
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
      * @param self|iterable<int|string, iterable<int|string, scalar|\Stringable>&\Countable>|object|string $init (optional)
      */
-    public function __construct($init = '')
+    public function __construct(iterable|object|string $init = '')
     {
         $this->list = new QueryList();
         $this->url = null;
@@ -160,9 +159,7 @@ class URLSearchParams implements Iterator
     {
         $name = IDLString::scrub($name);
 
-        return array_column($this->list->filter(static function (array $pair) use ($name): bool {
-            return $pair['name'] === $name;
-        }), 'value');
+        return array_column($this->list->filter(static fn(array $pair): bool => $pair['name'] === $name), 'value');
     }
 
     /**
@@ -221,8 +218,6 @@ class URLSearchParams implements Iterator
 
     /**
      * @internal
-     *
-     * @param \Rowbot\URL\Component\QueryList $list
      */
     public function setList(QueryList $list): void
     {
@@ -233,8 +228,6 @@ class URLSearchParams implements Iterator
      * Sets the associated url record.
      *
      * @internal
-     *
-     * @param \Rowbot\URL\URLRecord $url
      */
     public function setUrl(URLRecord $url): void
     {
@@ -356,10 +349,7 @@ class URLSearchParams implements Iterator
         }
     }
 
-    /**
-     * @param object $input
-     */
-    private function initObject($input): void
+    private function initObject(object $input): void
     {
         $reflection = new ReflectionObject($input);
 
@@ -377,25 +367,12 @@ class URLSearchParams implements Iterator
         }
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @return string|false
-     */
-    private function getStringValue($value)
+    private function getStringValue(mixed $value): string|false
     {
-        if (
-            $value instanceof Stringable
-            || is_scalar($value)
-            || (is_object($value) && method_exists($value, '__toString'))
-        ) {
-            return (string) $value;
-        }
-
-        return false;
+        return $value instanceof Stringable || is_scalar($value) ? (string) $value : false;
     }
 
-    public function __clone()
+    public function __clone(): void
     {
         $this->list = clone $this->list;
 
@@ -406,8 +383,6 @@ class URLSearchParams implements Iterator
 
     /**
      * Returns all name-value pairs stringified in the correct order.
-     *
-     * @return string The query string.
      */
     public function __toString(): string
     {

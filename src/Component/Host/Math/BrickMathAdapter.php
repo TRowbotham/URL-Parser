@@ -7,20 +7,17 @@ namespace Rowbot\URL\Component\Host\Math;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use Rowbot\URL\Component\Host\Math\Exception\MathException;
+use Stringable;
 
+use function assert;
+use function is_numeric;
 use function is_string;
 
-class BrickMathAdapter implements NumberInterface
+class BrickMathAdapter implements NumberInterface, Stringable
 {
-    /**
-     * @var \Brick\Math\BigInteger
-     */
-    private $number;
+    private BigInteger $number;
 
-    /**
-     * @param int|string|\Brick\Math\BigInteger $number
-     */
-    public function __construct($number, int $base = 10)
+    public function __construct(int|string|BigInteger $number, int $base = 10)
     {
         if (is_string($number)) {
             $this->number = BigInteger::fromBase($number, $base);
@@ -83,8 +80,14 @@ class BrickMathAdapter implements NumberInterface
         return new self($this->number->power($number));
     }
 
+    /**
+     * @return numeric-string
+     */
     public function __toString(): string
     {
-        return (string) $this->number;
+        $str = (string) $this->number;
+        assert(is_numeric($str));
+
+        return $str;
     }
 }

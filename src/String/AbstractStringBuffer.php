@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\String;
 
 use IteratorAggregate;
+use Stringable;
 
 use function mb_strlen;
 use function mb_substr;
@@ -12,7 +13,7 @@ use function mb_substr;
 /**
  * @implements \IteratorAggregate<int, string>
  */
-abstract class AbstractStringBuffer implements IteratorAggregate
+abstract class AbstractStringBuffer implements IteratorAggregate, Stringable
 {
     /**
      * @var string

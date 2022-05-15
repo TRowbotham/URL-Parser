@@ -6,6 +6,7 @@ namespace Rowbot\URL\String;
 
 use Rowbot\URL\String\Exception\RegexException;
 use Rowbot\URL\String\Exception\UConverterException;
+use Stringable;
 
 use function explode;
 use function intval;
@@ -23,7 +24,7 @@ use function strspn;
 
 use const PHP_INT_MAX;
 
-abstract class AbstractUSVString implements USVStringInterface
+abstract class AbstractUSVString implements Stringable, USVStringInterface
 {
     /**
      * @var string
@@ -160,7 +161,6 @@ abstract class AbstractUSVString implements USVStringInterface
         string $toEncoding,
         string $fromEncoding
     ): string {
-        /** @var int|string $sub */
         $sub = mb_substitute_character();
         mb_substitute_character(0xFFFD);
         $result = mb_convert_encoding($string, $toEncoding, $fromEncoding);

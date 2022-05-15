@@ -4,72 +4,55 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
+use Rowbot\URL\Component\Host\HostInterface;
 use Rowbot\URL\Component\Host\NullHost;
 use Rowbot\URL\Component\PathList;
+use Rowbot\URL\Component\PathListInterface;
 use Rowbot\URL\Component\Scheme;
 
 class URLRecord
 {
     /**
      * An ASCII string that identifies the type of URL.
-     *
-     * @var \Rowbot\URL\Component\Scheme
      */
-    public $scheme;
+    public Scheme $scheme;
 
     /**
      * An ASCII string identifying a username.
-     *
-     * @var string
      */
-    public $username;
+    public string $username;
 
     /**
      * An ASCII string identifying a password.
-     *
-     * @var string
      */
-    public $password;
+    public string $password;
 
-    /**
-     * @var \Rowbot\URL\Component\Host\HostInterface
-     */
-    public $host;
+    public HostInterface $host;
 
     /**
      * A 16-bit unsigned integer that identifies a networking port.
-     *
-     * @var int|null
      */
-    public $port;
+    public ?int $port;
 
     /**
      * A list of zero or more ASCII strings holding data.
-     *
-     * @var \Rowbot\URL\Component\PathListInterface
      */
-    public $path;
+    public PathListInterface $path;
 
     /**
      * An ASCII string holding data.
-     *
-     * @var string|null
      */
-    public $query;
+    public ?string $query;
 
     /**
      * An ASCII string holding data.
-     *
-     * @var string|null
      */
-    public $fragment;
+    public string|null $fragment;
 
     /**
      * Identifies whether the URL can act as a base URL.
-     *
-     * @var bool
      */
-    public $cannotBeABaseUrl;
+    public bool $cannotBeABaseUrl;
 
     public function __construct()
     {
@@ -111,8 +94,6 @@ class URLRecord
      * Computes a URL's origin.
      *
      * @see https://url.spec.whatwg.org/#origin
-     *
-     * @return \Rowbot\URL\Origin
      */
     public function getOrigin(): Origin
     {
@@ -221,7 +202,7 @@ class URLRecord
         return $output;
     }
 
-    public function __clone()
+    public function __clone(): void
     {
         $this->scheme = clone $this->scheme;
         $this->host = clone $this->host;

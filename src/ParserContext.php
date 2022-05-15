@@ -16,53 +16,37 @@ final class ParserContext
 {
     /**
      * @readonly
-     *
-     * @var \Rowbot\URL\URLRecord|null
      */
-    public $base;
+    public ?URLRecord $base;
 
     /**
      * @readonly
-     *
-     * @var \Rowbot\URL\String\StringBufferInterface
      */
-    public $buffer;
+    public StringBufferInterface $buffer;
 
     /**
      * @readonly
-     *
-     * @var \Rowbot\URL\String\USVStringInterface
      */
-    public $input;
+    public USVStringInterface $input;
 
     /**
      * @readonly
-     *
-     * @var \Rowbot\URL\String\StringIteratorInterface
      */
-    public $iter;
+    public StringIteratorInterface $iter;
 
-    /**
-     * @var \Rowbot\URL\State\State
-     */
-    public $state;
+    public State $state;
 
     /**
      * @readonly
-     *
-     * @var \Rowbot\URL\URLRecord
      */
-    public $url;
+    public URLRecord $url;
 
     /**
      * @var string
      */
-    private $encoding;
+    private string $encoding;
 
-    /**
-     * @var \Rowbot\URL\State\State|null
-     */
-    private $stateOverride;
+    private ?State $stateOverride;
 
     public function __construct(
         USVStringInterface $input,

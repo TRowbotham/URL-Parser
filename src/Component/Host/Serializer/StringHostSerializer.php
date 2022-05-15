@@ -6,10 +6,7 @@ namespace Rowbot\URL\Component\Host\Serializer;
 
 class StringHostSerializer implements HostSerializerInterface
 {
-    /**
-     * @var string
-     */
-    private $string;
+    private string $string;
 
     public function __construct(string $string)
     {

@@ -12,10 +12,13 @@ use Rowbot\URL\Component\Host\Math\NumberFactory;
 class IPv4AddressSerializer implements HostSerializerInterface
 {
     /**
-     * @var string
+     * @var numeric-string
      */
-    private $address;
+    private string $address;
 
+    /**
+     * @param numeric-string $address
+     */
     public function __construct(string $address)
     {
         $this->address = $address;

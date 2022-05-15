@@ -15,7 +15,7 @@ class IPv6Address extends AbstractHost implements HostInterface
     /**
      * @var array<int, int>
      */
-    private $address;
+    private array $address;
 
     /**
      * @param array<int, int> $address

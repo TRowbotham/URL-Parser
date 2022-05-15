@@ -14,10 +14,7 @@ use const PHP_INT_SIZE;
  */
 final class NumberFactory
 {
-    /**
-     * @param int|string $number
-     */
-    public static function createNumber($number, int $base): NumberInterface
+    public static function createNumber(int|string $number, int $base): NumberInterface
     {
         // PHP_INT_SIZE returns the number of bytes that can fit in to an integer on the given
         // platform. If the size is 4, then we know we are operating on a 32-bit platform.

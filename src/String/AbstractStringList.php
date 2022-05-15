@@ -15,14 +15,14 @@ use function count;
 abstract class AbstractStringList
 {
     /**
-     * @var int
+     * @var 0|positive-int
      */
-    protected $cursor;
+    protected int $cursor;
 
     /**
      * @var array<int, T>
      */
-    protected $list;
+    protected array $list;
 
     /**
      * @param array<int, T> $list

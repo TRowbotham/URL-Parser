@@ -12,15 +12,9 @@ use Rowbot\URL\String\CodePoint;
  */
 class AuthorityState implements State
 {
-    /**
-     * @var bool
-     */
-    private $atTokenSeen;
+    private bool $atTokenSeen;
 
-    /**
-     * @var bool
-     */
-    private $passwordTokenSeen;
+    private bool $passwordTokenSeen;
 
     public function __construct()
     {

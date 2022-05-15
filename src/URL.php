@@ -20,6 +20,7 @@ use Rowbot\URL\State\SchemeStartState;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\IDLString;
 use Rowbot\URL\String\USVStringInterface;
+use Stringable;
 
 use function json_encode;
 use function json_last_error;
@@ -47,17 +48,11 @@ use const JSON_UNESCAPED_SLASHES;
  * @property \Rowbot\URL\URLSearchParams $searchParams
  * @property string                      $hash
  */
-class URL implements JsonSerializable
+class URL implements JsonSerializable, Stringable
 {
-    /**
-     * @var \Rowbot\URL\URLSearchParams
-     */
-    private $queryObject;
+    private URLSearchParams $queryObject;
 
-    /**
-     * @var \Rowbot\URL\URLRecord
-     */
-    private $url;
+    private URLRecord $url;
 
     /**
      * @throws \Rowbot\URL\Exception\TypeError
@@ -157,7 +152,7 @@ class URL implements JsonSerializable
         }
     }
 
-    public function __clone()
+    public function __clone(): void
     {
         $this->url = clone $this->url;
         $this->queryObject = clone $this->queryObject;
@@ -165,11 +160,9 @@ class URL implements JsonSerializable
     }
 
     /**
-     * @return string|\Rowbot\URL\URLSearchParams
-     *
      * @throws \InvalidArgumentException When an invalid $name value is passed.
      */
-    public function __get(string $name)
+    public function __get(string $name): string|URLSearchParams
     {
         if ($name === 'hash') {
             if ($this->url->fragment === null || $this->url->fragment === '') {
