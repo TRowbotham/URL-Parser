@@ -34,7 +34,7 @@ class ToASCIIWindowTest extends WhatwgTestCase
         }
 
         $this->expectException(TypeError::class);
-        $url = new URL($hostTest->input);
+        new URL($hostTest->input);
     }
 
     /**

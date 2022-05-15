@@ -4,24 +4,18 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests;
 
-use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Runner\Version;
 use Rowbot\URL\String\Exception\RegexException;
 use Rowbot\URL\String\Exception\UndefinedIndexException;
 use Rowbot\URL\String\StringList;
 use Rowbot\URL\String\Utf8String;
 use ValueError;
 
-use function version_compare;
-
-use const PHP_VERSION_ID;
-
 class StringsTest extends TestCase
 {
     public function testTranscodeUnknownEncoding(): void
     {
-        $this->expectPromotedWarning();
+        $this->expectException(ValueError::class);
         Utf8String::transcode('stuff', 'gallifreyan', 'utf-8');
     }
 
@@ -125,20 +119,5 @@ class StringsTest extends TestCase
         foreach ($s->split('=') as $key => $string) {
             self::assertIsInt($key);
         }
-    }
-
-    protected function expectPromotedWarning(): void
-    {
-        if (PHP_VERSION_ID < 80000) {
-            if (version_compare(Version::series(), '9', '>=')) {
-                $this->expectWarning();
-            } else {
-                $this->expectException(Warning::class);
-            }
-
-            return;
-        }
-
-        $this->expectException(ValueError::class);
     }
 }

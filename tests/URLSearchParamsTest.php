@@ -10,9 +10,6 @@ use Rowbot\URL\URL;
 use Rowbot\URL\URLSearchParams;
 use stdClass;
 
-use function fclose;
-use function fopen;
-
 class URLSearchParamsTest extends TestCase
 {
     public function testCloningStandaloneURLSearchParams(): void
@@ -61,7 +58,7 @@ class URLSearchParamsTest extends TestCase
     public function testInvalidIteratorInput(iterable $input): void
     {
         $this->expectException(TypeError::class);
-        $query = new URLSearchParams($input);
+        new URLSearchParams($input);
     }
 
     public function unhandledInputProvider(): array

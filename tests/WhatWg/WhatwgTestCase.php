@@ -11,19 +11,18 @@ use function array_filter;
 use function hexdec;
 use function json_decode;
 use function json_encode;
-use function json_last_error;
-use function json_last_error_msg;
 use function preg_match;
 use function sprintf;
 use function substr_replace;
 
-use const JSON_ERROR_NONE;
+use const JSON_THROW_ON_ERROR;
 use const PREG_OFFSET_CAPTURE;
 
 abstract class WhatwgTestCase extends TestCase
 {
     private const WHATWG_BASE_URI = 'https://raw.githubusercontent.com/web-platform-tests/wpt/master/url/resources/';
     private const CACHE_TTL = 86400 * 7; // 7 DAYS
+    private const JSON_DEPTH = 512;
 
     protected function loadTestData(string $url): array
     {
@@ -33,21 +32,11 @@ abstract class WhatwgTestCase extends TestCase
         $testData = $cache->getItem($cacheKey);
 
         if ($testData->isHit()) {
-            $json = json_decode($testData->get(), true);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-                return $json;
-            }
-
-            throw new RuntimeException(sprintf(
-                'The local copy of %s could not be converted into json : %s',
-                $uri,
-                json_last_error_msg()
-            ));
+            return json_decode($testData->get(), true, self::JSON_DEPTH, JSON_THROW_ON_ERROR);
         }
 
         static $client;
-        $client = $client ?? new Client(['base_uri' => self::WHATWG_BASE_URI]);
+        $client ??= new Client(['base_uri' => self::WHATWG_BASE_URI]);
         $response = $client->get($url);
 
         if ($response->getStatusCode() >= 400) {
@@ -99,18 +88,8 @@ abstract class WhatwgTestCase extends TestCase
             }
         }
 
-        $json = json_decode($body, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException(sprintf(
-                'the downloaded copy of the testsuite located at %s is an invalid json file: %s',
-                $url,
-                json_last_error_msg()
-            ));
-        }
-
-        $json = array_filter($json, '\is_array');
-        $testData->set(json_encode($json));
+        $json = array_filter(json_decode($body, true, self::JSON_DEPTH, JSON_THROW_ON_ERROR), 'is_array');
+        $testData->set(json_encode($json, JSON_THROW_ON_ERROR));
         $cache->save($testData);
 
         return $json;

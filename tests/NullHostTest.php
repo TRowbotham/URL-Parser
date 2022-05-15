@@ -14,8 +14,8 @@ class NullHostTest extends TestCase
     {
         $host = new NullHost();
         $serializer = $host->getSerializer();
-        self::assertEmpty($host->getSerializer()->toFormattedString());
-        self::assertEmpty($host->getSerializer()->toString());
+        self::assertEmpty($serializer->toFormattedString());
+        self::assertEmpty($serializer->toString());
     }
 
     public function testNullHostIsEqualOnlyToItself(): void

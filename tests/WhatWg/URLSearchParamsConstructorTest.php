@@ -195,14 +195,14 @@ class URLSearchParamsConstructorTest extends TestCase
         try {
             new URLSearchParams([[1]]);
             self::assertTrue(false);
-        } catch (TypeError $e) {
+        } catch (TypeError) {
             self::assertTrue(true);
         }
 
         try {
             new URLSearchParams([[1, 2, 3]]);
             self::assertTrue(false);
-        } catch (TypeError $e) {
+        } catch (TypeError) {
             self::assertTrue(true);
         }
     }
