@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests;
 
+use ArrayObject;
+use Countable;
+use Generator;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
 use Rowbot\URL\URLSearchParams;
-use stdClass;
 
 class URLSearchParamsTest extends TestCase
 {
@@ -46,16 +48,40 @@ class URLSearchParamsTest extends TestCase
 
     public function getInvalidIteratorInput(): array
     {
+        $generator = (static function (): Generator {
+            yield 'foo';
+            yield 'bar';
+        })();
+        $anonClass = new class ($generator) implements Countable
+        {
+            public Generator $foo;
+
+            public function __construct(Generator $foo)
+            {
+                $this->foo = $foo;
+            }
+
+            public function count(): int
+            {
+                return 2;
+            }
+        };
+
         return [
             'sequences not equal to 2' => [[['foo', 'bar'], ['baz']]],
-            'non-iterable'             => [[new stdClass()]],
+            'non-iterable'             => [new ArrayObject(['x', 'y'])],
+            'generator'                => [[$generator]],
+            'invalid-name'             => [[[null, 'foo']]],
+            'invalid-value'            => [[['foo', null]]],
+            'countable-only'           => [[[$anonClass]]],
+            'invalid-property-value'   => [$anonClass],
         ];
     }
 
     /**
      * @dataProvider getInvalidIteratorInput
      */
-    public function testInvalidIteratorInput(iterable $input): void
+    public function testInvalidIteratorInput(iterable|object $input): void
     {
         $this->expectException(TypeError::class);
         new URLSearchParams($input);

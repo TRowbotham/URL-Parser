@@ -308,7 +308,7 @@ class URLSearchParams implements Iterator, Stringable
             //
             // $a = new \ArrayObject(new \ArrayObject(['x', 'y']));
             // $s = new \Rowbot\URL\URLSearchParams($a);'
-            if (!is_countable($pair)) {
+            if (!is_countable($pair) || !is_iterable($pair)) {
                 throw new TypeError(sprintf(
                     'Expected a valid sequence such as an Array or iterable Object that implements '
                     . 'the \Countable interface. %s found instead.',
