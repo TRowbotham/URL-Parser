@@ -6,6 +6,10 @@
 
 - Bump minimum PHP version to 8
 
+### Removed
+
+- Removed \Rowbot\URL\Exception\JsonException in favor of \JsonException
+
 ## [3.1.7] - 2022-08-26
 
 ### Fixed
