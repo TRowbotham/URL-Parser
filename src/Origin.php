@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL;
 
 use Rowbot\URL\Component\Host\HostInterface;
+use Rowbot\URL\Component\Host\NullHost;
 use Stringable;
 
 /**
@@ -22,9 +23,13 @@ class Origin implements Stringable
 
     private string $scheme;
 
-    private function __construct()
+    private function __construct(?string $domain, HostInterface $host, bool $isOpaque, ?int $port, string $scheme)
     {
-        $this->isOpaque = true;
+        $this->domain = $domain;
+        $this->host = $host;
+        $this->isOpaque = $isOpaque;
+        $this->port = $port;
+        $this->scheme = $scheme;
     }
 
     /**
@@ -36,14 +41,7 @@ class Origin implements Stringable
         ?int $port,
         string $domain = null
     ): self {
-        $origin = new self();
-        $origin->domain = $domain;
-        $origin->host = $host;
-        $origin->isOpaque = false;
-        $origin->port = $port;
-        $origin->scheme = $scheme;
-
-        return $origin;
+        return new self($domain, $host, false, $port, $scheme);
     }
 
     /**
@@ -52,7 +50,7 @@ class Origin implements Stringable
      */
     public static function createOpaqueOrigin(): self
     {
-        return new self();
+        return new self(null, new NullHost(), true, null, '');
     }
 
     /**
