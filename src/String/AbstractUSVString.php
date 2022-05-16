@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
+use Rowbot\URL\String\Exception\MbstringException;
 use Rowbot\URL\String\Exception\RegexException;
-use Rowbot\URL\String\Exception\UConverterException;
 use Stringable;
 
 use function explode;
@@ -167,7 +167,7 @@ abstract class AbstractUSVString implements Stringable, USVStringInterface
         mb_substitute_character($sub);
 
         if ($result === false) {
-            throw new UConverterException(sprintf(
+            throw new MbstringException(sprintf(
                 'Attempting to transcode from "%s" to "%s" failed.',
                 $fromEncoding,
                 $toEncoding
