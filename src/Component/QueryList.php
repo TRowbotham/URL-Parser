@@ -204,7 +204,6 @@ class QueryList implements IteratorAggregate
     {
         $temp = [];
 
-        // Add information about the relative position of each name-value pair.
         foreach ($this->list as $pair) {
             $codeUnits = $this->convertToCodeUnits($pair['name']);
             $temp[] = ['original' => $pair, 'codeUnits' => $codeUnits, 'length' => count($codeUnits)];
@@ -226,47 +225,25 @@ class QueryList implements IteratorAggregate
         //    position in which they appeared in the array. (e.g. The string "b=c&a=c&b=a&a=a"
         //    becomes "a=c&a=a&b=c&b=a".)
         usort($temp, static function (array $a, array $b): int {
-            if ($a['length'] === $b['length']) {
-                return $a['codeUnits'] <=> $b['codeUnits'];
-            }
-
-            $i = 0;
-            $comparison = 0;
             $aCodeUnits = $a['codeUnits'];
             $bCodeUnits = $b['codeUnits'];
+            $lengthComparison = $a['length'] <=> $b['length'];
 
-            do {
-                if (!isset($aCodeUnits[$i])) {
-                    // If we have reached this point then there are 2
-                    // possibilities:
-                    //
-                    // 1) $a is an empty string and $b is not.
-                    // 2) $a is a non-empty string, but its length is shorter
-                    //    than $b.
-                    //
-                    // $a and $b are considered equal thus far, but $a is
-                    // shorter so it gets to come before $b.
-                    return -1;
-                }
+            if ($lengthComparison === 0) {
+                return $aCodeUnits <=> $bCodeUnits;
+            }
 
-                if (!isset($bCodeUnits[$i])) {
-                    // If we have reached this point then there are 2
-                    // possibilities:
-                    //
-                    // 1) $b is an empty string and $a is not.
-                    // 2) $b is a non-empty string, but its length is shorter
-                    //    than $a.
-                    //
-                    // $a and $b are considered equal thus far, but $b is
-                    // shorter so it gets to come before $a.
-                    return 1;
-                }
+            $shortestLength = $lengthComparison === -1 ? $a['length'] : $b['length'];
 
+            for ($i = 0; $i < $shortestLength; ++$i) {
                 $comparison = $aCodeUnits[$i] <=> $bCodeUnits[$i];
-                ++$i;
-            } while ($comparison === 0);
 
-            return $comparison;
+                if ($comparison !== 0) {
+                    return $comparison;
+                }
+            }
+
+            return $lengthComparison;
         });
 
         $this->list = array_column($temp, 'original');
