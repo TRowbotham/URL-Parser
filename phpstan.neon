@@ -10,8 +10,14 @@ parameters:
 
     ignoreErrors:
         -
-            message: '#Call to function is_countable\(\) with Countable&iterable<int\|string, bool\|float\|int\|string\|Stringable> will always evaluate to true\.#'
+            message: '#Call to function is_(countable|iterable)\(\) with Countable&iterable<int\|string, bool\|float\|int\|string\|Stringable> will always evaluate to true\.#'
             path: src/URLSearchParams.php
+            count: 2
+
+        -
+            message: '#Result of \|\| is always false\.#'
+            path: src/URLSearchParams.php
+            count: 1
 
         -
             message: '#Strict comparison using === between string and false will always evaluate to false\.#'
