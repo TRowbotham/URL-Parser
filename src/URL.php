@@ -198,15 +198,7 @@ class URL implements JsonSerializable, Stringable
         }
 
         if ($name === 'pathname') {
-            if ($this->url->cannotBeABaseUrl) {
-                return (string) $this->url->path->first();
-            }
-
-            if ($this->url->path->isEmpty()) {
-                return '';
-            }
-
-            return '/' . $this->url->path;
+            return (string) $this->url->path;
         }
 
         if ($name === 'port') {
@@ -268,14 +260,14 @@ class URL implements JsonSerializable, Stringable
             $this->url->fragment = '';
             $parser->parse($input, null, null, $this->url, new FragmentState());
         } elseif ($name === 'host') {
-            if ($this->url->cannotBeABaseUrl) {
+            if ($this->url->path->isOpaque()) {
                 // Terminate these steps
                 return;
             }
 
             $parser->parse($input, null, null, $this->url, new HostState());
         } elseif ($name === 'hostname') {
-            if ($this->url->cannotBeABaseUrl) {
+            if ($this->url->path->isOpaque()) {
                 // Terminate these steps
                 return;
             }
@@ -303,7 +295,7 @@ class URL implements JsonSerializable, Stringable
 
             $this->setUrlPassword($input);
         } elseif ($name === 'pathname') {
-            if ($this->url->cannotBeABaseUrl) {
+            if ($this->url->path->isOpaque()) {
                 // Terminate these steps
                 return;
             }

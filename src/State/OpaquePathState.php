@@ -10,7 +10,7 @@ use Rowbot\URL\String\CodePoint;
 /**
  * @see https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
  */
-class CannotBeABaseUrlPathState implements State
+class OpaquePathState implements State
 {
     public function handle(ParserContext $context, string $codePoint): int
     {
@@ -49,7 +49,7 @@ class CannotBeABaseUrlPathState implements State
         }
 
         // 3.3. If c is not the EOF code point, UTF-8 percent-encode c using the C0 control percent-encode set and
-        // append the result to url’s path[0].
+        // append the result to url’s path.
         if ($codePoint !== CodePoint::EOF) {
             $context->url->path->first()->append(CodePoint::utf8PercentEncode($codePoint));
         }

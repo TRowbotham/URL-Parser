@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\Component\Path;
+use Rowbot\URL\Component\OpaquePath;
+use Rowbot\URL\Component\PathSegment;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
 
+use function assert;
 use function strpbrk;
 use function strtolower;
 
@@ -96,7 +98,10 @@ class SchemeState implements State
                 && $context->base !== null
                 && $context->base->scheme->equals($context->url->scheme)
             ) {
-                // This means that base's cannot-be-a-base-URL flag is unset.
+                assert(
+                    $context->base->scheme->isSpecial(),
+                    'base is special (and therefore does not have an opaque path)'
+                );
                 $context->state = new SpecialRelativeOrAuthorityState();
 
             // 2.7. Otherwise, if url is special, set state to special authority slashes state.
@@ -109,12 +114,10 @@ class SchemeState implements State
                 $context->state = new PathOrAuthorityState();
                 $context->iter->next();
 
-            // 2.9. Otherwise, set url’s cannot-be-a-base-URL to true, append an empty string to url’s path, and set
-            // state to cannot-be-a-base-URL path state.
+            // 2.9. Otherwise, set url’s path to the empty string and set state to opaque path state.
             } else {
-                $context->url->cannotBeABaseUrl = true;
-                $context->url->path->push(new Path());
-                $context->state = new CannotBeABaseUrlPathState();
+                $context->url->path = new OpaquePath(new PathSegment());
+                $context->state = new OpaquePathState();
             }
 
             return self::RETURN_OK;

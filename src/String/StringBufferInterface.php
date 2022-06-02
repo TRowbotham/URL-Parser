@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\String;
 
 use IteratorAggregate;
-use Rowbot\URL\Component\Path;
+use Rowbot\URL\Component\PathSegment;
 use Rowbot\URL\Component\Scheme;
 
 /**
@@ -32,7 +32,7 @@ interface StringBufferInterface extends IteratorAggregate
 
     public function toInt(int $base = 10): int;
 
-    public function toPath(): Path;
+    public function toPath(): PathSegment;
 
     public function toScheme(): Scheme;
 

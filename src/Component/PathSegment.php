@@ -13,7 +13,7 @@ use function strpbrk;
 /**
  * Represents a component in a URL's path as an ASCII string.
  */
-class Path extends AbstractStringBuffer
+class PathSegment extends AbstractStringBuffer
 {
     /**
      * @see https://url.spec.whatwg.org/#normalized-windows-drive-letter

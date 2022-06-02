@@ -6,8 +6,8 @@ namespace Rowbot\URL;
 
 use Rowbot\URL\Component\Host\HostInterface;
 use Rowbot\URL\Component\Host\NullHost;
+use Rowbot\URL\Component\PathInterface;
 use Rowbot\URL\Component\PathList;
-use Rowbot\URL\Component\PathListInterface;
 use Rowbot\URL\Component\Scheme;
 
 class URLRecord
@@ -35,9 +35,9 @@ class URLRecord
     public ?int $port;
 
     /**
-     * A list of zero or more ASCII strings holding data.
+     * An ASCII string or a list of zero or more ASCII strings; Initially an empty list.
      */
-    public PathListInterface $path;
+    public PathInterface $path;
 
     /**
      * An ASCII string holding data.
@@ -49,11 +49,6 @@ class URLRecord
      */
     public string|null $fragment;
 
-    /**
-     * Identifies whether the URL can act as a base URL.
-     */
-    public bool $cannotBeABaseUrl;
-
     public function __construct()
     {
         $this->scheme = new Scheme();
@@ -64,7 +59,6 @@ class URLRecord
         $this->path = new PathList();
         $this->query = null;
         $this->fragment = null;
-        $this->cannotBeABaseUrl = false;
     }
 
     /**
@@ -74,10 +68,7 @@ class URLRecord
      */
     public function cannotHaveUsernamePasswordPort(): bool
     {
-        return $this->host->isNull()
-            || $this->host->isEmpty()
-            || $this->cannotBeABaseUrl
-            || $this->scheme->isFile();
+        return $this->host->isNull() || $this->host->isEmpty() || $this->scheme->isFile();
     }
 
     /**
@@ -174,31 +165,29 @@ class URLRecord
             }
         }
 
-        if ($this->cannotBeABaseUrl) {
-            $output .= $this->path->first();
-        } else {
-            $pathCount = $this->path->count();
-
-            if ($isNullHost && $pathCount > 1 && $this->path->first()->isEmpty()) {
-                $output .= '/.';
-            }
-
-            // Needed since implode() doesn't add a starting "/" when there is only one path segment.
-            if ($pathCount > 0) {
-                $output .= '/';
-            }
-
-            $output .= $this->path;
+        // 3. If url’s host is null, url does not have an opaque path, url’s path’s size is greater than 1, and url’s
+        // path[0] is the empty string, then append U+002F (/) followed by U+002E (.) to output.
+        if ($isNullHost && !$this->path->isOpaque() && $this->path->count() > 1 && $this->path->first()->isEmpty()) {
+            // NOTE: This prevents web+demo:/.//not-a-host/ or web+demo:/path/..//not-a-host/, when parsed and then
+            // serialized, from ending up as web+demo://not-a-host/ (they end up as web+demo:/.//not-a-host/)
+            $output .= '/.';
         }
 
+        // 4. Append the result of URL path serializing url to output.
+        $output .= $this->path;
+
+        // 5. If url’s query is non-null, append U+003F (?), followed by url’s query, to output.
         if ($this->query !== null) {
             $output .= '?' . $this->query;
         }
 
+        // 6. If exclude fragment is false and url’s fragment is non-null, then append U+0023 (#), followed by url’s
+        // fragment, to output.
         if (!$excludeFragment && $this->fragment !== null) {
             $output .= '#' . $this->fragment;
         }
 
+        // 7. Return output.
         return $output;
     }
 

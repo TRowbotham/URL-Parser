@@ -4,18 +4,25 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component;
 
+use Rowbot\URL\Exception\URLException;
+
 use function implode;
 
-class PathList extends AbstractPath
+class OpaquePath extends AbstractPath
 {
+    public function __construct(PathSegment $path)
+    {
+        parent::__construct([$path]);
+    }
+
     public function isOpaque(): bool
     {
-        return false;
+        return true;
     }
 
     public function push(PathSegment $path): void
     {
-        $this->list[] = $path;
+        throw new URLException('Opaque path can only contain a single path');
     }
 
     /**
@@ -23,10 +30,6 @@ class PathList extends AbstractPath
      */
     public function __toString(): string
     {
-        if (!isset($this->list[0])) {
-            return '';
-        }
-
-        return '/' . implode('/', $this->list);
+        return implode('', $this->list);
     }
 }

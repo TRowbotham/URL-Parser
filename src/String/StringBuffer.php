@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
-use Rowbot\URL\Component\Path;
+use Rowbot\URL\Component\PathSegment;
 use Rowbot\URL\Component\Scheme;
 
 use function intval;
@@ -22,9 +22,9 @@ class StringBuffer extends AbstractStringBuffer implements StringBufferInterface
         return intval($this->string, $base);
     }
 
-    public function toPath(): Path
+    public function toPath(): PathSegment
     {
-        return new Path($this->string);
+        return new PathSegment($this->string);
     }
 
     public function toScheme(): Scheme

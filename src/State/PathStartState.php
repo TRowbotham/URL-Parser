@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\Component\Path;
+use Rowbot\URL\Component\PathSegment;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
 
@@ -66,7 +66,7 @@ class PathStartState implements State
 
         // 5. Otherwise, if state override is given and url’s host is null, append the empty string to url’s path.
         if ($context->isStateOverridden() && $context->url->host->isNull()) {
-            $context->url->path->push(new Path());
+            $context->url->path->push(new PathSegment());
         }
 
         return self::RETURN_OK;

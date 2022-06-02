@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\State;
 
-use Rowbot\URL\Component\Path;
+use Rowbot\URL\Component\PathSegment;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
 
@@ -66,7 +66,7 @@ class PathState implements State
                 // 1.2.2. If neither c is U+002F (/), nor url is special and c is U+005C (\), append the empty string
                 // to url’s path.
                 if ($codePoint !== '/' && !($urlIsSpecial && $codePoint === '\\')) {
-                    $context->url->path->push(new Path());
+                    $context->url->path->push(new PathSegment());
                 }
 
             // 1.3. Otherwise, if buffer is a single-dot path segment and if neither c is U+002F (/), nor url is special
@@ -76,7 +76,7 @@ class PathState implements State
                 && $codePoint !== '/'
                 && !($urlIsSpecial && $codePoint === '\\')
             ) {
-                $context->url->path->push(new Path());
+                $context->url->path->push(new PathSegment());
 
             // 1.4. Otherwise, if buffer is not a single-dot path segment, then:
             } elseif (!isset(self::SINGLE_DOT_SEGMENT[$stringBuffer])) {

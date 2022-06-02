@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Rowbot\URL\Component\Path;
+use Rowbot\URL\Component\PathSegment;
 
 class PathTest extends TestCase
 {
@@ -32,7 +32,7 @@ class PathTest extends TestCase
      */
     public function testIsNormalizedWindowsDriveLetter(string $input, bool $expected): void
     {
-        $s = new Path($input);
+        $s = new PathSegment($input);
         self::assertSame($expected, $s->isNormalizedWindowsDriveLetter());
     }
 }
