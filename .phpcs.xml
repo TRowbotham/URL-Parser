@@ -186,4 +186,9 @@
             </property>
         </properties>
     </rule>
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="ignoreComments" value="true" />
+        </properties>
+    </rule>
 </ruleset>
