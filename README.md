@@ -12,7 +12,7 @@ This API offers 2 objects that you can use to help you work with URLs; [URL](#ur
 
 ## Requirements
 
-* PHP >= 7.1
+* PHP >= 8.0
 * `ext-json`
 * `ext-mbstring`
 * `brick/math`
