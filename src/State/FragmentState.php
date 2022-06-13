@@ -6,12 +6,16 @@ namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
+use Rowbot\URL\String\EncodeSet;
+use Rowbot\URL\String\PercentEncodeTrait;
 
 /**
  * @see https://url.spec.whatwg.org/#fragment-state
  */
 class FragmentState implements State
 {
+    use PercentEncodeTrait;
+
     public function handle(ParserContext $context, string $codePoint): int
     {
         // 1. If c is not the EOF code point, then:
@@ -34,10 +38,7 @@ class FragmentState implements State
         }
 
         // 1.3. UTF-8 percent-encode c using the fragment percent-encode set and append the result to url’s fragment.
-        $context->url->fragment .= CodePoint::utf8PercentEncode(
-            $codePoint,
-            CodePoint::FRAGMENT_PERCENT_ENCODE_SET
-        );
+        $context->url->fragment .= $this->percentEncodeAfterEncoding('utf-8', $codePoint, EncodeSet::FRAGMENT);
 
         return self::RETURN_OK;
     }

@@ -57,7 +57,8 @@ class FileHostState implements State
 
             // 1.3. Otherwise, run these steps:
             // 1.3.1. Let host be the result of host parsing buffer with url is not special.
-            $host = HostParser::parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
+            $parser = new HostParser();
+            $host = $parser->parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
 
             // 1.3.2. If host is failure, then return failure.
             if ($host === false) {

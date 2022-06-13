@@ -6,6 +6,8 @@ namespace Rowbot\URL\Component;
 
 use ArrayIterator;
 use IteratorAggregate;
+use Rowbot\URL\String\EncodeSet;
+use Rowbot\URL\String\PercentEncodeTrait;
 use Rowbot\URL\String\Utf8String;
 use Rowbot\URL\Support\EncodingHelper;
 
@@ -17,10 +19,8 @@ use function explode;
 use function mb_ord;
 use function mb_str_split;
 use function rawurldecode;
-use function rawurlencode;
 use function str_contains;
 use function str_replace;
-use function strlen;
 use function usort;
 
 /**
@@ -28,6 +28,8 @@ use function usort;
  */
 class QueryList implements IteratorAggregate
 {
+    use PercentEncodeTrait;
+
     private const LEAD_OFFSET = 0xD800 - (0x10000 >> 10);
 
     /**
@@ -262,8 +264,8 @@ class QueryList implements IteratorAggregate
         $output = '';
 
         foreach ($this->list as $key => $tuple) {
-            $name = $this->urlencode(Utf8String::transcode($tuple['name'], $encoding, 'utf-8'));
-            $value = $this->urlencode(Utf8String::transcode($tuple['value'], $encoding, 'utf-8'));
+            $name = $this->percentEncodeAfterEncoding($encoding, $tuple['name'], EncodeSet::X_WWW_URLENCODED, true);
+            $value = $this->percentEncodeAfterEncoding($encoding, $tuple['value'], EncodeSet::X_WWW_URLENCODED, true);
 
             if ($key > 0) {
                 $output .= '&';
@@ -296,36 +298,5 @@ class QueryList implements IteratorAggregate
         }
 
         return $codeUnits;
-    }
-
-    /**
-     * Encodes a string to be a valid application/x-www-form-urlencoded string.
-     *
-     * @see https://url.spec.whatwg.org/#concept-urlencoded-byte-serializer
-     */
-    private function urlencode(string $input): string
-    {
-        $output = '';
-        $length = strlen($input);
-
-        for ($i = 0; $i < $length; ++$i) {
-            if ($input[$i] === "\x20") {
-                $output .= '+';
-            } elseif (
-                $input[$i] === "\x2A"
-                || $input[$i] === "\x2D"
-                || $input[$i] === "\x2E"
-                || ($input[$i] >= "\x30" && $input[$i] <= "\x39")
-                || ($input[$i] >= "\x41" && $input[$i] <= "\x5A")
-                || $input[$i] === "\x5F"
-                || ($input[$i] >= "\x61" && $input[$i] <= "\x7A")
-            ) {
-                $output .= $input[$i];
-            } else {
-                $output .= rawurlencode($input[$i]);
-            }
-        }
-
-        return $output;
     }
 }

@@ -6,12 +6,16 @@ namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
+use Rowbot\URL\String\EncodeSet;
+use Rowbot\URL\String\PercentEncodeTrait;
 
 /**
  * @see https://url.spec.whatwg.org/#authority-state
  */
 class AuthorityState implements State
 {
+    use PercentEncodeTrait;
+
     private bool $atTokenSeen;
 
     private bool $passwordTokenSeen;
@@ -35,6 +39,8 @@ class AuthorityState implements State
 
             // 1.3. Set atSignSeen to true.
             $this->atTokenSeen = true;
+            $username = '';
+            $password = '';
 
             // 1.4. For each codePoint in buffer:
             foreach ($context->buffer as $bufferCodePoint) {
@@ -48,15 +54,17 @@ class AuthorityState implements State
 
                 // 1.4.3. If passwordTokenSeen is true, then append encodedCodePoints to url’s password.
                 // 1.4.4. Otherwise, append encodedCodePoints to url’s username.
-                $userInfo = $this->passwordTokenSeen ? 'password' : 'username';
-
-                // 1.4.2. Let encodedCodePoints be the result of running UTF-8 percent-encode codePoint using the
-                // userinfo percent-encode set.
-                $context->url->{$userInfo} .= CodePoint::utf8PercentEncode(
-                    $bufferCodePoint,
-                    CodePoint::USERINFO_PERCENT_ENCODE_SET
-                );
+                if ($this->passwordTokenSeen) {
+                    $password .= $bufferCodePoint;
+                } else {
+                    $username .= $bufferCodePoint;
+                }
             }
+
+            // 1.4.2. Let encodedCodePoints be the result of running UTF-8 percent-encode codePoint using the
+            // userinfo percent-encode set.
+            $context->url->username .= $this->percentEncodeAfterEncoding('utf-8', $username, EncodeSet::USERINFO);
+            $context->url->password .= $this->percentEncodeAfterEncoding('utf-8', $password, EncodeSet::USERINFO);
 
             // 1.5. Set buffer to the empty string.
             $context->buffer->clear();

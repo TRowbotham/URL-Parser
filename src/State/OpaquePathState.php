@@ -6,12 +6,16 @@ namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
+use Rowbot\URL\String\EncodeSet;
+use Rowbot\URL\String\PercentEncodeTrait;
 
 /**
  * @see https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
  */
 class OpaquePathState implements State
 {
+    use PercentEncodeTrait;
+
     public function handle(ParserContext $context, string $codePoint): int
     {
         // 1. If c is U+003F (?), then set url’s query to the empty string and state to query state.
@@ -51,7 +55,11 @@ class OpaquePathState implements State
         // 3.3. If c is not the EOF code point, UTF-8 percent-encode c using the C0 control percent-encode set and
         // append the result to url’s path.
         if ($codePoint !== CodePoint::EOF) {
-            $context->url->path->first()->append(CodePoint::utf8PercentEncode($codePoint));
+            $context->url->path->first()->append($this->percentEncodeAfterEncoding(
+                'utf-8',
+                $codePoint,
+                EncodeSet::C0_CONTROL
+            ));
         }
 
         return self::RETURN_OK;

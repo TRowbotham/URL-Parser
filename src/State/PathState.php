@@ -7,12 +7,16 @@ namespace Rowbot\URL\State;
 use Rowbot\URL\Component\PathSegment;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
+use Rowbot\URL\String\EncodeSet;
+use Rowbot\URL\String\PercentEncodeTrait;
 
 /**
  * @see https://url.spec.whatwg.org/#path-state
  */
 class PathState implements State
 {
+    use PercentEncodeTrait;
+
     /**
      * @see https://url.spec.whatwg.org/#double-dot-path-segment
      */
@@ -127,10 +131,7 @@ class PathState implements State
         }
 
         // 2.3. UTF-8 percent-encode c using the path percent-encode set and append the result to buffer.
-        $context->buffer->append(CodePoint::utf8PercentEncode(
-            $codePoint,
-            CodePoint::PATH_PERCENT_ENCODE_SET
-        ));
+        $context->buffer->append($this->percentEncodeAfterEncoding('utf-8', $codePoint, EncodeSet::PATH));
 
         return self::RETURN_OK;
     }

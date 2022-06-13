@@ -24,6 +24,3 @@ parameters:
             path: src/String/AbstractUSVString.php
 
         # Note to self: You can't escape single quotes in neon. Another possible alternative would be to replace single quotes with \x27.
-        -
-            message: '#Variable property access on Rowbot\\URL\\URLRecord\.#'
-            path: src/State/AuthorityState.php

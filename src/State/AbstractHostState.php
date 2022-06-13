@@ -45,7 +45,8 @@ abstract class AbstractHostState implements State
             }
 
             // 2.3. Let host be the result of host parsing buffer with url is not special.
-            $host = HostParser::parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
+            $parser = new HostParser();
+            $host = $parser->parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
 
             // 2.4. If host is failure, then return failure.
             if ($host === false) {
@@ -93,7 +94,8 @@ abstract class AbstractHostState implements State
             }
 
             // 3.3. Let host be the result of host parsing buffer with url is not special.
-            $host = HostParser::parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
+            $parser = new HostParser();
+            $host = $parser->parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
 
             // 3.4. If host is failure, then return failure.
             if ($host === false) {

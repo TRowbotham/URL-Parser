@@ -6,6 +6,8 @@ namespace Rowbot\URL\Component\Host;
 
 use Rowbot\Idna\Idna;
 use Rowbot\URL\String\CodePoint;
+use Rowbot\URL\String\EncodeSet;
+use Rowbot\URL\String\PercentEncodeTrait;
 use Rowbot\URL\String\USVStringInterface;
 
 use function assert;
@@ -16,6 +18,8 @@ use function rawurldecode;
  */
 class HostParser
 {
+    use PercentEncodeTrait;
+
     /**
      * @see https://url.spec.whatwg.org/#forbidden-host-code-point
      * @see https://url.spec.whatwg.org/#forbidden-domain-code-point
@@ -30,7 +34,7 @@ class HostParser
      *
      * @return \Rowbot\URL\Component\Host\HostInterface|false The returned Host can never be a null host.
      */
-    public static function parse(USVStringInterface $input, bool $isNotSpecial = false): HostInterface|false
+    public function parse(USVStringInterface $input, bool $isNotSpecial = false): HostInterface|false
     {
         if ($input->startsWith('[')) {
             if (!$input->endsWith(']')) {
@@ -42,12 +46,12 @@ class HostParser
         }
 
         if ($isNotSpecial) {
-            return self::parseOpaqueHost($input);
+            return $this->parseOpaqueHost($input);
         }
 
         assert(!$input->isEmpty());
         $domain = rawurldecode((string) $input);
-        $asciiDomain = self::domainToAscii($domain);
+        $asciiDomain = $this->domainToAscii($domain);
 
         if ($asciiDomain === false) {
             // Validation error.
@@ -69,7 +73,7 @@ class HostParser
     /**
      * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
      */
-    private static function domainToAscii(string $domain, bool $beStrict = false): StringHost|false
+    private function domainToAscii(string $domain, bool $beStrict = false): StringHost|false
     {
         $result = Idna::toAscii($domain, [
             'CheckHyphens'            => false,
@@ -99,14 +103,12 @@ class HostParser
      *
      * @see https://url.spec.whatwg.org/#concept-opaque-host-parser
      */
-    private static function parseOpaqueHost(USVStringInterface $input): HostInterface|false
+    private function parseOpaqueHost(USVStringInterface $input): HostInterface|false
     {
         if ($input->matches('/[' . self::FORBIDDEN_HOST_CODEPOINTS . ']/u')) {
             // Validation error.
             return false;
         }
-
-        $output = '';
 
         foreach ($input as $i => $codePoint) {
             if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
@@ -116,9 +118,9 @@ class HostParser
             if ($codePoint === '%' && !$input->substr($i + 1)->startsWithTwoAsciiHexDigits()) {
                 // Validation error.
             }
-
-            $output .= CodePoint::utf8PercentEncode($codePoint);
         }
+
+        $output = $this->percentEncodeAfterEncoding('utf-8', (string) $input, EncodeSet::C0_CONTROL);
 
         return new StringHost($output);
     }

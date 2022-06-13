@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
-use function rawurlencode;
 use function strpbrk;
 
 /**
@@ -14,11 +13,6 @@ use function strpbrk;
  */
 final class CodePoint
 {
-    public const C0_CONTROL_PERCENT_ENCODE_SET = 1;
-    public const FRAGMENT_PERCENT_ENCODE_SET   = 2;
-    public const PATH_PERCENT_ENCODE_SET       = 3;
-    public const USERINFO_PERCENT_ENCODE_SET   = 4;
-
     public const ASCII_ALPHA_MASK = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     public const ASCII_ALNUM_MASK = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     public const ASCII_DIGIT_MASK = '0123456789';
@@ -93,77 +87,5 @@ final class CodePoint
             && $codePoint !== "\u{FFFFF}"
             && $codePoint !== "\u{10FFFE}"
             && $codePoint !== "\u{10FFFF}";
-    }
-
-    /**
-     * Encodes a code point if the code point is not part of the specified encode set.
-     *
-     * @see https://url.spec.whatwg.org/#utf-8-percent-encode
-     *
-     * @param string $codePoint        A code point to be encoded.
-     * @param int    $percentEncodeSet The encode set used to decide whether or not the code point should be percent
-     *                                 encoded.
-     */
-    public static function utf8PercentEncode(
-        string $codePoint,
-        int $percentEncodeSet = self::C0_CONTROL_PERCENT_ENCODE_SET
-    ): string {
-        $inEncodeSet = false;
-
-        switch ($percentEncodeSet) {
-            case self::USERINFO_PERCENT_ENCODE_SET:
-                $inEncodeSet = $codePoint === '/'
-                    || $codePoint === ':'
-                    || $codePoint === ';'
-                    || $codePoint === '='
-                    || $codePoint === '@'
-                    || $codePoint === '['
-                    || $codePoint === '\\'
-                    || $codePoint === ']'
-                    || $codePoint === '^'
-                    || $codePoint === '|';
-
-                if ($inEncodeSet) {
-                    break;
-                }
-
-                // No break.
-
-            case self::PATH_PERCENT_ENCODE_SET:
-                $inEncodeSet = $codePoint === '#'
-                    || $codePoint === '?'
-                    || $codePoint === '{'
-                    || $codePoint === '}';
-
-                if ($inEncodeSet) {
-                    break;
-                }
-
-                // No break.
-
-            case self::FRAGMENT_PERCENT_ENCODE_SET:
-                $inEncodeSet = $codePoint === ' '
-                    || $codePoint === '"'
-                    || $codePoint === '<'
-                    || $codePoint === '>'
-                    || $codePoint === '`';
-
-                if ($inEncodeSet) {
-                    break;
-                }
-
-                // No break.
-
-            case self::C0_CONTROL_PERCENT_ENCODE_SET:
-                $inEncodeSet = ($codePoint >= "\0" && $codePoint <= "\x1F") || $codePoint >= "\x7E";
-
-                break;
-        }
-
-        if (!$inEncodeSet) {
-            return $codePoint;
-        }
-
-        return rawurlencode($codePoint);
     }
 }

@@ -6,19 +6,16 @@ namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
-
-use function mb_convert_encoding;
-use function rawurlencode;
-use function str_ends_with;
-use function str_starts_with;
-use function strlen;
-use function substr;
+use Rowbot\URL\String\EncodeSet;
+use Rowbot\URL\String\PercentEncodeTrait;
 
 /**
  * @see https://url.spec.whatwg.org/#query-state
  */
 class QueryState implements State
 {
+    use PercentEncodeTrait;
+
     public function handle(ParserContext $context, string $codePoint): int
     {
         // 1. If encoding is not UTF-8 and one of the following is true:
@@ -32,70 +29,55 @@ class QueryState implements State
             $context->setOutputEncoding('utf-8');
         }
 
-        // 2. If state override is not given and c is U+0023 (#), then set url’s fragment to the empty string and state
-        // to fragment state.
-        if (!$context->isStateOverridden() && $codePoint === '#') {
-            $context->url->fragment = '';
-            $context->state = new FragmentState();
+        // 2. If one of the following is true:
+        //      - state override is not given and c is U+0023 (#)
+        //      - c is the EOF code point
+        // then:
+        if (!$context->isStateOverridden() && $codePoint === '#' || $codePoint === CodePoint::EOF) {
+            // 2.1. Let queryPercentEncodeSet be the special-query percent-encode set if url is special; otherwise the
+            // query percent-encode set.
+            $queryPercentEncodeSet = $context->url->scheme->isSpecial()
+                ? EncodeSet::SPECIAL_QUERY
+                : EncodeSet::QUERY;
+
+            // 2.2. Percent-encode after encoding, with encoding, buffer, and queryPercentEncodeSet, and append the
+            // result to url’s query.
+            //
+            // NOTE: This operation cannot be invoked code-point-for-code-point due to the stateful ISO-2022-JP encoder.
+            $context->url->query .= $this->percentEncodeAfterEncoding(
+                $context->getOutputEncoding(),
+                (string) $context->buffer,
+                $queryPercentEncodeSet
+            );
+
+            // 2.3. Set buffer to the empty string.
+            $context->buffer->clear();
+
+            // 2.4. If c is U+0023 (#), then set url’s fragment to the empty string and state to fragment state.
+            if ($codePoint === '#') {
+                $context->url->fragment = '';
+                $context->state = new FragmentState();
+            }
+
+            return self::RETURN_OK;
+        }
 
         // 3. Otherwise, if c is not the EOF code point:
-        } elseif ($codePoint !== CodePoint::EOF) {
-            // 3.1. If c is not a URL code point and not U+0025 (%), validation error.
-            if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
-                // Validation error.
-            }
-
-            // 3.2. If c is U+0025 (%) and remaining does not start with two ASCII hex digits, validation error.
-            if (
-                $codePoint === '%'
-                && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
-            ) {
-                // Validation error.
-            }
-
-            // 3.3. Let bytes be the result of encoding c using encoding.
-            $encoding = $context->getOutputEncoding();
-            $bytes = mb_convert_encoding($codePoint, $encoding, 'utf-8');
-
-            // This can happen when encoding code points using a non-UTF-8 encoding.
-            //
-            // 3.4. If bytes starts with `&#` and ends with 0x3B (;), then:
-            if (str_starts_with($bytes, '&#') && str_ends_with($bytes, ';')) {
-                // 3.4.1. Replace `&#` at the start of bytes with `%26%23`.
-                // 3.4.2. Replace 0x3B (;) at the end of bytes with `%3B`.
-                // 3.4.3. Append bytes, isomorphic decoded, to url’s query.
-                $context->url->query .= '%26%23' . substr($bytes, 2, -1) . '%3B';
-
-            // 3.5. Otherwise, for each byte in bytes:
-            } else {
-                $length = strlen($bytes);
-
-                for ($i = 0; $i < $length; ++$i) {
-                    $byte = $bytes[$i];
-
-                    // 3.5.1. If one of the following is true
-                    //      - byte is less than 0x21 (!)
-                    //      - byte is greater than 0x7E (~)
-                    //      - byte is 0x22 ("), 0x23 (#), 0x3C (<), or 0x3E (>)
-                    //      - byte is 0x27 (') and url is special
-                    // then append byte, percent encoded, to url’s query.
-                    if (
-                        $bytes < "\x21"
-                        || $bytes > "\x7E"
-                        || $bytes === "\x22"
-                        || $bytes === "\x23"
-                        || $bytes === "\x3C"
-                        || $bytes === "\x3E"
-                        || ($bytes === "\x27" && $context->url->scheme->isSpecial())
-                    ) {
-                        $byte = rawurlencode($bytes[$i]);
-                    }
-
-                    // 3.5.2. Otherwise, append a code point whose value is byte to url’s query.
-                    $context->url->query .= $byte;
-                }
-            }
+        // 3.1. If c is not a URL code point and not U+0025 (%), validation error.
+        if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
+            // Validation error.
         }
+
+        // 3.2. If c is U+0025 (%) and remaining does not start with two ASCII hex digits, validation error.
+        if (
+            $codePoint === '%'
+            && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
+        ) {
+            // Validation error.
+        }
+
+        // 3.3. Append c to buffer.
+        $context->buffer->append($codePoint);
 
         return self::RETURN_OK;
     }

@@ -16,8 +16,9 @@ use Rowbot\URL\State\PathStartState;
 use Rowbot\URL\State\PortState;
 use Rowbot\URL\State\QueryState;
 use Rowbot\URL\State\SchemeStartState;
-use Rowbot\URL\String\CodePoint;
+use Rowbot\URL\String\EncodeSet;
 use Rowbot\URL\String\IDLString;
+use Rowbot\URL\String\PercentEncodeTrait;
 use Rowbot\URL\String\USVStringInterface;
 use Stringable;
 
@@ -47,6 +48,8 @@ use const JSON_UNESCAPED_SLASHES;
  */
 class URL implements JsonSerializable, Stringable
 {
+    use PercentEncodeTrait;
+
     private URLSearchParams $queryObject;
 
     private URLRecord $url;
@@ -118,14 +121,7 @@ class URL implements JsonSerializable, Stringable
      */
     private function setUrlPassword(USVStringInterface $input): void
     {
-        $this->url->password = '';
-
-        foreach ($input as $codePoint) {
-            $this->url->password .= CodePoint::utf8PercentEncode(
-                $codePoint,
-                CodePoint::USERINFO_PERCENT_ENCODE_SET
-            );
-        }
+        $this->url->password = $this->percentEncodeAfterEncoding('utf-8', (string) $input, EncodeSet::USERINFO);
     }
 
     /**
@@ -133,14 +129,7 @@ class URL implements JsonSerializable, Stringable
      */
     private function setUrlUsername(USVStringInterface $input): void
     {
-        $this->url->username = '';
-
-        foreach ($input as $codePoint) {
-            $this->url->username .= CodePoint::utf8PercentEncode(
-                $codePoint,
-                CodePoint::USERINFO_PERCENT_ENCODE_SET
-            );
-        }
+        $this->url->username = $this->percentEncodeAfterEncoding('utf-8', (string) $input, EncodeSet::USERINFO);
     }
 
     public function __clone(): void
