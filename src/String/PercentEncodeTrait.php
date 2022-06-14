@@ -62,11 +62,18 @@ trait PercentEncodeTrait
         $replacedEntities = 0;
         $input = preg_replace(
             '/&#x([[:xdigit:]]{2,6});/',
-            '__' . $random_bytes . '_' . '${1}__',
+            '__' . $random_bytes . '_${1}__',
             $input,
             -1,
             $replacedEntities
         );
+
+        if ($input === null) {
+            throw new RegexException(sprintf(
+                'preg_replace encountered an error with message "%s".',
+                preg_last_error_msg()
+            ));
+        }
 
         // 5.1. Let encodeOutput be an empty I/O queue.
         // 5.2. Set potentialError to the result of running encode or fail with inputQueue, encoder, and encodeOutput.
