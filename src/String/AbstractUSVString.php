@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
-use Rowbot\URL\String\Exception\MbstringException;
 use Rowbot\URL\String\Exception\RegexException;
 use Stringable;
 
 use function explode;
 use function intval;
-use function mb_convert_encoding;
 use function mb_strlen;
-use function mb_substitute_character;
 use function mb_substr;
 use function preg_last_error_msg;
 use function preg_match;
@@ -154,27 +151,6 @@ abstract class AbstractUSVString implements Stringable, USVStringInterface
     public function toInt(int $base = 10): int
     {
         return intval($this->string, $base);
-    }
-
-    public static function transcode(
-        string $string,
-        string $toEncoding,
-        string $fromEncoding
-    ): string {
-        $sub = mb_substitute_character();
-        mb_substitute_character(0xFFFD);
-        $result = mb_convert_encoding($string, $toEncoding, $fromEncoding);
-        mb_substitute_character($sub);
-
-        if ($result === false) {
-            throw new MbstringException(sprintf(
-                'Attempting to transcode from "%s" to "%s" failed.',
-                $fromEncoding,
-                $toEncoding
-            ));
-        }
-
-        return $result;
     }
 
     public function __toString(): string

@@ -21,6 +21,6 @@ parameters:
 
         -
             message: '#Strict comparison using === between string and false will always evaluate to false\.#'
-            path: src/String/AbstractUSVString.php
+            path: src/String/Utf8String.php
 
         # Note to self: You can't escape single quotes in neon. Another possible alternative would be to replace single quotes with \x27.
