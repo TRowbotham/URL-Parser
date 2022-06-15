@@ -9,7 +9,7 @@ use ReflectionObject;
 use ReflectionProperty;
 use Rowbot\URL\Component\QueryList;
 use Rowbot\URL\Exception\TypeError;
-use Rowbot\URL\String\IDLString;
+use Rowbot\URL\String\Utf8String;
 use Stringable;
 
 use function array_column;
@@ -67,7 +67,7 @@ class URLSearchParams implements Iterator, Stringable
         $str = $this->getStringValue($init);
 
         if ($str !== false) {
-            $init = IDLString::scrub($str);
+            $init = Utf8String::scrub($str);
 
             if ($init !== '' && $init[0] === '?') {
                 $init = substr($init, 1);
@@ -101,7 +101,7 @@ class URLSearchParams implements Iterator, Stringable
      */
     public function append(string $name, string $value): void
     {
-        $this->list->append(IDLString::scrub($name), IDLString::scrub($value));
+        $this->list->append(Utf8String::scrub($name), Utf8String::scrub($value));
         $this->update();
     }
 
@@ -128,7 +128,7 @@ class URLSearchParams implements Iterator, Stringable
      */
     public function delete(string $name): void
     {
-        $this->list->remove(IDLString::scrub($name));
+        $this->list->remove(Utf8String::scrub($name));
         $this->update();
     }
 
@@ -143,7 +143,7 @@ class URLSearchParams implements Iterator, Stringable
      */
     public function get(string $name): ?string
     {
-        return $this->list->first(IDLString::scrub($name));
+        return $this->list->first(Utf8String::scrub($name));
     }
 
     /**
@@ -157,7 +157,7 @@ class URLSearchParams implements Iterator, Stringable
      */
     public function getAll(string $name): array
     {
-        $name = IDLString::scrub($name);
+        $name = Utf8String::scrub($name);
 
         return array_column($this->list->filter(static fn(array $pair): bool => $pair['name'] === $name), 'value');
     }
@@ -173,7 +173,7 @@ class URLSearchParams implements Iterator, Stringable
      */
     public function has(string $name): bool
     {
-        return $this->list->contains(IDLString::scrub($name));
+        return $this->list->contains(Utf8String::scrub($name));
     }
 
     public function key(): int
@@ -204,8 +204,8 @@ class URLSearchParams implements Iterator, Stringable
      */
     public function set(string $name, string $value): void
     {
-        $name = IDLString::scrub($name);
-        $value = IDLString::scrub($value);
+        $name = Utf8String::scrub($name);
+        $value = Utf8String::scrub($value);
 
         if ($this->list->contains($name)) {
             $this->list->set($name, $value);
@@ -345,7 +345,7 @@ class URLSearchParams implements Iterator, Stringable
                 ));
             }
 
-            $this->list->append(IDLString::scrub($name), IDLString::scrub($value));
+            $this->list->append(Utf8String::scrub($name), Utf8String::scrub($value));
         }
     }
 
@@ -363,7 +363,7 @@ class URLSearchParams implements Iterator, Stringable
                 ));
             }
 
-            $this->list->append(IDLString::scrub($property->getName()), IDLString::scrub($value));
+            $this->list->append(Utf8String::scrub($property->getName()), Utf8String::scrub($value));
         }
     }
 

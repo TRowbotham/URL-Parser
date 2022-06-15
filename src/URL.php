@@ -17,9 +17,9 @@ use Rowbot\URL\State\PortState;
 use Rowbot\URL\State\QueryState;
 use Rowbot\URL\State\SchemeStartState;
 use Rowbot\URL\String\EncodeSet;
-use Rowbot\URL\String\IDLString;
 use Rowbot\URL\String\PercentEncodeTrait;
 use Rowbot\URL\String\USVStringInterface;
+use Rowbot\URL\String\Utf8String;
 use Stringable;
 
 use function json_encode;
@@ -63,14 +63,14 @@ class URL implements JsonSerializable, Stringable
         $parser = new BasicURLParser();
 
         if ($base !== null) {
-            $parsedBase = $parser->parse(new IDLString($base));
+            $parsedBase = $parser->parse(Utf8String::fromUnsafe($base));
 
             if ($parsedBase === false) {
                 throw new TypeError($base . ' is not a valid URL.');
             }
         }
 
-        $parsedURL = $parser->parse(new IDLString($url), $parsedBase);
+        $parsedURL = $parser->parse(Utf8String::fromUnsafe($url), $parsedBase);
 
         if ($parsedURL === false) {
             throw new TypeError($url . ' is not a valid URL.');
@@ -231,7 +231,7 @@ class URL implements JsonSerializable, Stringable
             throw new TypeError();
         }
 
-        $input = new IDLString($value);
+        $input = Utf8String::fromUnsafe($value);
         $parser = new BasicURLParser();
 
         if ($name === 'hash') {

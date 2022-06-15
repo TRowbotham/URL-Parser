@@ -5,6 +5,7 @@
 ## Changed
 
 - Bump minimum PHP version to 8
+- Lone surrogate code points are no longer treated differently from other invalid code points
 
 ### Removed
 

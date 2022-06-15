@@ -221,6 +221,10 @@ class URLSearchParamsConstructorTest extends TestCase
         $obj3->{"c\u{D83D}"} = '23';
         $obj3->{"d\u{1234}"} = 'foo';
 
+        // Mimic error handling of JavaScript Object keys
+        $json = json_encode($obj3, JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR);
+        $obj3 = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
+
         return [
             ['input' => $obj, 'output' => [['+', '%C2']]],
             [
