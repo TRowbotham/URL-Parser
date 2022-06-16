@@ -19,6 +19,7 @@ use function random_bytes;
 use function rawurlencode;
 use function sprintf;
 use function str_contains;
+use function strcasecmp;
 use function strlen;
 
 use const PREG_SPLIT_DELIM_CAPTURE;
@@ -51,58 +52,65 @@ trait PercentEncodeTrait
         // 3. Let output be the empty string.
         $output = '';
 
-        // Generate a random string to be used as a placeholder, only changing it if the given input contains the same
-        // sequence of bytes.
-        while ($random_bytes === null || str_contains($input, $random_bytes)) {
-            $random_bytes = bin2hex(random_bytes(16));
-        }
+        // Avoid the costly encoding conversion and error handling in the common case of UTF-8 as it is only relevant
+        // for non-UTF-8 strings.
+        if (strcasecmp($encoder, 'utf-8') !== 0) {
+            // Generate a random string to be used as a placeholder, only changing it if the given input contains the
+            // same sequence of bytes.
+            while ($random_bytes === null || str_contains($input, $random_bytes)) {
+                $random_bytes = bin2hex(random_bytes(16));
+            }
 
-        // Replace any existing numeric entities, that are in the hexadecimal format, so that we can distinguish
-        // encoding errors below. These will be reinserted later.
-        $replacedEntities = 0;
-        $input = preg_replace(
-            '/&#x([[:xdigit:]]{2,6});/',
-            '__' . $random_bytes . '_${1}__',
-            $input,
-            -1,
-            $replacedEntities
-        );
+            // Replace any existing numeric entities, that are in the hexadecimal format, so that we can distinguish
+            // encoding errors below. These will be reinserted later.
+            $replacedEntities = 0;
+            $input = preg_replace(
+                '/&#x([[:xdigit:]]{2,6});/',
+                '__' . $random_bytes . '_${1}__',
+                $input,
+                -1,
+                $replacedEntities
+            );
 
-        if ($input === null) {
-            throw new RegexException(sprintf(
-                'preg_replace encountered an error with message "%s".',
-                preg_last_error_msg()
-            ));
-        }
-
-        // 5.1. Let encodeOutput be an empty I/O queue.
-        // 5.2. Set potentialError to the result of running encode or fail with inputQueue, encoder, and encodeOutput.
-        $substituteChar = mb_substitute_character();
-        mb_substitute_character('entity');
-        $encodeOutput = mb_convert_encoding($input, $encoder, 'utf-8');
-        mb_substitute_character($substituteChar);
-
-        $chunks = preg_split('/&#x([[:xdigit:]]{2,6});/', $encodeOutput, -1, PREG_SPLIT_DELIM_CAPTURE);
-
-        if ($chunks === false) {
-            throw new RegexException(sprintf(
-                'preg_split encountered an error with message "%s".',
-                preg_last_error_msg()
-            ));
-        }
-
-        // Replace the inserted placeholders of original numeric entities with the original text, so they get percent
-        // encoded.
-        if ($replacedEntities > 0) {
-            $chunks = preg_replace("/__{$random_bytes}_([[:xdigit:]]+)__/", '&#x${1};', $chunks);
-
-            if ($chunks === null) {
+            if ($input === null) {
                 throw new RegexException(sprintf(
                     'preg_replace encountered an error with message "%s".',
                     preg_last_error_msg()
                 ));
             }
+
+            // 5.1. Let encodeOutput be an empty I/O queue.
+            // 5.2. Set potentialError to the result of running encode or fail with inputQueue, encoder, and
+            // encodeOutput.
+            $substituteChar = mb_substitute_character();
+            mb_substitute_character('entity');
+            $encodeOutput = mb_convert_encoding($input, $encoder, 'utf-8');
+            mb_substitute_character($substituteChar);
+
+            $chunks = preg_split('/&#x([[:xdigit:]]{2,6});/', $encodeOutput, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+            if ($chunks === false) {
+                throw new RegexException(sprintf(
+                    'preg_split encountered an error with message "%s".',
+                    preg_last_error_msg()
+                ));
+            }
+
+            // Replace the inserted placeholders of original numeric entities with the original text, so they get
+            // percent encoded.
+            if ($replacedEntities > 0) {
+                $chunks = preg_replace("/__{$random_bytes}_([[:xdigit:]]+)__/", '&#x${1};', $chunks);
+
+                if ($chunks === null) {
+                    throw new RegexException(sprintf(
+                        'preg_replace encountered an error with message "%s".',
+                        preg_last_error_msg()
+                    ));
+                }
+            }
         }
+
+        $chunks ??= [$input];
 
         foreach ($chunks as $key => $bytes) {
             // 5.4. If potentialError is non-null, then append "%26%23", followed by the shortest sequence of ASCII
