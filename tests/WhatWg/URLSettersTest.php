@@ -3,7 +3,6 @@
 namespace Rowbot\URL\Tests\WhatWg;
 
 use Rowbot\URL\URL;
-use stdClass;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-setters.html
@@ -21,7 +20,7 @@ class URLSettersTest extends WhatwgTestCase
                 unset($inputs['comment']);
                 $inputs['setter'] = $key;
 
-                yield [(object) $inputs];
+                yield [$inputs];
             }
         }
     }
@@ -29,12 +28,12 @@ class URLSettersTest extends WhatwgTestCase
     /**
      * @dataProvider urlSetterGetterDataProvider
      */
-    public function testSetters(stdClass $input): void
+    public function testSetters(array $input): void
     {
-        $url = new URL($input->href);
-        $url->{$input->setter} = $input->new_value;
+        $url = new URL($input['href']);
+        $url->{$input['setter']} = $input['new_value'];
 
-        foreach ($input->expected as $attribute => $value) {
+        foreach ($input['expected'] as $attribute => $value) {
             self::assertSame($value, $url->$attribute, $attribute);
         }
     }

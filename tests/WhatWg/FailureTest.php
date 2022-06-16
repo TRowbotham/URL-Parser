@@ -4,7 +4,6 @@ namespace Rowbot\URL\Tests\WhatWg;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
-use stdClass;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/failure.html
@@ -15,7 +14,7 @@ class FailureTest extends WhatwgTestCase
     {
         foreach ($this->loadTestData('urltestdata.json') as $inputs) {
             if (isset($inputs['failure']) && $inputs['base'] === 'about:blank') {
-                yield [(object) $inputs];
+                yield [$inputs];
             }
         }
     }
@@ -27,19 +26,19 @@ class FailureTest extends WhatwgTestCase
      *
      * @dataProvider urlTestDataFailureProvider
      */
-    public function testURLContructor(stdClass $test): void
+    public function testURLContructor(array $test): void
     {
         $this->expectException(TypeError::class);
-        new URL('about:blank', $test->input);
+        new URL('about:blank', $test['input']);
     }
 
     /**
      * @dataProvider urlTestDataFailureProvider
      */
-    public function testUrlHrefSetterThrows(stdClass $test): void
+    public function testUrlHrefSetterThrows(array $test): void
     {
         $this->expectException(TypeError::class);
         $url = new URL('about:blank');
-        $url->href = $test->input;
+        $url->href = $test['input'];
     }
 }

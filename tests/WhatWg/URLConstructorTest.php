@@ -4,9 +4,8 @@ namespace Rowbot\URL\Tests\WhatWg;
 
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
-use stdClass;
 
-use function property_exists;
+use function array_key_exists;
 
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/url-constructor.html
@@ -17,7 +16,7 @@ class URLConstructorTest extends WhatwgTestCase
     {
         foreach ($this->loadTestData('urltestdata.json') as $inputs) {
             if (isset($inputs['base']) && !isset($inputs['failure'])) {
-                yield [(object) $inputs];
+                yield [$inputs];
             }
         }
     }
@@ -25,33 +24,33 @@ class URLConstructorTest extends WhatwgTestCase
     /**
      * @dataProvider urlTestDataSuccessProvider
      */
-    public function testUrlConstructorSucceeded(stdClass $expected): void
+    public function testUrlConstructorSucceeded(array $expected): void
     {
-        $base = $expected->base ? $expected->base : 'about:blank';
-        $url = new URL($expected->input, $base);
-        self::assertSame($expected->href, $url->href, 'href');
-        self::assertSame($expected->protocol, $url->protocol, 'protocol');
-        self::assertSame($expected->username, $url->username, 'username');
-        self::assertSame($expected->password, $url->password, 'password');
-        self::assertSame($expected->host, $url->host, 'host');
-        self::assertSame($expected->hostname, $url->hostname, 'hostname');
-        self::assertSame($expected->port, $url->port, 'port');
-        self::assertSame($expected->pathname, $url->pathname, 'pathname');
-        self::assertSame($expected->search, $url->search, 'search');
+        $base = $expected['base'] ? $expected['base'] : 'about:blank';
+        $url = new URL($expected['input'], $base);
+        self::assertSame($expected['href'], $url->href, 'href');
+        self::assertSame($expected['protocol'], $url->protocol, 'protocol');
+        self::assertSame($expected['username'], $url->username, 'username');
+        self::assertSame($expected['password'], $url->password, 'password');
+        self::assertSame($expected['host'], $url->host, 'host');
+        self::assertSame($expected['hostname'], $url->hostname, 'hostname');
+        self::assertSame($expected['port'], $url->port, 'port');
+        self::assertSame($expected['pathname'], $url->pathname, 'pathname');
+        self::assertSame($expected['search'], $url->search, 'search');
 
-        if (property_exists($expected, 'searchParams')) {
+        if (array_key_exists('searchParams', $expected)) {
             self::assertTrue((bool) $url->searchParams);
-            self::assertSame($expected->searchParams, $url->searchParams->toString(), 'searchParams');
+            self::assertSame($expected['searchParams'], $url->searchParams->toString(), 'searchParams');
         }
 
-        self::assertSame($expected->hash, $url->hash, 'hash');
+        self::assertSame($expected['hash'], $url->hash, 'hash');
     }
 
     public function urlTestDataFailureProvider(): iterable
     {
         foreach ($this->loadTestData('urltestdata.json') as $inputs) {
             if (isset($inputs['failure'])) {
-                yield [(object) $inputs];
+                yield [$inputs];
             }
         }
     }
@@ -59,9 +58,9 @@ class URLConstructorTest extends WhatwgTestCase
     /**
      * @dataProvider urlTestDataFailureProvider
      */
-    public function testUrlConstructorFailed(stdClass $expected): void
+    public function testUrlConstructorFailed(array $expected): void
     {
         $this->expectException(TypeError::class);
-        isset($expected->base) ? new URL($expected->input, $expected->base) : new URL($expected->input);
+        isset($expected['base']) ? new URL($expected['input'], $expected['base']) : new URL($expected['input']);
     }
 }
