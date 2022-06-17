@@ -9,6 +9,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use function array_filter;
 use function json_decode;
 use function json_encode;
+use function preg_replace;
 
 use const JSON_THROW_ON_ERROR;
 

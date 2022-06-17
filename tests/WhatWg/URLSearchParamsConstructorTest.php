@@ -7,6 +7,12 @@ use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URLSearchParams;
 use stdClass;
 
+use function json_decode;
+use function json_encode;
+
+use const JSON_INVALID_UTF8_SUBSTITUTE;
+use const JSON_THROW_ON_ERROR;
+
 /**
  * @see https://github.com/web-platform-tests/wpt/blob/master/url/urlsearchparams-constructor.any.js
  */
