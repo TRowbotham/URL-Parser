@@ -21,15 +21,15 @@ class SchemeState implements State
     public function handle(ParserContext $context, string $codePoint): int
     {
         // 1. If c is an ASCII alphanumeric, U+002B (+), U+002D (-), or U+002E (.), append c, lowercased, to buffer.
-        if (
+        while (
             strpbrk($codePoint, CodePoint::ASCII_ALNUM_MASK) === $codePoint
             || $codePoint === '+'
             || $codePoint === '-'
             || $codePoint === '.'
         ) {
             $context->buffer->append(strtolower($codePoint));
-
-            return self::RETURN_OK;
+            $context->iter->next();
+            $codePoint = $context->iter->current();
         }
 
         // 2. Otherwise, if c is U+003A (:), then:

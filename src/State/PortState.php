@@ -17,10 +17,10 @@ class PortState implements State
     public function handle(ParserContext $context, string $codePoint): int
     {
         // 1. If c is an ASCII digit, append c to buffer.
-        if (strpbrk($codePoint, CodePoint::ASCII_DIGIT_MASK) === $codePoint) {
+        while (strpbrk($codePoint, CodePoint::ASCII_DIGIT_MASK) === $codePoint) {
             $context->buffer->append($codePoint);
-
-            return self::RETURN_OK;
+            $context->iter->next();
+            $codePoint = $context->iter->current();
         }
 
         // 2. Otherwise, if one of the following is true:

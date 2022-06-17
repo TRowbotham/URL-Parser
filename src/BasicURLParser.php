@@ -61,28 +61,26 @@ class BasicURLParser
 
         $iter = $input->getIterator();
         $iter->rewind();
-        $length = $input->length();
+        // length + imaginary eof character
+        $length = $input->length() + 1;
         $buffer = new StringBuffer();
         $context = new ParserContext($input, $iter, $buffer, $url, $base, $stateOverride, $encodingOverride);
 
-        while (true) {
+        do {
             $status = $context->state->handle($context, $iter->current());
 
             if ($status === State::RETURN_CONTINUE) {
+                $status = State::RETURN_OK;
+
                 continue;
             }
 
-            if ($status === State::RETURN_FAILURE) {
-                return false;
-            }
-
-            if ($status === State::RETURN_BREAK || $iter->key() >= $length) {
-                break;
-            }
-
             $iter->next();
-        }
+        } while ($status === State::RETURN_OK && $iter->key() < $length);
 
-        return $url;
+        return match ($status) {
+            State::RETURN_FAILURE => false,
+            default               => $url,
+        };
     }
 }

@@ -29,56 +29,58 @@ class QueryState implements State
             $context->setOutputEncoding('utf-8');
         }
 
-        // 2. If one of the following is true:
-        //      - state override is not given and c is U+0023 (#)
-        //      - c is the EOF code point
-        // then:
-        if (!$context->isStateOverridden() && $codePoint === '#' || $codePoint === CodePoint::EOF) {
-            // 2.1. Let queryPercentEncodeSet be the special-query percent-encode set if url is special; otherwise the
-            // query percent-encode set.
-            $queryPercentEncodeSet = $context->url->scheme->isSpecial()
-                ? EncodeSet::SPECIAL_QUERY
-                : EncodeSet::QUERY;
+        do {
+            // 2. If one of the following is true:
+            //      - state override is not given and c is U+0023 (#)
+            //      - c is the EOF code point
+            // then:
+            if (!$context->isStateOverridden() && $codePoint === '#' || $codePoint === CodePoint::EOF) {
+                // 2.1. Let queryPercentEncodeSet be the special-query percent-encode set if url is special; otherwise the
+                // query percent-encode set.
+                $queryPercentEncodeSet = $context->url->scheme->isSpecial()
+                    ? EncodeSet::SPECIAL_QUERY
+                    : EncodeSet::QUERY;
 
-            // 2.2. Percent-encode after encoding, with encoding, buffer, and queryPercentEncodeSet, and append the
-            // result to url’s query.
-            //
-            // NOTE: This operation cannot be invoked code-point-for-code-point due to the stateful ISO-2022-JP encoder.
-            $context->url->query .= $this->percentEncodeAfterEncoding(
-                $context->getOutputEncoding(),
-                (string) $context->buffer,
-                $queryPercentEncodeSet
-            );
+                // 2.2. Percent-encode after encoding, with encoding, buffer, and queryPercentEncodeSet, and append the
+                // result to url’s query.
+                //
+                // NOTE: This operation cannot be invoked code-point-for-code-point due to the stateful ISO-2022-JP encoder.
+                $context->url->query .= $this->percentEncodeAfterEncoding(
+                    $context->getOutputEncoding(),
+                    (string) $context->buffer,
+                    $queryPercentEncodeSet
+                );
 
-            // 2.3. Set buffer to the empty string.
-            $context->buffer->clear();
+                // 2.3. Set buffer to the empty string.
+                $context->buffer->clear();
 
-            // 2.4. If c is U+0023 (#), then set url’s fragment to the empty string and state to fragment state.
-            if ($codePoint === '#') {
-                $context->url->fragment = '';
-                $context->state = new FragmentState();
+                // 2.4. If c is U+0023 (#), then set url’s fragment to the empty string and state to fragment state.
+                if ($codePoint === '#') {
+                    $context->url->fragment = '';
+                    $context->state = new FragmentState();
+                }
+
+                return self::RETURN_OK;
             }
 
-            return self::RETURN_OK;
-        }
+            // 3. Otherwise, if c is not the EOF code point:
+            // 3.1. If c is not a URL code point and not U+0025 (%), validation error.
+            if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
+                // Validation error.
+            }
 
-        // 3. Otherwise, if c is not the EOF code point:
-        // 3.1. If c is not a URL code point and not U+0025 (%), validation error.
-        if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
-            // Validation error.
-        }
+            // 3.2. If c is U+0025 (%) and remaining does not start with two ASCII hex digits, validation error.
+            if (
+                $codePoint === '%'
+                && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
+            ) {
+                // Validation error.
+            }
 
-        // 3.2. If c is U+0025 (%) and remaining does not start with two ASCII hex digits, validation error.
-        if (
-            $codePoint === '%'
-            && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
-        ) {
-            // Validation error.
-        }
-
-        // 3.3. Append c to buffer.
-        $context->buffer->append($codePoint);
-
-        return self::RETURN_OK;
+            // 3.3. Append c to buffer.
+            $context->buffer->append($codePoint);
+            $context->iter->next();
+            $codePoint = $context->iter->current();
+        } while (true);
     }
 }

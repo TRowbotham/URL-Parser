@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Performance improvements
+
 ## Changed
 
 - Bump minimum PHP version to 8
