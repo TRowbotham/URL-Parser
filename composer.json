@@ -23,8 +23,8 @@
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.0",
         "phpunit/phpunit": "^9.0",
-        "slevomat/coding-standard": "^7.1",
-        "squizlabs/php_codesniffer": "^3.6",
+        "slevomat/coding-standard": "^8.0",
+        "squizlabs/php_codesniffer": "^3.7.1",
         "symfony/cache": "^5.0 || ^6.0"
     },
     "autoload": {
