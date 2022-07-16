@@ -65,7 +65,7 @@ trait PercentEncodeTrait
             // encoding errors below. These will be reinserted later.
             $replacedEntities = 0;
             $input = preg_replace(
-                '/&#x([[:xdigit:]]{2,6});/',
+                '/&#x([[:xdigit:]]{2,6};?)/',
                 '__' . $random_bytes . '_${1}__',
                 $input,
                 -1,
@@ -99,7 +99,7 @@ trait PercentEncodeTrait
             // Replace the inserted placeholders of original numeric entities with the original text, so they get
             // percent encoded.
             if ($replacedEntities > 0) {
-                $chunks = preg_replace("/__{$random_bytes}_([[:xdigit:]]+)__/", '&#x${1};', $chunks);
+                $chunks = preg_replace("/__{$random_bytes}_([[:xdigit:]]+;?)__/", '&#x${1}', $chunks);
 
                 if ($chunks === null) {
                     throw new RegexException(sprintf(
