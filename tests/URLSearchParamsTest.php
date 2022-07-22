@@ -81,7 +81,7 @@ class URLSearchParamsTest extends TestCase
     /**
      * @dataProvider getInvalidIteratorInput
      */
-    public function testInvalidIteratorInput(iterable|object $input): void
+    public function testInvalidIteratorInput(array|object $input): void
     {
         $this->expectException(TypeError::class);
         new URLSearchParams($input);

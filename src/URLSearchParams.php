@@ -54,7 +54,7 @@ class URLSearchParams implements Iterator, Stringable
      *
      * @param self|iterable<int|string, iterable<int|string, scalar|\Stringable>&\Countable>|object|string $init (optional)
      */
-    public function __construct(iterable|object|string $init = '')
+    public function __construct(array|object|string $init = '')
     {
         $this->list = new QueryList();
         $this->url = null;
