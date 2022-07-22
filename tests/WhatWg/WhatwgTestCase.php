@@ -36,14 +36,18 @@ abstract class WhatwgTestCase extends TestCase
             // to fail
             $body = preg_replace(
                 '/
+                    (?(DEFINE)
+                        (?<high>\\\u[Dd][89AaBb][[:xdigit:]][[:xdigit:]])
+                        (?<low>\\\u[Dd][C-Fc-f][[:xdigit:]][[:xdigit:]])
+                    )
+
                     # Match a low surrogate not preceded by a high surrogate
-                    (?<!(?<high>\\\u[Dd][89AaBb][[:xdigit:]][[:xdigit:]]))
-                    (?<low>\\\u[Dd][C-Fc-f][[:xdigit:]][[:xdigit:]])
+                    (?<!(?&high))(?&low)
 
                     # Match a high surrogate not followed by a low surrogate
                     |(?&high)(?!(?&low))
                 /x',
-                '\uFFFD',
+                '\\uFFFD',
                 (string) $response->getBody()
             );
 
