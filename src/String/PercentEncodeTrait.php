@@ -251,6 +251,6 @@ trait PercentEncodeTrait
         }
 
         // C0_CONTROL
-        return $codePoint <= 0x1F || $codePoint > 0x7E;
+        return $codePoint < 0x20 || $codePoint > 0x7E;
     }
 }
