@@ -117,6 +117,9 @@ trait PercentEncodeTrait
             // digits representing potentialError in base ten, followed by "%3B", to output.
             //
             // NOTE: This can happen when encoding is not UTF-8.
+            //
+            // Because we are splitting using the PREG_SPLIT_DELIM_CAPTURE_FLAG, odd keys contain the hex number of the
+            // numeric entity inserted during encoding conversion should an invalid character be encountered.
             if ($key % 2 === 1) {
                 $output .= '%26%23' . hexdec($bytes) . '%3B';
 
