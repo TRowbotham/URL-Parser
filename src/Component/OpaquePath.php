@@ -25,6 +25,11 @@ class OpaquePath extends AbstractPath
         throw new URLException('Opaque path can only contain a single path');
     }
 
+    public function shorten(Scheme $scheme): void
+    {
+        throw new URLException('Cannot shorten an opaque path');
+    }
+
     /**
      * @see https://url.spec.whatwg.org/#url-path-serializer
      */

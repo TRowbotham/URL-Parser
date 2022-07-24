@@ -6,8 +6,6 @@ namespace Rowbot\URL\Component;
 
 use Rowbot\URL\String\Exception\UndefinedIndexException;
 
-use function array_pop;
-use function assert;
 use function count;
 
 abstract class AbstractPath implements PathInterface
@@ -25,8 +23,6 @@ abstract class AbstractPath implements PathInterface
         $this->list = $paths;
     }
 
-    abstract public function isOpaque(): bool;
-
     public function count(): int
     {
         return count($this->list);
@@ -40,21 +36,6 @@ abstract class AbstractPath implements PathInterface
     public function isEmpty(): bool
     {
         return $this->list === [];
-    }
-
-    public function shorten(Scheme $scheme): void
-    {
-        // 1. Assert: url does not have an opaque path.
-        assert(!$this->isOpaque());
-
-        // 3. If url’s scheme is "file", path’s size is 1, and path[0] is a normalized Windows drive letter, then
-        // return.
-        if ($scheme->isFile() && count($this->list) === 1 && $this->list[0]->isNormalizedWindowsDriveLetter()) {
-            return;
-        }
-
-        // 4. Remove path’s last item, if any.
-        array_pop($this->list);
     }
 
     public function __clone()

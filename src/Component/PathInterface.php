@@ -17,5 +17,8 @@ interface PathInterface extends Countable, Stringable
 
     public function push(PathSegment $path): void;
 
+    /**
+     * @see https://url.spec.whatwg.org/#shorten-a-urls-path
+     */
     public function shorten(Scheme $scheme): void;
 }
