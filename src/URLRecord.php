@@ -6,9 +6,11 @@ namespace Rowbot\URL;
 
 use Rowbot\URL\Component\Host\HostInterface;
 use Rowbot\URL\Component\Host\NullHost;
+use Rowbot\URL\Component\OpaqueOrigin;
 use Rowbot\URL\Component\PathInterface;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\Scheme;
+use Rowbot\URL\Component\TupleOrigin;
 
 class URLRecord
 {
@@ -94,7 +96,7 @@ class URLRecord
 
             if ($url === false) {
                 // Return a new opaque origin
-                return Origin::createOpaqueOrigin();
+                return new OpaqueOrigin();
             }
 
             return $url->getOrigin();
@@ -103,21 +105,16 @@ class URLRecord
         if ($this->scheme->isFile()) {
             // Unfortunate as it is, this is left as an exercise to the
             // reader. When in doubt, return a new opaque origin.
-            return Origin::createOpaqueOrigin();
+            return new OpaqueOrigin();
         }
 
         if ($this->scheme->isSpecial()) {
             // Return a tuple consiting of URL's scheme, host, port, and null
-            return Origin::createTupleOrigin(
-                (string) $this->scheme,
-                $this->host,
-                $this->port,
-                null
-            );
+            return new TupleOrigin((string) $this->scheme, $this->host, $this->port);
         }
 
         // Return a new opaque origin.
-        return Origin::createOpaqueOrigin();
+        return new OpaqueOrigin();
     }
 
     /**

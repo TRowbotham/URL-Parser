@@ -6,6 +6,7 @@ namespace Rowbot\URL\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\BasicURLParser;
+use Rowbot\URL\Component\OpaqueOrigin;
 use Rowbot\URL\String\Utf8String;
 
 class URLRecordTest extends TestCase
@@ -15,7 +16,7 @@ class URLRecordTest extends TestCase
         $parser = new BasicURLParser();
         $record = $parser->parse(new Utf8String('blob:failure'));
         $origin = $record->getOrigin();
-        self::assertTrue($origin->isOpaque());
+        self::assertInstanceOf(OpaqueOrigin::class, $origin);
         self::assertNull($origin->getEffectiveDomain());
     }
 
@@ -24,7 +25,7 @@ class URLRecordTest extends TestCase
         $parser = new BasicURLParser();
         $record = $parser->parse(new Utf8String('file:///C:/Users/Desktop/'));
         $origin = $record->getOrigin();
-        self::assertTrue($origin->isOpaque());
+        self::assertInstanceOf(OpaqueOrigin::class, $origin);
         self::assertNull($origin->getEffectiveDomain());
     }
 
