@@ -31,8 +31,8 @@ class BasicURLParser
      *                                                                object that should be modified based on the input
      *                                                                URL and optional base URL. Default is null.
      * @param \Rowbot\URL\State\State|null          $stateOverride    (optional) An object implementing the
-     *                                                                \Rowbot\URL\State interface that overrides the
-     *                                                                default start state, which is the Scheme Start
+     *                                                                \Rowbot\URL\State\State interface that overrides
+     *                                                                the default start state, which is the Scheme Start
      *                                                                State. Default is null.
      */
     public function parse(
