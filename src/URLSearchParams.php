@@ -39,14 +39,8 @@ class URLSearchParams implements Iterator, Stringable
      */
     private int $cursor;
 
-    /**
-     * @var \Rowbot\URL\Component\QueryList
-     */
     private QueryList $list;
 
-    /**
-     * @var \Rowbot\URL\URLRecord|null
-     */
     private ?URLRecord $url;
 
     /**

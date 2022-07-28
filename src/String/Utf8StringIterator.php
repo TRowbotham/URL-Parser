@@ -13,9 +13,6 @@ class Utf8StringIterator implements StringIteratorInterface
      */
     private array $codePoints;
 
-    /**
-     * @var int
-     */
     private int $cursor;
 
     public function __construct(string $string)

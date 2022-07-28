@@ -255,10 +255,8 @@ class QueryList implements IteratorAggregate
      * Encodes the list of tuples as a valid application/x-www-form-urlencoded string.
      *
      * @see https://url.spec.whatwg.org/#concept-urlencoded-serializer
-     *
-     * @param string|null $encodingOverride (optional)
      */
-    public function toUrlencodedString(string $encodingOverride = null): string
+    public function toUrlencodedString(?string $encodingOverride = null): string
     {
         $encoding = EncodingHelper::getOutputEncoding($encodingOverride) ?? 'utf-8';
         $output = '';
@@ -280,7 +278,7 @@ class QueryList implements IteratorAggregate
     /**
      * @see https://www.unicode.org/faq/utf_bom.html?source=post_page---------------------------#utf16-4
      *
-     * @return list<list<int>>
+     * @return list<non-empty-list<int>>
      */
     private function convertToCodeUnits(string $input): array
     {

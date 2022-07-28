@@ -41,9 +41,6 @@ final class ParserContext
      */
     public URLRecord $url;
 
-    /**
-     * @var string
-     */
     private string $encoding;
 
     private ?State $stateOverride;

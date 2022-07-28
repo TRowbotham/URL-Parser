@@ -122,10 +122,9 @@ class URLRecord
      *
      * @see https://url.spec.whatwg.org/#concept-url-equals
      *
-     * @param self $otherUrl        A URL to compare equality against.
      * @param bool $excludeFragment (optional) determines whether a URL's fragment should be factored into equality.
      */
-    public function isEqual(URLRecord $otherUrl, bool $excludeFragment = false): bool
+    public function isEqual(self $otherUrl, bool $excludeFragment = false): bool
     {
         return $this->serializeURL($excludeFragment) === $otherUrl->serializeURL($excludeFragment);
     }
