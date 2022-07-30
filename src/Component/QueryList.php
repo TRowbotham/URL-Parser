@@ -235,7 +235,7 @@ class QueryList implements IteratorAggregate
                 return $aCodeUnits <=> $bCodeUnits;
             }
 
-            $shortestLength = $lengthComparison === -1 ? $a['length'] : $b['length'];
+            $shortestLength = $lengthComparison < 0 ? $a['length'] : $b['length'];
 
             for ($i = 0; $i < $shortestLength; ++$i) {
                 $comparison = $aCodeUnits[$i] <=> $bCodeUnits[$i];
