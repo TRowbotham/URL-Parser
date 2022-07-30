@@ -16,6 +16,8 @@ interface Origin extends Stringable
      */
     public function getEffectiveDomain(): ?string;
 
+    public function isOpaque(): bool;
+
     /**
      * Checks if two origins are the same.
      *

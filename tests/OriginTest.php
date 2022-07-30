@@ -165,12 +165,13 @@ class OriginTest extends TestCase
     public function testEffectiveDomainConcept(): void
     {
         $origin = new OpaqueOrigin();
+        self::assertTrue($origin->isOpaque());
         self::assertNull($origin->getEffectiveDomain());
 
         $parser = new BasicURLParser();
         $record = $parser->parse(new Utf8String('blob:https://foo.com'));
         $origin = $record->getOrigin();
-        self::assertInstanceOf(TupleOrigin::class, $origin);
+        self::assertFalse($origin->isOpaque());
         self::assertNotNull($origin->getEffectiveDomain());
         self::assertSame('foo.com', $origin->getEffectiveDomain());
 
@@ -181,6 +182,7 @@ class OriginTest extends TestCase
             314,
             'example.org'
         );
+        self::assertFalse($origin->isOpaque());
         self::assertNotNull($origin->getEffectiveDomain());
         self::assertSame('example.org', $origin->getEffectiveDomain());
     }

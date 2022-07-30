@@ -37,6 +37,11 @@ final class TupleOrigin implements Origin
         return $this->host->getSerializer()->toFormattedString();
     }
 
+    public function isOpaque(): bool
+    {
+        return false;
+    }
+
     public function isSameOrigin(Origin $other): bool
     {
         return $other instanceof self

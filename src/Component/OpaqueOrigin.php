@@ -16,6 +16,11 @@ final class OpaqueOrigin implements Origin
         return null;
     }
 
+    public function isOpaque(): bool
+    {
+        return true;
+    }
+
     public function isSameOrigin(Origin $other): bool
     {
         return $this === $other;
