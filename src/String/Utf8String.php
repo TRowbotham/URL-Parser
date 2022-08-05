@@ -37,7 +37,7 @@ class Utf8String extends AbstractUSVString
 
         if ($result === false) {
             throw new MbstringException(sprintf(
-                'Attempting to transcode from "%s" to "%s" failed.',
+                'Transcoding from "%s" to "%s" failed.',
                 $fromEncoding,
                 $toEncoding
             ));

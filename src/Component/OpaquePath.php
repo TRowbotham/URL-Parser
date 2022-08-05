@@ -22,7 +22,7 @@ class OpaquePath extends AbstractPath
 
     public function push(PathSegment $path): void
     {
-        throw new URLException('Opaque path can only contain a single path');
+        throw new URLException('An opaque path can only contain a single path');
     }
 
     public function shorten(Scheme $scheme): void

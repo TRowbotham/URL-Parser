@@ -305,7 +305,7 @@ class URLSearchParams implements Iterator, Stringable
             if (!is_countable($pair) || !is_iterable($pair)) {
                 throw new TypeError(sprintf(
                     'Expected a valid sequence such as an Array or iterable Object that implements '
-                    . 'the \Countable interface. %s found instead.',
+                    . 'the \\Countable interface. %s found instead.',
                     get_debug_type($pair)
                 ));
             }
@@ -327,14 +327,14 @@ class URLSearchParams implements Iterator, Stringable
 
             if ($name === false) {
                 throw new TypeError(sprintf(
-                    'The name of the name-value pair at index %s must be a scalar value or stringable.',
+                    'The name of the name-value pair at index "%s" must be a scalar value or stringable.',
                     $key
                 ));
             }
 
             if ($value === false) {
                 throw new TypeError(sprintf(
-                    'The value of the name-value pair at index %s must be a scalar value or stringable.',
+                    'The value of the name-value pair at index "%s" must be a scalar value or stringable.',
                     $key
                 ));
             }
@@ -352,7 +352,7 @@ class URLSearchParams implements Iterator, Stringable
 
             if ($value === false) {
                 throw new TypeError(sprintf(
-                    'The value of property %s must be a scalar value or stringable.',
+                    'The value of property "%s" must be a scalar value or \\Stringable.',
                     $reflection->getName()
                 ));
             }

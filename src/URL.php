@@ -23,6 +23,7 @@ use Rowbot\URL\String\Utf8String;
 use Stringable;
 
 use function json_encode;
+use function sprintf;
 
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
@@ -66,14 +67,14 @@ class URL implements JsonSerializable, Stringable
             $parsedBase = $parser->parse(Utf8String::fromUnsafe($base));
 
             if ($parsedBase === false) {
-                throw new TypeError($base . ' is not a valid URL.');
+                throw new TypeError(sprintf('"%s" is not a valid base URL.', $base));
             }
         }
 
         $parsedURL = $parser->parse(Utf8String::fromUnsafe($url), $parsedBase);
 
         if ($parsedURL === false) {
-            throw new TypeError($url . ' is not a valid URL.');
+            throw new TypeError(sprintf('"%s" is not a valid URL.', $url));
         }
 
         $this->url = $parsedURL;
@@ -218,7 +219,7 @@ class URL implements JsonSerializable, Stringable
             return $this->url->username;
         }
 
-        throw new InvalidArgumentException($name . ' is not a valid property.');
+        throw new InvalidArgumentException(sprintf('"%s" is not a valid property.', $name));
     }
 
     /**
@@ -228,7 +229,7 @@ class URL implements JsonSerializable, Stringable
     public function __set(string $name, string $value): void
     {
         if ($name === 'searchParams') {
-            throw new TypeError();
+            throw new TypeError('Cannot redefine the searchParams property.');
         }
 
         $input = Utf8String::fromUnsafe($value);
@@ -266,7 +267,7 @@ class URL implements JsonSerializable, Stringable
             $parsedURL = $parser->parse($input);
 
             if ($parsedURL === false) {
-                throw new TypeError($value . ' is not a valid URL.');
+                throw new TypeError(sprintf('"%s" is not a valid URL.', $value));
             }
 
             $this->url = $parsedURL;
@@ -327,7 +328,7 @@ class URL implements JsonSerializable, Stringable
 
             $this->setUrlUsername($input);
         } else {
-            throw new InvalidArgumentException($name . ' is not a valid property.');
+            throw new InvalidArgumentException(sprintf('"%s" is not a valid property.', $name));
         }
     }
 

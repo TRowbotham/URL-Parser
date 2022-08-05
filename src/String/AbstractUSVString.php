@@ -64,10 +64,8 @@ abstract class AbstractUSVString implements Stringable, USVStringInterface
 
         if ($result === false) {
             throw new RegexException(sprintf(
-                'preg_match encountered an error with message "%s" trying to match "%s" against "%s".',
+                'preg_match encountered an error with message "%s".',
                 preg_last_error_msg(),
-                $this->string,
-                $pattern
             ));
         }
 
@@ -84,9 +82,8 @@ abstract class AbstractUSVString implements Stringable, USVStringInterface
 
         if ($result === null) {
             throw new RegexException(sprintf(
-                'preg_replace encountered an error with message "%s" and pattern %s.',
+                'preg_replace encountered an error with message "%s".',
                 preg_last_error_msg(),
-                $pattern
             ));
         }
 
