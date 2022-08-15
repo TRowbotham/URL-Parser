@@ -22,6 +22,7 @@ class RelativeSlashState implements State
             // 1.1. If c is U+005C (\), validation error.
             if ($codePoint === '\\') {
                 // Validation error.
+                $context->logger?->notice('unexpected-reverse-solidus');
             }
 
             // 1.2. Set state to special authority ignore slashes state.

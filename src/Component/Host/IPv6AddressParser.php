@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host;
 
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
@@ -16,7 +17,7 @@ use function strpbrk;
  */
 class IPv6AddressParser
 {
-    public static function parse(USVStringInterface $input): IPv6Address|false
+    public static function parse(ParserContext $context, USVStringInterface $input): IPv6Address|false
     {
         // 1. Let address be a new IPv6 address whose IPv6 pieces are all 0.
         $address = [0, 0, 0, 0, 0, 0, 0, 0];
@@ -35,6 +36,8 @@ class IPv6AddressParser
         if ($iter->current() === ':') {
             // 5.1. If remaining does not start with U+003A (:), validation error, return failure.
             if ($iter->peek() !== ':') {
+                $context->logger?->warning('invalid-compressed-ipv6-address');
+
                 return false;
             }
 
@@ -49,6 +52,8 @@ class IPv6AddressParser
         while ($iter->valid()) {
             // 6.1. If pieceIndex is 8, validation error, return failure.
             if ($pieceIndex === 8) {
+                $context->logger?->warning('ipv6-too-many-pieces');
+
                 return false;
             }
 
@@ -56,6 +61,8 @@ class IPv6AddressParser
             if ($iter->current() === ':') {
                 // 6.2.1. If compress is non-null, validation error, return failure.
                 if ($compress !== null) {
+                    $context->logger?->warning('ipv6-multiple-compression');
+
                     return false;
                 }
 
@@ -84,6 +91,8 @@ class IPv6AddressParser
             if ($iter->current() === '.') {
                 // 6.5.1. If length is 0, validation error, return failure.
                 if ($length === 0) {
+                    $context->logger?->warning('ipv4-in-ipv6-empty-part');
+
                     return false;
                 }
 
@@ -92,10 +101,12 @@ class IPv6AddressParser
 
                 // 6.5.3. If pieceIndex is greater than 6, validation error, return failure.
                 if ($pieceIndex > 6) {
+                    $context->logger?->warning('ipv4-in-ipv6-too-many-pieces');
+
                     return false;
                 }
 
-                $result = self::parseIPv4Address($iter, $address, $pieceIndex);
+                $result = self::parseIPv4Address($context, $iter, $address, $pieceIndex);
 
                 if ($result === false) {
                     return false;
@@ -114,11 +125,15 @@ class IPv6AddressParser
 
                 // 6.2.2. If c is the EOF code point, validation error, return failure.
                 if (!$iter->valid()) {
+                    $context->logger?->warning('ipv6-unexpected-eof');
+
                     return false;
                 }
 
             // 6.7. Otherwise, if c is not the EOF code point, validation error, return failure.
             } elseif ($iter->valid()) {
+                $context->logger?->warning('ipv6-unexpected-delimiter');
+
                 return false;
             }
 
@@ -147,6 +162,8 @@ class IPv6AddressParser
 
         // Otherwise, if compress is null and pieceIndex is not 8, validation error, return failure.
         } elseif ($pieceIndex !== 8) {
+            $context->logger?->warning('ipv6-too-few-pieces');
+
             return false;
         }
 
@@ -160,6 +177,7 @@ class IPv6AddressParser
      * @return array{0: list<int>, 1: int}|false
      */
     private static function parseIPv4Address(
+        ParserContext $context,
         StringIteratorInterface $iter,
         array $address,
         int $pieceIndex
@@ -177,6 +195,8 @@ class IPv6AddressParser
                 // 6.5.5.2.2 Otherwise, validation error, return failure.
                 if ($iter->current() !== '.' || $numbersSeen >= 4) {
                     // Validation error.
+                    $context->logger?->warning('ipv4-in-ipv6-too-many-parts');
+
                     return false;
                 }
 
@@ -189,6 +209,8 @@ class IPv6AddressParser
             // 6.5.5.3. If c is not an ASCII digit, validation error, return failure.
             if (strpbrk($current, CodePoint::ASCII_DIGIT_MASK) !== $current) {
                 // Validation error.
+                $context->logger?->warning('ipv4-in-ipv6-unexpected-code-point');
+
                 return false;
             }
 
@@ -204,6 +226,8 @@ class IPv6AddressParser
                 // Otherwise, if ipv4Piece is 0, validation error, return failure.
                 } elseif ($ipv4Piece === 0) {
                     // Validation error.
+                    $context->logger?->warning('ipv4-in-ipv6-invalid-first-part');
+
                     return false;
 
                 // Otherwise, set ipv4Piece to ipv4Piece × 10 + number.
@@ -214,6 +238,8 @@ class IPv6AddressParser
                 // 6.5.5.4.3. If ipv4Piece is greater than 255, validation error, return failure.
                 if ($ipv4Piece > 255) {
                     // Validation error.
+                    $context->logger?->warning('ipv4-in-ipv6-part-out-of-range');
+
                     return false;
                 }
 
@@ -238,6 +264,8 @@ class IPv6AddressParser
         // 6.5.6. If numbersSeen is not 4, validation error, return failure.
         if ($numbersSeen !== 4) {
             // Validation error.
+            $context->logger?->warning('ipv4-in-ipv6-too-few-parts');
+
             return false;
         }
 

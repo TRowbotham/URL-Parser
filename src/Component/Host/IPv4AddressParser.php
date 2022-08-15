@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\Component\Host;
 
 use Rowbot\URL\Component\Host\Math\NumberFactory;
+use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\USVStringInterface;
 
@@ -18,7 +19,7 @@ use function strspn;
  */
 class IPv4AddressParser
 {
-    public static function parse(USVStringInterface $input): IPv4Address|false
+    public static function parse(ParserContext $context, USVStringInterface $input): IPv4Address|false
     {
         // 1. Let validationError be false.
         //
@@ -44,6 +45,8 @@ class IPv4AddressParser
 
         // 4. If parts’s size is greater than 4, validation error, return failure.
         if ($count > 4) {
+            $context->logger?->warning('ipv4-too-many-parts');
+
             return false;
         }
 
@@ -57,6 +60,8 @@ class IPv4AddressParser
 
             // 6.2. If result is failure, validation error, return failure.
             if ($result === false) {
+                $context->logger?->warning('ipv4-invalid-radix-digit');
+
                 return false;
             }
 
@@ -75,11 +80,14 @@ class IPv4AddressParser
         // And therefore error reporting resumes.
         if ($validationError) {
             // Validation error.
+            $context->logger?->notice('unexpected-non-decimal-number');
         }
 
         // 8. If any item in numbers is greater than 255, validation error.
         foreach ($numbers as $number) {
             if ($number->isGreaterThan(255)) {
+                $context->logger?->warning('ipv4-part-out-of-range');
+
                 break;
             }
         }
@@ -98,6 +106,8 @@ class IPv4AddressParser
         // 10. If the last item in numbers is greater than or equal to 256 ** (5 − numbers’s size), validation error,
         // return failure.
         if ($numbers[$size - 1]->isGreaterThanOrEqualTo($limit)) {
+            $context->logger?->warning('ipv4-part-out-of-range');
+
             return false;
         }
 

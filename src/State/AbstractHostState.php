@@ -37,6 +37,8 @@ abstract class AbstractHostState implements State
                 // 2.1. If buffer is the empty string, validation error, return failure.
                 if ($context->buffer->isEmpty()) {
                     // Validation error. Return failure.
+                    $context->logger?->warning('unexpected-port-without-host');
+
                     return self::RETURN_FAILURE;
                 }
 
@@ -47,7 +49,7 @@ abstract class AbstractHostState implements State
 
                 // 2.3. Let host be the result of host parsing buffer with url is not special.
                 $parser = new HostParser();
-                $host = $parser->parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
+                $host = $parser->parse($context, $context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
 
                 // 2.4. If host is failure, then return failure.
                 if ($host === false) {
@@ -80,6 +82,8 @@ abstract class AbstractHostState implements State
                 // 3.1. If url is special and buffer is the empty string, validation error, return failure.
                 if ($context->url->scheme->isSpecial() && $context->buffer->isEmpty()) {
                     // Validation error. Return failure.
+                    $context->logger?->warning('empty-host-special-scheme');
+
                     return self::RETURN_FAILURE;
                 }
 
@@ -91,12 +95,14 @@ abstract class AbstractHostState implements State
                     && ($context->url->includesCredentials() || $context->url->port !== null)
                 ) {
                     // Validation error.
+                    $context->logger?->notice('host-invalid');
+
                     return self::RETURN_BREAK;
                 }
 
                 // 3.3. Let host be the result of host parsing buffer with url is not special.
                 $parser = new HostParser();
-                $host = $parser->parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
+                $host = $parser->parse($context, $context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
 
                 // 3.4. If host is failure, then return failure.
                 if ($host === false) {

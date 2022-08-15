@@ -22,6 +22,8 @@ class SpecialAuthorityIgnoreSlashesState implements State
         }
 
         // 2. Otherwise, validation error.
+        $context->logger?->notice('missing-solidus-before-authority');
+
         return self::RETURN_OK;
     }
 }

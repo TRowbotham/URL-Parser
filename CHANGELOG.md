@@ -5,6 +5,7 @@
 ### Added
 
 - Performance improvements
+- Basic validation error logging
 
 ## Changed
 

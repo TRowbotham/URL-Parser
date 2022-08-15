@@ -32,6 +32,7 @@ class FileHostState implements State
                 // path state.
                 if (!$context->isStateOverridden() && $context->buffer->isWindowsDriveLetter()) {
                     // Validation error
+                    $context->logger?->notice('unexpected-windows-drive-letter-host');
                     $context->state = new PathState();
 
                     return self::RETURN_OK;
@@ -59,7 +60,7 @@ class FileHostState implements State
                 // 1.3. Otherwise, run these steps:
                 // 1.3.1. Let host be the result of host parsing buffer with url is not special.
                 $parser = new HostParser();
-                $host = $parser->parse($context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
+                $host = $parser->parse($context, $context->buffer->toUtf8String(), !$context->url->scheme->isSpecial());
 
                 // 1.3.2. If host is failure, then return failure.
                 if ($host === false) {

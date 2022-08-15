@@ -15,6 +15,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "brick/math": "^0.8.13 || ^0.9",
+        "psr/log": "^3.0",
         "rowbot/idna": "^0.1.5"
     },
     "require-dev": {

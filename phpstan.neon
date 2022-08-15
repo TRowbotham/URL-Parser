@@ -24,3 +24,7 @@ parameters:
             path: src/String/Utf8String.php
 
         # Note to self: You can't escape single quotes in neon. Another possible alternative would be to replace single quotes with \x27.
+        -
+            message: '#Instanceof between Psr\\Log\\LoggerInterface and Psr\\Log\\LoggerInterface will always evaluate to true\.#'
+            path: src/URL.php
+            count: 1

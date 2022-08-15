@@ -25,6 +25,7 @@ class FragmentState implements State
             // 1.1. If c is not a URL code point and not U+0025 (%), validation error.
             if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
                 // Validation error.
+                $context->logger?->notice('invalid-url-code-point');
             }
 
             // 1.2. If c is U+0025 (%) and remaining does not start with two ASCII hex digits, validation error.
@@ -38,6 +39,7 @@ class FragmentState implements State
             $buffer .= $codePoint;
             $context->iter->next();
             $codePoint = $context->iter->current();
+            $context->logger?->notice('unescaped-percent-sign');
         }
 
         // 1.3. UTF-8 percent-encode c using the fragment percent-encode set and append the result to url’s fragment.

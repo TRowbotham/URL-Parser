@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
+use Psr\Log\LoggerInterface;
 use Rowbot\URL\State\HostnameState;
 use Rowbot\URL\State\SchemeStartState;
 use Rowbot\URL\State\State;
@@ -41,6 +42,8 @@ final class ParserContext
      */
     public URLRecord $url;
 
+    public ?LoggerInterface $logger;
+
     private string $encoding;
 
     private ?State $stateOverride;
@@ -52,7 +55,8 @@ final class ParserContext
         URLRecord $url,
         ?URLRecord $base,
         ?State $stateOverride,
-        ?string $encodingOverride
+        ?string $encodingOverride,
+        ?LoggerInterface $logger
     ) {
         $this->input = $input;
         $this->iter = $iter;
@@ -62,6 +66,7 @@ final class ParserContext
         $this->encoding = EncodingHelper::getOutputEncoding($encodingOverride) ?? 'utf-8';
         $this->state = $stateOverride ?? new SchemeStartState();
         $this->stateOverride = $stateOverride;
+        $this->logger = $logger;
     }
 
     /**

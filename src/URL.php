@@ -6,6 +6,9 @@ namespace Rowbot\URL;
 
 use InvalidArgumentException;
 use JsonSerializable;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\QueryList;
 use Rowbot\URL\Exception\TypeError;
@@ -47,8 +50,9 @@ use const JSON_UNESCAPED_SLASHES;
  * @property \Rowbot\URL\URLSearchParams $searchParams
  * @property string                      $hash
  */
-class URL implements JsonSerializable, Stringable
+class URL implements JsonSerializable, LoggerAwareInterface, Stringable
 {
+    use LoggerAwareTrait;
     use PercentEncodeTrait;
 
     private URLSearchParams $queryObject;
@@ -56,12 +60,17 @@ class URL implements JsonSerializable, Stringable
     private URLRecord $url;
 
     /**
+     * @param array{logger?: \Psr\Log\LoggerInterface|null} $options
+     *
      * @throws \Rowbot\URL\Exception\TypeError
      */
-    public function __construct(string $url, string $base = null)
+    public function __construct(string $url, null|string $base = null, array $options = [])
     {
         $parsedBase = null;
-        $parser = new BasicURLParser();
+        $this->logger = isset($options['logger']) && $options['logger'] instanceof LoggerInterface
+            ? $options['logger']
+            : null;
+        $parser = new BasicURLParser($this->logger);
 
         if ($base !== null) {
             $parsedBase = $parser->parse(Utf8String::fromUnsafe($base));
@@ -233,7 +242,7 @@ class URL implements JsonSerializable, Stringable
         }
 
         $input = Utf8String::fromUnsafe($value);
-        $parser = new BasicURLParser();
+        $parser = new BasicURLParser($this->logger);
 
         if ($name === 'hash') {
             if ($input->isEmpty()) {

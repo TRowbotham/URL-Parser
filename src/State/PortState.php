@@ -46,6 +46,8 @@ class PortState implements State
                 // 2.1.2. If port is greater than 2 ^ 16 − 1, validation error, return failure.
                 if ($port > 2 ** 16 - 1) {
                     // Validation error. Return failure.
+                    $context->logger?->warning('port-out-of-range');
+
                     return self::RETURN_FAILURE;
                 }
 
@@ -73,6 +75,8 @@ class PortState implements State
         }
 
         // 3. Otherwise, validation error, return failure.
+        $context->logger?->warning('port-invalid');
+
         return self::RETURN_FAILURE;
     }
 }

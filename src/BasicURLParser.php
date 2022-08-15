@@ -4,12 +4,22 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Rowbot\URL\State\State;
 use Rowbot\URL\String\StringBuffer;
 use Rowbot\URL\String\USVStringInterface;
 
-class BasicURLParser
+class BasicURLParser implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
+    public function __construct(?LoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * The parser can parse both absolute and relative URLs. If a relative URL is given, a base URL must also be given
      * so that an absolute URL can be resolved. It can also parse individual parts of a URL when the default starting
@@ -50,6 +60,7 @@ class BasicURLParser
 
             if ($count !== 0) {
                 // Validation error.
+                $this->logger?->notice('unexpected-c0-control-or-space');
             }
         }
 
@@ -57,6 +68,7 @@ class BasicURLParser
 
         if ($count !== 0) {
             // Validation error.
+            $this->logger?->notice('unexpected-ascii-tab-or-newline');
         }
 
         $iter = $input->getIterator();
@@ -64,7 +76,16 @@ class BasicURLParser
         // length + imaginary eof character
         $length = $input->length() + 1;
         $buffer = new StringBuffer();
-        $context = new ParserContext($input, $iter, $buffer, $url, $base, $stateOverride, $encodingOverride);
+        $context = new ParserContext(
+            $input,
+            $iter,
+            $buffer,
+            $url,
+            $base,
+            $stateOverride,
+            $encodingOverride,
+            $this->logger
+        );
 
         do {
             $status = $context->state->handle($context, $iter->current());

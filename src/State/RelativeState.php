@@ -32,6 +32,7 @@ class RelativeState implements State
         // 4. Otherwise, if url is special and c is U+005C (\), validation error, set state to relative slash state.
         if ($context->url->scheme->isSpecial() && $codePoint === '\\') {
             // Validation error
+            $context->logger?->notice('unexpected-reverse-solidus');
             $context->state = new RelativeSlashState();
 
             return self::RETURN_OK;

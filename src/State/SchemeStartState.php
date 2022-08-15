@@ -37,6 +37,8 @@ class SchemeStartState implements State
         //
         // Note: This indication of failure is used exclusively by the Location object's protocol
         // attribute.
+        $context->logger?->warning('invalid-scheme-start');
+
         return self::RETURN_FAILURE;
     }
 }

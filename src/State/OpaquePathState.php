@@ -43,6 +43,7 @@ class OpaquePathState implements State
                 && $codePoint !== '%'
             ) {
                 // Validation error.
+                $context->logger?->notice('invalid-url-code-point');
             }
 
             // 3.2. If c is U+0025 (%) and remaining does not start with two ASCII hex digits, validation error.
@@ -51,6 +52,7 @@ class OpaquePathState implements State
                 && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
             ) {
                 // Validation error.
+                $context->logger?->notice('unescaped-percent-sign');
             }
 
             // 3.3. If c is not the EOF code point, UTF-8 percent-encode c using the C0 control percent-encode set and
