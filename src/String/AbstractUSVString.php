@@ -23,7 +23,7 @@ use const PHP_INT_MAX;
 
 abstract class AbstractUSVString implements Stringable, USVStringInterface
 {
-    protected $string;
+    protected string $string;
 
     public function __construct(string $string = '')
     {

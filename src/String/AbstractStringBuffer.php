@@ -15,7 +15,7 @@ use function mb_substr;
  */
 abstract class AbstractStringBuffer implements IteratorAggregate, Stringable
 {
-    protected $string;
+    protected string $string;
 
     public function __construct(string $string = '')
     {
