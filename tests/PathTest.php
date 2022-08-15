@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Rowbot\URL\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Rowbot\URL\Component\OpaquePath;
 use Rowbot\URL\Component\PathSegment;
+use Rowbot\URL\Component\Scheme;
+use Rowbot\URL\Exception\URLException;
 
 class PathTest extends TestCase
 {
@@ -34,5 +37,19 @@ class PathTest extends TestCase
     {
         $s = new PathSegment($input);
         self::assertSame($expected, $s->isNormalizedWindowsDriveLetter());
+    }
+
+    public function testOpaquePathThrowsOnShorten(): void
+    {
+        $path = new OpaquePath(new PathSegment());
+        $this->expectException(URLException::class);
+        $path->shorten(new Scheme('file'));
+    }
+
+    public function testOpaquePathThrowsOnPush(): void
+    {
+        $path = new OpaquePath(new PathSegment());
+        $this->expectException(URLException::class);
+        $path->push(new PathSegment());
     }
 }
