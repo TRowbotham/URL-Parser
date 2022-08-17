@@ -178,7 +178,7 @@ class IPv6AddressParser
             // 6.5.5.2. If numbersSeen is greater than 0, then:
             if ($numbersSeen > 0) {
                 // 6.5.5.2.2 Otherwise, validation error, return failure.
-                if ($iter->current() !== '.' && $numbersSeen >= 4) {
+                if ($iter->current() !== '.' || $numbersSeen >= 4) {
                     // Validation error.
                     return false;
                 }
