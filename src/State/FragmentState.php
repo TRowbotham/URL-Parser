@@ -34,12 +34,12 @@ class FragmentState implements State
                 && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
             ) {
                 // Validation error.
+                $context->logger?->notice('unescaped-percent-sign');
             }
 
             $buffer .= $codePoint;
             $context->iter->next();
             $codePoint = $context->iter->current();
-            $context->logger?->notice('unescaped-percent-sign');
         }
 
         // 1.3. UTF-8 percent-encode c using the fragment percent-encode set and append the result to url’s fragment.
