@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host;
 
+use Psr\Log\LogLevel;
 use Rowbot\URL\Component\Host\Math\NumberFactory;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
@@ -83,19 +84,21 @@ class IPv4AddressParser
             $context->logger?->notice('unexpected-non-decimal-number');
         }
 
+        $size = count($numbers);
+        $sizeMinusOne = $size - 1;
+
         // 8. If any item in numbers is greater than 255, validation error.
-        foreach ($numbers as $number) {
+        foreach ($numbers as $i => $number) {
             if ($number->isGreaterThan(255)) {
-                $context->logger?->warning('ipv4-part-out-of-range');
+                $level = $i < $sizeMinusOne ? LogLevel::WARNING : LogLevel::NOTICE;
+                $context->logger?->log($level, 'ipv4-part-out-of-range');
 
                 break;
             }
         }
 
-        $size = count($numbers);
-
         // 9. If any but the last item in numbers is greater than 255, then return failure.
-        for ($i = 0; $i < $size - 1; ++$i) {
+        for ($i = 0; $i < $sizeMinusOne; ++$i) {
             if ($numbers[$i]->isGreaterThan(255)) {
                 return false;
             }
@@ -105,7 +108,7 @@ class IPv4AddressParser
 
         // 10. If the last item in numbers is greater than or equal to 256 ** (5 − numbers’s size), validation error,
         // return failure.
-        if ($numbers[$size - 1]->isGreaterThanOrEqualTo($limit)) {
+        if ($numbers[$sizeMinusOne]->isGreaterThanOrEqualTo($limit)) {
             $context->logger?->warning('ipv4-part-out-of-range');
 
             return false;
