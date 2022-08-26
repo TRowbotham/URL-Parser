@@ -1,10 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Detection of windows drive letters
+
 ## [3.1.6] - 2022-08-16
 
 ### Changed
 
 - Forbid C0 control code points and U+007F DEL code point in non-opaque domain names per [whatwg/url#685](https://github.com/whatwg/url/pull/685)
+
+## Fixed
+
 - Fix parsing IPv4-mapped IPv6 addresses due to wrong logical condition
 
 ## [3.1.5] - 2022-01-10
