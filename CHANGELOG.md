@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [3.1.7] - 2022-08-26
+
 ### Fixed
 
 - Detection of windows drive letters
