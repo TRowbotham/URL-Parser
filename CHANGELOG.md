@@ -6,15 +6,46 @@
 
 - Performance improvements
 - Basic validation error logging
+- `\Rowbot\URL\URL` and `\Rowbot\URL\URLSearchParams` now implement `\Stringable`
+- `\Rowbot\URL\URLSearchParams` constructor now has a native typehint of `iterable|object|string`
 
-## Changed
+### Changed
 
 - Bump minimum PHP version to 8
 - Lone surrogate code points are no longer treated differently from other invalid code points
+- `\Rowbot\URL\Exception\UConverterException` has been renamed to `\Rowbot\URL\Exception\MbstringException`
+- Moved 32-bit tests to GitHub Actions from Appveyor
 
 ### Removed
 
-- Removed \Rowbot\URL\Exception\JsonException in favor of \JsonException
+- Removed `\Rowbot\URL\Exception\JsonException` in favor of `\JsonException`
+
+### Internals
+
+- Removed class `\Rowbot\URL\String\IDLString`
+- Added method `\Rowbot\URL\String\Utf8String::scrub()`
+- Added method `\Rowbot\URL\String\Utf8String::fromUnsafe()`
+- Moved method `\Rowbot\URL\String\AbstractUSVString::transcode()` to `\Rowbot\URL\String\Utf8String`
+- Removed method `\Rowbot\URL\String\Exception\RegexException::getNameFromLastCode()`
+- All objects with a `__toString()` method now implement `\Stringable`
+- Added native union typehints where possible
+- `\Rowbot\URL\Origin` is now an interface
+  - Added class `\Rowbot\URL\Component\TupleOrigin` which implements `\Rowbot\URL\Origin`
+  - Added class `\Rowbot\URL\Component\OpaqueOrigin` which implements `\Rowbot\URL\Origin`
+- `\Rowbot\URL\Component\PathListInterface` renamed to `\Rowbot\URL\PathInterface`
+  - Added class `\Rowbot\URL\Component\OpaquePath` which implements `\Rowbot\URL\PathInterface`
+- `\Rowbot\URL\Path` was renamed to `\Rowbot\URL\PathSegment`
+- `\Rowbot\URL\State\CannotBeABaseUrlPathState` was renamed to `\Rowbot\URL\State\OpaquePathState`
+  - Removed property `\Rowbot\URL\URLRecord::$cannotBeABaseUrl`
+- Adopted the specs new percent encoding model
+  - Removed const `\Rowbot\URL\String\CodePoint::C0_CONTROL_PERCENT_ENCODE_SET`
+  - Removed const `\Rowbot\URL\String\CodePoint::FRAGMENT_PERCENT_ENCODE_SET`
+  - Removed const `\Rowbot\URL\String\CodePoint::PATH_PERCENT_ENCODE_SET`
+  - Removed const `\Rowbot\URL\String\CodePoint::USERINFO_PERCENT_ENCODE_SET`
+  - Removed method `\Rowbot\URL\String\CodePoint::utf8PercentEncode()`
+  - Added class `\Rowbot\URL\String\EncodeSet`
+  - Added trait `\Rowbot\URL\String\PercentEncodeTrait`
+  - `\Rowbot\URL\Component\Host` methods are no longer static
 
 ## [3.1.7] - 2022-08-26
 
