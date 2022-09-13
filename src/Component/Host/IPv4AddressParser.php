@@ -22,20 +22,14 @@ class IPv4AddressParser
 {
     public static function parse(ParserContext $context, USVStringInterface $input): IPv4Address|false
     {
-        // 1. Let validationError be false.
-        //
-        // This uses validationError to track validation errors to avoid reporting them before we are confident we want
-        // to parse input as an IPv4 address as the host parser almost always invokes the IPv4 parser.
-        $validationError = false;
-
         // 2. Let parts be the result of strictly splitting input on U+002E (.).
         $parts = $input->split('.');
         $count = $parts->count();
 
         // 3. If the last item in parts is the empty string, then:
         if ($parts->last()->isEmpty()) {
-            // 3.1. Set validationError to true.
-            $validationError = true;
+            // 3.1. Validation error.
+            $context->logger?->notice('ipv4-last-part-empty');
 
             // 3.2. If parts’s size is greater than 1, then remove the last item from parts.
             if ($count > 1) {
@@ -68,20 +62,12 @@ class IPv4AddressParser
 
             // 6.3. If result[1] is true, then set validationError to true.
             if ($result[1] === true) {
-                $validationError = $result[1];
+                // Validation error.
+                $context->logger?->notice('unexpected-non-decimal-number');
             }
 
             // 6.4. Append result[0] to numbers.
             $numbers[] = $result[0];
-        }
-
-        // 7. If validationError is true, validation error.
-        //
-        // At this point each part was parsed into a number and input will be treated as an IPv4 address (or failure).
-        // And therefore error reporting resumes.
-        if ($validationError) {
-            // Validation error.
-            $context->logger?->notice('unexpected-non-decimal-number');
         }
 
         $size = count($numbers);
