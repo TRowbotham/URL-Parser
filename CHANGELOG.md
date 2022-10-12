@@ -46,6 +46,7 @@
   - Added class `\Rowbot\URL\String\EncodeSet`
   - Added trait `\Rowbot\URL\String\PercentEncodeTrait`
   - `\Rowbot\URL\Component\Host` methods are no longer static
+- `\Rowbot\URL\String\StringListInterface` extends `\IteratorAggregate` instead of `\Iterator`
 
 ## [3.1.7] - 2022-08-26
 

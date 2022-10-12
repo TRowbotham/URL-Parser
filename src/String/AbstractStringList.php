@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
+use Generator;
 use Rowbot\URL\String\Exception\UndefinedIndexException;
 
 use function array_pop;
@@ -15,11 +16,6 @@ use function count;
 abstract class AbstractStringList
 {
     /**
-     * @var 0|positive-int
-     */
-    protected int $cursor;
-
-    /**
      * @var array<int, T>
      */
     protected array $list;
@@ -29,7 +25,6 @@ abstract class AbstractStringList
      */
     public function __construct(array $list = [])
     {
-        $this->cursor = 0;
         $this->list = $list;
     }
 
@@ -55,11 +50,6 @@ abstract class AbstractStringList
         return $this->list === [];
     }
 
-    public function key(): int
-    {
-        return $this->cursor;
-    }
-
     /**
      * @return T
      */
@@ -72,11 +62,6 @@ abstract class AbstractStringList
         }
 
         return $this->list[$last];
-    }
-
-    public function next(): void
-    {
-        ++$this->cursor;
     }
 
     /**
@@ -95,14 +80,14 @@ abstract class AbstractStringList
         $this->list[] = $string;
     }
 
-    public function rewind(): void
+    /**
+     * @return \Generator<int, T>
+     */
+    public function getIterator(): Generator
     {
-        $this->cursor = 0;
-    }
-
-    public function valid(): bool
-    {
-        return isset($this->list[$this->cursor]);
+        foreach ($this->list as $string) {
+            yield $string;
+        }
     }
 
     public function __clone()

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Rowbot\URL\String;
 
 use Countable;
-use Iterator;
+use IteratorAggregate;
 
 /**
- * @extends \Iterator<int, \Rowbot\URL\String\USVStringInterface>
+ * @extends \IteratorAggregate<int, \Rowbot\URL\String\USVStringInterface>
  */
-interface StringListInterface extends Countable, Iterator
+interface StringListInterface extends Countable, IteratorAggregate
 {
     /**
      * @return \Rowbot\URL\String\USVStringInterface
