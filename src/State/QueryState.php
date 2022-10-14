@@ -67,7 +67,10 @@ class QueryState implements State
             // 3.1. If c is not a URL code point and not U+0025 (%), validation error.
             if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
                 // Validation error.
-                $context->logger?->notice('invalid-url-code-point');
+                $context->logger?->notice('invalid-url-code-point', [
+                    'input'  => (string) $context->input,
+                    'column' => $context->iter->key() + 1,
+                ]);
             }
 
             // 3.2. If c is U+0025 (%) and remaining does not start with two ASCII hex digits, validation error.
@@ -76,7 +79,10 @@ class QueryState implements State
                 && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
             ) {
                 // Validation error.
-                $context->logger?->notice('unescaped-percent-sign');
+                $context->logger?->notice('unescaped-percent-sign', [
+                    'input'  => (string) $context->input,
+                    'column' => $context->iter->key() + 1,
+                ]);
             }
 
             // 3.3. Append c to buffer.

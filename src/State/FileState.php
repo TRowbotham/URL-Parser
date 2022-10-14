@@ -28,7 +28,10 @@ class FileState implements State
             // 3.1. If c is U+005C (\), validation error.
             if ($codePoint === '\\') {
                 // Validation error
-                $context->logger?->notice('unexpected-reverse-solidus');
+                $context->logger?->notice('unexpected-reverse-solidus', [
+                    'input'  => (string) $context->input,
+                    'column' => $context->iter->key() + 1,
+                ]);
             }
 
             // 3.2. Set state to file slash state.
@@ -79,7 +82,10 @@ class FileState implements State
             // 4.4.3. Otherwise:
             } else {
                 // 4.4.3.1 Validation error.
-                $context->logger?->notice('unexpected-windows-drive-letter');
+                $context->logger?->notice('unexpected-windows-drive-letter', [
+                    'input'        => (string) $context->input,
+                    'column_range' => [$context->iter->key() + 1, $context->iter->key() + 3],
+                ]);
 
                 // 4.4.3.2. Set url’s path to an empty list.
                 $context->url->path = new PathList();

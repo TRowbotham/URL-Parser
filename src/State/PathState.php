@@ -59,7 +59,10 @@ class PathState implements State
                 // 1.1. If url is special and c is U+005C (\), validation error.
                 if ($urlIsSpecial && $codePoint === '\\') {
                     // Validation error.
-                    $context->logger?->notice('unexpected-reverse-solidus');
+                    $context->logger?->notice('unexpected-reverse-solidus', [
+                        'input'  => (string) $context->input,
+                        'column' => $context->iter->key() + 1,
+                    ]);
                 }
 
                 $stringBuffer = (string) $context->buffer;
@@ -122,7 +125,10 @@ class PathState implements State
             // 2.1. If c is not a URL code point and not U+0025 (%), validation error.
             if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
                 // Validation error
-                $context->logger?->notice('invalid-url-code-point');
+                $context->logger?->notice('invalid-url-code-point', [
+                    'input'  => (string) $context->input,
+                    'column' => $context->iter->key() + 1,
+                ]);
             }
 
             // 2.2. If c is U+0025 (%) and remaining does not start with two ASCII hex digits, validation error.
@@ -131,7 +137,10 @@ class PathState implements State
                 && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
             ) {
                 // Validation error
-                $context->logger?->notice('unescaped-percent-sign');
+                $context->logger?->notice('unescaped-percent-sign', [
+                    'input'  => (string) $context->input,
+                    'column' => $context->iter->key() + 1,
+                ]);
             }
 
             // 2.3. UTF-8 percent-encode c using the path percent-encode set and append the result to buffer.

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host;
 
+use ReflectionClass;
+use ReflectionClassConstant;
 use Rowbot\Idna\Idna;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
@@ -11,8 +13,15 @@ use Rowbot\URL\String\EncodeSet;
 use Rowbot\URL\String\PercentEncodeTrait;
 use Rowbot\URL\String\USVStringInterface;
 
+use function array_filter;
 use function assert;
+use function mb_strcut;
+use function mb_strlen;
 use function rawurldecode;
+use function str_starts_with;
+
+use const ARRAY_FILTER_USE_KEY;
+use const PREG_OFFSET_CAPTURE;
 
 /**
  * @see https://url.spec.whatwg.org/#concept-host-parser
@@ -43,7 +52,10 @@ class HostParser
         if ($input->startsWith('[')) {
             if (!$input->endsWith(']')) {
                 // Validation error.
-                $context->logger?->warning('unclosed-ipv6-address');
+                $context->logger?->warning('unclosed-ipv6-address', [
+                    'input'  => (string) $context->input,
+                    'column' => $context->iter->key() + 2,
+                ]);
 
                 return false;
             }
@@ -60,15 +72,15 @@ class HostParser
         $asciiDomain = $this->domainToAscii($context, $domain);
 
         if ($asciiDomain === false) {
-            // Validation error.
-            $context->logger?->warning('domain-to-ascii-failure');
-
             return false;
         }
 
-        if ($asciiDomain->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u')) {
+        if ($asciiDomain->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u', $matches, PREG_OFFSET_CAPTURE)) {
             // Validation error.
-            $context->logger?->warning('domain-forbidden-code-point');
+            $context->logger?->warning('domain-forbidden-code-point', [
+                'input'  => (string) $input,
+                'column' => mb_strlen(mb_strcut((string) $input, 0, $matches[0][1], 'utf-8'), 'utf-8') + 1,
+            ]);
 
             return false;
         }
@@ -97,14 +109,22 @@ class HostParser
 
         if ($convertedDomain === '') {
             // Validation error.
-            $context->logger?->warning('domain-to-ascii-empty-domain-failure');
+            $context->logger?->warning('domain-to-ascii-empty-domain-failure', [
+                'input'        => $domain,
+                'column_range' => [1, mb_strlen($domain, 'utf-8')],
+                'idn_errors'   => $this->enumerateIdnaErrors($result->getErrors()),
+            ]);
 
             return false;
         }
 
         if ($result->hasErrors()) {
             // Validation error.
-            $context->logger?->warning('domain-to-ascii-failure');
+            $context->logger?->warning('domain-to-ascii-failure', [
+                'input'        => $domain,
+                'column_range' => [1, mb_strlen($domain, 'utf-8')],
+                'idn_errors'   => $this->enumerateIdnaErrors($result->getErrors()),
+            ]);
 
             return false;
         }
@@ -119,9 +139,12 @@ class HostParser
      */
     private function parseOpaqueHost(ParserContext $context, USVStringInterface $input): HostInterface|false
     {
-        if ($input->matches('/[' . self::FORBIDDEN_HOST_CODEPOINTS . ']/u')) {
+        if ($input->matches('/[' . self::FORBIDDEN_HOST_CODEPOINTS . ']/u', $matches, PREG_OFFSET_CAPTURE)) {
             // Validation error.
-            $context->logger?->warning('opaque-host-forbidden-code-point');
+            $context->logger?->warning('opaque-host-forbidden-code-point', [
+                'input'  => (string) $input,
+                'column' => mb_strlen(mb_strcut((string) $input, 0, $matches[0][1], 'utf-8'), 'utf-8') + 1,
+            ]);
 
             return false;
         }
@@ -129,17 +152,45 @@ class HostParser
         foreach ($input as $i => $codePoint) {
             if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
                 // Validation error.
-                $context->logger?->notice('invalid-url-code-point');
+                $context->logger?->notice('invalid-url-code-point', [
+                    'input'  => (string) $input,
+                    'column' => $i,
+                ]);
             }
 
             if ($codePoint === '%' && !$input->substr($i + 1)->startsWithTwoAsciiHexDigits()) {
                 // Validation error.
-                $context->logger?->notice('unescaped-percent-sign');
+                $context->logger?->notice('unescaped-percent-sign', [
+                    'input'  => (string) $input,
+                    'column' => $i,
+                ]);
             }
         }
 
         $output = $this->percentEncodeAfterEncoding('utf-8', (string) $input, EncodeSet::C0_CONTROL);
 
         return new StringHost($output);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function enumerateIdnaErrors(int $bitmask): array
+    {
+        $reflection = new ReflectionClass(Idna::class);
+        $errorConstants = array_filter(
+            $reflection->getConstants(ReflectionClassConstant::IS_PUBLIC),
+            static fn (string $name): bool => str_starts_with($name, 'ERROR_'),
+            ARRAY_FILTER_USE_KEY
+        );
+        $errors = [];
+
+        foreach ($errorConstants as $name => $value) {
+            if (($value & $bitmask) !== 0) {
+                $errors[] = $name;
+            }
+        }
+
+        return $errors;
     }
 }

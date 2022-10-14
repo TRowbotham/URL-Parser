@@ -32,7 +32,10 @@ class AuthorityState implements State
             // 1. If c is U+0040 (@), then:
             if ($codePoint === '@') {
                 // 1.1. Validation error.
-                $context->logger?->notice('unexpected-commercial-at');
+                $context->logger?->notice('unexpected-commercial-at', [
+                    'input'  => (string) $context->input,
+                    'column' => $context->iter->key() + 1,
+                ]);
 
                 // 1.2. If atSignSeen is true, then prepend "%40" to buffer.
                 if ($this->atTokenSeen) {
@@ -89,7 +92,10 @@ class AuthorityState implements State
                 // 2.1. If atSignSeen is true and buffer is the empty string, validation error, return failure.
                 if ($this->atTokenSeen && $context->buffer->isEmpty()) {
                     // Validation error.
-                    $context->logger?->warning('unexpected-credentials-without-host');
+                    $context->logger?->warning('unexpected-credentials-without-host', [
+                        'input'  => (string) $context->input,
+                        'column' => $context->iter->key() + 1,
+                    ]);
 
                     return self::RETURN_FAILURE;
                 }

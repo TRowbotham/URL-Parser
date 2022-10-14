@@ -24,7 +24,10 @@ class SpecialRelativeOrAuthorityState implements State
 
         // 2. Otherwise, validation error, set state to relative state and decrease pointer by 1.
         $context->state = new RelativeState();
-        $context->logger?->notice('relative-url-missing-beginning-solidus');
+        $context->logger?->notice('relative-url-missing-beginning-solidus', [
+            'input'  => (string) $context->input,
+            'column' => $context->iter->key() + 1,
+        ]);
         $context->iter->prev();
 
         return self::RETURN_OK;

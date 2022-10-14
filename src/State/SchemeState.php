@@ -86,7 +86,10 @@ class SchemeState implements State
                 // 2.5.1. If remaining does not start with "//", validation error.
                 if ($context->iter->peek(2) !== '//') {
                     // Validation error.
-                    $context->logger?->notice('file-scheme-missing-following-solidus');
+                    $context->logger?->notice('file-scheme-missing-following-solidus', [
+                        'input'  => (string) $context->input,
+                        'column' => $context->iter->key() + 2,
+                    ]);
                 }
 
                 // 2.5.2. Set state to file state.
@@ -141,7 +144,10 @@ class SchemeState implements State
         // Note: This indication of failure is used exclusively by the Location object's protocol
         // attribute. Furthermore, the non-failure termination earlier in this state is an
         // intentional difference for defining that attribute.
-        $context->logger?->warning('invalid-scheme');
+        $context->logger?->warning('invalid-scheme', [
+            'input'  => (string) $context->input,
+            'column_range' => [1, $context->buffer->length()],
+        ]);
 
         return self::RETURN_FAILURE;
     }

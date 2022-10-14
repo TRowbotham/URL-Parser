@@ -22,7 +22,10 @@ class SpecialAuthorityIgnoreSlashesState implements State
         }
 
         // 2. Otherwise, validation error.
-        $context->logger?->notice('missing-solidus-before-authority');
+        $context->logger?->notice('missing-solidus-before-authority', [
+            'input'  => (string) $context->input,
+            'column' => $context->iter->key() + 1,
+        ]);
 
         return self::RETURN_OK;
     }

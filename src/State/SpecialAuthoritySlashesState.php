@@ -25,7 +25,10 @@ class SpecialAuthoritySlashesState implements State
         // 2. Otherwise, validation error, set state to special authority ignore slashes state and decrease pointer
         // by 1.
         $context->state = new SpecialAuthorityIgnoreSlashesState();
-        $context->logger?->notice('missing-solidus-before-authority');
+        $context->logger?->notice('missing-solidus-before-authority', [
+            'input'  => (string) $context->input,
+            'column' => $context->iter->key() + 1,
+        ]);
         $context->iter->prev();
 
         return self::RETURN_OK;

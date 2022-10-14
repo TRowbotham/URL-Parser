@@ -11,6 +11,12 @@ use Rowbot\URL\State\State;
 use Rowbot\URL\String\StringBuffer;
 use Rowbot\URL\String\USVStringInterface;
 
+use function mb_strlen;
+use function strlen;
+use function substr;
+
+use const PREG_OFFSET_CAPTURE;
+
 class BasicURLParser implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
@@ -56,19 +62,40 @@ class BasicURLParser implements LoggerAwareInterface
 
         if ($url === null) {
             $url = new URLRecord();
+            $originalInput = $input;
             $input = $input->replaceRegex('/^[\x00-\x20]+|[\x00-\x20]+$/u', '', -1, $count);
 
             if ($count !== 0) {
                 // Validation error.
-                $this->logger?->notice('unexpected-c0-control-or-space');
+                $this->logger?->notice('unexpected-c0-control-or-space', [
+                    'input' => (string) $originalInput,
+                    'column_range' => (static function () use ($originalInput): array {
+                        $originalInput->matches('/^[\x00-\x20]+|[\x00-\x20]+$/u', $matches, PREG_OFFSET_CAPTURE);
+
+                        if ($matches[0][1] === 0) {
+                            return [1, strlen($matches[0][0])];
+                        }
+
+                        return [$originalInput->length() - strlen($matches[0][0]) + 1, $originalInput->length()];
+                    })(),
+                ]);
             }
         }
 
+        $originalInput = $input;
         $input = $input->replaceRegex('/[\x09\x0A\x0D]+/u', '', -1, $count);
 
         if ($count !== 0) {
             // Validation error.
-            $this->logger?->notice('unexpected-ascii-tab-or-newline');
+            $this->logger?->notice('unexpected-ascii-tab-or-newline', [
+                'input' => (string) $originalInput,
+                'column_range' => (static function () use ($originalInput): array {
+                    $originalInput->matches('/[\x09\x0A\x0D]+/u', $matches, PREG_OFFSET_CAPTURE);
+                    $start = mb_strlen(substr((string) $originalInput, 0, $matches[0][1]), 'utf-8');
+
+                    return [$start + 1, $start + strlen($matches[0][0])];
+                })(),
+            ]);
         }
 
         $iter = $input->getIterator();

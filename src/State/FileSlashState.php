@@ -18,7 +18,10 @@ class FileSlashState implements State
             // 1.2. If c is U+005C (\), validation error.
             if ($codePoint === '\\') {
                 // Validation error.
-                $context->logger?->notice('unexpected-reverse-solidus');
+                $context->logger?->notice('unexpected-reverse-solidus', [
+                    'input'  => (string) $context->input,
+                    'column' => $context->iter->key() + 1,
+                ]);
             }
 
             // 1.2. Set state to file host state.

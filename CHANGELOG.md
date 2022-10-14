@@ -5,7 +5,7 @@
 ### Added
 
 - Performance improvements
-- Basic validation error logging
+- Validation error logging
 - `\Rowbot\URL\URL` and `\Rowbot\URL\URLSearchParams` now implement `\Stringable`
 - `\Rowbot\URL\URLSearchParams` constructor now has a native typehint of `iterable|object|string`
 

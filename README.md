@@ -30,7 +30,10 @@ The URL object is the primary object for working with a URL.
 
 ### The URL constructor
 
-`URL(self|string $url[, self|string $base])`
+`URL(self|string $url[, self|string $base = null, array $options = []])`
+
+The `$options` argument accepts an array with a key `logger` whose value is an object implementing
+`\Psr\Log\LoggerInterface`. See [Logging](#logging) for more information.
 
 #### URL constructor throws
 
@@ -222,3 +225,18 @@ Returns the serialization of the list of name-value pairs.
 #### `string URLSearchParams::__toString()`
 
 See [URLSearchParams::toString()](#string-urlsearchparamstostring)
+
+## Logging
+
+The given logger logs validation errors. Entries with a level of `warning` are fatal errors that cause the parser to
+fail. Entries with a level of `notice` are not fatal. All validation errors have an `input` key and either a `column`
+or `column_range` offset key. Column offsets start at 1.
+
+### Logging context
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `input` | `string` | The input string that the parser is operating on at the time of error. |
+| `column` | `positive-int` | The column offset of the error. |
+| `column_range` | `array{0: positive-int, 1: positive-int}` | Index 0 is the starting column offset, and index 1 is the end column offset. The range is inclusive. |
+| `idn_errors` | `list<string>` | A list of strings that represent IDN error constant names. |

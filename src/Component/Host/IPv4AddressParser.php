@@ -8,9 +8,12 @@ use Psr\Log\LogLevel;
 use Rowbot\URL\Component\Host\Math\NumberFactory;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
+use Rowbot\URL\String\StringListInterface;
 use Rowbot\URL\String\USVStringInterface;
 
 use function array_pop;
+use function array_reduce;
+use function array_slice;
 use function count;
 use function strlen;
 use function strspn;
@@ -29,7 +32,14 @@ class IPv4AddressParser
         // 3. If the last item in parts is the empty string, then:
         if ($parts->last()->isEmpty()) {
             // 3.1. Validation error.
-            $context->logger?->notice('ipv4-last-part-empty');
+            $context->logger?->notice('ipv4-last-part-empty', [
+                'input'  => (string) $input,
+                'column' => array_reduce(
+                    array_slice([...$parts], 0, $count - 1),
+                    static fn (int $carry, USVStringInterface $part): int => $carry += $part->length(),
+                    0
+                ),
+            ]);
 
             // 3.2. If parts’s size is greater than 1, then remove the last item from parts.
             if ($count > 1) {
@@ -40,7 +50,14 @@ class IPv4AddressParser
 
         // 4. If parts’s size is greater than 4, validation error, return failure.
         if ($count > 4) {
-            $context->logger?->warning('ipv4-too-many-parts');
+            $context->logger?->warning('ipv4-too-many-parts', [
+                'input'  => (string) $input,
+                'column' => array_reduce(
+                    array_slice([...$parts], 0, 4),
+                    static fn (int $carry, USVStringInterface $part): int => $carry += $part->length(),
+                    4
+                ),
+            ]);
 
             return false;
         }
@@ -49,13 +66,16 @@ class IPv4AddressParser
         $numbers = [];
 
         // 6. For each part of parts:
-        foreach ($parts as $part) {
+        foreach ($parts as $i => $part) {
             // 6.1. Let result be the result of parsing part.
             $result = self::parseIPv4Number($part);
 
             // 6.2. If result is failure, validation error, return failure.
             if ($result === false) {
-                $context->logger?->warning('ipv4-invalid-radix-digit');
+                $context->logger?->warning('ipv4-invalid-radix-digit', [
+                    'input'        => (string) $input,
+                    'column_range' => self::getColumnRange($i, $parts),
+                ]);
 
                 return false;
             }
@@ -63,7 +83,10 @@ class IPv4AddressParser
             // 6.3. If result[1] is true, then set validationError to true.
             if ($result[1] === true) {
                 // Validation error.
-                $context->logger?->notice('unexpected-non-decimal-number');
+                $context->logger?->notice('unexpected-non-decimal-number', [
+                    'input'        => (string) $input,
+                    'column_range' => self::getColumnRange($i, $parts),
+                ]);
             }
 
             // 6.4. Append result[0] to numbers.
@@ -72,22 +95,30 @@ class IPv4AddressParser
 
         $size = count($numbers);
         $sizeMinusOne = $size - 1;
+        $partTooLarge = false;
 
         // 8. If any item in numbers is greater than 255, validation error.
         foreach ($numbers as $i => $number) {
             if ($number->isGreaterThan(255)) {
-                $level = $i < $sizeMinusOne ? LogLevel::WARNING : LogLevel::NOTICE;
-                $context->logger?->log($level, 'ipv4-part-out-of-range');
+                $level = LogLevel::NOTICE;
+
+                if ($i < $sizeMinusOne) {
+                    $partTooLarge = true;
+                    $level = LogLevel::WARNING;
+                }
+
+                $context->logger?->log($level, 'ipv4-part-out-of-range', [
+                    'input'        => (string) $input,
+                    'column_range' => self::getColumnRange($i, $parts),
+                ]);
 
                 break;
             }
         }
 
         // 9. If any but the last item in numbers is greater than 255, then return failure.
-        for ($i = 0; $i < $sizeMinusOne; ++$i) {
-            if ($numbers[$i]->isGreaterThan(255)) {
-                return false;
-            }
+        if ($partTooLarge) {
+            return false;
         }
 
         $limit = NumberFactory::createNumber(256, 10)->pow(5 - $size);
@@ -95,7 +126,10 @@ class IPv4AddressParser
         // 10. If the last item in numbers is greater than or equal to 256 ** (5 − numbers’s size), validation error,
         // return failure.
         if ($numbers[$sizeMinusOne]->isGreaterThanOrEqualTo($limit)) {
-            $context->logger?->warning('ipv4-part-out-of-range');
+            $context->logger?->warning('ipv4-part-out-of-range', [
+                'input'        => (string) $input,
+                'column_range' => [$input->length() - $parts->last()->length() + 1, $input->length()],
+            ]);
 
             return false;
         }
@@ -218,5 +252,20 @@ class IPv4AddressParser
         // hex digits for digits with values 0 through 15.
         // 9. Return (output, validationError).
         return [NumberFactory::createNumber($s, $radix), $validationError];
+    }
+
+    /**
+     * @return array{0: int, 1: int}
+     */
+    private static function getColumnRange(int $i, StringListInterface $parts): array
+    {
+        $partsArray = array_slice([...$parts], 0, $i + 1);
+        $offset = array_reduce(
+            $partsArray,
+            static fn (int $carry, USVStringInterface $part): int => $carry += $part->length(),
+            $i
+        );
+
+        return [$offset - $partsArray[$i]->length() + 1, $offset];
     }
 }
