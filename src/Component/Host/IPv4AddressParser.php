@@ -36,7 +36,7 @@ class IPv4AddressParser
                 'input'  => (string) $input,
                 'column' => array_reduce(
                     array_slice([...$parts], 0, $count - 1),
-                    static fn (int $carry, USVStringInterface $part): int => $carry += $part->length(),
+                    static fn (int $carry, USVStringInterface $part): int => $carry + $part->length(),
                     0
                 ),
             ]);
@@ -54,7 +54,7 @@ class IPv4AddressParser
                 'input'  => (string) $input,
                 'column' => array_reduce(
                     array_slice([...$parts], 0, 4),
-                    static fn (int $carry, USVStringInterface $part): int => $carry += $part->length(),
+                    static fn (int $carry, USVStringInterface $part): int => $carry + $part->length(),
                     4
                 ),
             ]);
@@ -262,7 +262,7 @@ class IPv4AddressParser
         $partsArray = array_slice([...$parts], 0, $i + 1);
         $offset = array_reduce(
             $partsArray,
-            static fn (int $carry, USVStringInterface $part): int => $carry += $part->length(),
+            static fn (int $carry, USVStringInterface $part): int => $carry + $part->length(),
             $i
         );
 
