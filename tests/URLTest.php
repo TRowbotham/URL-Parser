@@ -6,8 +6,11 @@ namespace Rowbot\URL\Tests;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerTrait;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
+use stdClass;
 
 class URLTest extends TestCase
 {
@@ -71,5 +74,32 @@ class URLTest extends TestCase
         $url = new URL('http://example.com');
         $url->href = 'ssh://example.org';
         self::assertSame('ssh://example.org', $url->href);
+    }
+
+    public function testValidLoggerDoesNotThrow(): void
+    {
+        $url = 'https://example.com';
+        self::assertInstanceOf(URL::class, new URL($url, null, []));
+        self::assertInstanceOf(URL::class, new URL($url, null, ['logger' => null]));
+        self::assertInstanceOf(URL::class, new URL($url, null, ['logger' => new ValidationErrorLogger()]));
+    }
+
+    /**
+     * @dataProvider invalidLoggerProvider
+     */
+    public function testInvalidLoggerThrows($value): void
+    {
+        $this->expectException(TypeError::class);
+        new URL('https://example.com', null, ['logger' => $value]);
+    }
+
+    public function invalidLoggerProvider(): array
+    {
+        return [
+            ['foo'],
+            [true],
+            [2],
+            [new stdClass()],
+        ];
     }
 }

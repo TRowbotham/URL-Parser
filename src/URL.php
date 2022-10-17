@@ -67,9 +67,19 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
     public function __construct(string $url, null|string $base = null, array $options = [])
     {
         $parsedBase = null;
-        $this->logger = isset($options['logger']) && $options['logger'] instanceof LoggerInterface
-            ? $options['logger']
-            : null;
+        $this->logger = null;
+
+        if (isset($options['logger'])) {
+            if (!$options['logger'] instanceof LoggerInterface) {
+                throw new TypeError(sprintf(
+                    'The passed logger must be null or an instance of %s',
+                    LoggerInterface::class
+                ));
+            }
+
+            $this->logger = $options['logger'];
+        }
+
         $parser = new BasicURLParser($this->logger);
 
         if ($base !== null) {
