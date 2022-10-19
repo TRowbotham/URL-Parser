@@ -46,7 +46,7 @@ class URLSearchParams implements Iterator, Stringable
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
-     * @param self|iterable<int|string, iterable<int|string, scalar|\Stringable>&\Countable>|object|string $init (optional)
+     * @param iterable<int|string, iterable<int|string, scalar|\Stringable>&\Countable>|object|string|\Stringable $init (optional)
      */
     public function __construct(array|object|string $init = '')
     {
