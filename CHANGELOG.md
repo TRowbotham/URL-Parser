@@ -15,6 +15,7 @@
 - Lone surrogate code points are no longer treated differently from other invalid code points
 - `\Rowbot\URL\Exception\UConverterException` has been renamed to `\Rowbot\URL\Exception\MbstringException`
 - Moved 32-bit tests to GitHub Actions from Appveyor
+- `\Rowbot\URL\URL`'s $url and $base parameters now also accept `\Stringable`
 
 ### Removed
 

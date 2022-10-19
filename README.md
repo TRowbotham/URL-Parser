@@ -30,7 +30,7 @@ The URL object is the primary object for working with a URL.
 
 ### The URL constructor
 
-`URL(self|string $url[, self|string $base = null, array $options = []])`
+`URL(string|\Stringable $url[, null|string|\Stringable $base = null, array $options = []])`
 
 The `$options` argument accepts an array with a key `logger` whose value is an object implementing
 `\Psr\Log\LoggerInterface`. See [Logging](#logging) for more information.

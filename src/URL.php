@@ -64,7 +64,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
      *
      * @throws \Rowbot\URL\Exception\TypeError
      */
-    public function __construct(string $url, null|string $base = null, array $options = [])
+    public function __construct(string|Stringable $url, null|string|Stringable $base = null, array $options = [])
     {
         $parsedBase = null;
         $this->logger = null;
@@ -83,17 +83,17 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
         $parser = new BasicURLParser($this->logger);
 
         if ($base !== null) {
-            $parsedBase = $parser->parse(Utf8String::fromUnsafe($base));
+            $parsedBase = $parser->parse(Utf8String::fromUnsafe((string) $base));
 
             if ($parsedBase === false) {
-                throw new TypeError(sprintf('"%s" is not a valid base URL.', $base));
+                throw new TypeError(sprintf('"%s" is not a valid base URL.', (string) $base));
             }
         }
 
-        $parsedURL = $parser->parse(Utf8String::fromUnsafe($url), $parsedBase);
+        $parsedURL = $parser->parse(Utf8String::fromUnsafe((string) $url), $parsedBase);
 
         if ($parsedURL === false) {
-            throw new TypeError(sprintf('"%s" is not a valid URL.', $url));
+            throw new TypeError(sprintf('"%s" is not a valid URL.', (string) $url));
         }
 
         $this->url = $parsedURL;

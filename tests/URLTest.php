@@ -6,11 +6,11 @@ namespace Rowbot\URL\Tests;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LoggerTrait;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
 use stdClass;
+use Stringable;
+use TypeError as NativeTypeError;
 
 class URLTest extends TestCase
 {
@@ -100,6 +100,42 @@ class URLTest extends TestCase
             [true],
             [2],
             [new stdClass()],
+        ];
+    }
+
+    public function testURLConstructorAcceptsStringable(): void
+    {
+        $foo = new class implements Stringable {
+            public function __toString(): string
+            {
+                return 'https://foo.com';
+            }
+        };
+        $bar = new class implements Stringable {
+            public function __toString(): string
+            {
+                return 'https://bar.com';
+            }
+        };
+
+        self::assertInstanceOf(URL::class, new URL($foo));
+        self::assertInstanceOf(URL::class, new URL($foo, $bar));
+    }
+
+    /**
+     * @dataProvider nonStringableObjectProvider
+     */
+    public function testURLConstructorWithNonStringableObject(null|object|string $url, null|object|string $base): void
+    {
+        $this->expectException(NativeTypeError::class);
+        new URL($url, $base);
+    }
+
+    public function nonStringableObjectProvider(): array
+    {
+        return [
+            [new stdClass(), null],
+            ['https://example.com', new stdClass()],
         ];
     }
 }
