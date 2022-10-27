@@ -16,6 +16,7 @@
 - `\Rowbot\URL\Exception\UConverterException` has been renamed to `\Rowbot\URL\Exception\MbstringException`
 - Moved 32-bit tests to GitHub Actions from Appveyor
 - `\Rowbot\URL\URL`'s $url and $base parameters now also accept `\Stringable`
+- `\Rowbot\URL\URLSearchParams::current()` now returns `null` when the iterator is invalid instead of `['', '']`, which better matches the expected behavior
 
 ### Removed
 

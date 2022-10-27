@@ -30,7 +30,7 @@ use function substr;
  * @see https://url.spec.whatwg.org/#urlsearchparams
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
  *
- * @implements \Iterator<int, array{0: string, 1: string}>
+ * @implements \Iterator<int, array{0: string, 1: string}|null>
  */
 class URLSearchParams implements Iterator, Stringable
 {
@@ -100,14 +100,14 @@ class URLSearchParams implements Iterator, Stringable
     }
 
     /**
-     * @return array{0: string, 1: string}
+     * @return array{0: string, 1: string}|null
      */
-    public function current(): array
+    public function current(): array|null
     {
         $tuple = $this->list->getTupleAt($this->cursor);
 
         if ($tuple === null) {
-            return ['', ''];
+            return null;
         }
 
         return [$tuple['name'], $tuple['value']];
@@ -245,6 +245,9 @@ class URLSearchParams implements Iterator, Stringable
         return $this->list->toUrlencodedString();
     }
 
+    /**
+     * @phpstan-assert-if-true array{0: string, 1: string} $this->current()
+     */
     public function valid(): bool
     {
         return $this->list->getTupleAt($this->cursor) !== null;
