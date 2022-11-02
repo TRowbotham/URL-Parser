@@ -22,7 +22,8 @@ interface USVStringInterface extends IteratorAggregate
     public function length(): int;
 
     /**
-     * @param array<int, string> $matches
+     * @param array<int, string>    $matches
+     * @param int-mask<0, 256, 512> $flags
      */
     public function matches(string $pattern, ?array &$matches = null, int $flags = 0, int $offset = 0): bool;
 
