@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component;
 
-use Rowbot\URL\Exception\URLException;
+use Rowbot\URL\Exception\UnsupportedOperationException;
 
 use function implode;
 
@@ -22,12 +22,12 @@ class OpaquePath extends AbstractPath
 
     public function push(PathSegment $path): void
     {
-        throw new URLException('An opaque path can only contain a single path');
+        throw new UnsupportedOperationException('An opaque path can only contain a single path');
     }
 
     public function shorten(Scheme $scheme): void
     {
-        throw new URLException('Cannot shorten an opaque path');
+        throw new UnsupportedOperationException('Cannot shorten an opaque path');
     }
 
     /**
