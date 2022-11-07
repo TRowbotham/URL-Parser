@@ -105,10 +105,10 @@ class URLSearchParamsTest extends TestCase
         self::assertFalse($params->valid());
     }
 
-    public function testInvalidIteratorReturnsArrayWithEmptyStrings(): void
+    public function testInvalidIteratorReturnsNull(): void
     {
         $params = new URLSearchParams();
-        self::assertSame(['', ''], $params->current());
+        self::assertNull($params->current());
         self::assertFalse($params->valid());
     }
 
