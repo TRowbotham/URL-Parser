@@ -34,11 +34,7 @@ class IPv4AddressParser
             // 3.1. Validation error.
             $context->logger?->notice('ipv4-last-part-empty', [
                 'input'  => (string) $input,
-                'column' => array_reduce(
-                    array_slice([...$parts], 0, $count - 1),
-                    static fn (int $carry, USVStringInterface $part): int => $carry + $part->length(),
-                    0
-                ),
+                'column' => $input->length() + 1,
             ]);
 
             // 3.2. If parts’s size is greater than 1, then remove the last item from parts.
@@ -259,13 +255,15 @@ class IPv4AddressParser
      */
     private static function getColumnRange(int $i, StringListInterface $parts): array
     {
-        $partsArray = array_slice([...$parts], 0, $i + 1);
-        $offset = array_reduce(
-            $partsArray,
-            static fn (int $carry, USVStringInterface $part): int => $carry + $part->length(),
-            $i
-        );
+        $partsArray = [...$parts];
+        $offset = $i;
 
-        return [$offset - $partsArray[$i]->length() + 1, $offset];
+        for ($j = 0; $j < $i; ++$j) {
+            $offset += $partsArray[$j]->length();
+        }
+
+        $targetPartLength = $partsArray[$i]->length();
+
+        return [$offset + 1, $offset + $partsArray[$i]->length() + ($targetPartLength > 0 ? 0 : 1)];
     }
 }
