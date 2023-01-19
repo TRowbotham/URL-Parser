@@ -75,8 +75,11 @@ class HostParser
             return false;
         }
 
-        if ($asciiDomain->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u', $matches, PREG_OFFSET_CAPTURE)) {
+        if ($asciiDomain->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u')) {
             // Validation error.
+            // Does looking for forbidden code points in the input translate the same as it does in an ascii domain? If not, we will
+            // need to show the ascii domain in the error instead, though it would be preferable to show the original input.
+            $input->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u', $matches, PREG_OFFSET_CAPTURE);
             $context->logger?->warning('domain-forbidden-code-point', [
                 'input'  => (string) $input,
                 'column' => mb_strlen(mb_strcut((string) $input, 0, $matches[0][1], 'utf-8'), 'utf-8') + 1,
