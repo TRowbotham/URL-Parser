@@ -69,7 +69,7 @@ class HostParser
 
         assert(!$input->isEmpty());
         $domain = rawurldecode((string) $input);
-        $asciiDomain = $this->domainToAscii($context, $domain);
+        $asciiDomain = $this->domainToAscii($context, $domain, false);
 
         if ($asciiDomain === false) {
             return false;
@@ -95,7 +95,7 @@ class HostParser
     /**
      * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
      */
-    private function domainToAscii(ParserContext $context, string $domain, bool $beStrict = false): StringHost|false
+    private function domainToAscii(ParserContext $context, string $domain, bool $beStrict): StringHost|false
     {
         $result = Idna::toAscii($domain, [
             'CheckHyphens'            => false,
