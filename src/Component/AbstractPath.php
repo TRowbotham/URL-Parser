@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\Component;
 
 use Rowbot\URL\String\Exception\UndefinedIndexException;
+use Rowbot\URL\URLRecord;
 
 use function count;
 
@@ -36,6 +37,23 @@ abstract class AbstractPath implements PathInterface
     public function isEmpty(): bool
     {
         return $this->list === [];
+    }
+
+    public function potentiallyStripTrailingSpaces(URLRecord $url): void
+    {
+        if (!$this->isOpaque()) {
+            return;
+        }
+
+        if ($url->fragment !== null) {
+            return;
+        }
+
+        if ($url->query !== null) {
+            return;
+        }
+
+        $this->list[0]->stripTrailingSpaces();
     }
 
     public function __clone()

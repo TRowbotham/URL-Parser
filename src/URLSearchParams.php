@@ -273,6 +273,10 @@ class URLSearchParams implements Iterator, Stringable
         }
 
         $this->url->query = $query;
+
+        if ($query === null) {
+            $this->url->path->potentiallyStripTrailingSpaces($this->url);
+        }
     }
 
     /**

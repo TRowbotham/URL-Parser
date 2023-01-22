@@ -7,6 +7,7 @@ namespace Rowbot\URL\Component;
 use Rowbot\URL\String\AbstractStringBuffer;
 use Rowbot\URL\String\CodePoint;
 
+use function rtrim;
 use function strlen;
 use function strpbrk;
 
@@ -23,5 +24,10 @@ class PathSegment extends AbstractStringBuffer
         return strlen($this->string) === 2
             && strpbrk($this->string[0], CodePoint::ASCII_ALPHA_MASK) === $this->string[0]
             && $this->string[1] === ':';
+    }
+
+    public function stripTrailingSpaces(): void
+    {
+        $this->string = rtrim($this->string, "\x20");
     }
 }
