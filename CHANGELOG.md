@@ -17,6 +17,7 @@
 - Moved 32-bit tests to GitHub Actions from Appveyor
 - `\Rowbot\URL\URL`'s $url and $base parameters now also accept `\Stringable`
 - `\Rowbot\URL\URLSearchParams::current()` now returns `null` when the iterator is invalid instead of `['', '']`, which better matches the expected behavior
+- Ensure opaque paths can round trip from the API [whatwg/url#651](https://github.com/whatwg/url/issues/651) [whatwg/url#728](https://github.com/whatwg/url/pull/728)
 
 ### Removed
 
