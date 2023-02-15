@@ -32,7 +32,7 @@ class FileHostState implements State
                 // path state.
                 if (!$context->isStateOverridden() && $context->buffer->isWindowsDriveLetter()) {
                     // Validation error
-                    $context->logger?->notice('unexpected-windows-drive-letter-host', [
+                    $context->logger?->notice('file-invalid-Windows-drive-letter-host', [
                         'input'        => (string) $context->input,
                         'column_range' => [$context->iter->key(), $context->iter->key() + $context->buffer->length()],
                     ]);

@@ -43,7 +43,7 @@ class OpaquePathState implements State
                 && $codePoint !== '%'
             ) {
                 // Validation error.
-                $context->logger?->notice('invalid-url-code-point', [
+                $context->logger?->notice('invalid-URL-unit', [
                     'input'  => (string) $context->input,
                     'column' => $context->iter->key() + 1,
                 ]);
@@ -55,7 +55,7 @@ class OpaquePathState implements State
                 && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
             ) {
                 // Validation error.
-                $context->logger?->notice('unescaped-percent-sign', [
+                $context->logger?->notice('invalid-URL-unit', [
                     'input'  => (string) $context->input,
                     'column' => $context->iter->key() + 1,
                 ]);

@@ -33,15 +33,10 @@ class SchemeStartState implements State
             return self::RETURN_OK;
         }
 
-        // 3. Otherwise, validation error, return failure.
+        // 3. Otherwise, return failure.
         //
         // Note: This indication of failure is used exclusively by the Location object's protocol
         // attribute.
-        $context->logger?->warning('invalid-scheme-start', [
-            'input'  => (string) $context->input,
-            'column' => $context->iter->key() + 1,
-        ]);
-
         return self::RETURN_FAILURE;
     }
 }

@@ -67,7 +67,7 @@ class BasicURLParser implements LoggerAwareInterface
 
             if ($count !== 0) {
                 // Validation error.
-                $this->logger?->notice('unexpected-c0-control-or-space', [
+                $this->logger?->notice('invalid-URL-unit', [
                     'input' => (string) $originalInput,
                     'column_range' => (static function () use ($originalInput): array {
                         $originalInput->matches('/^[\x00-\x20]+|[\x00-\x20]+$/u', $matches, PREG_OFFSET_CAPTURE);
@@ -87,7 +87,7 @@ class BasicURLParser implements LoggerAwareInterface
 
         if ($count !== 0) {
             // Validation error.
-            $this->logger?->notice('unexpected-ascii-tab-or-newline', [
+            $this->logger?->notice('invalid-URL-unit', [
                 'input' => (string) $originalInput,
                 'column_range' => (static function () use ($originalInput): array {
                     $originalInput->matches('/[\x09\x0A\x0D]+/u', $matches, PREG_OFFSET_CAPTURE);

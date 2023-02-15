@@ -28,7 +28,7 @@ class FileState implements State
             // 3.1. If c is U+005C (\), validation error.
             if ($codePoint === '\\') {
                 // Validation error
-                $context->logger?->notice('unexpected-reverse-solidus', [
+                $context->logger?->notice('invalid-reverse-solidus', [
                     'input'  => (string) $context->input,
                     'column' => $context->iter->key() + 1,
                 ]);
@@ -82,7 +82,7 @@ class FileState implements State
             // 4.4.3. Otherwise:
             } else {
                 // 4.4.3.1 Validation error.
-                $context->logger?->notice('unexpected-windows-drive-letter', [
+                $context->logger?->notice('file-invalid-Windows-drive-letter', [
                     'input'        => (string) $context->input,
                     'column_range' => [$context->iter->key() + 1, $context->iter->key() + 3],
                 ]);

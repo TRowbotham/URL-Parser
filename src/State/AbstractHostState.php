@@ -37,7 +37,7 @@ abstract class AbstractHostState implements State
                 // 2.1. If buffer is the empty string, validation error, return failure.
                 if ($context->buffer->isEmpty()) {
                     // Validation error. Return failure.
-                    $context->logger?->warning('unexpected-port-without-host', [
+                    $context->logger?->warning('host-missing', [
                         'input'  => (string) $context->input,
                         'column' => $context->iter->key() + 1,
                     ]);
@@ -85,7 +85,7 @@ abstract class AbstractHostState implements State
                 // 3.1. If url is special and buffer is the empty string, validation error, return failure.
                 if ($context->url->scheme->isSpecial() && $context->buffer->isEmpty()) {
                     // Validation error. Return failure.
-                    $context->logger?->warning('empty-host-special-scheme', [
+                    $context->logger?->warning('host-missing', [
                         'input'  => (string) $context->input,
                         'column' => $context->iter->key() + 2, // Add 2 since we called ->prev() above
                     ]);
@@ -100,12 +100,6 @@ abstract class AbstractHostState implements State
                     && $context->buffer->isEmpty()
                     && ($context->url->includesCredentials() || $context->url->port !== null)
                 ) {
-                    // Validation error.
-                    $context->logger?->notice('host-invalid', [
-                        'input'  => (string) $context->input,
-                        'column' => $context->iter->key() + 2, // Add 2 since we called ->prev() above
-                    ]);
-
                     return self::RETURN_BREAK;
                 }
 

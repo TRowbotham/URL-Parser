@@ -16,7 +16,7 @@ class NoSchemeState implements State
         // 1. If base is null, or base has an opaque path and c is not U+0023 (#), validation error, return failure.
         if ($context->base === null || ($context->base->path->isOpaque() && $codePoint !== '#')) {
             // Validation error. Return failure.
-            $context->logger?->warning('missing-scheme-non-relative-url', [
+            $context->logger?->warning('missing-scheme-non-relative-URL', [
                 'input'  => (string) $context->input,
                 'column' => $context->iter->key() + 1,
             ]);

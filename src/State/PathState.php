@@ -59,7 +59,7 @@ class PathState implements State
                 // 1.1. If url is special and c is U+005C (\), validation error.
                 if ($urlIsSpecial && $codePoint === '\\') {
                     // Validation error.
-                    $context->logger?->notice('unexpected-reverse-solidus', [
+                    $context->logger?->notice('invalid-reverse-solidus', [
                         'input'  => (string) $context->input,
                         'column' => $context->iter->key() + 1,
                     ]);
@@ -125,7 +125,7 @@ class PathState implements State
             // 2.1. If c is not a URL code point and not U+0025 (%), validation error.
             if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
                 // Validation error
-                $context->logger?->notice('invalid-url-code-point', [
+                $context->logger?->notice('invalid-URL-unit', [
                     'input'  => (string) $context->input,
                     'column' => $context->iter->key() + 1,
                 ]);
@@ -137,7 +137,7 @@ class PathState implements State
                 && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
             ) {
                 // Validation error
-                $context->logger?->notice('unescaped-percent-sign', [
+                $context->logger?->notice('invalid-URL-unit', [
                     'input'  => (string) $context->input,
                     'column' => $context->iter->key() + 1,
                 ]);

@@ -25,28 +25,28 @@ class IPv4AddressParser
 {
     public static function parse(ParserContext $context, USVStringInterface $input): IPv4Address|false
     {
-        // 2. Let parts be the result of strictly splitting input on U+002E (.).
+        // 1. Let parts be the result of strictly splitting input on U+002E (.).
         $parts = $input->split('.');
         $count = $parts->count();
 
-        // 3. If the last item in parts is the empty string, then:
+        // 2. If the last item in parts is the empty string, then:
         if ($parts->last()->isEmpty()) {
-            // 3.1. Validation error.
-            $context->logger?->notice('ipv4-last-part-empty', [
+            // 2.1. Validation error.
+            $context->logger?->notice('IPv4-part-empty', [
                 'input'  => (string) $input,
                 'column' => $input->length() + 1,
             ]);
 
-            // 3.2. If parts’s size is greater than 1, then remove the last item from parts.
+            // 2.2. If parts’s size is greater than 1, then remove the last item from parts.
             if ($count > 1) {
                 $parts->pop();
                 --$count;
             }
         }
 
-        // 4. If parts’s size is greater than 4, validation error, return failure.
+        // 3. If parts’s size is greater than 4, validation error, return failure.
         if ($count > 4) {
-            $context->logger?->warning('ipv4-too-many-parts', [
+            $context->logger?->warning('IPv4-too-many-parts', [
                 'input'  => (string) $input,
                 'column' => array_reduce(
                     array_slice([...$parts], 0, 4),
@@ -58,17 +58,17 @@ class IPv4AddressParser
             return false;
         }
 
-        // 5. Let numbers be an empty list.
+        // 4. Let numbers be an empty list.
         $numbers = [];
 
-        // 6. For each part of parts:
+        // 5. For each part of parts:
         foreach ($parts as $i => $part) {
-            // 6.1. Let result be the result of parsing part.
+            // 5.1. Let result be the result of parsing part.
             $result = self::parseIPv4Number($part);
 
-            // 6.2. If result is failure, validation error, return failure.
+            // 5.2. If result is failure, validation error, return failure.
             if ($result === false) {
-                $context->logger?->warning('ipv4-invalid-radix-digit', [
+                $context->logger?->warning('IPv4-non-numeric-part', [
                     'input'        => (string) $input,
                     'column_range' => self::getColumnRange($i, $parts),
                 ]);
@@ -76,81 +76,82 @@ class IPv4AddressParser
                 return false;
             }
 
-            // 6.3. If result[1] is true, then set validationError to true.
+            // 5.3. If result[1] is true, then set validationError to true.
             if ($result[1] === true) {
                 // Validation error.
-                $context->logger?->notice('unexpected-non-decimal-number', [
+                $context->logger?->notice('IPv4-non-decimal-part', [
                     'input'        => (string) $input,
                     'column_range' => self::getColumnRange($i, $parts),
                 ]);
             }
 
-            // 6.4. Append result[0] to numbers.
+            // 5.4. Append result[0] to numbers.
             $numbers[] = $result[0];
         }
 
         $size = count($numbers);
         $sizeMinusOne = $size - 1;
-        $partTooLarge = false;
+        $failure = false;
+        $errorQueue = [];
 
-        // 8. If any item in numbers is greater than 255, validation error.
+        // 6. If any item in numbers is greater than 255, validation error.
         foreach ($numbers as $i => $number) {
             if ($number->isGreaterThan(255)) {
-                $level = LogLevel::NOTICE;
-
+                // 7. If any but the last item in numbers is greater than 255, then return failure.
                 if ($i < $sizeMinusOne) {
-                    $partTooLarge = true;
-                    $level = LogLevel::WARNING;
+                    $errorQueue[$i] = LogLevel::WARNING;
+                    $failure = true;
+
+                    break;
                 }
 
-                $context->logger?->log($level, 'ipv4-part-out-of-range', [
-                    'input'        => (string) $input,
-                    'column_range' => self::getColumnRange($i, $parts),
-                ]);
+                $errorQueue[$i] = LogLevel::NOTICE;
 
                 break;
             }
         }
 
-        // 9. If any but the last item in numbers is greater than 255, then return failure.
-        if ($partTooLarge) {
-            return false;
-        }
-
         $limit = NumberFactory::createNumber(256, 10)->pow(5 - $size);
 
-        // 10. If the last item in numbers is greater than or equal to 256 ** (5 − numbers’s size), validation error,
+        // 8. If the last item in numbers is greater than or equal to 256 ** (5 − numbers’s size), validation error,
         // return failure.
         if ($numbers[$sizeMinusOne]->isGreaterThanOrEqualTo($limit)) {
-            $context->logger?->warning('ipv4-part-out-of-range', [
-                'input'        => (string) $input,
-                'column_range' => [$input->length() - $parts->last()->length() + 1, $input->length()],
-            ]);
+            $errorQueue[$sizeMinusOne] = LogLevel::WARNING;
+            $failure = true;
+        }
 
+        foreach ($errorQueue as $partIndex => $level) {
+            $context->logger?->log($level, 'IPv4-out-of-range-part', [
+                'input'        => (string) $input,
+                'column_range' => self::getColumnRange($partIndex, $parts),
+            ]);
+        }
+
+        if ($failure) {
             return false;
         }
 
         /**
-         * 11. Let ipv4 be the last item in numbers.
-         * 12. Remove the last item from numbers.
+         * 9. Let ipv4 be the last item in numbers.
+         * 10. Remove the last item from numbers.
          *
          * @var \Rowbot\URL\Component\Host\Math\NumberInterface $ipv4
          */
         $ipv4 = array_pop($numbers);
 
-        // 13. Let counter be 0.
+        // 11. Let counter be 0.
         $counter = 0;
 
-        // 14. For each n of numbers:
+        // 12. For each n of numbers:
         foreach ($numbers as $number) {
-            // 14.1. Increment ipv4 by n × 256 ** (3 − counter).
+            // 12.1. Increment ipv4 by n × 256 ** (3 − counter).
             $ipv4 = $ipv4->plus($number->multipliedBy(256 ** (3 - $counter)));
 
-            // 14.2. Increment counter by 1.
+            // 12.2. Increment counter by 1.
             ++$counter;
         }
 
-        // 15. Return ipv4.
+        // 13. Return ipv4.
         return new IPv4Address((string) $ipv4);
     }
 
