@@ -37,20 +37,15 @@ class OpaquePathState implements State
 
             // 3. Otherwise:
             // 3.1. If c is not the EOF code point, not a URL code point, and not U+0025 (%), validation error.
-            if (
-                $codePoint !== CodePoint::EOF
-                && !CodePoint::isUrlCodePoint($codePoint)
-                && $codePoint !== '%'
-            ) {
+            if ($codePoint !== CodePoint::EOF && $codePoint !== '%' && !CodePoint::isUrlCodePoint($codePoint)) {
                 // Validation error.
                 $context->logger?->notice('invalid-URL-unit', [
                     'input'  => (string) $context->input,
                     'column' => $context->iter->key() + 1,
                 ]);
-            }
 
             // 3.2. If c is U+0025 (%) and remaining does not start with two ASCII hex digits, validation error.
-            if (
+            } elseif (
                 $codePoint === '%'
                 && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
             ) {

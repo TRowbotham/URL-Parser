@@ -145,15 +145,13 @@ class HostParser
         }
 
         foreach ($input as $i => $codePoint) {
-            if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
+            if ($codePoint !== '%' && !CodePoint::isUrlCodePoint($codePoint)) {
                 // Validation error.
                 $context->logger?->notice('invalid-URL-unit', [
                     'input'  => (string) $input,
                     'column' => $i,
                 ]);
-            }
-
-            if ($codePoint === '%' && !$input->substr($i + 1)->startsWithTwoAsciiHexDigits()) {
+            } elseif ($codePoint === '%' && !$input->substr($i + 1)->startsWithTwoAsciiHexDigits()) {
                 // Validation error.
                 $context->logger?->notice('invalid-URL-unit', [
                     'input'  => (string) $input,

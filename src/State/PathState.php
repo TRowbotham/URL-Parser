@@ -123,16 +123,15 @@ class PathState implements State
 
             // 2. Otherwise, run these steps:
             // 2.1. If c is not a URL code point and not U+0025 (%), validation error.
-            if (!CodePoint::isUrlCodePoint($codePoint) && $codePoint !== '%') {
+            if ($codePoint !== '%' && !CodePoint::isUrlCodePoint($codePoint)) {
                 // Validation error
                 $context->logger?->notice('invalid-URL-unit', [
                     'input'  => (string) $context->input,
                     'column' => $context->iter->key() + 1,
                 ]);
-            }
 
             // 2.2. If c is U+0025 (%) and remaining does not start with two ASCII hex digits, validation error.
-            if (
+            } elseif (
                 $codePoint === '%'
                 && !$context->input->substr($context->iter->key() + 1)->startsWithTwoAsciiHexDigits()
             ) {
