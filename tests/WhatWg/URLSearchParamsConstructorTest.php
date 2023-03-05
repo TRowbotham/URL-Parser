@@ -213,7 +213,7 @@ class URLSearchParamsConstructorTest extends TestCase
         }
     }
 
-    public function getTestData(): array
+    public static function getTestData(): array
     {
         $obj = new stdClass();
         $obj->{'+'} = '%C2';

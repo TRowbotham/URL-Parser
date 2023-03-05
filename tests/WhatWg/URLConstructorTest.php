@@ -12,9 +12,9 @@ use function array_key_exists;
  */
 class URLConstructorTest extends WhatwgTestCase
 {
-    public function urlTestDataSuccessProvider(): iterable
+    public static function urlTestDataSuccessProvider(): iterable
     {
-        foreach ($this->loadTestData('urltestdata.json') as $inputs) {
+        foreach (self::loadTestData('urltestdata.json') as $inputs) {
             if (isset($inputs['base']) && !isset($inputs['failure'])) {
                 yield [$inputs];
             }
@@ -46,9 +46,9 @@ class URLConstructorTest extends WhatwgTestCase
         self::assertSame($expected['hash'], $url->hash, 'hash');
     }
 
-    public function urlTestDataFailureProvider(): iterable
+    public static function urlTestDataFailureProvider(): iterable
     {
-        foreach ($this->loadTestData('urltestdata.json') as $inputs) {
+        foreach (self::loadTestData('urltestdata.json') as $inputs) {
             if (isset($inputs['failure'])) {
                 yield [$inputs];
             }

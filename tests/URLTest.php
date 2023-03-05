@@ -93,7 +93,7 @@ class URLTest extends TestCase
         new URL('https://example.com', null, ['logger' => $value]);
     }
 
-    public function invalidLoggerProvider(): array
+    public static function invalidLoggerProvider(): array
     {
         return [
             ['foo'],
@@ -131,7 +131,7 @@ class URLTest extends TestCase
         new URL($url, $base);
     }
 
-    public function nonStringableObjectProvider(): array
+    public static function nonStringableObjectProvider(): array
     {
         return [
             [new stdClass(), null],

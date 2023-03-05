@@ -9,7 +9,7 @@ use Rowbot\URL\Support\EncodingHelper;
 
 class EncodingHelperTest extends TestCase
 {
-    public function encodingDataProvider(): array
+    public static function encodingDataProvider(): array
     {
         return [
             ['REPLACEMENT', 'utf-8'],

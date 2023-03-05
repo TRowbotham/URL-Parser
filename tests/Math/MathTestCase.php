@@ -16,7 +16,7 @@ abstract class MathTestCase extends TestCase
      */
     abstract public function createNumber($number, int $base = 10): NumberInterface;
 
-    public function intdivNumberProvider(): array
+    public static function intdivNumberProvider(): array
     {
         return [
             [2, '21'],
@@ -39,7 +39,7 @@ abstract class MathTestCase extends TestCase
         self::assertSame($quoient, (string) $computedQuotient);
     }
 
-    public function equalityNumberProvider(): array
+    public static function equalityNumberProvider(): array
     {
         return [
             [PHP_INT_MAX, 10, (string) PHP_INT_MAX],
@@ -59,7 +59,7 @@ abstract class MathTestCase extends TestCase
         self::assertTrue($this->createNumber($number, $base)->isEqualTo($this->createNumber($expected)));
     }
 
-    public function greaterThanNumberProvider(): array
+    public static function greaterThanNumberProvider(): array
     {
         return [
             [42, 9000, false],
@@ -77,7 +77,7 @@ abstract class MathTestCase extends TestCase
         self::assertSame($result, $this->createNumber($number1)->isGreaterThan($number2));
     }
 
-    public function greaterThanOrEqualToNumberProvider(): array
+    public static function greaterThanOrEqualToNumberProvider(): array
     {
         return [
             [42, 9000, false],
@@ -95,7 +95,7 @@ abstract class MathTestCase extends TestCase
         self::assertSame($result, $this->createNumber($number1)->isGreaterThanOrEqualTo($this->createNumber($number2)));
     }
 
-    public function modNumberProvider(): array
+    public static function modNumberProvider(): array
     {
         return [
             [2, 2, 0],
@@ -115,7 +115,7 @@ abstract class MathTestCase extends TestCase
         self::assertSame((string) $remainder, (string) $computedRemainder);
     }
 
-    public function multipliedByNumberProvider(): array
+    public static function multipliedByNumberProvider(): array
     {
         return [
             [7, 2, 14],
@@ -136,7 +136,7 @@ abstract class MathTestCase extends TestCase
         self::assertSame((string) $product, (string) $computedProduct);
     }
 
-    public function additionNumberProvider(): array
+    public static function additionNumberProvider(): array
     {
         return [
             [6, 6, '12'],
@@ -156,7 +156,7 @@ abstract class MathTestCase extends TestCase
         self::assertSame($sum, (string) $computedSum);
     }
 
-    public function powerNumberProvider(): array
+    public static function powerNumberProvider(): array
     {
         return [
             [256, 2, '65536'],

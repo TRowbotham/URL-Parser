@@ -38,7 +38,7 @@ class HostParserTest extends TestCase
         }
     }
 
-    public function exampleDataProvider(): array
+    public static function exampleDataProvider(): array
     {
         return [
             ['input' => 'EXAMPLE.COM', 'output' => ['example.com', 'EXAMPLE.COM']],

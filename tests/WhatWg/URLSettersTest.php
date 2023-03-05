@@ -9,9 +9,9 @@ use Rowbot\URL\URL;
  */
 class URLSettersTest extends WhatwgTestCase
 {
-    public function urlSetterGetterDataProvider(): iterable
+    public static function urlSetterGetterDataProvider(): iterable
     {
-        foreach ($this->loadTestData('setters_tests.json') as $key => $tests) {
+        foreach (self::loadTestData('setters_tests.json') as $key => $tests) {
             if ($key === 'comment') {
                 continue;
             }

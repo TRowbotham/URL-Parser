@@ -15,21 +15,21 @@ use const JSON_THROW_ON_ERROR;
 
 abstract class WhatwgTestCase extends TestCase
 {
+    private static Client|null $client = null;
+
     private const WHATWG_BASE_URI = 'https://raw.githubusercontent.com/web-platform-tests/wpt/master/url/resources/';
     private const CACHE_TTL = 86400 * 7; // 7 DAYS
     private const JSON_DEPTH = 512;
 
-    protected function loadTestData(string $url): array
+    protected static function loadTestData(string $url): array
     {
-        static $client;
-
         $cache = new FilesystemAdapter('whatwg-test-suite', self::CACHE_TTL, __DIR__ . '/data');
-        $data = $cache->get($url, static function () use (&$client, $url): string {
-            $client ??= new Client([
+        $data = $cache->get($url, static function () use ($url): string {
+            self::$client ??= new Client([
                 'base_uri'    => self::WHATWG_BASE_URI,
                 'http_errors' => true,
             ]);
-            $response = $client->get($url);
+            $response = self::$client->get($url);
 
             // Replace all unpaired surrogate escape sequences with a \uFFFD escape sequence to avoid
             // json_decode() having a stroke and emitting a JSON_ERROR_UTF16 error causing the decode

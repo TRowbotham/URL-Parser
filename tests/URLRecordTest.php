@@ -28,7 +28,7 @@ class URLRecordTest extends TestCase
         self::assertNull($origin->getEffectiveDomain());
     }
 
-    public function urlEqualityProvider(): iterable
+    public static function urlEqualityProvider(): iterable
     {
         return [
             ['file:///C:/Users/Desktop/', 'file:///C|/Users/Desktop/', true, true],

@@ -9,9 +9,9 @@ use Rowbot\URL\URL;
  */
 class URLOriginTest extends WhatwgTestCase
 {
-    public function urlTestDataOriginProvider(): iterable
+    public static function urlTestDataOriginProvider(): iterable
     {
-        foreach ($this->loadTestData('urltestdata.json') as $inputs) {
+        foreach (self::loadTestData('urltestdata.json') as $inputs) {
             if (isset($inputs['origin'])) {
                 yield [$inputs];
             }

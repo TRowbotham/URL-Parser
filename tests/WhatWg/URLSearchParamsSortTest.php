@@ -11,7 +11,7 @@ use Rowbot\URL\URLSearchParams;
  */
 class URLSearchParamsSortTest extends TestCase
 {
-    public function getTestData(): array
+    public static function getTestData(): array
     {
         return [
             [

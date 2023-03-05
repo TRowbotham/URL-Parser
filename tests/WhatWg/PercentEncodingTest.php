@@ -31,9 +31,9 @@ class PercentEncodingTest extends WhatwgTestCase
         }
     }
 
-    public function percentEncodedDataProvider(): iterable
+    public static function percentEncodedDataProvider(): iterable
     {
-        return $this->loadTestData('percent-encoding.json');
+        return self::loadTestData('percent-encoding.json');
     }
 
     /**
@@ -47,7 +47,7 @@ class PercentEncodingTest extends WhatwgTestCase
         self::assertSame($output, $result);
     }
 
-    public function exampleDataProvider(): array
+    public static function exampleDataProvider(): array
     {
         return [
             ['encoding' => 'Shift_JIS', 'input' => ' ', 'output' => '%20', 'encode_set' => EncodeSet::USERINFO, 'spaceAsPlus' => false],

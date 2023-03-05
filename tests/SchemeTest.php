@@ -10,7 +10,7 @@ use Rowbot\URL\Component\Scheme;
 
 class SchemeTest extends TestCase
 {
-    public function specialSchemeNonNullDefaultPortProvider(): iterable
+    public static function specialSchemeNonNullDefaultPortProvider(): iterable
     {
         $reflection = new ReflectionClass(Scheme::class);
         $schemes = $reflection->getConstant('SPECIAL_SCHEMES');
@@ -33,7 +33,7 @@ class SchemeTest extends TestCase
         self::assertTrue($scheme->isDefaultPort($port));
     }
 
-    public function schemeDefaultPortProvider(): array
+    public static function schemeDefaultPortProvider(): array
     {
         return [
             ['sftp', 22],

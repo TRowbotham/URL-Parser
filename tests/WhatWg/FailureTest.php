@@ -10,9 +10,9 @@ use Rowbot\URL\URL;
  */
 class FailureTest extends WhatwgTestCase
 {
-    public function urlTestDataFailureProvider(): iterable
+    public static function urlTestDataFailureProvider(): iterable
     {
-        foreach ($this->loadTestData('urltestdata.json') as $inputs) {
+        foreach (self::loadTestData('urltestdata.json') as $inputs) {
             if (isset($inputs['failure']) && $inputs['base'] === 'about:blank') {
                 yield [$inputs];
             }

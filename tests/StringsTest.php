@@ -19,7 +19,7 @@ class StringsTest extends TestCase
         Utf8String::transcode('stuff', 'gallifreyan', 'utf-8');
     }
 
-    public function startsWithTwoAsciiHexDigitsProvider(): array
+    public static function startsWithTwoAsciiHexDigitsProvider(): array
     {
         return [
             ['ab', true],
@@ -44,7 +44,7 @@ class StringsTest extends TestCase
         self::assertSame($expected, $s->startsWithTwoAsciiHexDigits());
     }
 
-    public function startsWithWindowsDriveLetterProvider(): array
+    public static function startsWithWindowsDriveLetterProvider(): array
     {
         return [
             ['c:', true],

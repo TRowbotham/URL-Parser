@@ -10,9 +10,9 @@ use Rowbot\URL\URL;
  */
 class ToASCIIWindowTest extends WhatwgTestCase
 {
-    public function toAsciiTestProvider(): iterable
+    public static function toAsciiTestProvider(): iterable
     {
-        foreach ($this->loadTestData('toascii.json') as $inputs) {
+        foreach (self::loadTestData('toascii.json') as $inputs) {
             yield [$inputs];
         }
     }

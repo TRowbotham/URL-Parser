@@ -12,7 +12,7 @@ use Rowbot\URL\Exception\URLException;
 
 class PathTest extends TestCase
 {
-    public function isNormalizedWindowsDriveLetterProvider(): array
+    public static function isNormalizedWindowsDriveLetterProvider(): array
     {
         return [
             ['c:', true],

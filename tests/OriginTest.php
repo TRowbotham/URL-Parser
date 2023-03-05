@@ -18,7 +18,7 @@ use Rowbot\URL\URLRecord;
 
 class OriginTest extends TestCase
 {
-    public function originProvider(): array
+    public static function originProvider(): array
     {
         $hostParser = new HostParser();
         $context = new ParserContext(

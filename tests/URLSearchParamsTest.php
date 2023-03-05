@@ -46,7 +46,7 @@ class URLSearchParamsTest extends TestCase
         }
     }
 
-    public function getInvalidIteratorInput(): array
+    public static function getInvalidIteratorInput(): array
     {
         $generator = (static function (): Generator {
             yield 'foo';
@@ -87,7 +87,7 @@ class URLSearchParamsTest extends TestCase
         new URLSearchParams($input);
     }
 
-    public function unhandledInputProvider(): array
+    public static function unhandledInputProvider(): array
     {
         return [
             [static function (): void {

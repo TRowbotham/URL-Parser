@@ -12,7 +12,7 @@ use function in_array;
  */
 class URLEncodedParserTest extends TestCase
 {
-    public function getTestData(): array
+    public static function getTestData(): array
     {
         return [
             ['input' => 'test', 'output' => [['test', '']]],
