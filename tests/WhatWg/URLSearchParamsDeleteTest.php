@@ -54,4 +54,24 @@ class URLSearchParamsDeleteTest extends TestCase
         self::assertSame('http://example.com/', $url->href);
         self::assertSame('', $url->search);
     }
+
+    public function testChangingTheQueryOfAUrlWithAnOpaquePathCanImpactThePath(): void
+    {
+        $url = new URL('data:space    ?test');
+        self::assertTrue($url->searchParams->has('test'));
+        $url->searchParams->delete('test');
+        self::assertFalse($url->searchParams->has('test'));
+        self::assertSame('', $url->search);
+        self::assertSame('space', $url->pathname);
+        self::assertSame('data:space', $url->href);
+    }
+
+    public function testChangingTheQueryOfAUrlWithAnOpaquePathCanImpactThePathIfTheUrlHasNoFragment(): void
+    {
+        $url = new URL('data:space    ?test#test');
+        $url->searchParams->delete('test');
+        self::assertSame('', $url->search);
+        self::assertSame('space    ', $url->pathname);
+        self::assertSame('data:space    #test', $url->href);
+    }
 }

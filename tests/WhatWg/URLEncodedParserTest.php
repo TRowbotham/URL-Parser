@@ -18,6 +18,7 @@ class URLEncodedParserTest extends TestCase
             ['input' => 'test', 'output' => [['test', '']]],
             ['input' => "\u{FEFF}test=\u{FEFF}", 'output' => [["\u{FEFF}test", "\u{FEFF}"]]],
             ['input' => '%EF%BB%BFtest=%EF%BB%BF', 'output' => [["\u{FEFF}test", "\u{FEFF}"]]],
+            ['input' => '%EF%BF%BF=%EF%BF%BF', 'output' =>[["\u{FFFF}", "\u{FFFF}"]]],
             ['input' => '%FE%FF', 'output' => [["\u{FFFD}\u{FFFD}", '']]],
             ['input' => '†&†=x', 'output' => [['†', ''], ['†', 'x']]],
             ['input' => '%C2', 'output' => [["\u{FFFD}", '']]],
