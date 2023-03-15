@@ -8,6 +8,8 @@
 - Validation error logging
 - `\Rowbot\URL\URL` and `\Rowbot\URL\URLSearchParams` now implement `\Stringable`
 - `\Rowbot\URL\URLSearchParams` constructor now has a native typehint of `array|object|string`
+- `\Rowbot\URL\URLSearchParams` now has a `size` getter per [whatwg/url#734](https://github.com/whatwg/url/pull/734)
+  - `\Rowbot\URL\URLSearchParams` now also implements `\Countable`
 
 ### Changed
 
@@ -50,6 +52,7 @@
   - Added trait `\Rowbot\URL\String\PercentEncodeTrait`
   - `\Rowbot\URL\Component\Host` methods are no longer static
 - `\Rowbot\URL\String\StringListInterface` extends `\IteratorAggregate` instead of `\Iterator`
+- `\Rowbot\URL\Component\QueryList` now implements `\Countable`
 
 ## [3.1.7] - 2022-08-26
 

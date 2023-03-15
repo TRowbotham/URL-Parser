@@ -222,6 +222,10 @@ Sorts the list of search params by comparing code units. The relative order of n
 
 Returns the serialization of the list of name-value pairs.
 
+### `int URLSearchParams::$size`
+
+Returns the number of query parameters in the list.
+
 #### `string URLSearchParams::__toString()`
 
 See [URLSearchParams::toString()](#string-urlsearchparamstostring)

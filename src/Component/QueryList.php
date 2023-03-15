@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\Component;
 
 use ArrayIterator;
+use Countable;
 use IteratorAggregate;
 use Rowbot\URL\String\EncodeSet;
 use Rowbot\URL\String\PercentEncodeTrait;
@@ -26,7 +27,7 @@ use function usort;
 /**
  * @implements \IteratorAggregate<int, array{name: string, value: string}>
  */
-class QueryList implements IteratorAggregate
+class QueryList implements Countable, IteratorAggregate
 {
     use PercentEncodeTrait;
 
@@ -109,6 +110,11 @@ class QueryList implements IteratorAggregate
     {
         $this->list[] = ['name' => $name, 'value' => $value];
         $this->cache[$name] = true;
+    }
+
+    public function count(): int
+    {
+        return count($this->list);
     }
 
     /**

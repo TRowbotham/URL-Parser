@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
+use Countable;
 use Iterator;
 use ReflectionObject;
 use ReflectionProperty;
@@ -31,8 +32,10 @@ use function substr;
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
  *
  * @implements \Iterator<int, array{0: string, 1: string}|null>
+ *
+ * @property-read int<0, max> $size
  */
-class URLSearchParams implements Iterator, Stringable
+class URLSearchParams implements Countable, Iterator, Stringable
 {
     /**
      * @var 0|positive-int
@@ -97,6 +100,11 @@ class URLSearchParams implements Iterator, Stringable
     {
         $this->list->append(Utf8String::scrub($name), Utf8String::scrub($value));
         $this->update();
+    }
+
+    public function count(): int
+    {
+        return $this->list->count();
     }
 
     /**
@@ -380,6 +388,17 @@ class URLSearchParams implements Iterator, Stringable
         // Null out the url in-case someone tries cloning the object returned by
         // the URL::searchParams attribute.
         $this->url = null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function __get(string $name)
+    {
+        return match ($name) {
+            'size'  => $this->list->count(),
+            default => null,
+        };
     }
 
     /**
