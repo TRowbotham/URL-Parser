@@ -39,7 +39,7 @@
   - Added class `\Rowbot\URL\Component\OpaqueOrigin` which implements `\Rowbot\URL\Origin`
 - `\Rowbot\URL\Component\PathListInterface` renamed to `\Rowbot\URL\PathInterface`
   - Added class `\Rowbot\URL\Component\OpaquePath` which implements `\Rowbot\URL\PathInterface`
-- `\Rowbot\URL\Path` was renamed to `\Rowbot\URL\PathSegment`
+- `\Rowbot\URL\Component\Path` was renamed to `\Rowbot\URL\Component\PathSegment`
 - `\Rowbot\URL\State\CannotBeABaseUrlPathState` was renamed to `\Rowbot\URL\State\OpaquePathState`
   - Removed property `\Rowbot\URL\URLRecord::$cannotBeABaseUrl`
 - Adopted the specs new percent encoding model
