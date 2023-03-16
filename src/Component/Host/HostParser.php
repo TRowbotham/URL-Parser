@@ -10,7 +10,7 @@ use Rowbot\Idna\Idna;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\EncodeSet;
-use Rowbot\URL\String\PercentEncodeTrait;
+use Rowbot\URL\String\PercentEncoder;
 use Rowbot\URL\String\USVStringInterface;
 
 use function array_filter;
@@ -28,8 +28,6 @@ use const PREG_OFFSET_CAPTURE;
  */
 class HostParser
 {
-    use PercentEncodeTrait;
-
     /**
      * @see https://url.spec.whatwg.org/#forbidden-host-code-point
      * @see https://url.spec.whatwg.org/#forbidden-domain-code-point
@@ -160,7 +158,8 @@ class HostParser
             }
         }
 
-        $output = $this->percentEncodeAfterEncoding('utf-8', (string) $input, EncodeSet::C0_CONTROL);
+        $percentEncoder = new PercentEncoder();
+        $output = $percentEncoder->percentEncodeAfterEncoding('utf-8', (string) $input, EncodeSet::C0_CONTROL);
 
         return new StringHost($output);
     }

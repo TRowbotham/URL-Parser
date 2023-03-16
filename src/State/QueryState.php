@@ -7,15 +7,13 @@ namespace Rowbot\URL\State;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\EncodeSet;
-use Rowbot\URL\String\PercentEncodeTrait;
+use Rowbot\URL\String\PercentEncoder;
 
 /**
  * @see https://url.spec.whatwg.org/#query-state
  */
 class QueryState implements State
 {
-    use PercentEncodeTrait;
-
     public function handle(ParserContext $context, string $codePoint): int
     {
         // 1. If encoding is not UTF-8 and one of the following is true:
@@ -45,7 +43,8 @@ class QueryState implements State
                 // result to url’s query.
                 //
                 // NOTE: This operation cannot be invoked code-point-for-code-point due to the stateful ISO-2022-JP encoder.
-                $context->url->query .= $this->percentEncodeAfterEncoding(
+                $percentEncoder = new PercentEncoder();
+                $context->url->query .= $percentEncoder->percentEncodeAfterEncoding(
                     $context->getOutputEncoding(),
                     (string) $context->buffer,
                     $queryPercentEncodeSet

@@ -6,14 +6,12 @@ namespace Rowbot\URL\Tests\WhatWg;
 
 use Rowbot\URL\BasicURLParser;
 use Rowbot\URL\String\EncodeSet;
-use Rowbot\URL\String\PercentEncodeTrait;
+use Rowbot\URL\String\PercentEncoder;
 use Rowbot\URL\String\Utf8String;
 use Rowbot\URL\Tests\WhatWg\WhatwgTestCase;
 
 class PercentEncodingTest extends WhatwgTestCase
 {
-    use PercentEncodeTrait;
-
     /**
      * @dataProvider percentEncodedDataProvider
      */
@@ -43,7 +41,8 @@ class PercentEncodingTest extends WhatwgTestCase
      */
     public function testPercentEncodingExamples(string $encoding, string $input, string $output, int $encodeSet, bool $spaceAsPlus): void
     {
-        $result = $this->percentEncodeAfterEncoding($encoding, $input, $encodeSet, $spaceAsPlus);
+        $percentEncoder = new PercentEncoder();
+        $result = $percentEncoder->percentEncodeAfterEncoding($encoding, $input, $encodeSet, $spaceAsPlus);
         self::assertSame($output, $result);
     }
 

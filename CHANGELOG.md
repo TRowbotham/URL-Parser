@@ -49,7 +49,7 @@
   - Removed const `\Rowbot\URL\String\CodePoint::USERINFO_PERCENT_ENCODE_SET`
   - Removed method `\Rowbot\URL\String\CodePoint::utf8PercentEncode()`
   - Added class `\Rowbot\URL\String\EncodeSet`
-  - Added trait `\Rowbot\URL\String\PercentEncodeTrait`
+  - Added class `\Rowbot\URL\String\PercentEncoder`
   - `\Rowbot\URL\Component\Host` methods are no longer static
 - `\Rowbot\URL\String\StringListInterface` extends `\IteratorAggregate` instead of `\Iterator`
 - `\Rowbot\URL\Component\QueryList` now implements `\Countable`

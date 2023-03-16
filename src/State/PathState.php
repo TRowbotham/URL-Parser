@@ -8,15 +8,13 @@ use Rowbot\URL\Component\PathSegment;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\EncodeSet;
-use Rowbot\URL\String\PercentEncodeTrait;
+use Rowbot\URL\String\PercentEncoder;
 
 /**
  * @see https://url.spec.whatwg.org/#path-state
  */
 class PathState implements State
 {
-    use PercentEncodeTrait;
-
     /**
      * @see https://url.spec.whatwg.org/#double-dot-path-segment
      */
@@ -43,6 +41,8 @@ class PathState implements State
 
     public function handle(ParserContext $context, string $codePoint): int
     {
+        $percentEncoder = null;
+
         do {
             // 1. If one of the following is true:
             //      - c is the EOF code point or U+002F (/)
@@ -143,7 +143,8 @@ class PathState implements State
             }
 
             // 2.3. UTF-8 percent-encode c using the path percent-encode set and append the result to buffer.
-            $context->buffer->append($this->percentEncodeAfterEncoding('utf-8', $codePoint, EncodeSet::PATH));
+            $percentEncoder ??= new PercentEncoder();
+            $context->buffer->append($percentEncoder->percentEncodeAfterEncoding('utf-8', $codePoint, EncodeSet::PATH));
             $context->iter->next();
             $codePoint = $context->iter->current();
         } while (true);

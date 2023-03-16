@@ -24,8 +24,15 @@ use function strlen;
 
 use const PREG_SPLIT_DELIM_CAPTURE;
 
-trait PercentEncodeTrait
+final class PercentEncoder
 {
+    private ?string $randomBytes;
+
+    public function __construct()
+    {
+        $this->randomBytes = null;
+    }
+
     /**
      * While letting mbstring do the text encoding works in the majority of cases, it isn't perfect due to differences
      * in the encoders for mbstring and those defined by the WHATWG encoding standard. This is the best we can do
@@ -38,14 +45,12 @@ trait PercentEncodeTrait
      * @param string                          $input             UTF-8 encoded string
      * @param \Rowbot\URL\String\EncodeSet::* $percentEncodeSet
      */
-    private function percentEncodeAfterEncoding(
+    public function percentEncodeAfterEncoding(
         string $encoding,
         string $input,
         int $percentEncodeSet,
         bool $spaceAsPlus = false
     ): string {
-        static $random_bytes = null;
-
         // 1. Let encoder be the result of getting an encoder from encoding.
         $encoder = EncodingHelper::getOutputEncoding($encoding) ?? 'utf-8';
 
@@ -57,8 +62,8 @@ trait PercentEncodeTrait
         if (strcasecmp($encoder, 'utf-8') !== 0) {
             // Generate a random string to be used as a placeholder, only changing it if the given input contains the
             // same sequence of bytes.
-            while ($random_bytes === null || str_contains($input, $random_bytes)) {
-                $random_bytes = bin2hex(random_bytes(16));
+            while ($this->randomBytes === null || str_contains($input, $this->randomBytes)) {
+                $this->randomBytes = bin2hex(random_bytes(16));
             }
 
             // Replace any existing numeric entities, that are in the hexadecimal format, so that we can distinguish
@@ -66,7 +71,7 @@ trait PercentEncodeTrait
             $replacedEntities = 0;
             $input = preg_replace(
                 '/&#x([[:xdigit:]]{2,6};?)/',
-                '__' . $random_bytes . '_${1}__',
+                '__' . $this->randomBytes . '_${1}__',
                 $input,
                 -1,
                 $replacedEntities
@@ -99,7 +104,7 @@ trait PercentEncodeTrait
             // Replace the inserted placeholders of original numeric entities with the original text, so they get
             // percent encoded.
             if ($replacedEntities > 0) {
-                $chunks = preg_replace("/__{$random_bytes}_([[:xdigit:]]+;?)__/", '&#x${1}', $chunks);
+                $chunks = preg_replace("/__{$this->randomBytes}_([[:xdigit:]]+;?)__/", '&#x${1}', $chunks);
 
                 if ($chunks === null) {
                     throw new RegexException(sprintf(

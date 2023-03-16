@@ -7,15 +7,13 @@ namespace Rowbot\URL\State;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\EncodeSet;
-use Rowbot\URL\String\PercentEncodeTrait;
+use Rowbot\URL\String\PercentEncoder;
 
 /**
  * @see https://url.spec.whatwg.org/#authority-state
  */
 class AuthorityState implements State
 {
-    use PercentEncodeTrait;
-
     private bool $atTokenSeen;
 
     private bool $passwordTokenSeen;
@@ -68,8 +66,17 @@ class AuthorityState implements State
 
                 // 1.4.2. Let encodedCodePoints be the result of running UTF-8 percent-encode codePoint using the
                 // userinfo percent-encode set.
-                $context->url->username .= $this->percentEncodeAfterEncoding('utf-8', $username, EncodeSet::USERINFO);
-                $context->url->password .= $this->percentEncodeAfterEncoding('utf-8', $password, EncodeSet::USERINFO);
+                $percentEncoder = new PercentEncoder();
+                $context->url->username .= $percentEncoder->percentEncodeAfterEncoding(
+                    'utf-8',
+                    $username,
+                    EncodeSet::USERINFO
+                );
+                $context->url->password .= $percentEncoder->percentEncodeAfterEncoding(
+                    'utf-8',
+                    $password,
+                    EncodeSet::USERINFO
+                );
 
                 // 1.5. Set buffer to the empty string.
                 $context->buffer->clear();

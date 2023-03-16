@@ -8,7 +8,7 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Rowbot\URL\String\EncodeSet;
-use Rowbot\URL\String\PercentEncodeTrait;
+use Rowbot\URL\String\PercentEncoder;
 use Rowbot\URL\String\Utf8String;
 use Rowbot\URL\Support\EncodingHelper;
 
@@ -29,8 +29,6 @@ use function usort;
  */
 class QueryList implements Countable, IteratorAggregate
 {
-    use PercentEncodeTrait;
-
     private const LEAD_OFFSET = 0xD800 - (0x10000 >> 10);
 
     /**
@@ -266,10 +264,21 @@ class QueryList implements Countable, IteratorAggregate
     {
         $encoding = EncodingHelper::getOutputEncoding($encodingOverride) ?? 'utf-8';
         $output = '';
+        $percentEncoder = new PercentEncoder();
 
         foreach ($this->list as $key => $tuple) {
-            $name = $this->percentEncodeAfterEncoding($encoding, $tuple['name'], EncodeSet::X_WWW_URLENCODED, true);
-            $value = $this->percentEncodeAfterEncoding($encoding, $tuple['value'], EncodeSet::X_WWW_URLENCODED, true);
+            $name = $percentEncoder->percentEncodeAfterEncoding(
+                $encoding,
+                $tuple['name'],
+                EncodeSet::X_WWW_URLENCODED,
+                true
+            );
+            $value = $percentEncoder->percentEncodeAfterEncoding(
+                $encoding,
+                $tuple['value'],
+                EncodeSet::X_WWW_URLENCODED,
+                true
+            );
 
             if ($key > 0) {
                 $output .= '&';
