@@ -43,12 +43,11 @@ final class PercentEncoder
      *
      * @param string                          $encoding          Output encoding
      * @param string                          $input             UTF-8 encoded string
-     * @param \Rowbot\URL\String\EncodeSet::* $percentEncodeSet
      */
     public function percentEncodeAfterEncoding(
         string $encoding,
         string $input,
-        int $percentEncodeSet,
+        EncodeSet $percentEncodeSet,
         bool $spaceAsPlus = false
     ): string {
         // 1. Let encoder be the result of getting an encoder from encoding.
@@ -167,10 +166,8 @@ final class PercentEncoder
      * @see https://url.spec.whatwg.org/#path-percent-encode-set
      * @see https://url.spec.whatwg.org/#userinfo-percent-encode-set
      * @see https://url.spec.whatwg.org/#component-percent-encode-set
-     *
-     * @param \Rowbot\URL\String\EncodeSet::* $percentEncodeSet
      */
-    private function inEncodeSet(int $codePoint, int $percentEncodeSet): bool
+    private function inEncodeSet(int $codePoint, EncodeSet $percentEncodeSet): bool
     {
         switch ($percentEncodeSet) {
             case EncodeSet::X_WWW_URLENCODED:

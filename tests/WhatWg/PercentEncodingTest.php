@@ -39,7 +39,7 @@ class PercentEncodingTest extends WhatwgTestCase
      *
      * @dataProvider exampleDataProvider
      */
-    public function testPercentEncodingExamples(string $encoding, string $input, string $output, int $encodeSet, bool $spaceAsPlus): void
+    public function testPercentEncodingExamples(string $encoding, string $input, string $output, EncodeSet $encodeSet, bool $spaceAsPlus): void
     {
         $percentEncoder = new PercentEncoder();
         $result = $percentEncoder->percentEncodeAfterEncoding($encoding, $input, $encodeSet, $spaceAsPlus);
