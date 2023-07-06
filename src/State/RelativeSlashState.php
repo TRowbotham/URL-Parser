@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 
 use function assert;
 
@@ -29,14 +30,14 @@ class RelativeSlashState implements State
             }
 
             // 1.2. Set state to special authority ignore slashes state.
-            $context->state = new SpecialAuthorityIgnoreSlashesState();
+            $context->state = ParserState::SPECIAL_AUTHORITY_IGNORE_SLASHES;
 
             return self::RETURN_OK;
         }
 
         // 2. Otherwise, if c is U+002F (/), then set state to authority state.
         if ($codePoint === '/') {
-            $context->state = new AuthorityState();
+            $context->state = ParserState::AUTHORITY;
 
             return self::RETURN_OK;
         }
@@ -47,7 +48,7 @@ class RelativeSlashState implements State
         $context->url->password = $context->base->password;
         $context->url->host = clone $context->base->host;
         $context->url->port = $context->base->port;
-        $context->state = new PathState();
+        $context->state = ParserState::PATH;
         $context->iter->prev();
 
         return self::RETURN_OK;

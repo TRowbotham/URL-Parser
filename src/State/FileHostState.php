@@ -7,6 +7,7 @@ namespace Rowbot\URL\State;
 use Rowbot\URL\Component\Host\HostParser;
 use Rowbot\URL\Component\Host\StringHost;
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 
 /**
@@ -36,7 +37,7 @@ class FileHostState implements State
                         'input'        => (string) $context->input,
                         'column_range' => [$context->iter->key(), $context->iter->key() + $context->buffer->length()],
                     ]);
-                    $context->state = new PathState();
+                    $context->state = ParserState::PATH;
 
                     return self::RETURN_OK;
                 }
@@ -55,7 +56,7 @@ class FileHostState implements State
                     }
 
                     // 1.2.3. Set state to path start state.
-                    $context->state = new PathStartState();
+                    $context->state = ParserState::PATH_START;
 
                     return self::RETURN_OK;
                 }
@@ -85,7 +86,7 @@ class FileHostState implements State
 
                 // 1.3.6. Set buffer to the empty string and state to path start state.
                 $context->buffer->clear();
-                $context->state = new PathStartState();
+                $context->state = ParserState::PATH_START;
 
                 return self::RETURN_OK;
             }

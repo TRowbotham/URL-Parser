@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 
 /**
  * @see https://url.spec.whatwg.org/#path-or-authority-state
@@ -15,13 +16,13 @@ class PathOrAuthorityState implements State
     {
         // 1. If c is U+002F (/), then set state to authority state.
         if ($codePoint === '/') {
-            $context->state = new AuthorityState();
+            $context->state = ParserState::AUTHORITY;
 
             return self::RETURN_OK;
         }
 
         // 2. Otherwise, set state to path state, and decrease pointer by 1.
-        $context->state = new PathState();
+        $context->state = ParserState::PATH;
         $context->iter->prev();
 
         return self::RETURN_OK;

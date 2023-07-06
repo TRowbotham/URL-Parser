@@ -12,13 +12,6 @@ use Psr\Log\LoggerInterface;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\QueryList;
 use Rowbot\URL\Exception\TypeError;
-use Rowbot\URL\State\FragmentState;
-use Rowbot\URL\State\HostnameState;
-use Rowbot\URL\State\HostState;
-use Rowbot\URL\State\PathStartState;
-use Rowbot\URL\State\PortState;
-use Rowbot\URL\State\QueryState;
-use Rowbot\URL\State\SchemeStartState;
 use Rowbot\URL\String\EncodeSet;
 use Rowbot\URL\String\PercentEncoder;
 use Rowbot\URL\String\USVStringInterface;
@@ -277,21 +270,21 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
             }
 
             $this->url->fragment = '';
-            $parser->parse($input, null, null, $this->url, new FragmentState());
+            $parser->parse($input, null, null, $this->url, ParserState::FRAGMENT);
         } elseif ($name === 'host') {
             if ($this->url->path->isOpaque()) {
                 // Terminate these steps
                 return;
             }
 
-            $parser->parse($input, null, null, $this->url, new HostState());
+            $parser->parse($input, null, null, $this->url, ParserState::HOST);
         } elseif ($name === 'hostname') {
             if ($this->url->path->isOpaque()) {
                 // Terminate these steps
                 return;
             }
 
-            $parser->parse($input, null, null, $this->url, new HostnameState());
+            $parser->parse($input, null, null, $this->url, ParserState::HOSTNAME);
         } elseif ($name === 'href') {
             $parsedURL = $parser->parse($input);
 
@@ -320,7 +313,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
             }
 
             $this->url->path = new PathList();
-            $parser->parse($input, null, null, $this->url, new PathStartState());
+            $parser->parse($input, null, null, $this->url, ParserState::PATH_START);
         } elseif ($name === 'port') {
             if ($this->url->cannotHaveUsernamePasswordPort()) {
                 return;
@@ -332,9 +325,9 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
                 return;
             }
 
-            $parser->parse($input, null, null, $this->url, new PortState());
+            $parser->parse($input, null, null, $this->url, ParserState::PORT);
         } elseif ($name === 'protocol') {
-            $parser->parse($input->append(':'), null, null, $this->url, new SchemeStartState());
+            $parser->parse($input->append(':'), null, null, $this->url, ParserState::SCHEME_START);
         } elseif ($name === 'search') {
             if ($value === '') {
                 $this->url->query = null;
@@ -349,7 +342,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
             }
 
             $this->url->query = '';
-            $parser->parse($input, null, null, $this->url, new QueryState());
+            $parser->parse($input, null, null, $this->url, ParserState::QUERY);
             $this->queryObject->setList(QueryList::fromString((string) $input));
         } elseif ($name === 'username') {
             if ($this->url->cannotHaveUsernamePasswordPort()) {

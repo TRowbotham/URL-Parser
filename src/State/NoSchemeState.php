@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 
 /**
  * @see https://url.spec.whatwg.org/#no-scheme-state
@@ -32,21 +33,21 @@ class NoSchemeState implements State
             $context->url->path = clone $context->base->path;
             $context->url->query = $context->base->query;
             $context->url->fragment = '';
-            $context->state = new FragmentState();
+            $context->state = ParserState::FRAGMENT;
 
             return self::RETURN_OK;
         }
 
         // 3. Otherwise, if base’s scheme is not "file", set state to relative state and decrease pointer by 1.
         if (!$context->base->scheme->isFile()) {
-            $context->state = new RelativeState();
+            $context->state = ParserState::RELATIVE;
             $context->iter->prev();
 
             return self::RETURN_OK;
         }
 
         // 4. Otherwise, set state to file state and decrease pointer by 1.
-        $context->state = new FileState();
+        $context->state = ParserState::FILE;
         $context->iter->prev();
 
         return self::RETURN_OK;

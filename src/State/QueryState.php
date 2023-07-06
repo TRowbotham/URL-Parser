@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\EncodeSet;
 use Rowbot\URL\String\PercentEncoder;
@@ -56,7 +57,7 @@ class QueryState implements State
                 // 2.4. If c is U+0023 (#), then set url’s fragment to the empty string and state to fragment state.
                 if ($codePoint === '#') {
                     $context->url->fragment = '';
-                    $context->state = new FragmentState();
+                    $context->state = ParserState::FRAGMENT;
                 }
 
                 return self::RETURN_OK;

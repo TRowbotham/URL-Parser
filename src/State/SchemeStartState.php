@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 
 use function strpbrk;
@@ -20,14 +21,14 @@ class SchemeStartState implements State
         // 1. If c is an ASCII alpha, append c, lowercased, to buffer, and set state to scheme state.
         if (strpbrk($codePoint, CodePoint::ASCII_ALPHA_MASK) === $codePoint) {
             $context->buffer->append(strtolower($codePoint));
-            $context->state = new SchemeState();
+            $context->state = ParserState::SCHEME;
 
             return self::RETURN_OK;
         }
 
         // 2. Otherwise, if state override is not given, set state to no scheme state and decrease pointer by 1.
         if (!$context->isStateOverridden()) {
-            $context->state = new NoSchemeState();
+            $context->state = ParserState::NO_SCHEME;
             $context->iter->prev();
 
             return self::RETURN_OK;

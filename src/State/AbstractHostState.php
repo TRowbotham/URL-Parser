@@ -6,6 +6,7 @@ namespace Rowbot\URL\State;
 
 use Rowbot\URL\Component\Host\HostParser;
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 
 /**
@@ -26,7 +27,7 @@ abstract class AbstractHostState implements State
         // host state.
         if ($context->isStateOverridden() && $context->url->scheme->isFile()) {
             $context->iter->prev();
-            $context->state = new FileHostState();
+            $context->state = ParserState::FILE_HOST;
 
             return self::RETURN_OK;
         }
@@ -62,7 +63,7 @@ abstract class AbstractHostState implements State
                 // 5. Set url’s host to host, buffer to the empty string, and state to port state.
                 $context->url->host = $host;
                 $context->buffer->clear();
-                $context->state = new PortState();
+                $context->state = ParserState::PORT;
 
                 return self::RETURN_OK;
             }
@@ -115,7 +116,7 @@ abstract class AbstractHostState implements State
                 // 3.5. Set url’s host to host, buffer to the empty string, and state to path start state.
                 $context->url->host = $host;
                 $context->buffer->clear();
-                $context->state = new PathStartState();
+                $context->state = ParserState::PATH_START;
 
                 // 3.6. If state override is given, then return.
                 if ($context->isStateOverridden()) {

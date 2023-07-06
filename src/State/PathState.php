@@ -6,6 +6,7 @@ namespace Rowbot\URL\State;
 
 use Rowbot\URL\Component\PathSegment;
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\EncodeSet;
 use Rowbot\URL\String\PercentEncoder;
@@ -110,12 +111,12 @@ class PathState implements State
                 // 1.6. If c is U+003F (?), then set url’s query to the empty string and state to query state.
                 if ($codePoint === '?') {
                     $context->url->query = '';
-                    $context->state = new QueryState();
+                    $context->state = ParserState::QUERY;
 
                 // If c is U+0023 (#), then set url’s fragment to the empty string and state to fragment state.
                 } elseif ($codePoint === '#') {
                     $context->url->fragment = '';
-                    $context->state = new FragmentState();
+                    $context->state = ParserState::FRAGMENT;
                 }
 
                 return self::RETURN_OK;

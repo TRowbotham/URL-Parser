@@ -6,6 +6,7 @@ namespace Rowbot\URL\State;
 
 use Rowbot\URL\Component\PathSegment;
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 
 /**
@@ -27,7 +28,7 @@ class PathStartState implements State
             }
 
             // 1.2. Set state to path state.
-            $context->state = new PathState();
+            $context->state = ParserState::PATH;
 
             // 1.3. If c is neither U+002F (/) nor U+005C (\), then decrease pointer by 1.
             if ($codePoint !== '/' && $codePoint !== '\\') {
@@ -41,7 +42,7 @@ class PathStartState implements State
         // state to query state.
         if (!$context->isStateOverridden() && $codePoint === '?') {
             $context->url->query = '';
-            $context->state = new QueryState();
+            $context->state = ParserState::QUERY;
 
             return self::RETURN_OK;
         }
@@ -50,7 +51,7 @@ class PathStartState implements State
         // state to fragment state.
         if (!$context->isStateOverridden() && $codePoint === '#') {
             $context->url->fragment = '';
-            $context->state = new FragmentState();
+            $context->state = ParserState::FRAGMENT;
 
             return self::RETURN_OK;
         }
@@ -58,7 +59,7 @@ class PathStartState implements State
         // 4. Otherwise, if c is not the EOF code point:
         if ($codePoint !== CodePoint::EOF) {
             // 4.1. Set state to path state.
-            $context->state = new PathState();
+            $context->state = ParserState::PATH;
 
             // 4.2. If c is not U+002F (/), then decrease pointer by 1.
             if ($codePoint !== '/') {

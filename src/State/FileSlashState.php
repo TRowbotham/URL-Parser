@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 
 /**
  * @see https://url.spec.whatwg.org/#file-slash-state
@@ -25,7 +26,7 @@ class FileSlashState implements State
             }
 
             // 1.2. Set state to file host state.
-            $context->state = new FileHostState();
+            $context->state = ParserState::FILE_HOST;
 
             return self::RETURN_OK;
         }
@@ -50,7 +51,7 @@ class FileSlashState implements State
         }
 
         // 2.2. Set state to path state, and decrease pointer by 1.
-        $context->state = new PathState();
+        $context->state = ParserState::PATH;
         $context->iter->prev();
 
         return self::RETURN_OK;

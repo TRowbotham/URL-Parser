@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Rowbot\URL;
 
 use Psr\Log\LoggerInterface;
-use Rowbot\URL\State\HostnameState;
-use Rowbot\URL\State\SchemeStartState;
-use Rowbot\URL\State\State;
 use Rowbot\URL\String\StringBufferInterface;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
@@ -35,7 +32,7 @@ final class ParserContext
      */
     public StringIteratorInterface $iter;
 
-    public State $state;
+    public ParserState $state;
 
     /**
      * @readonly
@@ -46,7 +43,7 @@ final class ParserContext
 
     private string $encoding;
 
-    private ?State $stateOverride;
+    private ?ParserState $stateOverride;
 
     public function __construct(
         USVStringInterface $input,
@@ -54,7 +51,7 @@ final class ParserContext
         StringBufferInterface $buffer,
         URLRecord $url,
         ?URLRecord $base,
-        ?State $stateOverride,
+        ?ParserState $stateOverride,
         ?string $encodingOverride,
         ?LoggerInterface $logger
     ) {
@@ -64,7 +61,7 @@ final class ParserContext
         $this->url = $url;
         $this->base = $base;
         $this->encoding = EncodingHelper::getOutputEncoding($encodingOverride) ?? 'utf-8';
-        $this->state = $stateOverride ?? new SchemeStartState();
+        $this->state = $stateOverride ?? ParserState::SCHEME_START;
         $this->stateOverride = $stateOverride;
         $this->logger = $logger;
     }
@@ -91,7 +88,7 @@ final class ParserContext
      */
     public function isOverrideStateHostname(): bool
     {
-        return $this->stateOverride instanceof HostnameState;
+        return $this->stateOverride === ParserState::HOSTNAME;
     }
 
     /**

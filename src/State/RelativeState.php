@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 
 use function assert;
@@ -24,7 +25,7 @@ class RelativeState implements State
 
         // 3. If c is U+002F (/), then set state to relative slash state.
         if ($codePoint === '/') {
-            $context->state = new RelativeSlashState();
+            $context->state = ParserState::RELATIVE_SLASH;
 
             return self::RETURN_OK;
         }
@@ -36,7 +37,7 @@ class RelativeState implements State
                 'input'  => (string) $context->input,
                 'column' => $context->iter->key() + 1,
             ]);
-            $context->state = new RelativeSlashState();
+            $context->state = ParserState::RELATIVE_SLASH;
 
             return self::RETURN_OK;
         }
@@ -54,7 +55,7 @@ class RelativeState implements State
         // 5.2. If c is U+003F (?), then set url’s query to the empty string, and state to query state.
         if ($codePoint === '?') {
             $context->url->query = '';
-            $context->state = new QueryState();
+            $context->state = ParserState::QUERY;
 
             return self::RETURN_OK;
         }
@@ -62,7 +63,7 @@ class RelativeState implements State
         // 5.3. Otherwise, if c is U+0023 (#), set url’s fragment to the empty string and state to fragment state.
         if ($codePoint === '#') {
             $context->url->fragment = '';
-            $context->state = new FragmentState();
+            $context->state = ParserState::FRAGMENT;
 
             return self::RETURN_OK;
         }
@@ -79,7 +80,7 @@ class RelativeState implements State
         $context->url->path->shorten($context->url->scheme);
 
         // 5.4.3. Set state to path state and decrease pointer by 1.
-        $context->state = new PathState();
+        $context->state = ParserState::PATH;
         $context->iter->prev();
 
         return self::RETURN_OK;

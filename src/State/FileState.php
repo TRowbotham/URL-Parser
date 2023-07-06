@@ -8,6 +8,7 @@ use Rowbot\URL\Component\Host\StringHost;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\Scheme;
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 
 /**
@@ -35,7 +36,7 @@ class FileState implements State
             }
 
             // 3.2. Set state to file slash state.
-            $context->state = new FileSlashState();
+            $context->state = ParserState::FILE_SLASH;
 
             return self::RETURN_OK;
         }
@@ -51,7 +52,7 @@ class FileState implements State
             // 4.2. If c is U+003F (?), then set url’s query to the empty string and state to query state.
             if ($codePoint === '?') {
                 $context->url->query = '';
-                $context->state = new QueryState();
+                $context->state = ParserState::QUERY;
 
                 return self::RETURN_OK;
             }
@@ -59,7 +60,7 @@ class FileState implements State
             // 4.3. Otherwise, if c is U+0023 (#), set url’s fragment to the empty string and state to fragment state.
             if ($codePoint === '#') {
                 $context->url->fragment = '';
-                $context->state = new FragmentState();
+                $context->state = ParserState::FRAGMENT;
 
                 return self::RETURN_OK;
             }
@@ -92,14 +93,14 @@ class FileState implements State
             }
 
             // 4.4.4 Set state to path state and decrease pointer by 1.
-            $context->state = new PathState();
+            $context->state = ParserState::PATH;
             $context->iter->prev();
 
             return self::RETURN_OK;
         }
 
         // 5. Otherwise, set state to path state, and decrease pointer by 1.
-        $context->state = new PathState();
+        $context->state = ParserState::PATH;
         $context->iter->prev();
 
         return self::RETURN_OK;

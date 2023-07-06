@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\EncodeSet;
 use Rowbot\URL\String\PercentEncoder;
@@ -111,7 +112,7 @@ class AuthorityState implements State
                 // and set state to host state.
                 $context->iter->seek(-($context->buffer->length() + 1));
                 $context->buffer->clear();
-                $context->state = new HostState();
+                $context->state = ParserState::HOST;
 
                 return self::RETURN_OK;
             }

@@ -46,8 +46,8 @@ class BasicURLParser implements LoggerAwareInterface
      * @param \Rowbot\URL\URLRecord|null            $url              (optional) This represents an existing URL record
      *                                                                object that should be modified based on the input
      *                                                                URL and optional base URL. Default is null.
-     * @param \Rowbot\URL\State\State|null          $stateOverride    (optional) An object implementing the
-     *                                                                \Rowbot\URL\State\State interface that overrides
+     * @param \Rowbot\URL\ParserState|null          $stateOverride    (optional) An object implementing the
+     *                                                                \Rowbot\URL\ParserState interface that overrides
      *                                                                the default start state, which is the Scheme Start
      *                                                                State. Default is null.
      */
@@ -56,7 +56,7 @@ class BasicURLParser implements LoggerAwareInterface
         URLRecord $base = null,
         string $encodingOverride = null,
         URLRecord $url = null,
-        State $stateOverride = null
+        ParserState $stateOverride = null
     ): URLRecord|false {
         $count = 0;
 
@@ -113,9 +113,16 @@ class BasicURLParser implements LoggerAwareInterface
             $encodingOverride,
             $this->logger
         );
+        $state = $context->state;
+        $handler = ParserState::createHandlerFor($context->state);
 
         do {
-            $status = $context->state->handle($context, $iter->current());
+            if ($state !== $context->state) {
+                $state = $context->state;
+                $handler = ParserState::createHandlerFor($context->state);
+            }
+
+            $status = $handler->handle($context, $iter->current());
 
             if ($status === State::RETURN_CONTINUE) {
                 $status = State::RETURN_OK;

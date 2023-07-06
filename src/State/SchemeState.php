@@ -7,6 +7,7 @@ namespace Rowbot\URL\State;
 use Rowbot\URL\Component\OpaquePath;
 use Rowbot\URL\Component\PathSegment;
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 
 use function assert;
@@ -93,7 +94,7 @@ class SchemeState implements State
                 }
 
                 // 2.5.2. Set state to file state.
-                $context->state = new FileState();
+                $context->state = ParserState::FILE;
 
             // 2.6. Otherwise, if url is special, base is non-null, and base’s scheme is equal to url’s scheme, set
             // state to special relative or authority state.
@@ -106,22 +107,22 @@ class SchemeState implements State
                     $context->base->scheme->isSpecial(),
                     'base is special (and therefore does not have an opaque path)'
                 );
-                $context->state = new SpecialRelativeOrAuthorityState();
+                $context->state = ParserState::SPECIAL_RELATIVE_OR_AUTHORITY;
 
             // 2.7. Otherwise, if url is special, set state to special authority slashes state.
             } elseif ($urlIsSpecial) {
-                $context->state = new SpecialAuthoritySlashesState();
+                $context->state = ParserState::SPECIAL_AUTHORITY_SLASHES;
 
             // 2.8. Otherwise, if remaining starts with an U+002F (/), set state to path or authority state and
             // increase pointer by 1.
             } elseif ($context->iter->peek() === '/') {
-                $context->state = new PathOrAuthorityState();
+                $context->state = ParserState::PATH_OR_AUTHORITY;
                 $context->iter->next();
 
             // 2.9. Otherwise, set url’s path to the empty string and set state to opaque path state.
             } else {
                 $context->url->path = new OpaquePath(new PathSegment());
-                $context->state = new OpaquePathState();
+                $context->state = ParserState::OPAQUE_PATH;
             }
 
             return self::RETURN_OK;
@@ -131,7 +132,7 @@ class SchemeState implements State
         // start over (from the first code point in input).
         if (!$context->isStateOverridden()) {
             $context->buffer->clear();
-            $context->state = new NoSchemeState();
+            $context->state = ParserState::NO_SCHEME;
 
             // Reset the pointer to point at the first code point.
             $context->iter->rewind();

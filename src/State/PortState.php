@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\State;
 
 use Rowbot\URL\ParserContext;
+use Rowbot\URL\ParserState;
 use Rowbot\URL\String\CodePoint;
 
 use function strpbrk;
@@ -74,7 +75,7 @@ class PortState implements State
             }
 
             // 2.3. Set state to path start state and decrease pointer by 1.
-            $context->state = new PathStartState();
+            $context->state = ParserState::PATH_START;
             $context->iter->prev();
 
             return self::RETURN_OK;
