@@ -13,7 +13,7 @@
 
 ### Changed
 
-- Bump minimum PHP version to 8
+- Bump minimum PHP version to 8.1
 - Lone surrogate code points are no longer treated differently from other invalid code points
 - `\Rowbot\URL\Exception\UConverterException` has been renamed to `\Rowbot\URL\Exception\MbstringException`
 - Moved 32-bit tests to GitHub Actions from Appveyor
