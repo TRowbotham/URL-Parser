@@ -99,6 +99,12 @@ class URLRecord
                 return new OpaqueOrigin();
             }
 
+            $scheme = (string) $url->scheme;
+
+            if ($scheme !== 'https' && $scheme !== 'http') {
+                return new OpaqueOrigin();
+            }
+
             return $url->getOrigin();
         }
 

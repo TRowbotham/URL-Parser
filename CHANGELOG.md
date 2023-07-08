@@ -20,6 +20,7 @@
 - `\Rowbot\URL\URL`'s $url and $base parameters now also accept `\Stringable`
 - `\Rowbot\URL\URLSearchParams::current()` now returns `null` when the iterator is invalid instead of `['', '']`, which better matches the expected behavior
 - Ensure opaque paths can round trip from the API [whatwg/url#651](https://github.com/whatwg/url/issues/651) [whatwg/url#728](https://github.com/whatwg/url/pull/728)
+- Blob URL's with an inner non-http(s) URL now returns an opaque origin per [whatwg/url#770](https://github.com/whatwg/url/issues/770) and [whatwg/url#771](https://github.com/whatwg/url/pull/771)
 
 ### Removed
 
