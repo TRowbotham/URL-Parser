@@ -35,6 +35,14 @@ class HostParser
     private const FORBIDDEN_HOST_CODEPOINTS = '\x00\x09\x0A\x0D\x20#\/:<>?@[\\\\\]^|';
     private const FORBIDDEN_DOMAIN_CODEPOINTS = self::FORBIDDEN_HOST_CODEPOINTS . '\x01-\x1F%\x7F';
 
+    private const UNICODE_IDNA_OPTIONS = [
+        'CheckHyphens'            => false,
+        'CheckBidi'               => true,
+        'CheckJoiners'            => true,
+        'UseSTD3ASCIIRules'       => false,
+        'Transitional_Processing' => false,
+    ];
+
     /**
      * Parses a host string. The string could represent a domain, IPv4 or IPv6 address, or an opaque host.
      *
@@ -78,6 +86,7 @@ class HostParser
             $context->logger?->warning('domain-invalid-code-point', [
                 'input'  => (string) $asciiDomain,
                 'column' => mb_strlen(mb_strcut((string) $asciiDomain, 0, $matches[0][1], 'utf-8'), 'utf-8') + 1,
+                'unicode_domain' => Idna::toUnicode((string) $asciiDomain, self::UNICODE_IDNA_OPTIONS)->getDomain(),
             ]);
 
             return false;
@@ -116,6 +125,7 @@ class HostParser
                 'input'        => $domain,
                 'column_range' => [1, mb_strlen($domain, 'utf-8')],
                 'idn_errors'   => $this->enumerateIdnaErrors($result->getErrors()),
+                'unicode_domain' => Idna::toUnicode((string) $domain, self::UNICODE_IDNA_OPTIONS)->getDomain(),
             ]);
 
             return false;
