@@ -125,7 +125,7 @@ class HostParser
                 'input'        => $domain,
                 'column_range' => [1, mb_strlen($domain, 'utf-8')],
                 'idn_errors'   => $this->enumerateIdnaErrors($result->getErrors()),
-                'unicode_domain' => Idna::toUnicode((string) $domain, self::UNICODE_IDNA_OPTIONS)->getDomain(),
+                'unicode_domain' => Idna::toUnicode($domain, self::UNICODE_IDNA_OPTIONS)->getDomain(),
             ]);
 
             return false;
