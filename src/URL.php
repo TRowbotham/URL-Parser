@@ -15,10 +15,8 @@ use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\String\Utf8String;
 use Stringable;
 
-use function is_int;
 use function json_encode;
 use function sprintf;
-use function vsprintf;
 
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
