@@ -74,4 +74,14 @@ class URLSearchParamsDeleteTest extends TestCase
         self::assertSame('space    ', $url->pathname);
         self::assertSame('data:space    #test', $url->href);
     }
+
+    public function testTwoArgumentDelete(): void
+    {
+        $params = new URLSearchParams();
+        $params->append('a', 'b');
+        $params->append('a', 'c');
+        $params->append('a', 'd');
+        $params->delete('a', 'c');
+        self::assertSame('a=b&a=d', $params->toString());
+    }
 }

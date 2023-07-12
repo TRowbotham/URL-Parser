@@ -197,9 +197,10 @@ $params1 = new URLSearchParams($params);
 
 Appends a new name-value pair to the list.
 
-#### `void URLSearchParams::delete(string $name)`
+#### `void URLSearchParams::delete(string $name[, string $value])`
 
-Deletes all name-value pairs whose name is `$name` from the list.
+Deletes all name-value pairs whose name is `$name` from the list. If the optional `$value` is provided,
+then only pairs with the same name and value are removed.
 
 #### `string|null URLSearchParams::get(string $name)`
 
@@ -209,7 +210,7 @@ Returns the value of the first name-value pair whose name is `$name` in the list
 
 Returns a list of values of all name-value pairs whose name is `$name`, in list order, or the empty list if there are no name-value pairs whose name is `$name` in the list.
 
-#### `bool URLSearchParams::has(string $name)`
+#### `bool URLSearchParams::has(string $name[, string $value])`
 
 Returns true if there is a name-value pair in the list, and false otherwise.
 

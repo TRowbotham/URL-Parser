@@ -11,6 +11,7 @@
 - `\Rowbot\URL\URLSearchParams` now has a `size` getter per [whatwg/url#734](https://github.com/whatwg/url/pull/734)
   - `\Rowbot\URL\URLSearchParams` now also implements `\Countable`
 - Added `\Rowbot\URL\URL::canParse()`, which returns a boolean if parsing was successful, per [whatwg/url#713](https://github.com/whatwg/url/issues/713) and [whatwg/url#763](https://github.com/whatwg/url/pull/763)
+- Add value parameter to `\Rowbot\URL\URLSearchParams::has()` and `\Rowbot\URL\URLSearchParams::delete()` per [whatwg/url#335](https://github.com/whatwg/url/issues/335) and [whatwg/url#735](https://github.com/whatwg/url/pull/735)
 
 ### Changed
 

@@ -118,9 +118,21 @@ class QueryList implements Countable, IteratorAggregate
     /**
      * Determines if a name-value pair with name $name exists in the collection.
      */
-    public function contains(string $name): bool
+    public function contains(string $name, ?string $value = null): bool
     {
-        return isset($this->cache[$name]);
+        $hasTuple = isset($this->cache[$name]);
+
+        if ($value === null || !$hasTuple) {
+            return $hasTuple;
+        }
+
+        foreach ($this->list as $tuple) {
+            if ($name === $tuple['name'] && $value === $tuple['value']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -166,15 +178,27 @@ class QueryList implements Countable, IteratorAggregate
     /**
      * Removes all name-value pairs with name $name from the list.
      */
-    public function remove(string $name): void
+    public function remove(string $name, ?string $value): void
     {
+        $seen = 0;
+        $removed = 0;
+
         for ($i = count($this->list) - 1; $i >= 0; --$i) {
             if ($this->list[$i]['name'] === $name) {
+                ++$seen;
+
+                if ($value !== null && $this->list[$i]['value'] !== $value) {
+                    continue;
+                }
+
                 array_splice($this->list, $i, 1);
+                ++$removed;
             }
         }
 
-        unset($this->cache[$name]);
+        if ($seen === $removed) {
+            unset($this->cache[$name]);
+        }
     }
 
     /**

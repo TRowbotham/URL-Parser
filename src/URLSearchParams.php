@@ -128,9 +128,13 @@ class URLSearchParams implements Countable, Iterator, Stringable
      *
      * @param string $name The name of the key to delete.
      */
-    public function delete(string $name): void
+    public function delete(string $name, string $value = null): void
     {
-        $this->list->remove(Utf8String::scrub($name));
+        if ($value !== null) {
+            $value = Utf8String::scrub($value);
+        }
+
+        $this->list->remove(Utf8String::scrub($name), $value);
         $this->update();
     }
 
@@ -173,9 +177,13 @@ class URLSearchParams implements Countable, Iterator, Stringable
      *
      * @return bool Returns true if the key exits, otherwise false.
      */
-    public function has(string $name): bool
+    public function has(string $name, string $value = null): bool
     {
-        return $this->list->contains(Utf8String::scrub($name));
+        if ($value !== null) {
+            $value = Utf8String::scrub($value);
+        }
+
+        return $this->list->contains(Utf8String::scrub($name), $value);
     }
 
     public function key(): int

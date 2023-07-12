@@ -34,4 +34,18 @@ class URLSearchParamsHasTest extends TestCase
         $params->delete('first');
         self::assertFalse($params->has('first'));
     }
+
+    public function testTwoArgumentHas(): void
+    {
+        $params = new URLSearchParams('a=b&a=d&c&e&');
+        self::assertTrue($params->has('a', 'b'));
+        self::assertFalse($params->has('a', 'c'));
+        self::assertTrue($params->has('a', 'd'));
+        self::assertTrue($params->has('e', ''));
+        $params->append('first', 'null');
+        self::assertFalse($params->has('first', ''));
+        self::assertTrue($params->has('first', 'null'));
+        $params->delete('a', 'b');
+        self::assertTrue($params->has('a', 'd'));
+    }
 }
