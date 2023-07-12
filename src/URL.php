@@ -12,9 +12,6 @@ use Psr\Log\LoggerInterface;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\QueryList;
 use Rowbot\URL\Exception\TypeError;
-use Rowbot\URL\String\EncodeSet;
-use Rowbot\URL\String\PercentEncoder;
-use Rowbot\URL\String\USVStringInterface;
 use Rowbot\URL\String\Utf8String;
 use Stringable;
 
@@ -126,32 +123,6 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
     public function jsonSerialize(): string
     {
         return $this->url->serializeURL();
-    }
-
-    /**
-     * @see https://url.spec.whatwg.org/#set-the-password
-     */
-    private function setUrlPassword(USVStringInterface $input): void
-    {
-        $percentEncoder = new PercentEncoder();
-        $this->url->password = $percentEncoder->percentEncodeAfterEncoding(
-            'utf-8',
-            (string) $input,
-            EncodeSet::USERINFO
-        );
-    }
-
-    /**
-     * @see https://url.spec.whatwg.org/#set-the-username
-     */
-    private function setUrlUsername(USVStringInterface $input): void
-    {
-        $percentEncoder = new PercentEncoder();
-        $this->url->username = $percentEncoder->percentEncodeAfterEncoding(
-            'utf-8',
-            (string) $input,
-            EncodeSet::USERINFO
-        );
     }
 
     public function __clone(): void
@@ -305,7 +276,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
                 return;
             }
 
-            $this->setUrlPassword($input);
+            $this->url->setPassword($input);
         } elseif ($name === 'pathname') {
             if ($this->url->path->isOpaque()) {
                 // Terminate these steps
@@ -349,7 +320,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
                 return;
             }
 
-            $this->setUrlUsername($input);
+            $this->url->setUsername($input);
         } else {
             throw new InvalidArgumentException(sprintf('"%s" is not a valid property.', $name));
         }

@@ -11,6 +11,9 @@ use Rowbot\URL\Component\PathInterface;
 use Rowbot\URL\Component\PathList;
 use Rowbot\URL\Component\Scheme;
 use Rowbot\URL\Component\TupleOrigin;
+use Rowbot\URL\String\EncodeSet;
+use Rowbot\URL\String\PercentEncoder;
+use Rowbot\URL\String\USVStringInterface;
 
 class URLRecord
 {
@@ -191,6 +194,32 @@ class URLRecord
 
         // 7. Return output.
         return $output;
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#set-the-password
+     */
+    public function setPassword(USVStringInterface $input): void
+    {
+        $percentEncoder = new PercentEncoder();
+        $this->password = $percentEncoder->percentEncodeAfterEncoding(
+            'utf-8',
+            (string) $input,
+            EncodeSet::USERINFO
+        );
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#set-the-username
+     */
+    public function setUsername(USVStringInterface $input): void
+    {
+        $percentEncoder = new PercentEncoder();
+        $this->username = $percentEncoder->percentEncodeAfterEncoding(
+            'utf-8',
+            (string) $input,
+            EncodeSet::USERINFO
+        );
     }
 
     public function __clone(): void
