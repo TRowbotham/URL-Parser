@@ -10,6 +10,7 @@
 - `\Rowbot\URL\URLSearchParams` constructor now has a native typehint of `array|object|string`
 - `\Rowbot\URL\URLSearchParams` now has a `size` getter per [whatwg/url#734](https://github.com/whatwg/url/pull/734)
   - `\Rowbot\URL\URLSearchParams` now also implements `\Countable`
+- Added `\Rowbot\URL\URL::canParse()`, which returns a boolean if parsing was successful, per [whatwg/url#713](https://github.com/whatwg/url/issues/713) and [whatwg/url#763](https://github.com/whatwg/url/pull/763)
 
 ### Changed
 

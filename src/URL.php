@@ -15,8 +15,10 @@ use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\String\Utf8String;
 use Stringable;
 
+use function is_int;
 use function json_encode;
 use function sprintf;
+use function vsprintf;
 
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
@@ -55,7 +57,6 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
      */
     public function __construct(string|Stringable $url, null|string|Stringable $base = null, array $options = [])
     {
-        $parsedBase = null;
         $this->logger = null;
 
         if (isset($options['logger'])) {
@@ -69,21 +70,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
             $this->logger = $options['logger'];
         }
 
-        $parser = new BasicURLParser($this->logger);
-
-        if ($base !== null) {
-            $parsedBase = $parser->parse(Utf8String::fromUnsafe((string) $base));
-
-            if ($parsedBase === false) {
-                throw new TypeError(sprintf('"%s" is not a valid base URL.', (string) $base));
-            }
-        }
-
-        $parsedURL = $parser->parse(Utf8String::fromUnsafe((string) $url), $parsedBase);
-
-        if ($parsedURL === false) {
-            throw new TypeError(sprintf('"%s" is not a valid URL.', (string) $url));
-        }
+        $parsedURL = self::apiURLParser($url, $base, $this->logger);
 
         $this->url = $parsedURL;
         $this->queryObject = new URLSearchParams();
@@ -94,6 +81,20 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
         }
 
         $this->queryObject->setList(QueryList::fromString($this->url->query));
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#dom-url-canparse
+     */
+    public static function canParse(string|Stringable $url, null|string|Stringable $base = null): bool
+    {
+        try {
+            self::apiURLParser($url, $base, null);
+        } catch (TypeError) {
+            return false;
+        }
+
+        return true;
     }
 
     public function toString(): string
@@ -123,6 +124,36 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
     public function jsonSerialize(): string
     {
         return $this->url->serializeURL();
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#api-url-parser
+     */
+    private static function apiURLParser(
+        string|Stringable $url,
+        null|string|Stringable $base = null,
+        LoggerInterface $logger = null
+    ): URLRecord {
+        $parsedBase = null;
+        $parser = new BasicURLParser($logger);
+
+        if ($base !== null) {
+            $stringBase = (string) $base;
+            $parsedBase = $parser->parse(Utf8String::fromUnsafe($stringBase));
+
+            if ($parsedBase === false) {
+                throw new TypeError(sprintf('"%s" is not a valid base URL', $stringBase));
+            }
+        }
+
+        $stringURL = (string) $url;
+        $parsedURL = $parser->parse(Utf8String::fromUnsafe($url), $parsedBase);
+
+        if ($parsedURL === false) {
+            throw new TypeError(sprintf('"%s" is not a valid URL', $stringURL));
+        }
+
+        return $parsedURL;
     }
 
     public function __clone(): void

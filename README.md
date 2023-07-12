@@ -118,6 +118,10 @@ Returns the URLSearchParams object associated with this URL allowing you to modi
 
 The `hash` getter, also known as a URLs fragment, returns the portion of the URL that follows the "#" character. The `hash` setter updates the portion of the URL that follows the "#".
 
+#### `bool URL::canParse(string|\Stringable $url[, null|string|\Stringable $base = null])`
+
+A static method that allows the user to quickly check if a URL is parsable, without needing to construct a new URL object and wrapping it with a try/catch statement.
+
 #### `string URL::toJSON()`
 
 Returns a JSON encoded string of the URL. Note that this method escapes forward slashes, which is not the default for PHPs `json_encode()`, but matches the default behavior of JavaScripts `JSON.stringify()`. If you wish to control the serialization, then pass the URL obect to the `json_encode()` function.
