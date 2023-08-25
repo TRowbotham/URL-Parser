@@ -102,13 +102,10 @@ class URLRecord
                 return new OpaqueOrigin();
             }
 
-            $scheme = (string) $url->scheme;
-
-            if ($scheme !== 'https' && $scheme !== 'http') {
-                return new OpaqueOrigin();
-            }
-
-            return $url->getOrigin();
+            return match ((string) $url->scheme) {
+                'https', 'http', 'file' => $url->getOrigin(),
+                default                 => new OpaqueOrigin(),
+            };
         }
 
         if ($this->scheme->isFile()) {
