@@ -145,7 +145,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
         }
 
         $stringURL = (string) $url;
-        $parsedURL = $parser->parse(Utf8String::fromUnsafe($url), $parsedBase);
+        $parsedURL = $parser->parse(Utf8String::fromUnsafe($stringURL), $parsedBase);
 
         if ($parsedURL === false) {
             throw new TypeError(sprintf('"%s" is not a valid URL', $stringURL));
