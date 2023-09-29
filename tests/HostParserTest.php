@@ -26,8 +26,8 @@ class HostParserTest extends TestCase
         $context = new ParserContext($in, $in->getIterator(), new StringBuffer(), new URLRecord(), null, null, null, null);
 
         foreach ($output as $i => $expected) {
-            $isNotSpecial = $i % 2 === 1;
-            $host = $parser->parse($context, $in, $isNotSpecial);
+            $isOpaque = $i % 2 === 1;
+            $host = $parser->parse($context, $in, $isOpaque);
 
             if ($expected === false) {
                 self::assertFalse($host);

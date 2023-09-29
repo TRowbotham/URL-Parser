@@ -46,14 +46,14 @@ class HostParser
     /**
      * Parses a host string. The string could represent a domain, IPv4 or IPv6 address, or an opaque host.
      *
-     * @param bool $isNotSpecial (optional) Whether or not the URL has a special scheme.
+     * @param bool $isOpaque (optional) Whether or not the URL has a special scheme.
      *
      * @return \Rowbot\URL\Component\Host\HostInterface|false The returned Host can never be a null host.
      */
     public function parse(
         ParserContext $context,
         USVStringInterface $input,
-        bool $isNotSpecial = false
+        bool $isOpaque = false
     ): HostInterface|false {
         if ($input->startsWith('[')) {
             if (!$input->endsWith(']')) {
@@ -69,7 +69,7 @@ class HostParser
             return IPv6AddressParser::parse($context, $input->substr(1, -1));
         }
 
-        if ($isNotSpecial) {
+        if ($isOpaque) {
             return $this->parseOpaqueHost($context, $input);
         }
 
