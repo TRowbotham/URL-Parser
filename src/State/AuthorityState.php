@@ -31,7 +31,7 @@ class AuthorityState implements State
             // 1. If c is U+0040 (@), then:
             if ($codePoint === '@') {
                 // 1.1. Validation error.
-                $context->logger?->notice('invalid-credentials', [
+                $context->logger?->notice('host-missing', [
                     'input'  => (string) $context->input,
                     'column' => $context->iter->key() + 1,
                 ]);
