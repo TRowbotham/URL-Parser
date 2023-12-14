@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    name: PHP ${{ matrix.php }} ${{ matrix.enable-jit == 1 && 'with' || 'without' }} JIT on ${{ matrix.os }} ${{ matrix.arch }}
+    name: PHP ${{ matrix.php }} ${{ matrix.php-jit == 1255 && 'with' || 'without' }} JIT on ${{ matrix.os }} ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
     container: shivammathur/node:latest-${{ matrix.arch }}
     continue-on-error: ${{ matrix.php == 'nightly' }}
@@ -28,14 +28,15 @@ jobs:
         php:
           - 8.1
           - 8.2
-        enable-jit:
-          - 0
-          - 1
+          - 8.3
+        php-jit:
+          - disable
+          - 1255
         include:
           - php: nightly
             os: ubuntu-latest
             arch: amd64
-            enable-jit: 0
+            php-jit: disable
 
     steps:
       - name: Checkout
@@ -45,8 +46,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, mbstring, opcache, pcre, gmp
-          ini-values: zend.assertions=1, opcache.enable_cli=${{ matrix.enable-jit }}, opcache.memory_consumption=256, opcache.jit=1255, opcache.jit_buffer_size=256M
+          extensions: mbstring, opcache, pcre, gmp
+          ini-values: zend.assertions=1, opcache.enable_cli=1, opcache.memory_consumption=256, opcache.jit=${{ matrix.php-jit }}, opcache.jit_buffer_size=256M
           coverage: none
         env:
           fail-fast: true

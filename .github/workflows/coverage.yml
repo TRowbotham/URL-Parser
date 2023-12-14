@@ -35,7 +35,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, mbstring, opcache, pcre, gmp
+          extensions: mbstring, opcache, pcre, gmp
           coverage: pcov
         env:
           fail-fast: true
