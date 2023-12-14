@@ -61,10 +61,8 @@ class URLSearchParams implements Countable, Iterator, Stringable
             return;
         }
 
-        $str = $this->getStringValue($init);
-
-        if ($str !== false) {
-            $init = Utf8String::scrub($str);
+        if ($this->isStringable($init)) {
+            $init = Utf8String::scrub((string) $init);
 
             if ($init !== '' && $init[0] === '?') {
                 $init = substr($init, 1);
@@ -340,29 +338,23 @@ class URLSearchParams implements Countable, Iterator, Stringable
                 ));
             }
 
-            $parts = [];
+            [$name, $value] = $pair;
 
-            foreach ($pair as $part) {
-                $parts[] = $this->getStringValue($part);
-            }
-
-            [$name, $value] = $parts;
-
-            if ($name === false) {
+            if (!$this->isStringable($name)) {
                 throw new TypeError(sprintf(
                     'The name of the name-value pair at index "%s" must be a scalar value or stringable.',
                     $key
                 ));
             }
 
-            if ($value === false) {
+            if (!$this->isStringable($value)) {
                 throw new TypeError(sprintf(
                     'The value of the name-value pair at index "%s" must be a scalar value or stringable.',
                     $key
                 ));
             }
 
-            $this->list->append(Utf8String::scrub($name), Utf8String::scrub($value));
+            $this->list->append(Utf8String::scrub((string) $name), Utf8String::scrub((string) $value));
         }
     }
 
@@ -371,22 +363,25 @@ class URLSearchParams implements Countable, Iterator, Stringable
         $reflection = new ReflectionObject($input);
 
         foreach ($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
-            $value = $this->getStringValue($property->getValue($input));
+            $value = $property->getValue($input);
 
-            if ($value === false) {
+            if (!$this->isStringable($value)) {
                 throw new TypeError(sprintf(
                     'The value of property "%s" must be a scalar value or \\Stringable.',
                     $reflection->getName()
                 ));
             }
 
-            $this->list->append(Utf8String::scrub($property->getName()), Utf8String::scrub($value));
+            $this->list->append(Utf8String::scrub($property->getName()), Utf8String::scrub((string) $value));
         }
     }
 
-    private function getStringValue(mixed $value): string|false
+    /**
+     * @phpstan-assert-if-true scalar|\Stringable $value
+     */
+    private function isStringable(mixed $value): bool
     {
-        return $value instanceof Stringable || is_scalar($value) ? (string) $value : false;
+        return $value instanceof Stringable || is_scalar($value);
     }
 
     public function __clone(): void

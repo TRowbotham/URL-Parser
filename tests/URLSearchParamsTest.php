@@ -48,11 +48,11 @@ class URLSearchParamsTest extends TestCase
 
     public static function getInvalidIteratorInput(): array
     {
-        $generator = (static function (): Generator {
+        $generator = static function (): Generator {
             yield 'foo';
             yield 'bar';
-        })();
-        $anonClass = new class ($generator) implements Countable
+        };
+        $anonClass = new class ($generator()) implements Countable
         {
             public Generator $foo;
 
@@ -70,11 +70,12 @@ class URLSearchParamsTest extends TestCase
         return [
             'sequences not equal to 2' => [[['foo', 'bar'], ['baz']]],
             'non-iterable'             => [new ArrayObject(['x', 'y'])],
-            'generator'                => [[$generator]],
+            'generator'                => [[$generator()]],
             'invalid-name'             => [[[null, 'foo']]],
             'invalid-value'            => [[['foo', null]]],
             'countable-only'           => [[[$anonClass]]],
             'invalid-property-value'   => [$anonClass],
+            'iterable-non-countable'   => [new ArrayObject([$generator(), $generator()])]
         ];
     }
 
