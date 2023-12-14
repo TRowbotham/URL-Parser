@@ -15,7 +15,7 @@ use Rowbot\URL\String\CodePoint;
  */
 class FileHostState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         do {
             // 1. If c is the EOF code point, U+002F (/), U+005C (\), U+003F (?), or U+0023 (#), then decrease pointer by 1
@@ -39,7 +39,7 @@ class FileHostState implements State
                     ]);
                     $context->state = ParserState::PATH;
 
-                    return self::RETURN_OK;
+                    return StatusCode::OK;
                 }
 
                 // This is a (platform-independent) Windows drive letter quirk. $context->buffer is not reset
@@ -52,13 +52,13 @@ class FileHostState implements State
 
                     // 1.2.2. If state override is given, then return.
                     if ($context->isStateOverridden()) {
-                        return self::RETURN_BREAK;
+                        return StatusCode::BREAK;
                     }
 
                     // 1.2.3. Set state to path start state.
                     $context->state = ParserState::PATH_START;
 
-                    return self::RETURN_OK;
+                    return StatusCode::OK;
                 }
 
                 // 1.3. Otherwise, run these steps:
@@ -68,7 +68,7 @@ class FileHostState implements State
 
                 // 1.3.2. If host is failure, then return failure.
                 if ($host === false) {
-                    return self::RETURN_FAILURE;
+                    return StatusCode::FAILURE;
                 }
 
                 // 1.3.3. If host is "localhost", then set host to the empty string.
@@ -81,14 +81,14 @@ class FileHostState implements State
 
                 // 1.3.5. If state override is given, then return.
                 if ($context->isStateOverridden()) {
-                    return self::RETURN_BREAK;
+                    return StatusCode::BREAK;
                 }
 
                 // 1.3.6. Set buffer to the empty string and state to path start state.
                 $context->buffer->clear();
                 $context->state = ParserState::PATH_START;
 
-                return self::RETURN_OK;
+                return StatusCode::OK;
             }
 
             // 2. Otherwise, append c to buffer.

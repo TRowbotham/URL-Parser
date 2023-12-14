@@ -15,7 +15,7 @@ use Rowbot\URL\String\PercentEncoder;
  */
 class QueryState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. If encoding is not UTF-8 and one of the following is true:
         //      - url is not special
@@ -60,7 +60,7 @@ class QueryState implements State
                     $context->state = ParserState::FRAGMENT;
                 }
 
-                return self::RETURN_OK;
+                return StatusCode::OK;
             }
 
             // 3. Otherwise, if c is not the EOF code point:

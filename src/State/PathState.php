@@ -40,7 +40,7 @@ class PathState implements State
         '%2E' => '',
     ];
 
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         $percentEncoder = null;
 
@@ -119,7 +119,7 @@ class PathState implements State
                     $context->state = ParserState::FRAGMENT;
                 }
 
-                return self::RETURN_OK;
+                return StatusCode::OK;
             }
 
             // 2. Otherwise, run these steps:

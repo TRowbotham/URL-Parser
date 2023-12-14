@@ -15,7 +15,7 @@ use function assert;
  */
 class RelativeState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. Assert: base’s scheme is not "file".
         assert($context->base !== null && !$context->base->scheme->isFile());
@@ -27,7 +27,7 @@ class RelativeState implements State
         if ($codePoint === '/') {
             $context->state = ParserState::RELATIVE_SLASH;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 4. Otherwise, if url is special and c is U+005C (\), validation error, set state to relative slash state.
@@ -39,7 +39,7 @@ class RelativeState implements State
             ]);
             $context->state = ParserState::RELATIVE_SLASH;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 5. Otherwise:
@@ -57,7 +57,7 @@ class RelativeState implements State
             $context->url->query = '';
             $context->state = ParserState::QUERY;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 5.3. Otherwise, if c is U+0023 (#), set url’s fragment to the empty string and state to fragment state.
@@ -65,12 +65,12 @@ class RelativeState implements State
             $context->url->fragment = '';
             $context->state = ParserState::FRAGMENT;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 5.4 Otherwise, if c is not the EOF code point:
         if ($codePoint === CodePoint::EOF) {
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 5.4.1. Set url’s query to null.
@@ -83,6 +83,6 @@ class RelativeState implements State
         $context->state = ParserState::PATH;
         $context->iter->prev();
 
-        return self::RETURN_OK;
+        return StatusCode::OK;
     }
 }

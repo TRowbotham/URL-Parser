@@ -16,7 +16,7 @@ use Rowbot\URL\String\CodePoint;
  */
 class FileState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. Set url’s scheme to "file".
         $context->url->scheme = new Scheme('file');
@@ -38,7 +38,7 @@ class FileState implements State
             // 3.2. Set state to file slash state.
             $context->state = ParserState::FILE_SLASH;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 4. Otherwise, if base is non-null and base’s scheme is "file":
@@ -54,7 +54,7 @@ class FileState implements State
                 $context->url->query = '';
                 $context->state = ParserState::QUERY;
 
-                return self::RETURN_OK;
+                return StatusCode::OK;
             }
 
             // 4.3. Otherwise, if c is U+0023 (#), set url’s fragment to the empty string and state to fragment state.
@@ -62,12 +62,12 @@ class FileState implements State
                 $context->url->fragment = '';
                 $context->state = ParserState::FRAGMENT;
 
-                return self::RETURN_OK;
+                return StatusCode::OK;
             }
 
             // 4.4. Otherwise, if c is not the EOF code point:
             if ($codePoint === CodePoint::EOF) {
-                return self::RETURN_OK;
+                return StatusCode::OK;
             }
 
             // 4.4.1. Set url’s query to null.
@@ -96,13 +96,13 @@ class FileState implements State
             $context->state = ParserState::PATH;
             $context->iter->prev();
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 5. Otherwise, set state to path state, and decrease pointer by 1.
         $context->state = ParserState::PATH;
         $context->iter->prev();
 
-        return self::RETURN_OK;
+        return StatusCode::OK;
     }
 }

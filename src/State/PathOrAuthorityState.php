@@ -12,19 +12,19 @@ use Rowbot\URL\ParserState;
  */
 class PathOrAuthorityState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. If c is U+002F (/), then set state to authority state.
         if ($codePoint === '/') {
             $context->state = ParserState::AUTHORITY;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 2. Otherwise, set state to path state, and decrease pointer by 1.
         $context->state = ParserState::PATH;
         $context->iter->prev();
 
-        return self::RETURN_OK;
+        return StatusCode::OK;
     }
 }

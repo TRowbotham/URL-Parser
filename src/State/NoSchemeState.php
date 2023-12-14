@@ -12,7 +12,7 @@ use Rowbot\URL\ParserState;
  */
 class NoSchemeState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. If base is null, or base has an opaque path and c is not U+0023 (#), validation error, return failure.
         if ($context->base === null || ($context->base->path->isOpaque() && $codePoint !== '#')) {
@@ -22,7 +22,7 @@ class NoSchemeState implements State
                 'column' => $context->iter->key() + 1,
             ]);
 
-            return self::RETURN_FAILURE;
+            return StatusCode::FAILURE;
         }
 
         // 2. Otherwise, if base has an opaque path and c is U+0023 (#), set url’s scheme to base’s scheme, url’s path
@@ -35,7 +35,7 @@ class NoSchemeState implements State
             $context->url->fragment = '';
             $context->state = ParserState::FRAGMENT;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 3. Otherwise, if base’s scheme is not "file", set state to relative state and decrease pointer by 1.
@@ -43,13 +43,13 @@ class NoSchemeState implements State
             $context->state = ParserState::RELATIVE;
             $context->iter->prev();
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 4. Otherwise, set state to file state and decrease pointer by 1.
         $context->state = ParserState::FILE;
         $context->iter->prev();
 
-        return self::RETURN_OK;
+        return StatusCode::OK;
     }
 }

@@ -15,7 +15,7 @@ use function strpbrk;
  */
 class PortState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. If c is an ASCII digit, append c to buffer.
         while (strpbrk($codePoint, CodePoint::ASCII_DIGIT_MASK) === $codePoint) {
@@ -55,7 +55,7 @@ class PortState implements State
                         ],
                     ]);
 
-                    return self::RETURN_FAILURE;
+                    return StatusCode::FAILURE;
                 }
 
                 // 2.1.3. Set url’s port to null, if port is url’s scheme’s default port, and to port otherwise.
@@ -71,14 +71,14 @@ class PortState implements State
 
             // 2.2. If state override is given, then return.
             if ($context->isStateOverridden()) {
-                return self::RETURN_BREAK;
+                return StatusCode::BREAK;
             }
 
             // 2.3. Set state to path start state and decrease pointer by 1.
             $context->state = ParserState::PATH_START;
             $context->iter->prev();
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 3. Otherwise, validation error, return failure.
@@ -87,6 +87,6 @@ class PortState implements State
             'column_range' => [$context->iter->key() - $context->buffer->length() + 1, $context->iter->key() + 1],
         ]);
 
-        return self::RETURN_FAILURE;
+        return StatusCode::FAILURE;
     }
 }

@@ -12,7 +12,7 @@ use Rowbot\URL\ParserState;
  */
 class FileSlashState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. If c is U+002F (/) or U+005C (\), then:
         if ($codePoint === '/' || $codePoint === '\\') {
@@ -28,7 +28,7 @@ class FileSlashState implements State
             // 1.2. Set state to file host state.
             $context->state = ParserState::FILE_HOST;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 2. Otherwise:
@@ -54,6 +54,6 @@ class FileSlashState implements State
         $context->state = ParserState::PATH;
         $context->iter->prev();
 
-        return self::RETURN_OK;
+        return StatusCode::OK;
     }
 }

@@ -7,7 +7,7 @@ namespace Rowbot\URL;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
-use Rowbot\URL\State\State;
+use Rowbot\URL\State\StatusCode;
 use Rowbot\URL\String\StringBuffer;
 use Rowbot\URL\String\USVStringInterface;
 
@@ -124,17 +124,17 @@ class BasicURLParser implements LoggerAwareInterface
 
             $status = $handler->handle($context, $iter->current());
 
-            if ($status === State::RETURN_CONTINUE) {
-                $status = State::RETURN_OK;
+            if ($status === StatusCode::CONTINUE) {
+                $status = StatusCode::OK;
 
                 continue;
             }
 
             $iter->next();
-        } while ($status === State::RETURN_OK && $iter->key() < $length);
+        } while ($status === StatusCode::OK && $iter->key() < $length);
 
         return match ($status) {
-            State::RETURN_FAILURE => false,
+            StatusCode::FAILURE => false,
             default               => $url,
         };
     }

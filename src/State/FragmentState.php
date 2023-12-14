@@ -14,7 +14,7 @@ use Rowbot\URL\String\PercentEncoder;
  */
 class FragmentState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         $buffer = '';
 
@@ -49,6 +49,6 @@ class FragmentState implements State
         $percentEncoder = new PercentEncoder();
         $context->url->fragment .= $percentEncoder->percentEncodeAfterEncoding('utf-8', $buffer, EncodeSet::FRAGMENT);
 
-        return self::RETURN_OK;
+        return StatusCode::OK;
     }
 }

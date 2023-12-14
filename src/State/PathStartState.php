@@ -14,7 +14,7 @@ use Rowbot\URL\String\CodePoint;
  */
 class PathStartState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. If url is special, then:
         if ($context->url->scheme->isSpecial()) {
@@ -35,7 +35,7 @@ class PathStartState implements State
                 $context->iter->prev();
             }
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 2. Otherwise, if state override is not given and c is U+003F (?), set url’s query to the empty string and
@@ -44,7 +44,7 @@ class PathStartState implements State
             $context->url->query = '';
             $context->state = ParserState::QUERY;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 3. Otherwise, if state override is not given and c is U+0023 (#), set url’s fragment to the empty string and
@@ -53,7 +53,7 @@ class PathStartState implements State
             $context->url->fragment = '';
             $context->state = ParserState::FRAGMENT;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 4. Otherwise, if c is not the EOF code point:
@@ -66,7 +66,7 @@ class PathStartState implements State
                 $context->iter->prev();
             }
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 5. Otherwise, if state override is given and url’s host is null, append the empty string to url’s path.
@@ -74,6 +74,6 @@ class PathStartState implements State
             $context->url->path->push(new PathSegment());
         }
 
-        return self::RETURN_OK;
+        return StatusCode::OK;
     }
 }

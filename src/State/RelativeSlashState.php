@@ -14,7 +14,7 @@ use function assert;
  */
 class RelativeSlashState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         assert($context->base !== null);
 
@@ -32,14 +32,14 @@ class RelativeSlashState implements State
             // 1.2. Set state to special authority ignore slashes state.
             $context->state = ParserState::SPECIAL_AUTHORITY_IGNORE_SLASHES;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 2. Otherwise, if c is U+002F (/), then set state to authority state.
         if ($codePoint === '/') {
             $context->state = ParserState::AUTHORITY;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 3. Otherwise, set url’s username to base’s username, url’s password to base’s password, url’s host to base’s
@@ -51,6 +51,6 @@ class RelativeSlashState implements State
         $context->state = ParserState::PATH;
         $context->iter->prev();
 
-        return self::RETURN_OK;
+        return StatusCode::OK;
     }
 }

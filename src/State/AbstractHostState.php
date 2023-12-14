@@ -21,7 +21,7 @@ abstract class AbstractHostState implements State
         $this->isBracketOpen = false;
     }
 
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. If state override is given and url’s scheme is "file", then decrease pointer by 1 and set state to file
         // host state.
@@ -29,7 +29,7 @@ abstract class AbstractHostState implements State
             $context->iter->prev();
             $context->state = ParserState::FILE_HOST;
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         do {
@@ -43,12 +43,12 @@ abstract class AbstractHostState implements State
                         'column' => $context->iter->key() + 1,
                     ]);
 
-                    return self::RETURN_FAILURE;
+                    return StatusCode::FAILURE;
                 }
 
                 // 2.2. If state override is given and state override is hostname state, then return.
                 if ($context->isOverrideStateHostname()) {
-                    return self::RETURN_BREAK;
+                    return StatusCode::BREAK;
                 }
 
                 // 2.3. Let host be the result of host parsing buffer with url is not special.
@@ -57,7 +57,7 @@ abstract class AbstractHostState implements State
 
                 // 2.4. If host is failure, then return failure.
                 if ($host === false) {
-                    return self::RETURN_FAILURE;
+                    return StatusCode::FAILURE;
                 }
 
                 // 5. Set url’s host to host, buffer to the empty string, and state to port state.
@@ -65,7 +65,7 @@ abstract class AbstractHostState implements State
                 $context->buffer->clear();
                 $context->state = ParserState::PORT;
 
-                return self::RETURN_OK;
+                return StatusCode::OK;
             }
 
             // 3. Otherwise, if one of the following is true:
@@ -91,7 +91,7 @@ abstract class AbstractHostState implements State
                         'column' => $context->iter->key() + 2, // Add 2 since we called ->prev() above
                     ]);
 
-                    return self::RETURN_FAILURE;
+                    return StatusCode::FAILURE;
                 }
 
                 // 3.2. Otherwise, if state override is given, buffer is the empty string, and either url includes
@@ -101,7 +101,7 @@ abstract class AbstractHostState implements State
                     && $context->buffer->isEmpty()
                     && ($context->url->includesCredentials() || $context->url->port !== null)
                 ) {
-                    return self::RETURN_BREAK;
+                    return StatusCode::BREAK;
                 }
 
                 // 3.3. Let host be the result of host parsing buffer with url is not special.
@@ -110,7 +110,7 @@ abstract class AbstractHostState implements State
 
                 // 3.4. If host is failure, then return failure.
                 if ($host === false) {
-                    return self::RETURN_FAILURE;
+                    return StatusCode::FAILURE;
                 }
 
                 // 3.5. Set url’s host to host, buffer to the empty string, and state to path start state.
@@ -120,10 +120,10 @@ abstract class AbstractHostState implements State
 
                 // 3.6. If state override is given, then return.
                 if ($context->isStateOverridden()) {
-                    return self::RETURN_BREAK;
+                    return StatusCode::BREAK;
                 }
 
-                return self::RETURN_OK;
+                return StatusCode::OK;
             }
 
             // 4. Otherwise:

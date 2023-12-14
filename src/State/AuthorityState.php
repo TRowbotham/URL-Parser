@@ -25,7 +25,7 @@ class AuthorityState implements State
         $this->passwordTokenSeen = false;
     }
 
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         do {
             // 1. If c is U+0040 (@), then:
@@ -82,7 +82,7 @@ class AuthorityState implements State
                 // 1.5. Set buffer to the empty string.
                 $context->buffer->clear();
 
-                return self::RETURN_OK;
+                return StatusCode::OK;
             }
 
             // 2. Otherwise, if one of the following is true:
@@ -105,7 +105,7 @@ class AuthorityState implements State
                         'column' => $context->iter->key() + 1,
                     ]);
 
-                    return self::RETURN_FAILURE;
+                    return StatusCode::FAILURE;
                 }
 
                 // 2.2. Decrease pointer by the number of code points in buffer plus one, set buffer to the empty string,
@@ -114,7 +114,7 @@ class AuthorityState implements State
                 $context->buffer->clear();
                 $context->state = ParserState::HOST;
 
-                return self::RETURN_OK;
+                return StatusCode::OK;
             }
 
             // 3. Otherwise, append c to buffer.

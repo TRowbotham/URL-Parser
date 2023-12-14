@@ -12,7 +12,7 @@ use Rowbot\URL\ParserState;
  */
 class SpecialAuthoritySlashesState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. If c is U+002F (/) and remaining starts with U+002F (/), then set state to special authority ignore
         // slashes state and increase pointer by 1.
@@ -20,7 +20,7 @@ class SpecialAuthoritySlashesState implements State
             $context->state = ParserState::SPECIAL_AUTHORITY_IGNORE_SLASHES;
             $context->iter->next();
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 2. Otherwise, validation error, set state to special authority ignore slashes state and decrease pointer
@@ -32,6 +32,6 @@ class SpecialAuthoritySlashesState implements State
         ]);
         $context->iter->prev();
 
-        return self::RETURN_OK;
+        return StatusCode::OK;
     }
 }

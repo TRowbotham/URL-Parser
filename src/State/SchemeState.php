@@ -19,7 +19,7 @@ use function strtolower;
  */
 class SchemeState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         // 1. If c is an ASCII alphanumeric, U+002B (+), U+002D (-), or U+002E (.), append c, lowercased, to buffer.
         while (
@@ -47,7 +47,7 @@ class SchemeState implements State
                 // 2.1.1. If url’s scheme is a special scheme and buffer is not a special scheme, then return.
                 // 2.1.2. If url’s scheme is not a special scheme and buffer is a special scheme, then return.
                 if ($urlIsSpecial xor $bufferIsSpecialScheme) {
-                    return self::RETURN_BREAK;
+                    return StatusCode::BREAK;
                 }
 
                 // 2.1.3. If url includes credentials or has a non-null port, and buffer is "file", then return.
@@ -55,12 +55,12 @@ class SchemeState implements State
                     $context->url->includesCredentials()
                     || ($context->url->port !== null && $candidateScheme->isFile())
                 ) {
-                    return self::RETURN_BREAK;
+                    return StatusCode::BREAK;
                 }
 
                 // 2.1.4. If url’s scheme is "file" and its host is an empty host, then return.
                 if ($context->url->scheme->isFile() && $context->url->host->isEmpty()) {
-                    return self::RETURN_BREAK;
+                    return StatusCode::BREAK;
                 }
             }
 
@@ -75,7 +75,7 @@ class SchemeState implements State
                 }
 
                 // 2.3.2. Return.
-                return self::RETURN_BREAK;
+                return StatusCode::BREAK;
             }
 
             // 2.4. Set buffer to the empty string.
@@ -125,7 +125,7 @@ class SchemeState implements State
                 $context->state = ParserState::OPAQUE_PATH;
             }
 
-            return self::RETURN_OK;
+            return StatusCode::OK;
         }
 
         // 3. Otherwise, if state override is not given, set buffer to the empty string, state to no scheme state, and
@@ -137,7 +137,7 @@ class SchemeState implements State
             // Reset the pointer to point at the first code point.
             $context->iter->rewind();
 
-            return self::RETURN_CONTINUE;
+            return StatusCode::CONTINUE;
         }
 
         // 4. Otherwise, return failure.
@@ -145,6 +145,6 @@ class SchemeState implements State
         // Note: This indication of failure is used exclusively by the Location object's protocol
         // attribute. Furthermore, the non-failure termination earlier in this state is an
         // intentional difference for defining that attribute.
-        return self::RETURN_FAILURE;
+        return StatusCode::FAILURE;
     }
 }

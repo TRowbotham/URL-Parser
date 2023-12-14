@@ -15,7 +15,7 @@ use Rowbot\URL\String\PercentEncoder;
  */
 class OpaquePathState implements State
 {
-    public function handle(ParserContext $context, string $codePoint): int
+    public function handle(ParserContext $context, string $codePoint): StatusCode
     {
         $percentEncoder = null;
 
@@ -72,6 +72,6 @@ class OpaquePathState implements State
             $codePoint = $context->iter->current();
         } while ($codePoint !== CodePoint::EOF);
 
-        return self::RETURN_OK;
+        return StatusCode::OK;
     }
 }
