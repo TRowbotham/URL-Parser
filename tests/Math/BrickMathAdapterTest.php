@@ -11,7 +11,7 @@ use Rowbot\URL\Component\Host\Math\NumberInterface;
 
 class BrickMathAdapterTest extends MathTestCase
 {
-    public function createNumber($number, int $base = 10): NumberInterface
+    public function createNumber(int|string $number, int $base = 10): NumberInterface
     {
         return new BrickMathAdapter($number, $base);
     }

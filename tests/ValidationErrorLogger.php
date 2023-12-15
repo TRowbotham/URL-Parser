@@ -12,7 +12,7 @@ final class ValidationErrorLogger implements LoggerInterface
 {
     use LoggerTrait;
 
-    private $messages;
+    private array $messages;
 
     public function log($level, string|Stringable $message, array $context = []): void
     {

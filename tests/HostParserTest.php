@@ -19,7 +19,7 @@ class HostParserTest extends TestCase
      * @see https://url.spec.whatwg.org/#example-host-parsing
      */
     #[DataProvider('exampleDataProvider')]
-    public function testHostParser(string $input, array $output)
+    public function testHostParser(string $input, array $output): void
     {
         $parser = new HostParser();
         $in = new Utf8String($input);

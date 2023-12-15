@@ -15,7 +15,7 @@ class EncodingHelperTest extends TestCase
     #[TestWith(['UTF-16LE', 'utf-8'])]
     #[TestWith(['UTF-16BE', 'utf-8'])]
     #[TestWith(['ASCII', 'ascii'])]
-    public function testReplacementAndUtf16EncodingsGetForcedToUtf8($encoding, $outputEncoding): void
+    public function testReplacementAndUtf16EncodingsGetForcedToUtf8(string $encoding, string $outputEncoding): void
     {
         self::assertSame($outputEncoding, EncodingHelper::getOutputEncoding($encoding));
     }
