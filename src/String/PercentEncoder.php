@@ -172,11 +172,11 @@ final class PercentEncoder
         switch ($percentEncodeSet) {
             case EncodeSet::X_WWW_URLENCODED:
                 switch ($codePoint) {
-                    case 0x21:
-                    case 0x27:
-                    case 0x28:
-                    case 0x29:
-                    case 0x7E:
+                    case ord('!'):
+                    case ord('\''):
+                    case ord('('):
+                    case ord(')'):
+                    case ord('~'):
                         return true;
                 }
 
@@ -184,11 +184,11 @@ final class PercentEncoder
 
             case EncodeSet::COMPONENT:
                 switch ($codePoint) {
-                    case 0x24:
-                    case 0x25:
-                    case 0x26:
-                    case 0x2B:
-                    case 0x2C:
+                    case ord('$'):
+                    case ord('%'):
+                    case ord('&'):
+                    case ord('+'):
+                    case ord(','):
                         return true;
                 }
 
@@ -196,16 +196,16 @@ final class PercentEncoder
 
             case EncodeSet::USERINFO:
                 switch ($codePoint) {
-                    case 0x2F:
-                    case 0x3A:
-                    case 0x3B:
-                    case 0x3D:
-                    case 0x40:
-                    case 0x5B:
-                    case 0x5C:
-                    case 0x5D:
-                    case 0x5E:
-                    case 0x7C:
+                    case ord('/'):
+                    case ord(':'):
+                    case ord(';'):
+                    case ord('='):
+                    case ord('@'):
+                    case ord('['):
+                    case ord('\\'):
+                    case ord(']'):
+                    case ord('^'):
+                    case ord('|'):
                         return true;
                 }
 
@@ -213,10 +213,10 @@ final class PercentEncoder
 
             case EncodeSet::PATH:
                 switch ($codePoint) {
-                    case 0x3F:
-                    case 0x60:
-                    case 0x7B:
-                    case 0x7D:
+                    case ord('?'):
+                    case ord('`'):
+                    case ord('{'):
+                    case ord('}'):
                         return true;
 
                     default:
@@ -226,7 +226,7 @@ final class PercentEncoder
 
         switch ($percentEncodeSet) {
             case EncodeSet::SPECIAL_QUERY:
-                if ($codePoint === 0x27) {
+                if ($codePoint === ord('\'')) {
                     return true;
                 }
 
@@ -234,11 +234,11 @@ final class PercentEncoder
 
             case EncodeSet::QUERY:
                 switch ($codePoint) {
-                    case 0x20:
-                    case 0x22:
-                    case 0x23:
-                    case 0x3C:
-                    case 0x3E:
+                    case ord("\x20"):
+                    case ord('"'):
+                    case ord('#'):
+                    case ord('<'):
+                    case ord('>'):
                         return true;
                 }
 
@@ -246,11 +246,11 @@ final class PercentEncoder
 
             case EncodeSet::FRAGMENT:
                 switch ($codePoint) {
-                    case 0x20:
-                    case 0x22:
-                    case 0x3C:
-                    case 0x3E:
-                    case 0x60:
+                    case ord("\x20"):
+                    case ord('"'):
+                    case ord('<'):
+                    case ord('>'):
+                    case ord('`'):
                         return true;
                 }
         }
