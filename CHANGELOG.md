@@ -56,6 +56,11 @@
   - `\Rowbot\URL\Component\Host` methods are no longer static
 - `\Rowbot\URL\String\StringListInterface` extends `\IteratorAggregate` instead of `\Iterator`
 - `\Rowbot\URL\Component\QueryList` now implements `\Countable`
+- `\Rowbot\URL\State\State` now has a return type of `\Rowbot\URL\State\StatusCode` instead of `int`
+  - Removed const `\Rowbot\URL\State\State::RETURN_OK`
+  - Removed const `\Rowbot\URL\State\State::RETURN_CONTINUE`
+  - Removed const `\Rowbot\URL\State\State::RETURN_BREAK`
+  - Removed const `\Rowbot\URL\State\State::RETURN_FAILURE`
 
 ## [3.1.7] - 2022-08-26
 
