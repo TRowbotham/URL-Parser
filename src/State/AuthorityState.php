@@ -31,7 +31,7 @@ class AuthorityState implements State
             // 1. If c is U+0040 (@), then:
             if ($codePoint === '@') {
                 // 1.1. Validation error.
-                $context->logger?->notice('host-missing', [
+                $context->logger?->notice('invalid-credentials', [
                     'input'  => (string) $context->input,
                     'column' => $context->iter->key() + 1,
                 ]);
@@ -100,7 +100,7 @@ class AuthorityState implements State
                 // 2.1. If atSignSeen is true and buffer is the empty string, validation error, return failure.
                 if ($this->atTokenSeen && $context->buffer->isEmpty()) {
                     // Validation error.
-                    $context->logger?->warning('invalid-credentials', [
+                    $context->logger?->warning('host-missing', [
                         'input'  => (string) $context->input,
                         'column' => $context->iter->key() + 1,
                     ]);
