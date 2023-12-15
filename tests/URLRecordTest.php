@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests;
 
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\BasicURLParser;
 use Rowbot\URL\String\Utf8String;
@@ -28,18 +29,9 @@ class URLRecordTest extends TestCase
         self::assertNull($origin->getEffectiveDomain());
     }
 
-    public static function urlEqualityProvider(): iterable
-    {
-        return [
-            ['file:///C:/Users/Desktop/', 'file:///C|/Users/Desktop/', true, true],
-            ['https://example.com/path/?query#foo', 'https://example.com/path/?query', false, true],
-            ['http://example.com/path/foo/#bar', 'http://example.com/bar/../path/foo/#bar', true, true],
-        ];
-    }
-
-    /**
-     * @dataProvider urlEqualityProvider
-     */
+    #[TestWith(['file:///C:/Users/Desktop/', 'file:///C|/Users/Desktop/', true, true])]
+    #[TestWith(['https://example.com/path/?query#foo', 'https://example.com/path/?query', false, true])]
+    #[TestWith(['http://example.com/path/foo/#bar', 'http://example.com/bar/../path/foo/#bar', true, true])]
     public function testEquality(
         string $urlA,
         string $urlB,

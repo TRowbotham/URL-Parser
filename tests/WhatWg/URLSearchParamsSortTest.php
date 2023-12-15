@@ -2,6 +2,7 @@
 
 namespace Rowbot\URL\Tests\WhatWg;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\URL;
 use Rowbot\URL\URLSearchParams;
@@ -83,9 +84,7 @@ class URLSearchParamsSortTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getTestData
-     */
+    #[DataProvider('getTestData')]
     public function testSort(string $input, array $output): void
     {
         $url = new URL('?' . $input, 'https://example/');

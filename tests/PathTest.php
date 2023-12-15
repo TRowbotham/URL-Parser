@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\Component\OpaquePath;
 use Rowbot\URL\Component\PathSegment;
@@ -30,9 +31,7 @@ class PathTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider isNormalizedWindowsDriveLetterProvider
-     */
+    #[DataProvider('isNormalizedWindowsDriveLetterProvider')]
     public function testIsNormalizedWindowsDriveLetter(string $input, bool $expected): void
     {
         $s = new PathSegment($input);

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests\Math;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\Component\Host\Math\NumberInterface;
 
@@ -11,25 +13,13 @@ use const PHP_INT_MAX;
 
 abstract class MathTestCase extends TestCase
 {
-    /**
-     * @param int|string $number
-     */
-    abstract public function createNumber($number, int $base = 10): NumberInterface;
+    abstract public function createNumber(int|string $number, int $base = 10): NumberInterface;
 
-    public static function intdivNumberProvider(): array
-    {
-        return [
-            [2, '21'],
-            [0x0D, '3'],
-            [2, '21'],
-            [24, '1'],
-            [-24, '-2'],
-        ];
-    }
-
-    /**
-     * @dataProvider intdivNumberProvider
-     */
+    #[TestWith([2, '21'])]
+    #[TestWith([0x0D, '3'])]
+    #[TestWith([2, '21'])]
+    #[TestWith([24, '1'])]
+    #[TestWith([-24, '-2'])]
     public function testIntDiv(int $divisor, string $quoient): void
     {
         $dividend = $this->createNumber(42);
@@ -49,64 +39,33 @@ abstract class MathTestCase extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider equalityNumberProvider
-     *
-     * @param $number int|string
-     */
-    public function testIsEqualTo($number, int $base, string $expected): void
+    #[DataProvider('equalityNumberProvider')]
+    public function testIsEqualTo(int|string $number, int $base, string $expected): void
     {
         self::assertTrue($this->createNumber($number, $base)->isEqualTo($this->createNumber($expected)));
     }
 
-    public static function greaterThanNumberProvider(): array
-    {
-        return [
-            [42, 9000, false],
-            [9000, 42, true],
-            [42, 42, false],
-            [-2, -3, true],
-        ];
-    }
-
-    /**
-     * @dataProvider greaterThanNumberProvider
-     */
+    #[TestWith([42, 9000, false])]
+    #[TestWith([9000, 42, true])]
+    #[TestWith([42, 42, false])]
+    #[TestWith([-2, -3, true])]
     public function testIsGreaterThan(int $number1, int $number2, bool $result): void
     {
         self::assertSame($result, $this->createNumber($number1)->isGreaterThan($number2));
     }
 
-    public static function greaterThanOrEqualToNumberProvider(): array
-    {
-        return [
-            [42, 9000, false],
-            [9000, 42, true],
-            [42, 42, true],
-            [-2, -3, true],
-        ];
-    }
-
-    /**
-     * @dataProvider greaterThanOrEqualToNumberProvider
-     */
+    #[TestWith([42, 9000, false])]
+    #[TestWith([9000, 42, true])]
+    #[TestWith([42, 42, true])]
+    #[TestWith([-2, -3, true])]
     public function testIsGreaterThanOrEqualTo(int $number1, int $number2, bool $result): void
     {
         self::assertSame($result, $this->createNumber($number1)->isGreaterThanOrEqualTo($this->createNumber($number2)));
     }
 
-    public static function modNumberProvider(): array
-    {
-        return [
-            [2, 2, 0],
-            [5, 3, 2],
-            [17, 6, 5],
-        ];
-    }
-
-    /**
-     * @dataProvider modNumberProvider
-     */
+    #[TestWith([2, 2, 0])]
+    #[TestWith([5, 3, 2])]
+    #[TestWith([17, 6, 5])]
     public function testMod(int $dividend, int $divisor, int $remainder): void
     {
         $computedRemainder = $this->createNumber($dividend)->mod($divisor);
@@ -115,19 +74,10 @@ abstract class MathTestCase extends TestCase
         self::assertSame((string) $remainder, (string) $computedRemainder);
     }
 
-    public static function multipliedByNumberProvider(): array
-    {
-        return [
-            [7, 2, 14],
-            [5, 3, 15],
-            [17, 6, 102],
-            [-4, 3, -12],
-        ];
-    }
-
-    /**
-     * @dataProvider multipliedByNumberProvider
-     */
+    #[TestWith([7, 2, 14])]
+    #[TestWith([5, 3, 15])]
+    #[TestWith([17, 6, 102])]
+    #[TestWith([-4, 3, -12])]
     public function testMultipliedBy(int $multiplicand, int $multiplier, int $product): void
     {
         $computedProduct = $this->createNumber($multiplicand)->multipliedBy($multiplier);
@@ -136,18 +86,9 @@ abstract class MathTestCase extends TestCase
         self::assertSame((string) $product, (string) $computedProduct);
     }
 
-    public static function additionNumberProvider(): array
-    {
-        return [
-            [6, 6, '12'],
-            [4, -3, '1'],
-            [-256, 6, '-250'],
-        ];
-    }
-
-    /**
-     * @dataProvider additionNumberProvider
-     */
+    #[TestWith([6, 6, '12'])]
+    #[TestWith([4, -3, '1'])]
+    #[TestWith([-256, 6, '-250'])]
     public function testPlus(int $addend1, int $addend2, string $sum): void
     {
         $computedSum = $this->createNumber($addend1)->plus($this->createNumber($addend2));
@@ -156,17 +97,8 @@ abstract class MathTestCase extends TestCase
         self::assertSame($sum, (string) $computedSum);
     }
 
-    public static function powerNumberProvider(): array
-    {
-        return [
-            [256, 2, '65536'],
-            [2, 2, '4'],
-        ];
-    }
-
-    /**
-     * @dataProvider powerNumberProvider
-     */
+    #[TestWith([256, 2, '65536'])]
+    #[TestWith([2, 2, '4'])]
     public function testPow(int $base, int $exponent, string $power): void
     {
         $computedPower = $this->createNumber($base)->pow($exponent);
@@ -175,12 +107,8 @@ abstract class MathTestCase extends TestCase
         self::assertSame($power, (string) $computedPower);
     }
 
-    /**
-     * @dataProvider equalityNumberProvider
-     *
-     * @param int|string $number
-     */
-    public function testToString($number, int $base, string $result): void
+    #[DataProvider('equalityNumberProvider')]
+    public function testToString(int|string $number, int $base, string $result): void
     {
         self::assertSame($result, (string) $this->createNumber($number, $base));
     }

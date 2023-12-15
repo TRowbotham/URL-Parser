@@ -2,6 +2,7 @@
 
 namespace Rowbot\URL\Tests\WhatWg;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URLSearchParams;
@@ -261,9 +262,7 @@ class URLSearchParamsConstructorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getTestData
-     */
+    #[DataProvider('getTestData')]
     public function test($input, array $output): void
     {
         $params = new URLSearchParams($input);

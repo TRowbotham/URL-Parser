@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\Component\Host\HostInterface;
 use Rowbot\URL\Component\Host\HostParser;
@@ -16,9 +17,8 @@ class HostParserTest extends TestCase
 {
     /**
      * @see https://url.spec.whatwg.org/#example-host-parsing
-     *
-     * @dataProvider exampleDataProvider
      */
+    #[DataProvider('exampleDataProvider')]
     public function testHostParser(string $input, array $output)
     {
         $parser = new HostParser();

@@ -2,6 +2,7 @@
 
 namespace Rowbot\URL\Tests\WhatWg;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
 
@@ -21,9 +22,7 @@ class URLConstructorTest extends WhatwgTestCase
         }
     }
 
-    /**
-     * @dataProvider urlTestDataSuccessProvider
-     */
+    #[DataProvider('urlTestDataSuccessProvider')]
     public function testUrlConstructorSucceeded(array $expected): void
     {
         $base = $expected['base'] ? $expected['base'] : 'about:blank';
@@ -55,9 +54,7 @@ class URLConstructorTest extends WhatwgTestCase
         }
     }
 
-    /**
-     * @dataProvider urlTestDataFailureProvider
-     */
+    #[DataProvider('urlTestDataFailureProvider')]
     public function testUrlConstructorFailed(array $expected): void
     {
         $this->expectException(TypeError::class);

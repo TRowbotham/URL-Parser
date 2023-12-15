@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\String\Exception\RegexException;
 use Rowbot\URL\String\Exception\UndefinedIndexException;
@@ -35,9 +36,7 @@ class StringsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider startsWithTwoAsciiHexDigitsProvider
-     */
+    #[DataProvider('startsWithTwoAsciiHexDigitsProvider')]
     public function testStartsWithTwoAsciiHexDigits(string $input, bool $expected): void
     {
         $s = new Utf8String($input);
@@ -62,9 +61,7 @@ class StringsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider startsWithWindowsDriveLetterProvider
-     */
+    #[DataProvider('startsWithWindowsDriveLetterProvider')]
     public function testStartsWithWindowsDriveLetter(string $input, bool $expected): void
     {
         $s = new Utf8String($input);

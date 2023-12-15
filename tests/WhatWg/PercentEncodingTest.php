@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests\WhatWg;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Rowbot\URL\BasicURLParser;
 use Rowbot\URL\String\EncodeSet;
 use Rowbot\URL\String\PercentEncoder;
 use Rowbot\URL\String\Utf8String;
-use Rowbot\URL\Tests\WhatWg\WhatwgTestCase;
 
 class PercentEncodingTest extends WhatwgTestCase
 {
-    /**
-     * @dataProvider percentEncodedDataProvider
-     */
+    #[DataProvider('percentEncodedDataProvider')]
     public function testPercentEncoding(string $input, array $output): void
     {
         $parser = new BasicURLParser();
@@ -45,9 +43,8 @@ class PercentEncodingTest extends WhatwgTestCase
 
     /**
      * @see https://url.spec.whatwg.org/#example-percent-encode-operations
-     *
-     * @dataProvider exampleDataProvider
      */
+    #[DataProvider('exampleDataProvider')]
     public function testPercentEncodingExamples(string $encoding, string $input, string $output, EncodeSet $encodeSet, bool $spaceAsPlus): void
     {
         $percentEncoder = new PercentEncoder();

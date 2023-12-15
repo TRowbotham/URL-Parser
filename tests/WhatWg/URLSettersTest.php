@@ -2,6 +2,7 @@
 
 namespace Rowbot\URL\Tests\WhatWg;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Rowbot\URL\URL;
 
 /**
@@ -25,9 +26,7 @@ class URLSettersTest extends WhatwgTestCase
         }
     }
 
-    /**
-     * @dataProvider urlSetterGetterDataProvider
-     */
+    #[DataProvider('urlSetterGetterDataProvider')]
     public function testSetters(array $input): void
     {
         $url = new URL($input['href']);

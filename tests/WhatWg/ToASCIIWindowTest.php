@@ -2,6 +2,7 @@
 
 namespace Rowbot\URL\Tests\WhatWg;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
 
@@ -17,9 +18,7 @@ class ToASCIIWindowTest extends WhatwgTestCase
         }
     }
 
-    /**
-     * @dataProvider toAsciiTestProvider
-     */
+    #[DataProvider('toAsciiTestProvider')]
     public function testURLContructor(array $hostTest): void
     {
         if ($hostTest['output'] !== null) {
@@ -36,9 +35,7 @@ class ToASCIIWindowTest extends WhatwgTestCase
         new URL($hostTest['input']);
     }
 
-    /**
-     * @dataProvider toAsciiTestProvider
-     */
+    #[DataProvider('toAsciiTestProvider')]
     public function testHostSetter(array $hostTest): void
     {
         $url = new URL('https://x/x');
@@ -47,9 +44,7 @@ class ToASCIIWindowTest extends WhatwgTestCase
         self::assertSame($hostTest['output'] ?? 'x', $url->host);
     }
 
-    /**
-     * @dataProvider toAsciiTestProvider
-     */
+    #[DataProvider('toAsciiTestProvider')]
     public function testHostnameSetter(array $hostTest): void
     {
         $url = new URL('https://x/x');

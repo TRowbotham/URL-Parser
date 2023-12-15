@@ -7,6 +7,7 @@ namespace Rowbot\URL\Tests;
 use ArrayObject;
 use Countable;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
@@ -75,13 +76,11 @@ class URLSearchParamsTest extends TestCase
             'invalid-value'            => [[['foo', null]]],
             'countable-only'           => [[[$anonClass]]],
             'invalid-property-value'   => [$anonClass],
-            'iterable-non-countable'   => [new ArrayObject([$generator(), $generator()])]
+            'iterable-non-countable'   => [new ArrayObject([$generator(), $generator()])],
         ];
     }
 
-    /**
-     * @dataProvider getInvalidIteratorInput
-     */
+    #[DataProvider('getInvalidIteratorInput')]
     public function testInvalidIteratorInput(array|object $input): void
     {
         $this->expectException(TypeError::class);
@@ -97,9 +96,7 @@ class URLSearchParamsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider unhandledInputProvider
-     */
+    #[DataProvider('unhandledInputProvider')]
     public function testUnhandledInputDoesNothing($input): void
     {
         $params = new URLSearchParams($input);

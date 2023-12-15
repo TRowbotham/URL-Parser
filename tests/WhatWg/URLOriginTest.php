@@ -2,6 +2,7 @@
 
 namespace Rowbot\URL\Tests\WhatWg;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Rowbot\URL\URL;
 
 /**
@@ -18,9 +19,7 @@ class URLOriginTest extends WhatwgTestCase
         }
     }
 
-    /**
-     * @dataProvider urlTestDataOriginProvider
-     */
+    #[DataProvider('urlTestDataOriginProvider')]
     public function testOrigin(array $expected): void
     {
         $url = isset($expected['base']) ? new URL($expected['input'], $expected['base']) : new URL($expected['input']);

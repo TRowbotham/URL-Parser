@@ -15,11 +15,11 @@ use const JSON_THROW_ON_ERROR;
 
 abstract class WhatwgTestCase extends TestCase
 {
-    private static Client|null $client = null;
-
     private const WHATWG_BASE_URI = 'https://raw.githubusercontent.com/web-platform-tests/wpt/master/url/resources/';
     private const CACHE_TTL = 86400 * 7; // 7 DAYS
     private const JSON_DEPTH = 512;
+
+    private static Client|null $client = null;
 
     protected static function loadTestData(string $url): array
     {

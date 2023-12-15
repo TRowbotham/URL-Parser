@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rowbot\URL\Tests;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\URL;
@@ -84,23 +85,14 @@ class URLTest extends TestCase
         self::assertInstanceOf(URL::class, new URL($url, null, ['logger' => new ValidationErrorLogger()]));
     }
 
-    /**
-     * @dataProvider invalidLoggerProvider
-     */
+    #[TestWith(['foo'])]
+    #[TestWith([true])]
+    #[TestWith([2])]
+    #[TestWith([new stdClass()])]
     public function testInvalidLoggerThrows($value): void
     {
         $this->expectException(TypeError::class);
         new URL('https://example.com', null, ['logger' => $value]);
-    }
-
-    public static function invalidLoggerProvider(): array
-    {
-        return [
-            ['foo'],
-            [true],
-            [2],
-            [new stdClass()],
-        ];
     }
 
     public function testURLConstructorAcceptsStringable(): void
@@ -122,20 +114,11 @@ class URLTest extends TestCase
         self::assertInstanceOf(URL::class, new URL($foo, $bar));
     }
 
-    /**
-     * @dataProvider nonStringableObjectProvider
-     */
+    #[TestWith([new stdClass(), null])]
+    #[TestWith(['https://example.com', new stdClass()])]
     public function testURLConstructorWithNonStringableObject(null|object|string $url, null|object|string $base): void
     {
         $this->expectException(NativeTypeError::class);
         new URL($url, $base);
-    }
-
-    public static function nonStringableObjectProvider(): array
-    {
-        return [
-            [new stdClass(), null],
-            ['https://example.com', new stdClass()],
-        ];
     }
 }

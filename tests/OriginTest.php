@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Rowbot\URL\BasicURLParser;
 use Rowbot\URL\Component\Host\HostParser;
@@ -163,9 +164,7 @@ class OriginTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider originProvider
-     */
+    #[DataProvider('originProvider')]
     public function testSameOriginConcept(
         Origin $originA,
         Origin $originB,
