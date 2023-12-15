@@ -82,7 +82,10 @@ class AuthorityState implements State
                 // 1.5. Set buffer to the empty string.
                 $context->buffer->clear();
 
-                return StatusCode::OK;
+                $context->iter->next();
+                $codePoint = $context->iter->current();
+
+                continue;
             }
 
             // 2. Otherwise, if one of the following is true:

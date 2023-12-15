@@ -113,15 +113,9 @@ class BasicURLParser implements LoggerAwareInterface
             $encodingOverride,
             $this->logger
         );
-        $state = $context->state;
-        $handler = ParserState::createHandlerFor($context->state);
 
         do {
-            if ($state !== $context->state) {
-                $state = $context->state;
-                $handler = ParserState::createHandlerFor($context->state);
-            }
-
+            $handler = ParserState::createHandlerFor($context->state);
             $status = $handler->handle($context, $iter->current());
 
             if ($status === StatusCode::CONTINUE) {
