@@ -248,3 +248,4 @@ or `column_range` offset key. Column offsets start at 1.
 | `column` | `positive-int` | The column offset of the error. |
 | `column_range` | `array{0: positive-int, 1: positive-int}` | Index 0 is the starting column offset, and index 1 is the end column offset. The range is inclusive. |
 | `idn_errors` | `list<string>` | A list of strings that represent IDN error constant names. |
+| `unicode_domain` | `string` | The domain name as a Unicode string. |
