@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
+use function in_array;
 use function strpbrk;
 
 /**
@@ -34,58 +35,52 @@ final class CodePoint
     public static function isUrlCodePoint(string $codePoint): bool
     {
         return (
-                strpbrk($codePoint, self::ASCII_ALNUM_MASK) === $codePoint
-                || $codePoint === '!'
-                || $codePoint === '$'
-                || ($codePoint >= '&' && $codePoint <= '/')
-                || $codePoint === ':'
-                || $codePoint === ';'
-                || $codePoint === '='
-                || $codePoint === '?'
-                || $codePoint === '@'
-                || $codePoint === '_'
-                || $codePoint === '~'
-                || ($codePoint >= "\xA0" && $codePoint <= "\u{10FFFD}")
-            )
+            strpbrk($codePoint, self::ASCII_ALNUM_MASK) === $codePoint
+            || in_array($codePoint, ['!', '$', ':', ';', '=', '?', '@', '_', '~'], true)
+            || ($codePoint >= '&' && $codePoint <= '/')
+            || ($codePoint >= "\xA0" && $codePoint <= "\u{10FFFD}")
+        )
 
-            // Not a surrogate
-            && ($codePoint < "\u{D800}" || $codePoint > "\u{DFFF}")
+        // Not a surrogate
+        && ($codePoint < "\u{D800}" || $codePoint > "\u{DFFF}")
 
-            // Not a non-character
-            && ($codePoint < "\u{FDD0}" || $codePoint > "\u{FDEF}")
-            && $codePoint !== "\u{FFFE}"
-            && $codePoint !== "\u{FFFF}"
-            && $codePoint !== "\u{1FFFE}"
-            && $codePoint !== "\u{1FFFF}"
-            && $codePoint !== "\u{2FFFE}"
-            && $codePoint !== "\u{2FFFF}"
-            && $codePoint !== "\u{3FFFE}"
-            && $codePoint !== "\u{3FFFF}"
-            && $codePoint !== "\u{4FFFE}"
-            && $codePoint !== "\u{4FFFF}"
-            && $codePoint !== "\u{5FFFE}"
-            && $codePoint !== "\u{5FFFF}"
-            && $codePoint !== "\u{6FFFE}"
-            && $codePoint !== "\u{6FFFF}"
-            && $codePoint !== "\u{7FFFE}"
-            && $codePoint !== "\u{7FFFF}"
-            && $codePoint !== "\u{8FFFE}"
-            && $codePoint !== "\u{8FFFF}"
-            && $codePoint !== "\u{9FFFE}"
-            && $codePoint !== "\u{9FFFF}"
-            && $codePoint !== "\u{AFFFE}"
-            && $codePoint !== "\u{AFFFF}"
-            && $codePoint !== "\u{BFFFE}"
-            && $codePoint !== "\u{BFFFF}"
-            && $codePoint !== "\u{CFFFE}"
-            && $codePoint !== "\u{CFFFF}"
-            && $codePoint !== "\u{DFFFE}"
-            && $codePoint !== "\u{DFFFF}"
-            && $codePoint !== "\u{EFFFE}"
-            && $codePoint !== "\u{EFFFF}"
-            && $codePoint !== "\u{FFFFE}"
-            && $codePoint !== "\u{FFFFF}"
-            && $codePoint !== "\u{10FFFE}"
-            && $codePoint !== "\u{10FFFF}";
+        // Not a non-character
+        && ($codePoint < "\u{FDD0}" || $codePoint > "\u{FDEF}")
+        && !in_array($codePoint, [
+            "\u{FFFE}",
+            "\u{FFFF}",
+            "\u{1FFFE}",
+            "\u{1FFFF}",
+            "\u{2FFFE}",
+            "\u{2FFFF}",
+            "\u{3FFFE}",
+            "\u{3FFFF}",
+            "\u{4FFFE}",
+            "\u{4FFFF}",
+            "\u{5FFFE}",
+            "\u{5FFFF}",
+            "\u{6FFFE}",
+            "\u{6FFFF}",
+            "\u{7FFFE}",
+            "\u{7FFFF}",
+            "\u{8FFFE}",
+            "\u{8FFFF}",
+            "\u{9FFFE}",
+            "\u{9FFFF}",
+            "\u{AFFFE}",
+            "\u{AFFFF}",
+            "\u{BFFFE}",
+            "\u{BFFFF}",
+            "\u{CFFFE}",
+            "\u{CFFFF}",
+            "\u{DFFFE}",
+            "\u{DFFFF}",
+            "\u{EFFFE}",
+            "\u{EFFFF}",
+            "\u{FFFFE}",
+            "\u{FFFFF}",
+            "\u{10FFFE}",
+            "\u{10FFFF}",
+        ], true);
     }
 }
