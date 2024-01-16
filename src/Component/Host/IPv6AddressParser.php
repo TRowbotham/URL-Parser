@@ -9,6 +9,8 @@ use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\StringIteratorInterface;
 use Rowbot\URL\String\USVStringInterface;
 
+use function array_is_list;
+use function assert;
 use function intval;
 use function strpbrk;
 use function strpos;
@@ -193,14 +195,16 @@ class IPv6AddressParser
             return false;
         }
 
+        assert(array_is_list($address));
+
         // 9. Return address.
         return new IPv6Address($address);
     }
 
     /**
-     * @param list<int> $address
+     * @param non-empty-list<int> $address
      *
-     * @return array{0: list<int>, 1: int}|false
+     * @return array{0: non-empty-list<int>, 1: int}|false
      */
     private static function parseIPv4Address(
         ParserContext $context,
@@ -325,6 +329,8 @@ class IPv6AddressParser
 
             return false;
         }
+
+        assert(array_is_list($address));
 
         return [$address, $pieceIndex];
     }

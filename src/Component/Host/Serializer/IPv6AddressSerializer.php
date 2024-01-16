@@ -14,12 +14,12 @@ class IPv6AddressSerializer implements HostSerializerInterface
     private const MAX_SIZE = 8;
 
     /**
-     * @var array<int, int>
+     * @var non-empty-list<int>
      */
     private array $address;
 
     /**
-     * @param array<int, int> $address
+     * @param non-empty-list<int> $address
      */
     public function __construct(array $address)
     {

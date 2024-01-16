@@ -13,12 +13,12 @@ use Rowbot\URL\Component\Host\Serializer\IPv6AddressSerializer;
 class IPv6Address extends AbstractHost implements HostInterface
 {
     /**
-     * @var array<int, int>
+     * @var non-empty-list<int>
      */
     private array $address;
 
     /**
-     * @param array<int, int> $address
+     * @param non-empty-list<int> $address
      */
     public function __construct(array $address)
     {
