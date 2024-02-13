@@ -144,7 +144,7 @@ The URLSearchParams object allows you to work with query strings when you don't 
 
 ### The URLSearchParams constructor
 
-`URLSearchParams([iterable<int|string, iterable<int|string, scalar|\Stringable>&\Countable>|object|string|\Stringable $init])`
+`URLSearchParams([iterable<int|string, array<int|string, scalar|\Stringable>|(\Traversable<int|string, scalar|\Stringable>&\Countable)>|object|string|\Stringable $init])`
 
 #### URLSearchParams constructor throws
 

@@ -4,16 +4,12 @@ includes:
 
 parameters:
     level: max
+    treatPhpDocTypesAsCertain: false
 
     paths:
         - src
 
     ignoreErrors:
-        -
-            message: '#Call to function is_(countable|iterable)\(\) with Countable&iterable<int\|string, bool\|float\|int\|string\|Stringable> will always evaluate to true\.#'
-            path: src/URLSearchParams.php
-            count: 2
-
         -
             message: '#Call to function is_object\(\) with object will always evaluate to true\.#'
             path: src/URLSearchParams.php
@@ -24,17 +20,4 @@ parameters:
             path: src/URLSearchParams.php
             count: 1
 
-        -
-            message: '#Result of \|\| is always false\.#'
-            path: src/URLSearchParams.php
-            count: 1
-
-        -
-            message: '#Strict comparison using === between string and false will always evaluate to false\.#'
-            path: src/String/Utf8String.php
-
         # Note to self: You can't escape single quotes in neon. Another possible alternative would be to replace single quotes with \x27.
-        -
-            message: '#Instanceof between Psr\\Log\\LoggerInterface and Psr\\Log\\LoggerInterface will always evaluate to true\.#'
-            path: src/URL.php
-            count: 1

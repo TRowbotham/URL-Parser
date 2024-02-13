@@ -49,7 +49,7 @@ class URLSearchParams implements Countable, Iterator, Stringable
     /**
      * @see https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams
      *
-     * @param iterable<int|string, iterable<int|string, scalar|\Stringable>&\Countable>|object|string|\Stringable $init (optional)
+     * @param iterable<int|string, array<int|string, scalar|\Stringable>|(\Traversable<int|string, scalar|\Stringable>&\Countable)>|object|string|\Stringable $init
      */
     public function __construct(array|object|string $init = '')
     {
