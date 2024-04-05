@@ -14,7 +14,9 @@ use Rowbot\URL\Component\QueryList;
 use Rowbot\URL\Exception\TypeError;
 use Rowbot\URL\String\Utf8String;
 use Stringable;
+use Throwable;
 
+use function assert;
 use function json_encode;
 use function sprintf;
 
@@ -68,17 +70,36 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
             $this->logger = $options['logger'];
         }
 
-        $parsedURL = self::apiURLParser($url, $base, $this->logger);
+        // 1. Let parsedURL be the result of running the API URL parser on url with base, if given.
+        $parsedURL = self::parseURL($url, $base, $this->logger);
 
-        $this->url = $parsedURL;
-        $this->queryObject = new URLSearchParams();
-        $this->queryObject->setUrl($parsedURL);
+        if ($parsedURL->error === ParserErrorType::NONE) {
+            // 3. Initialize this with parsedURL.
+            assert($parsedURL->url !== null);
+            self::initializeURL($this, $parsedURL->url);
 
-        if ($this->url->query === null) {
             return;
         }
 
-        $this->queryObject->setList(QueryList::fromString($this->url->query));
+        // 2. If parsedURL is failure, then throw a TypeError.
+        $message = match ($parsedURL->error) {
+            ParserErrorType::BASE => 'Invalid base URL',
+            ParserErrorType::URL  => 'Invalid URL'
+        };
+
+        throw new TypeError($message);
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#dom-url-parse
+     */
+    public static function parse(string|Stringable $url, null|string|Stringable $base = null): ?self
+    {
+        try {
+            return new self($url, $base);
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**
@@ -86,13 +107,9 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
      */
     public static function canParse(string|Stringable $url, null|string|Stringable $base = null): bool
     {
-        try {
-            self::apiURLParser($url, $base, null);
-        } catch (TypeError) {
-            return false;
-        }
+        $parsedURL = self::parseURL($url, $base);
 
-        return true;
+        return $parsedURL->error === ParserErrorType::NONE;
     }
 
     public function toString(): string
@@ -127,31 +144,57 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
     /**
      * @see https://url.spec.whatwg.org/#api-url-parser
      */
-    private static function apiURLParser(
+    private static function parseURL(
         string|Stringable $url,
         null|string|Stringable $base = null,
         LoggerInterface $logger = null
-    ): URLRecord {
+    ): APIParserResult {
+        // 1. Let parsedBase be null.
         $parsedBase = null;
         $parser = new BasicURLParser($logger);
 
+        // 2. If base is non-null:
         if ($base !== null) {
+            // 2.1. Set parsedBase to the result of running the basic URL parser on base.
             $stringBase = (string) $base;
             $parsedBase = $parser->parse(Utf8String::fromUnsafe($stringBase));
 
+            // 2.2. If parsedBase is failure, then return failure.
             if ($parsedBase === false) {
-                throw new TypeError(sprintf('"%s" is not a valid base URL', $stringBase));
+                return new APIParserResult(null, ParserErrorType::BASE);
             }
         }
 
+        // 3. Return the result of running the basic URL parser on url with parsedBase.
         $stringURL = (string) $url;
         $parsedURL = $parser->parse(Utf8String::fromUnsafe($stringURL), $parsedBase);
 
         if ($parsedURL === false) {
-            throw new TypeError(sprintf('"%s" is not a valid URL', $stringURL));
+            return new APIParserResult(null, ParserErrorType::URL);
         }
 
-        return $parsedURL;
+        return new APIParserResult($parsedURL, ParserErrorType::NONE);
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#url-initialize
+     */
+    private static function initializeURL(self $url, URLRecord $urlRecord): void
+    {
+        // 1. Let query be urlRecord’s query, if that is non-null; otherwise the empty string.
+        $query = $urlRecord->query ?? '';
+
+        // 2. Set url’s URL to urlRecord.
+        $url->url = $urlRecord;
+
+        // 3. Set url’s query object to a new URLSearchParams object.
+        $url->queryObject = new URLSearchParams();
+
+        // 4. Initialize url’s query object with query.
+        $url->queryObject->setList(QueryList::fromString($query));
+
+        // 5. Set url’s query object’s URL object to url.
+        $url->queryObject->setUrl($urlRecord);
     }
 
     public function __clone(): void
