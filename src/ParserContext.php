@@ -12,32 +12,17 @@ use Rowbot\URL\Support\EncodingHelper;
 
 final class ParserContext
 {
-    /**
-     * @readonly
-     */
-    public ?URLRecord $base;
+    public readonly ?URLRecord $base;
 
-    /**
-     * @readonly
-     */
-    public StringBufferInterface $buffer;
+    public readonly StringBufferInterface $buffer;
 
-    /**
-     * @readonly
-     */
-    public USVStringInterface $input;
+    public readonly USVStringInterface $input;
 
-    /**
-     * @readonly
-     */
-    public StringIteratorInterface $iter;
+    public readonly StringIteratorInterface $iter;
 
     public ParserState $state;
 
-    /**
-     * @readonly
-     */
-    public URLRecord $url;
+    public readonly URLRecord $url;
 
     public ?LoggerInterface $logger;
 
