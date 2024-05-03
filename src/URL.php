@@ -55,7 +55,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
      *
      * @throws \Rowbot\URL\Exception\TypeError
      */
-    public function __construct(string|Stringable $url, null|string|Stringable $base = null, array $options = [])
+    public function __construct(string|Stringable $url, string|Stringable|null $base = null, array $options = [])
     {
         $this->logger = null;
 
@@ -93,7 +93,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
     /**
      * @see https://url.spec.whatwg.org/#dom-url-parse
      */
-    public static function parse(string|Stringable $url, null|string|Stringable $base = null): ?self
+    public static function parse(string|Stringable $url, string|Stringable|null $base = null): ?self
     {
         try {
             return new self($url, $base);
@@ -105,7 +105,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
     /**
      * @see https://url.spec.whatwg.org/#dom-url-canparse
      */
-    public static function canParse(string|Stringable $url, null|string|Stringable $base = null): bool
+    public static function canParse(string|Stringable $url, string|Stringable|null $base = null): bool
     {
         $parsedURL = self::parseURL($url, $base);
 
