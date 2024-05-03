@@ -34,7 +34,7 @@ interface USVStringInterface extends IteratorAggregate
         int &$count = 0
     ): self;
 
-    public function split(string $delimiter, int $limit = null): StringListInterface;
+    public function split(string $delimiter, ?int $limit = null): StringListInterface;
 
     public function startsWith(string $string): bool;
 
@@ -45,7 +45,7 @@ interface USVStringInterface extends IteratorAggregate
      */
     public function startsWithWindowsDriveLetter(): bool;
 
-    public function substr(int $start, int $length = null): self;
+    public function substr(int $start, ?int $length = null): self;
 
     public function toInt(int $base = 10): int;
 

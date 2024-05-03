@@ -53,10 +53,10 @@ class BasicURLParser implements LoggerAwareInterface
      */
     public function parse(
         USVStringInterface $input,
-        URLRecord $base = null,
-        string $encodingOverride = null,
-        URLRecord $url = null,
-        ParserState $stateOverride = null
+        ?URLRecord $base = null,
+        ?string $encodingOverride = null,
+        ?URLRecord $url = null,
+        ?ParserState $stateOverride = null
     ): URLRecord|false {
         $count = 0;
 

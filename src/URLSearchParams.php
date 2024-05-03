@@ -126,7 +126,7 @@ class URLSearchParams implements Countable, Iterator, Stringable
      *
      * @param string $name The name of the key to delete.
      */
-    public function delete(string $name, string $value = null): void
+    public function delete(string $name, ?string $value = null): void
     {
         if ($value !== null) {
             $value = Utf8String::scrub($value);
@@ -175,7 +175,7 @@ class URLSearchParams implements Countable, Iterator, Stringable
      *
      * @return bool Returns true if the key exits, otherwise false.
      */
-    public function has(string $name, string $value = null): bool
+    public function has(string $name, ?string $value = null): bool
     {
         if ($value !== null) {
             $value = Utf8String::scrub($value);

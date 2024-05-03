@@ -93,7 +93,7 @@ abstract class AbstractUSVString implements Stringable, USVStringInterface
         return $copy;
     }
 
-    public function split(string $delimiter, int $limit = null): StringListInterface
+    public function split(string $delimiter, ?int $limit = null): StringListInterface
     {
         if ($delimiter === '') {
             return new StringList();
@@ -134,7 +134,7 @@ abstract class AbstractUSVString implements Stringable, USVStringInterface
         return preg_match('/^[A-Za-z][:|](?:$|[\/\\\?#])/u', $this->string) === 1;
     }
 
-    public function substr(int $start, int $length = null): USVStringInterface
+    public function substr(int $start, ?int $length = null): USVStringInterface
     {
         $copy = clone $this;
         $copy->string = mb_substr($this->string, $start, $length, 'utf-8');

@@ -146,8 +146,8 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
      */
     private static function parseURL(
         string|Stringable $url,
-        null|string|Stringable $base = null,
-        LoggerInterface $logger = null
+        string|Stringable|null $base = null,
+        ?LoggerInterface $logger = null
     ): APIParserResult {
         // 1. Let parsedBase be null.
         $parsedBase = null;
