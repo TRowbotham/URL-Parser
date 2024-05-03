@@ -55,14 +55,14 @@ class PercentEncodingTest extends WhatwgTestCase
     public static function exampleDataProvider(): array
     {
         return [
-            ['encoding' => 'Shift_JIS', 'input' => ' ', 'output' => '%20', 'encode_set' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
-            ['encoding' => 'Shift_JIS', 'input' => '≡', 'output' => '%81%DF', 'encode_set' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
-            ['encoding' => 'Shift_JIS', 'input' => '‽', 'output' => '%26%238253%3B', 'encode_set' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
-            // ['encoding' => 'ISO-2022-JP', 'input' => '¥', 'output' => '%1B(J\%1B(B', 'encode_set' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
-            ['encoding' => 'Shift_JIS', 'input' => '1+1 ≡ 2%20‽', 'output' => '1+1+%81%DF+2%20%26%238253%3B', 'encode_set' => EncodeSet::USERINFO, 'spaceAsPlus' => true],
-            ['encoding' => 'UTF-8', 'input' => '≡', 'ouput' => '%E2%89%A1', 'encode_set' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
-            ['encoding' => 'UTF-8', 'input' => '‽', 'output' => '%E2%80%BD', 'encode_set' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
-            ['encoding' => 'UTF-8', 'input' => 'Say what‽', 'output' => 'Say%20what%E2%80%BD', 'encode_set' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
+            ['encoding' => 'Shift_JIS', 'input' => ' ', 'output' => '%20', 'encodeSet' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
+            ['encoding' => 'Shift_JIS', 'input' => '≡', 'output' => '%81%DF', 'encodeSet' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
+            ['encoding' => 'Shift_JIS', 'input' => '‽', 'output' => '%26%238253%3B', 'encodeSet' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
+            // ['encoding' => 'ISO-2022-JP', 'input' => '¥', 'output' => '%1B(J\%1B(B', 'encodeSet' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
+            ['encoding' => 'Shift_JIS', 'input' => '1+1 ≡ 2%20‽', 'output' => '1+1+%81%DF+2%20%26%238253%3B', 'encodeSet' => EncodeSet::USERINFO, 'spaceAsPlus' => true],
+            ['encoding' => 'UTF-8', 'input' => '≡', 'output' => '%E2%89%A1', 'encodeSet' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
+            ['encoding' => 'UTF-8', 'input' => '‽', 'output' => '%E2%80%BD', 'encodeSet' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
+            ['encoding' => 'UTF-8', 'input' => 'Say what‽', 'output' => 'Say%20what%E2%80%BD', 'encodeSet' => EncodeSet::USERINFO, 'spaceAsPlus' => false],
         ];
     }
 }

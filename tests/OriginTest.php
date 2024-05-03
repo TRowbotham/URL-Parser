@@ -56,14 +56,14 @@ class OriginTest extends TestCase
                     null,
                     null
                 ),
-                'same origin' => true,
-                'same origin-domain' => true,
+                'isSameOrigin' => true,
+                'isSameOriginDomain' => true,
             ],
             [
                 new TupleOrigin('https', $hostParser->parse($context, new Utf8String('example.org'), false), 314, null),
                 new TupleOrigin('https', $hostParser->parse($context, new Utf8String('example.org'), false), 420, null),
-                'same origin' => false,
-                'same origin-domain' => false,
+                'isSameOrigin' => false,
+                'isSameOriginDomain' => false,
             ],
             [
                 new TupleOrigin(
@@ -78,8 +78,8 @@ class OriginTest extends TestCase
                     420,
                     'example.org'
                 ),
-                'same origin' => false,
-                'same origin-domain' => true,
+                'isSameOrigin' => false,
+                'isSameOriginDomain' => true,
             ],
             [
                 new TupleOrigin(
@@ -94,8 +94,8 @@ class OriginTest extends TestCase
                     null,
                     'example.org'
                 ),
-                'same origin' => true,
-                'same origin-domain' => false,
+                'isSameOrigin' => true,
+                'isSameOriginDomain' => false,
             ],
             [
                 new TupleOrigin(
@@ -110,56 +110,56 @@ class OriginTest extends TestCase
                     null,
                     'example.org'
                 ),
-                'same origin' => false,
-                'same origin-domain' => false,
+                'isSameOrigin' => false,
+                'isSameOriginDomain' => false,
             ],
             [
                 new TupleOrigin('https', $hostParser->parse($context, new Utf8String('127.0.0.1'), false), null, null),
                 new TupleOrigin('https', $hostParser->parse($context, new Utf8String('1.1.1.1'), false), null, null),
-                'same origin' => false,
-                'same origin-domain' => false,
+                'isSameOrigin' => false,
+                'isSameOriginDomain' => false,
             ],
             [
                 new TupleOrigin('https', $hostParser->parse($context, new Utf8String('[::1]'), false), null, null),
                 new TupleOrigin('https', $hostParser->parse($context, new Utf8String('[1::1]'), false), null, null),
-                'same origin' => false,
-                'same origin-domain' => false,
+                'isSameOrigin' => false,
+                'isSameOriginDomain' => false,
             ],
             [
                 $urlParser->parse(new Utf8String('blob:https://foo.com'))->getOrigin(),
                 $urlParser->parse(new Utf8String('https://foo.com'))->getOrigin(),
-                'same origin' => true,
-                'same origin-domain' => true,
+                'isSameOrigin' => true,
+                'isSameOriginDomain' => true,
             ],
             [
                 $tuple,
                 $tuple,
-                'same origin' => true,
-                'same origin-domain' => true,
+                'isSameOrigin' => true,
+                'isSameOriginDomain' => true,
             ],
             [
                 $tuple,
                 $tupleDomain,
-                'same origin' => true,
-                'same origin-domain' => false,
+                'isSameOrigin' => true,
+                'isSameOriginDomain' => false,
             ],
             [
                 $opaque,
                 new OpaqueOrigin(),
-                'same origin' => false,
-                'same origin-domain' => false,
+                'isSameOrigin' => false,
+                'isSameOriginDomain' => false,
             ],
             [
                 $opaque,
                 $opaque,
-                'same origin' => true,
-                'same origin-domain' => true,
+                'isSameOrigin' => true,
+                'isSameOriginDomain' => true,
             ],
             [
                 $tuple,
                 $opaque,
-                'same origin' => false,
-                'same origin-domain' => false,
+                'isSameOrigin' => false,
+                'isSameOriginDomain' => false,
             ],
         ];
     }
