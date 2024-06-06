@@ -8,9 +8,9 @@ final class APIParserResult
 {
     public readonly ?URLRecord $url;
 
-    public readonly ParserErrorType $error;
+    public readonly APIParserErrorType $error;
 
-    public function __construct(?URLRecord $urlRecord, ParserErrorType $error)
+    public function __construct(?URLRecord $urlRecord, APIParserErrorType $error)
     {
         $this->url = $urlRecord;
         $this->error = $error;

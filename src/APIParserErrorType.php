@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL;
 
-enum ParserErrorType
+enum APIParserErrorType
 {
     case NONE;
 

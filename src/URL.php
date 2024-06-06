@@ -73,7 +73,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
         // 1. Let parsedURL be the result of running the API URL parser on url with base, if given.
         $parsedURL = self::parseURL($url, $base, $this->logger);
 
-        if ($parsedURL->error === ParserErrorType::NONE) {
+        if ($parsedURL->error === APIParserErrorType::NONE) {
             // 3. Initialize this with parsedURL.
             assert($parsedURL->url !== null);
             self::initializeURL($this, $parsedURL->url);
@@ -83,8 +83,8 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
 
         // 2. If parsedURL is failure, then throw a TypeError.
         $message = match ($parsedURL->error) {
-            ParserErrorType::BASE => 'Invalid base URL',
-            ParserErrorType::URL  => 'Invalid URL'
+            APIParserErrorType::BASE => 'Invalid base URL',
+            APIParserErrorType::URL  => 'Invalid URL'
         };
 
         throw new TypeError($message);
@@ -109,7 +109,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
     {
         $parsedURL = self::parseURL($url, $base);
 
-        return $parsedURL->error === ParserErrorType::NONE;
+        return $parsedURL->error === APIParserErrorType::NONE;
     }
 
     public function toString(): string
@@ -161,7 +161,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
 
             // 2.2. If parsedBase is failure, then return failure.
             if ($parsedBase === false) {
-                return new APIParserResult(null, ParserErrorType::BASE);
+                return new APIParserResult(null, APIParserErrorType::BASE);
             }
         }
 
@@ -170,10 +170,10 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
         $parsedURL = $parser->parse(Utf8String::fromUnsafe($stringURL), $parsedBase);
 
         if ($parsedURL === false) {
-            return new APIParserResult(null, ParserErrorType::URL);
+            return new APIParserResult(null, APIParserErrorType::URL);
         }
 
-        return new APIParserResult($parsedURL, ParserErrorType::NONE);
+        return new APIParserResult($parsedURL, APIParserErrorType::NONE);
     }
 
     /**
