@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [4.0.0] - 2024-06-20
+
 ### Added
 
 - Performance improvements
