@@ -52,12 +52,13 @@
   - Removed const `\Rowbot\URL\String\CodePoint::PATH_PERCENT_ENCODE_SET`
   - Removed const `\Rowbot\URL\String\CodePoint::USERINFO_PERCENT_ENCODE_SET`
   - Removed method `\Rowbot\URL\String\CodePoint::utf8PercentEncode()`
-  - Added class `\Rowbot\URL\String\EncodeSet`
+  - Added enum `\Rowbot\URL\String\EncodeSet`
   - Added class `\Rowbot\URL\String\PercentEncoder`
-  - `\Rowbot\URL\Component\Host` methods are no longer static
+  - `\Rowbot\URL\Component\Host\HostParser` methods are no longer static
 - `\Rowbot\URL\String\StringListInterface` extends `\IteratorAggregate` instead of `\Iterator`
 - `\Rowbot\URL\Component\QueryList` now implements `\Countable`
-- `\Rowbot\URL\State\State` now has a return type of `\Rowbot\URL\State\StatusCode` instead of `int`
+- Added enum `\Rowbot\URL\State\StatusCode`
+  - `\Rowbot\URL\State\State` now has a return type of `\Rowbot\URL\State\StatusCode` instead of `int`
   - Removed const `\Rowbot\URL\State\State::RETURN_OK`
   - Removed const `\Rowbot\URL\State\State::RETURN_CONTINUE`
   - Removed const `\Rowbot\URL\State\State::RETURN_BREAK`
