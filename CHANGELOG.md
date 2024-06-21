@@ -18,7 +18,7 @@
 
 - Bump minimum PHP version to 8.1
 - Lone surrogate code points are no longer treated differently from other invalid code points
-- `\Rowbot\URL\Exception\UConverterException` has been renamed to `\Rowbot\URL\Exception\MbstringException`
+- `\Rowbot\URL\String\Exception\UConverterException` has been renamed to `\Rowbot\URL\String\Exception\EncodingException`
 - Moved 32-bit tests to GitHub Actions from Appveyor
 - `\Rowbot\URL\URL`'s $url and $base parameters now also accept `\Stringable`
 - `\Rowbot\URL\URLSearchParams::current()` now returns `null` when the iterator is invalid instead of `['', '']`, which better matches the expected behavior

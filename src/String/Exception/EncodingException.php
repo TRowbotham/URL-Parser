@@ -6,6 +6,6 @@ namespace Rowbot\URL\String\Exception;
 
 use Rowbot\URL\Exception\URLException;
 
-class MbstringException extends URLException
+class EncodingException extends URLException
 {
 }

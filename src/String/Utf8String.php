@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\String;
 
-use Rowbot\URL\String\Exception\MbstringException;
+use Rowbot\URL\String\Exception\EncodingException;
 
 use function mb_convert_encoding;
 use function mb_scrub;
@@ -36,7 +36,7 @@ class Utf8String extends AbstractUSVString
         mb_substitute_character($substituteChar);
 
         if ($result === false) {
-            throw new MbstringException(sprintf(
+            throw new EncodingException(sprintf(
                 'Transcoding from "%s" to "%s" failed.',
                 $fromEncoding,
                 $toEncoding
