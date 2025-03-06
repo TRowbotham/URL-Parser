@@ -6,6 +6,7 @@
 
 - Update IDNA processing options per [whatwg/url#820](https://github.com/whatwg/url/issues/820), [whatwg/url#842](https://github.com/whatwg/url/pull/842), [whatwg/url#821](https://github.com/whatwg/url/issues/821), and [whatwg/url#820](https://github.com/whatwg/url/pull/843)
 - Update domain to ASCII error handling per [whatwg/url#845](https://github.com/whatwg/url/pull/845)
+- `^` are now percent encoded in non-opaque paths per [whatwg/url#607](https://github.com/whatwg/url/issues/607) and [whatwg/url#846](https://github.com/whatwg/url/pull/846)
 
 ## [4.0.0] - 2024-06-20
 

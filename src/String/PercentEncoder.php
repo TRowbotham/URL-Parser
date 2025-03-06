@@ -204,7 +204,6 @@ final class PercentEncoder
                     case ord('['):
                     case ord('\\'):
                     case ord(']'):
-                    case ord('^'):
                     case ord('|'):
                         return true;
                 }
@@ -214,6 +213,7 @@ final class PercentEncoder
             case EncodeSet::PATH:
                 switch ($codePoint) {
                     case ord('?'):
+                    case ord('^'):
                     case ord('`'):
                     case ord('{'):
                     case ord('}'):
