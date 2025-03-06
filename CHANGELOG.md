@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Update IDNA processing options per [whatwg/url#820](https://github.com/whatwg/url/issues/820), [whatwg/url#842](https://github.com/whatwg/url/pull/842), [whatwg/url#821](https://github.com/whatwg/url/issues/821), and [whatwg/url#820](https://github.com/whatwg/url/pull/843)
+
 ## [4.0.0] - 2024-06-20
 
 ### Added

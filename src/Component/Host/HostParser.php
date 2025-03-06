@@ -35,14 +35,6 @@ class HostParser
     private const FORBIDDEN_HOST_CODEPOINTS = '\x00\x09\x0A\x0D\x20#\/:<>?@[\\\\\]^|';
     private const FORBIDDEN_DOMAIN_CODEPOINTS = self::FORBIDDEN_HOST_CODEPOINTS . '\x01-\x1F%\x7F';
 
-    private const UNICODE_IDNA_OPTIONS = [
-        'CheckHyphens'            => false,
-        'CheckBidi'               => true,
-        'CheckJoiners'            => true,
-        'UseSTD3ASCIIRules'       => false,
-        'Transitional_Processing' => false,
-    ];
-
     /**
      * Parses a host string. The string could represent a domain, IPv4 or IPv6 address, or an opaque host.
      *
@@ -75,7 +67,8 @@ class HostParser
 
         assert(!$input->isEmpty());
         $domain = rawurldecode((string) $input);
-        $asciiDomain = $this->domainToAscii($context, $domain, false);
+        $beStrict = false;
+        $asciiDomain = $this->domainToAscii($context, $domain, $beStrict);
 
         if ($asciiDomain === false) {
             return false;
@@ -86,7 +79,7 @@ class HostParser
             $context->logger?->warning('domain-invalid-code-point', [
                 'input'  => (string) $asciiDomain,
                 'column' => mb_strlen(mb_strcut((string) $asciiDomain, 0, $matches[0][1], 'utf-8'), 'utf-8') + 1,
-                'unicode_domain' => Idna::toUnicode((string) $asciiDomain, self::UNICODE_IDNA_OPTIONS)->getDomain(),
+                'unicode_domain' => $this->domainToUnicode($context, (string) $asciiDomain, $beStrict, true),
             ]);
 
             return false;
@@ -105,15 +98,16 @@ class HostParser
     private function domainToAscii(ParserContext $context, string $domain, bool $beStrict): StringHost|false
     {
         // 1. Let result be the result of running Unicode ToASCII with domain_name set to domain, UseSTD3ASCIIRules set
-        // to beStrict, CheckHyphens set to false, CheckBidi set to true, CheckJoiners set to true,
-        // Transitional_Processing set to false, and VerifyDnsLength set to beStrict.
+        // to beStrict, CheckHyphens set to beStrict, CheckBidi set to true, CheckJoiners set to true,
+        // Transitional_Processing set to false, VerifyDnsLength set to beStrict, and IgnoreInvalidPunycode set to false.
         $result = Idna::toAscii($domain, [
-            'CheckHyphens'            => false,
+            'CheckHyphens'            => $beStrict,
             'CheckBidi'               => true,
             'CheckJoiners'            => true,
             'UseSTD3ASCIIRules'       => $beStrict,
             'Transitional_Processing' => false,
             'VerifyDnsLength'         => $beStrict,
+            'IgnoreInvalidPunycode'   => false,
         ]);
         $convertedDomain = $result->getDomain();
 
@@ -125,7 +119,7 @@ class HostParser
                 'input'        => $domain,
                 'column_range' => [1, mb_strlen($domain, 'utf-8')],
                 'idn_errors'   => $this->enumerateIdnaErrors($result->getErrors()),
-                'unicode_domain' => Idna::toUnicode($domain, self::UNICODE_IDNA_OPTIONS)->getDomain(),
+                'unicode_domain' => $this->domainToUnicode($context, $domain, $beStrict, true),
             ]);
 
             return false;
@@ -133,6 +127,39 @@ class HostParser
 
         // 4. Return result.
         return new StringHost($convertedDomain);
+    }
+
+    /**
+     * @see https://url.spec.whatwg.org/#concept-domain-to-unicode
+     */
+    private function domainToUnicode(
+        ParserContext $context,
+        string $domain,
+        bool $beStrict,
+        bool $suppressErrors = false
+    ): string {
+        // 1. Let result be the result of running Unicode ToUnicode with domain_name set to domain, CheckHyphens set to beStrict,
+        // CheckBidi set to true, CheckJoiners set to true, UseSTD3ASCIIRules set to beStrict, Transitional_Processing set to false,
+        // and IgnoreInvalidPunycode set to false.
+        $result = Idna::toUnicode($domain, [
+            'CheckHyphens'            => $beStrict,
+            'CheckBidi'               => true,
+            'CheckJoiners'            => true,
+            'UseSTD3ASCIIRules'       => $beStrict,
+            'Transitional_Processing' => false,
+            'IgnoreInvalidPunycode'   => false,
+        ]);
+
+        // 2. Signify domain-to-Unicode validation errors for any returned errors, and then, return result.
+        if (!$suppressErrors && $result->hasErrors()) {
+            $context->logger?->warning('domain-to-Unicode', [
+                'column_range' => [1, mb_strlen($domain, 'utf-8')],
+                'idn_errors'   => $this->enumerateIdnaErrors($result->getErrors()),
+                'unicode_domain' => $result->getDomain(),
+            ]);
+        }
+
+        return $result->getDomain();
     }
 
     /**
