@@ -100,7 +100,7 @@ class HostParser
         // 1. Let result be the result of running Unicode ToASCII with domain_name set to domain, UseSTD3ASCIIRules set
         // to beStrict, CheckHyphens set to beStrict, CheckBidi set to true, CheckJoiners set to true,
         // Transitional_Processing set to false, VerifyDnsLength set to beStrict, and IgnoreInvalidPunycode set to false.
-        $result = Idna::toAscii($domain, [
+        $idnResult = Idna::toAscii($domain, [
             'CheckHyphens'            => $beStrict,
             'CheckBidi'               => true,
             'CheckJoiners'            => true,
@@ -109,24 +109,54 @@ class HostParser
             'VerifyDnsLength'         => $beStrict,
             'IgnoreInvalidPunycode'   => false,
         ]);
-        $convertedDomain = $result->getDomain();
 
-        // 2. If result is a failure value, validation error, return failure.
-        // 3. If result is the empty string, validation error, return failure.
-        if ($convertedDomain === '' || $result->hasErrors()) {
+        // 2. If result is a failure value, domain-to-ASCII validation error, return failure.
+        if ($idnResult->hasErrors()) {
             // Validation error.
             $context->logger?->warning('domain-to-ASCII', [
                 'input'        => $domain,
                 'column_range' => [1, mb_strlen($domain, 'utf-8')],
-                'idn_errors'   => $this->enumerateIdnaErrors($result->getErrors()),
+                'idn_errors'   => $this->enumerateIdnaErrors($idnResult->getErrors()),
                 'unicode_domain' => $this->domainToUnicode($context, $domain, $beStrict, true),
             ]);
 
             return false;
         }
 
-        // 4. Return result.
-        return new StringHost($convertedDomain);
+        $result = new StringHost($idnResult->getDomain());
+
+        // 3. If beStrict is false:
+        if (!$beStrict) {
+            // 3.1. If result is the empty string, domain-to-ASCII validation error, return failure.
+            if ($result->isEmpty()) {
+                // Validation error.
+                $context->logger?->warning('domain-to-ASCII', [
+                    'input'        => $domain,
+                    'column_range' => [1, mb_strlen($domain, 'utf-8')],
+                    'idn_errors'   => $this->enumerateIdnaErrors($idnResult->getErrors()),
+                    'unicode_domain' => $this->domainToUnicode($context, $domain, $beStrict, true),
+                ]);
+
+                return false;
+            }
+
+            // 3.2. If result contains a forbidden domain code point, domain-invalid-code-point validation error, return failure.
+            if ($result->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u', $matches, PREG_OFFSET_CAPTURE)) {
+                // Validation error.
+                $context->logger?->warning('domain-invalid-code-point', [
+                    'input'  => (string) $result,
+                    'column' => mb_strlen(mb_strcut((string) $result, 0, $matches[0][1], 'utf-8'), 'utf-8') + 1,
+                ]);
+
+                return false;
+            }
+        }
+
+        // 4. Assert: result is not the empty string and does not contain a forbidden domain code point.
+        assert(!$result->isEmpty() && !$result->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u'));
+
+        // 5. Return result.
+        return $result;
     }
 
     /**
