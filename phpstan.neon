@@ -8,6 +8,7 @@ parameters:
 
     paths:
         - src
+        - PHPStan
 
     ignoreErrors:
         -
@@ -15,9 +16,15 @@ parameters:
             path: src/URLSearchParams.php
             count: 1
 
-        -
-            message: '#Cannot use array destructuring on Countable&iterable<int\|string, bool\|float\|int\|string\|Stringable>\.#'
-            path: src/URLSearchParams.php
-            count: 1
-
         # Note to self: You can't escape single quotes in neon. Another possible alternative would be to replace single quotes with \x27.
+
+services:
+    -
+        class: Rowbot\URL\PHPStan\PregMatchParameterOutExtension
+        tags:
+            - phpstan.methodParameterOutTypeExtension
+
+    -
+        class: Rowbot\URL\PHPStan\PregMatchTypeSpecifyingExtension
+        tags:
+            - phpstan.typeSpecifier.methodTypeSpecifyingExtension

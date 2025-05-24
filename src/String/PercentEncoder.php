@@ -91,6 +91,7 @@ final class PercentEncoder
             $encodeOutput = mb_convert_encoding($input, $encoder, 'utf-8');
             mb_substitute_character($substituteChar);
 
+            // @phpstan-ignore argument.type
             $chunks = preg_split('/&#x([[:xdigit:]]{2,6});/', $encodeOutput, -1, PREG_SPLIT_DELIM_CAPTURE);
 
             if ($chunks === false) {

@@ -300,6 +300,9 @@ class URLSearchParams implements Countable, Iterator, Stringable
      */
     private function initIterator(iterable $input): void
     {
+        // @var array<string> $pairName
+        $pairName = ['name', 'value'];
+
         foreach ($input as $key => $pair) {
             // Try to catch cases where $pair isn't countable or $pair is
             // countable, but isn't a valid sequence, such as:
@@ -338,23 +341,23 @@ class URLSearchParams implements Countable, Iterator, Stringable
                 ));
             }
 
-            [$name, $value] = $pair;
+            $nvPair = [];
+            $i = 0;
 
-            if (!$this->isStringable($name)) {
-                throw new TypeError(sprintf(
-                    'The name of the name-value pair at index "%s" must be a scalar value or stringable.',
-                    $key
-                ));
+            foreach ($pair as $value) {
+                if (!$this->isStringable($value)) {
+                    throw new TypeError(sprintf(
+                        'The %s of the name-value pair at index "%s" must be a scalar value or stringable.',
+                        $pairName[$i],
+                        $key
+                    ));
+                }
+
+                $nvPair[] = Utf8String::scrub((string) $value);
+                ++$i;
             }
 
-            if (!$this->isStringable($value)) {
-                throw new TypeError(sprintf(
-                    'The value of the name-value pair at index "%s" must be a scalar value or stringable.',
-                    $key
-                ));
-            }
-
-            $this->list->append(Utf8String::scrub((string) $name), Utf8String::scrub((string) $value));
+            $this->list->append($nvPair[0], $nvPair[1]);
         }
     }
 

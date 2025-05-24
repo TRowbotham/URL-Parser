@@ -58,7 +58,7 @@ abstract class AbstractUSVString implements Stringable, USVStringInterface
         return mb_strlen($this->string, 'utf-8');
     }
 
-    public function matches(string $pattern, ?array &$matches = null, int $flags = 0, int $offset = 0): bool
+    public function matches(string $pattern, array &$matches = [], int $flags = 0, int $offset = 0): bool
     {
         $result = preg_match($pattern, $this->string, $matches, $flags, $offset);
 

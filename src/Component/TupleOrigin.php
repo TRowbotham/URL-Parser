@@ -28,7 +28,7 @@ final class TupleOrigin implements Origin
         $this->scheme = $scheme;
     }
 
-    public function getEffectiveDomain(): ?string
+    public function getEffectiveDomain(): string
     {
         if ($this->domain !== null) {
             return $this->domain;

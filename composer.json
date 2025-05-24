@@ -34,7 +34,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Rowbot\\URL\\Tests\\": "tests/"
+            "Rowbot\\URL\\Tests\\": "tests/",
+            "Rowbot\\URL\\PHPStan\\": "PHPStan/"
         }
     },
     "scripts": {

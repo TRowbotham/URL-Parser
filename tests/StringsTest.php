@@ -72,6 +72,7 @@ class StringsTest extends TestCase
     {
         $this->expectException(RegexException::class);
         $s = new Utf8String('');
+        $matches = [];
         $s->matches('/[A-Z]/', $matches, 0, 1);
     }
 

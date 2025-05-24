@@ -74,6 +74,8 @@ class HostParser
             return false;
         }
 
+        $matches = [];
+
         if ($asciiDomain->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u', $matches, PREG_OFFSET_CAPTURE)) {
             // Validation error.
             $context->logger?->warning('domain-invalid-code-point', [
@@ -140,6 +142,8 @@ class HostParser
                 return false;
             }
 
+            $matches = [];
+
             // 3.2. If result contains a forbidden domain code point, domain-invalid-code-point validation error, return failure.
             if ($result->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u', $matches, PREG_OFFSET_CAPTURE)) {
                 // Validation error.
@@ -199,6 +203,8 @@ class HostParser
      */
     private function parseOpaqueHost(ParserContext $context, USVStringInterface $input): HostInterface|false
     {
+        $matches = [];
+
         if ($input->matches('/[' . self::FORBIDDEN_HOST_CODEPOINTS . ']/u', $matches, PREG_OFFSET_CAPTURE)) {
             // Validation error.
             $context->logger?->warning('host-invalid-code-point', [
@@ -245,6 +251,7 @@ class HostParser
         $errors = [];
 
         foreach ($errorConstants as $name => $value) {
+            // @phpstan-ignore binaryOp.invalid
             if (($value & $bitmask) !== 0) {
                 $errors[] = $name;
             }

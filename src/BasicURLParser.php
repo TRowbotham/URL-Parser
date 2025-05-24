@@ -70,8 +70,10 @@ class BasicURLParser implements LoggerAwareInterface
                 $this->logger?->notice('invalid-URL-unit', [
                     'input' => (string) $originalInput,
                     'column_range' => (static function () use ($originalInput): array {
+                        $matches = [];
                         $originalInput->matches('/^[\x00-\x20]+|[\x00-\x20]+$/u', $matches, PREG_OFFSET_CAPTURE);
 
+                        // @phpstan-ignore offsetAccess.notFound (Matches were found since $count is not 0)
                         if ($matches[0][1] === 0) {
                             return [1, strlen($matches[0][0])];
                         }
@@ -90,9 +92,13 @@ class BasicURLParser implements LoggerAwareInterface
             $this->logger?->notice('invalid-URL-unit', [
                 'input' => (string) $originalInput,
                 'column_range' => (static function () use ($originalInput): array {
+                    $matches = [];
                     $originalInput->matches('/[\x09\x0A\x0D]+/u', $matches, PREG_OFFSET_CAPTURE);
+
+                    // @phpstan-ignore offsetAccess.notFound (Matches were found since $count is not 0)
                     $start = mb_strlen(substr((string) $originalInput, 0, $matches[0][1]), 'utf-8');
 
+                    // @phpstan-ignore offsetAccess.notFound (Matches were found since $count is not 0)
                     return [$start + 1, $start + strlen($matches[0][0])];
                 })(),
             ]);
