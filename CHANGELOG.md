@@ -9,6 +9,12 @@
 - `^` are now percent encoded in non-opaque paths per [whatwg/url#607](https://github.com/whatwg/url/issues/607) and [whatwg/url#846](https://github.com/whatwg/url/pull/846)
 - Bump version of `brick/math`
 - Bump version of `phpstan/phpstan`
+- Ensure opaque paths always round trip per [whatwg/url#784](https://github.com/whatwg/url/issues/784) and [whatwg/url#844](https://github.com/whatwg/url/pull/844)
+
+### Internals
+
+- Removed `\Rowbot\URL\Component\PathInterface::potentiallyStripTrailingSpaces()` as it no longer exists in the spec
+  - Removed `\Rowbot\URL\Component\PathSegment::stripTrailingSpaces()` as it was only used by the above method.
 
 ## [4.0.0] - 2024-06-20
 

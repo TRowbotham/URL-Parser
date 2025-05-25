@@ -302,7 +302,6 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
         if ($name === 'hash') {
             if ($input->isEmpty()) {
                 $this->url->fragment = null;
-                $this->url->path->potentiallyStripTrailingSpaces($this->url);
 
                 // Terminate these steps
                 return;
@@ -375,7 +374,6 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
             if ($value === '') {
                 $this->url->query = null;
                 $this->queryObject->setList(new QueryList());
-                $this->url->path->potentiallyStripTrailingSpaces($this->url);
 
                 return;
             }
