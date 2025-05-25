@@ -46,9 +46,9 @@ abstract class AbstractHostState implements State
                     return StatusCode::FAILURE;
                 }
 
-                // 2.2. If state override is given and state override is hostname state, then return.
+                // 2.2. If state override is given and state override is hostname state, then return failure.
                 if ($context->isOverrideStateHostname()) {
-                    return StatusCode::BREAK;
+                    return StatusCode::FAILURE;
                 }
 
                 // 2.3. Let host be the result of host parsing buffer with url is not special.
@@ -95,13 +95,13 @@ abstract class AbstractHostState implements State
                 }
 
                 // 3.2. Otherwise, if state override is given, buffer is the empty string, and either url includes
-                // credentials or url’s port is non-null, return.
+                // credentials or url’s port is non-null, then return failure.
                 if (
                     $context->isStateOverridden()
                     && $context->buffer->isEmpty()
                     && ($context->url->includesCredentials() || $context->url->port !== null)
                 ) {
-                    return StatusCode::BREAK;
+                    return StatusCode::FAILURE;
                 }
 
                 // 3.3. Let host be the result of host parsing buffer with url is not special.

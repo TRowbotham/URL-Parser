@@ -11,6 +11,7 @@
 - Bump version of `phpstan/phpstan`
 - Ensure opaque paths always round trip per [whatwg/url#784](https://github.com/whatwg/url/issues/784) and [whatwg/url#844](https://github.com/whatwg/url/pull/844)
 - Make port state override return failure more for URLPattern per [whatwg/url#866](https://github.com/whatwg/url/pull/866) and [whatwg/urlpattern#266](https://github.com/whatwg/urlpattern/issues/266)
+- Report all hostname state failures for URLPattern per [whatwg/url#863](https://github.com/whatwg/url/pull/863) and [whatwg/urlpattern#252](https://github.com/whatwg/urlpattern/issues/252)
 
 ### Internals
 
