@@ -17,6 +17,8 @@
 
 - Removed `\Rowbot\URL\Component\PathInterface::potentiallyStripTrailingSpaces()` as it no longer exists in the spec
   - Removed `\Rowbot\URL\Component\PathSegment::stripTrailingSpaces()` as it was only used by the above method.
+  - Removed `\Rowbot\URL\Component\AbstractPath::potentiallyStripTrailingSpaces()`
+- The `$matches` parameter of `\Rowbot\URL\String\USVString::matches()` is no longer nullable to make PHPStan happy
 
 ## [4.0.0] - 2024-06-20
 
