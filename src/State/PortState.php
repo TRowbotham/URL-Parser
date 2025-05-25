@@ -67,11 +67,16 @@ class PortState implements State
 
                 // 2.1.4. Set buffer to the empty string.
                 $context->buffer->clear();
+
+                // 2.1.5. If state override is given, then return.
+                if ($context->isStateOverridden()) {
+                    return StatusCode::BREAK;
+                }
             }
 
-            // 2.2. If state override is given, then return.
+            // 2.2. If state override is given, then return failure
             if ($context->isStateOverridden()) {
-                return StatusCode::BREAK;
+                return StatusCode::FAILURE;
             }
 
             // 2.3. Set state to path start state and decrease pointer by 1.
