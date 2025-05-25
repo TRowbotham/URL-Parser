@@ -74,6 +74,7 @@ class URLSearchParams implements Countable, Iterator, Stringable
         }
 
         if (is_iterable($init)) {
+            // @phpstan-ignore argument.type
             $this->initIterator($init);
 
             return;
@@ -290,7 +291,7 @@ class URLSearchParams implements Countable, Iterator, Stringable
     }
 
     /**
-     * @param iterable<int|string, iterable<int|string, scalar|\Stringable>&\Countable> $input
+     * @param iterable<int|string, array<int|string, scalar|\Stringable>|(\Traversable<int|string, scalar|\Stringable>&\Countable)> $input
      *
      * @throws \Rowbot\URL\Exception\TypeError
      */
