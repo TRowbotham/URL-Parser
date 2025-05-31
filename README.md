@@ -125,6 +125,10 @@ The `hash` getter, also known as a URLs fragment, returns the portion of the URL
 
 A static method that allows the user to quickly check if a URL is parsable, without needing to construct a new URL object and wrapping it with a try/catch statement.
 
+#### `?\Rowbot\URL\URL URL::parse(string|\Stringable $url, null|string|\Stringable $base = null)`
+
+A static method that allows the user to parse a string in a way that does not throw exceptions like with the constructor object.
+
 #### `string URL::toJSON()`
 
 Returns a JSON encoded string of the URL. Note that this method escapes forward slashes, which is not the default for PHPs `json_encode()`, but matches the default behavior of JavaScripts `JSON.stringify()`. If you wish to control the serialization, then pass the URL obect to the `json_encode()` function.
