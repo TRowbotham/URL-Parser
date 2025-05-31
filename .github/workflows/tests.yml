@@ -55,7 +55,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if [[ ${{ matrix.php == 'nightly' }} ]]; then
+          if [[ '${{ matrix.php }}' == 'nightly' ]]; then
             composer update --no-interaction --ignore-platform-reqs
           else
             composer update --no-interaction
