@@ -14,6 +14,7 @@
 - Report all hostname state failures for URLPattern per [whatwg/url#863](https://github.com/whatwg/url/pull/863) and [whatwg/urlpattern#252](https://github.com/whatwg/urlpattern/issues/252)
 - Bump version of `symfony/cache`
 - Bump version of `phpunit/phpunit`
+- Bump version of `rowbot/idna`
 
 ### Internals
 

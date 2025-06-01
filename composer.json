@@ -15,7 +15,7 @@
         "ext-mbstring": "*",
         "brick/math": "^0.12 || ^0.13",
         "psr/log": "^3.0",
-        "rowbot/idna": "^0.1.5"
+        "rowbot/idna": "^0.2.0"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.0",
