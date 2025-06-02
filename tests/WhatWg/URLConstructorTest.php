@@ -15,7 +15,7 @@ class URLConstructorTest extends WhatwgTestCase
 {
     public static function urlTestDataSuccessProvider(): iterable
     {
-        foreach (self::loadTestData('urltestdata.json') as $inputs) {
+        foreach (self::loadCombinedUrlTestData() as $inputs) {
             if (isset($inputs['base']) && !isset($inputs['failure'])) {
                 yield [$inputs];
             }
@@ -47,7 +47,7 @@ class URLConstructorTest extends WhatwgTestCase
 
     public static function urlTestDataFailureProvider(): iterable
     {
-        foreach (self::loadTestData('urltestdata.json') as $inputs) {
+        foreach (self::loadCombinedUrlTestData() as $inputs) {
             if (isset($inputs['failure'])) {
                 yield [$inputs];
             }

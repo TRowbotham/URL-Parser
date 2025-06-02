@@ -59,4 +59,12 @@ abstract class WhatwgTestCase extends TestCase
 
         return json_decode($data, true, self::JSON_DEPTH, JSON_THROW_ON_ERROR);
     }
+
+    protected static function loadCombinedUrlTestData(): array
+    {
+        return [
+            ...self::loadTestData('urltestdata.json'),
+            ...self::loadTestData('urltestdata-javascript-only.json'),
+        ];
+    }
 }

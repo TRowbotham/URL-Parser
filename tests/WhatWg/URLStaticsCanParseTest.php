@@ -15,6 +15,8 @@ class URLStaticsCanParseTest extends TestCase
 {
     #[TestWith(['url' => 'a:b', 'base' => null, 'expected' => true])]
     #[TestWith(['url' => 'a:/b', 'base' => null, 'expected' => true])]
+    #[TestWith(['url' => 'undefined', 'base' => 'aaa:b', 'expected' => false])]
+    #[TestWith(['url' => 'undefined', 'base' => 'https://test:test/', 'expected' => false])]
     #[TestWith(['url' => 'https://test:test', 'base' => null, 'expected' => false])]
     #[TestWith(['url' => 'a', 'base' => 'https://b/', 'expected' => true])]
     public function testCanParse(string $url, ?string $base, bool $expected): void

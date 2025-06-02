@@ -12,7 +12,7 @@ class URLOriginTest extends WhatwgTestCase
 {
     public static function urlTestDataOriginProvider(): iterable
     {
-        foreach (self::loadTestData('urltestdata.json') as $inputs) {
+        foreach (self::loadCombinedUrlTestData() as $inputs) {
             if (isset($inputs['origin'])) {
                 yield [$inputs];
             }
