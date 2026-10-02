@@ -4,7 +4,9 @@
 
 ## Changed
 
- - `^0.15` is now the minimum version of `brick/math`
+- Support version `^2.0` of `psr/log`. Thanks [@loevgaard](https://github.com/loevgaard)
+- More versions of `brick/math` are supported. Thanks [@tacman](github.com/tacman)
+- `^0.15` is now the minimum version of `brick/math`
 
 ### Fixed
 
