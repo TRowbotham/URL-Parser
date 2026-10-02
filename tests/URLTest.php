@@ -121,4 +121,11 @@ class URLTest extends TestCase
         $this->expectException(NativeTypeError::class);
         new URL($url, $base);
     }
+
+    public function testFoo(): void
+    {
+        $url = new URL('https://user:pass@example.com/path');
+        $url->protocol = 'http';
+        self::assertSame('http:', $url->protocol);
+    }
 }

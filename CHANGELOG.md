@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Setting host when URL contains credentials [#14](https://github.com/TRowbotham/URL-Parser/issues/14)
+
 ## [4.1.0] - 2025-09-18
 
 ### Changed

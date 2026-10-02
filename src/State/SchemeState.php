@@ -52,8 +52,8 @@ class SchemeState implements State
 
                 // 2.1.3. If url includes credentials or has a non-null port, and buffer is "file", then return.
                 if (
-                    $context->url->includesCredentials()
-                    || ($context->url->port !== null && $candidateScheme->isFile())
+                    ($context->url->includesCredentials() || $context->url->port !== null)
+                    && $candidateScheme->isFile()
                 ) {
                     return StatusCode::BREAK;
                 }
