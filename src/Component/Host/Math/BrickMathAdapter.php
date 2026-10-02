@@ -28,7 +28,7 @@ class BrickMathAdapter implements NumberInterface, Stringable
 
     public function intdiv(int $number): NumberInterface
     {
-        return new self($this->number->dividedBy($number, RoundingMode::FLOOR));
+        return new self($this->number->dividedBy($number, RoundingMode::Floor));
     }
 
     public function isEqualTo(NumberInterface $number): bool

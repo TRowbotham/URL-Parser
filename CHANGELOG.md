@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## Changed
+
+ - `^0.15` is now the minimum version of `brick/math`
+
 ### Fixed
 
 - Setting host when URL contains credentials [#14](https://github.com/TRowbotham/URL-Parser/issues/14)
