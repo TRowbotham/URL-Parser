@@ -23,7 +23,6 @@ jobs:
           - ubuntu-latest
         arch:
           - amd64
-          - i386
         php:
           - 8.1
 
