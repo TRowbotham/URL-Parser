@@ -6,6 +6,7 @@ namespace Rowbot\URL\Component\Host\Math;
 
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
+use ReflectionEnum;
 use Rowbot\URL\Component\Host\Math\Exception\MathException;
 use Stringable;
 
@@ -28,7 +29,10 @@ class BrickMathAdapter implements NumberInterface, Stringable
 
     public function intdiv(int $number): NumberInterface
     {
-        return new self($this->number->dividedBy($number, RoundingMode::Floor));
+        $re = new ReflectionEnum(RoundingMode::class);
+        $case = $re->hasCase('Floor') ? 'Floor' : 'FLOOR';
+
+        return new self($this->number->dividedBy($number, $re->getCase($case)->getValue()));
     }
 
     public function isEqualTo(NumberInterface $number): bool

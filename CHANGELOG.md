@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Revert `brick/math` minimum version bump to fix PHP 8.1 compatibility
+
 ## [4.2.0] - 2026-10-01
 
 ## Changed
