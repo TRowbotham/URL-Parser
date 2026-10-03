@@ -1,5 +1,11 @@
 # Changelog
 
+[Unreleased]
+
+### Changed
+
+- Updated domain parsing per [whatwg/url#914](https://github.com/whatwg/url/pull/914) and [whatwg/url#915](https://github.com/whatwg/url/pull/915)
+
 ## [4.2.1] - 2026-10-02
 
 ### Fixed

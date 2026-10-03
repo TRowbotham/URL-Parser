@@ -4,23 +4,17 @@ declare(strict_types=1);
 
 namespace Rowbot\URL\Component\Host;
 
-use ReflectionClass;
-use ReflectionClassConstant;
-use Rowbot\Idna\Idna;
 use Rowbot\URL\ParserContext;
 use Rowbot\URL\String\CodePoint;
 use Rowbot\URL\String\EncodeSet;
 use Rowbot\URL\String\PercentEncoder;
 use Rowbot\URL\String\USVStringInterface;
 
-use function array_filter;
 use function assert;
 use function mb_strcut;
 use function mb_strlen;
 use function rawurldecode;
-use function str_starts_with;
 
-use const ARRAY_FILTER_USE_KEY;
 use const PREG_OFFSET_CAPTURE;
 
 /**
@@ -30,10 +24,8 @@ class HostParser
 {
     /**
      * @see https://url.spec.whatwg.org/#forbidden-host-code-point
-     * @see https://url.spec.whatwg.org/#forbidden-domain-code-point
      */
-    private const FORBIDDEN_HOST_CODEPOINTS = '\x00\x09\x0A\x0D\x20#\/:<>?@[\\\\\]^|';
-    private const FORBIDDEN_DOMAIN_CODEPOINTS = self::FORBIDDEN_HOST_CODEPOINTS . '\x01-\x1F%\x7F';
+    public const FORBIDDEN_HOST_CODEPOINTS = '\x00\x09\x0A\x0D\x20#\/:<>?@[\\\\\]^|';
 
     /**
      * Parses a host string. The string could represent a domain, IPv4 or IPv6 address, or an opaque host.
@@ -47,7 +39,9 @@ class HostParser
         USVStringInterface $input,
         bool $isOpaque = false
     ): HostInterface|false {
+        // 1. If input starts with U+005B ([), then:
         if ($input->startsWith('[')) {
+            // 1.2. If input does not end with U+005D (]), IPv6-unclosed validation error, return failure.
             if (!$input->endsWith(']')) {
                 // Validation error.
                 $context->logger?->warning('IPv6-unclosed', [
@@ -58,142 +52,50 @@ class HostParser
                 return false;
             }
 
+            // 1.3. Return the result of IPv6 parsing input with its leading U+005B ([) and trailing U+005D (]) removed.
             return IPv6AddressParser::parse($context, $input->substr(1, -1));
         }
 
+        // 2. If isOpaque is true, then return the result of opaque-host parsing input.
         if ($isOpaque) {
             return $this->parseOpaqueHost($context, $input);
         }
 
+        // 3. Assert: input is not the empty string.
         assert(!$input->isEmpty());
-        $domain = rawurldecode((string) $input);
-        $beStrict = false;
-        $asciiDomain = $this->domainToAscii($context, $domain, $beStrict);
 
+        // 4. If input contains a percent-encoded byte, domain-percent-encoded validation error.
+        foreach ($input as $i => $codePoint) {
+            if ($codePoint === '%' && $input->substr($i + 1)->startsWithTwoAsciiHexDigits()) {
+                $context->logger?->warning('domain-percent-encoded', [
+                    'input'  => (string) $input,
+                    'column_range' => [$i, $i + 2],
+                ]);
+
+                break;
+            }
+        }
+
+        // 5. Let domain be the result of running UTF-8 decode without BOM on the percent-decoding of input.
+        $domain = rawurldecode((string) $input);
+
+        // 6. Let asciiDomain be the result of running domain parser with domain and false.
+        $parser = new DomainParser();
+        $asciiDomain = $parser->parse($context, $domain, false);
+
+        // 7. If asciiDomain is failure, then return failure.
         if ($asciiDomain === false) {
             return false;
         }
 
-        $matches = [];
+        $asciiDomain = new StringHost($asciiDomain);
 
-        if ($asciiDomain->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u', $matches, PREG_OFFSET_CAPTURE)) {
-            // Validation error.
-            $context->logger?->warning('domain-invalid-code-point', [
-                'input'  => (string) $asciiDomain,
-                'column' => mb_strlen(mb_strcut((string) $asciiDomain, 0, $matches[0][1], 'utf-8'), 'utf-8') + 1,
-                'unicode_domain' => $this->domainToUnicode($context, (string) $asciiDomain, $beStrict, true),
-            ]);
-
-            return false;
-        }
-
+        // 8. If asciiDomain ends in a number:
         if (IPv4AddressParser::endsInIPv4Number($asciiDomain)) {
             return IPv4AddressParser::parse($context, $asciiDomain);
         }
 
         return $asciiDomain;
-    }
-
-    /**
-     * @see https://url.spec.whatwg.org/#concept-domain-to-ascii
-     */
-    private function domainToAscii(ParserContext $context, string $domain, bool $beStrict): StringHost|false
-    {
-        // 1. Let result be the result of running Unicode ToASCII with domain_name set to domain, UseSTD3ASCIIRules set
-        // to beStrict, CheckHyphens set to beStrict, CheckBidi set to true, CheckJoiners set to true,
-        // Transitional_Processing set to false, VerifyDnsLength set to beStrict, and IgnoreInvalidPunycode set to false.
-        $idnResult = Idna::toAscii($domain, [
-            'CheckHyphens'            => $beStrict,
-            'CheckBidi'               => true,
-            'CheckJoiners'            => true,
-            'UseSTD3ASCIIRules'       => $beStrict,
-            'Transitional_Processing' => false,
-            'VerifyDnsLength'         => $beStrict,
-            'IgnoreInvalidPunycode'   => false,
-        ]);
-
-        // 2. If result is a failure value, domain-to-ASCII validation error, return failure.
-        if ($idnResult->hasErrors()) {
-            // Validation error.
-            $context->logger?->warning('domain-to-ASCII', [
-                'input'        => $domain,
-                'column_range' => [1, mb_strlen($domain, 'utf-8')],
-                'idn_errors'   => $this->enumerateIdnaErrors($idnResult->getErrors()),
-                'unicode_domain' => $this->domainToUnicode($context, $domain, $beStrict, true),
-            ]);
-
-            return false;
-        }
-
-        $result = new StringHost($idnResult->getDomain());
-
-        // 3. If beStrict is false:
-        if (!$beStrict) {
-            // 3.1. If result is the empty string, domain-to-ASCII validation error, return failure.
-            if ($result->isEmpty()) {
-                // Validation error.
-                $context->logger?->warning('domain-to-ASCII', [
-                    'input'        => $domain,
-                    'column_range' => [1, mb_strlen($domain, 'utf-8')],
-                    'idn_errors'   => $this->enumerateIdnaErrors($idnResult->getErrors()),
-                    'unicode_domain' => $this->domainToUnicode($context, $domain, $beStrict, true),
-                ]);
-
-                return false;
-            }
-
-            $matches = [];
-
-            // 3.2. If result contains a forbidden domain code point, domain-invalid-code-point validation error, return failure.
-            if ($result->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u', $matches, PREG_OFFSET_CAPTURE)) {
-                // Validation error.
-                $context->logger?->warning('domain-invalid-code-point', [
-                    'input'  => (string) $result,
-                    'column' => mb_strlen(mb_strcut((string) $result, 0, $matches[0][1], 'utf-8'), 'utf-8') + 1,
-                ]);
-
-                return false;
-            }
-        }
-
-        // 4. Assert: result is not the empty string and does not contain a forbidden domain code point.
-        assert(!$result->isEmpty() && !$result->matches('/[' . self::FORBIDDEN_DOMAIN_CODEPOINTS . ']/u'));
-
-        // 5. Return result.
-        return $result;
-    }
-
-    /**
-     * @see https://url.spec.whatwg.org/#concept-domain-to-unicode
-     */
-    private function domainToUnicode(
-        ParserContext $context,
-        string $domain,
-        bool $beStrict,
-        bool $suppressErrors = false
-    ): string {
-        // 1. Let result be the result of running Unicode ToUnicode with domain_name set to domain, CheckHyphens set to beStrict,
-        // CheckBidi set to true, CheckJoiners set to true, UseSTD3ASCIIRules set to beStrict, Transitional_Processing set to false,
-        // and IgnoreInvalidPunycode set to false.
-        $result = Idna::toUnicode($domain, [
-            'CheckHyphens'            => $beStrict,
-            'CheckBidi'               => true,
-            'CheckJoiners'            => true,
-            'UseSTD3ASCIIRules'       => $beStrict,
-            'Transitional_Processing' => false,
-            'IgnoreInvalidPunycode'   => false,
-        ]);
-
-        // 2. Signify domain-to-Unicode validation errors for any returned errors, and then, return result.
-        if (!$suppressErrors && $result->hasErrors()) {
-            $context->logger?->warning('domain-to-Unicode', [
-                'column_range' => [1, mb_strlen($domain, 'utf-8')],
-                'idn_errors'   => $this->enumerateIdnaErrors($result->getErrors()),
-                'unicode_domain' => $result->getDomain(),
-            ]);
-        }
-
-        return $result->getDomain();
     }
 
     /**
@@ -235,28 +137,5 @@ class HostParser
         $output = $percentEncoder->percentEncodeAfterEncoding('utf-8', (string) $input, EncodeSet::C0_CONTROL);
 
         return new StringHost($output);
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function enumerateIdnaErrors(int $bitmask): array
-    {
-        $reflection = new ReflectionClass(Idna::class);
-        $errorConstants = array_filter(
-            $reflection->getConstants(ReflectionClassConstant::IS_PUBLIC),
-            static fn (string $name): bool => str_starts_with($name, 'ERROR_'),
-            ARRAY_FILTER_USE_KEY
-        );
-        $errors = [];
-
-        foreach ($errorConstants as $name => $value) {
-            // @phpstan-ignore binaryOp.invalid
-            if (($value & $bitmask) !== 0) {
-                $errors[] = $name;
-            }
-        }
-
-        return $errors;
     }
 }
