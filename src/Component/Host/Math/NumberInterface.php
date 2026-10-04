@@ -35,6 +35,9 @@ interface NumberInterface
      */
     public function plus(self $number): self;
 
+    /**
+     * @param int<0, max> $number
+     */
     public function pow(int $number): self;
 
     /**

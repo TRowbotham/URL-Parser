@@ -18,10 +18,13 @@ class BrickMathAdapter implements NumberInterface, Stringable
 {
     private BigInteger $number;
 
+    /**
+     * @param int|non-empty-string|\Brick\Math\BigInteger $number
+     * @param int<2, 36> $base
+     */
     public function __construct(int|string|BigInteger $number, int $base = 10)
     {
         if (is_string($number)) {
-            /** @phpstan-ignore argument.type, argument.type */
             $this->number = BigInteger::fromBase($number, $base);
 
             return;
@@ -83,7 +86,6 @@ class BrickMathAdapter implements NumberInterface, Stringable
 
     public function pow(int $number): NumberInterface
     {
-        /** @phpstan-ignore argument.type */
         return new self($this->number->power($number));
     }
 

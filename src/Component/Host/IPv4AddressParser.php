@@ -14,6 +14,7 @@ use Rowbot\URL\String\USVStringInterface;
 use function array_pop;
 use function array_reduce;
 use function array_slice;
+use function assert;
 use function count;
 use function strlen;
 use function strspn;
@@ -111,7 +112,9 @@ class IPv4AddressParser
             }
         }
 
-        $limit = NumberFactory::createNumber(256, 10)->pow(5 - $size);
+        $diff = 5 - $size;
+        assert($diff > -1);
+        $limit = NumberFactory::createNumber(256, 10)->pow($diff);
 
         // 8. If the last item in numbers is greater than or equal to 256 ** (5 − numbers’s size), validation error,
         // return failure.
@@ -244,6 +247,8 @@ class IPv4AddressParser
         ) {
             return false;
         }
+
+        assert($length !== 0);
 
         // 8. Let output be the mathematical integer value that is represented by input in radix-R notation, using ASCII
         // hex digits for digits with values 0 through 15.

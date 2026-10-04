@@ -14,6 +14,10 @@ use const PHP_INT_SIZE;
  */
 final class NumberFactory
 {
+    /**
+     * @param int|non-empty-string $number
+     * @param int<2, 36> $base
+     */
     public static function createNumber(int|string $number, int $base): NumberInterface
     {
         // PHP_INT_SIZE returns the number of bytes that can fit in to an integer on the given
