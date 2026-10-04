@@ -10,8 +10,6 @@ use ReflectionEnum;
 use Rowbot\URL\Component\Host\Math\Exception\MathException;
 use Stringable;
 
-use function assert;
-use function is_numeric;
 use function is_string;
 
 class BrickMathAdapter implements NumberInterface, Stringable
@@ -94,8 +92,8 @@ class BrickMathAdapter implements NumberInterface, Stringable
      */
     public function __toString(): string
     {
+        /** @var numeric-string */
         $str = (string) $this->number;
-        assert(is_numeric($str));
 
         return $str;
     }
