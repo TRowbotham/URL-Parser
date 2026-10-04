@@ -92,7 +92,7 @@ class BrickMathAdapter implements NumberInterface, Stringable
      */
     public function __toString(): string
     {
-        /** @var numeric-string $str */
+        /** @var numeric-string&non-empty-string $str */
         $str = (string) $this->number;
 
         return $str;
