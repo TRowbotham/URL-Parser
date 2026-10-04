@@ -10,6 +10,8 @@ use ReflectionEnum;
 use Rowbot\URL\Component\Host\Math\Exception\MathException;
 use Stringable;
 
+use function assert;
+use function is_numeric;
 use function is_string;
 
 class BrickMathAdapter implements NumberInterface, Stringable
@@ -19,6 +21,7 @@ class BrickMathAdapter implements NumberInterface, Stringable
     public function __construct(int|string|BigInteger $number, int $base = 10)
     {
         if (is_string($number)) {
+            /** @phpstan-ignore argument.type, argument.type */
             $this->number = BigInteger::fromBase($number, $base);
 
             return;
@@ -32,6 +35,7 @@ class BrickMathAdapter implements NumberInterface, Stringable
         $re = new ReflectionEnum(RoundingMode::class);
         $case = $re->hasCase('Floor') ? 'Floor' : 'FLOOR';
 
+        /** @phpstan-ignore argument.type */
         return new self($this->number->dividedBy($number, $re->getCase($case)->getValue()));
     }
 
@@ -79,6 +83,7 @@ class BrickMathAdapter implements NumberInterface, Stringable
 
     public function pow(int $number): NumberInterface
     {
+        /** @phpstan-ignore argument.type */
         return new self($this->number->power($number));
     }
 
@@ -88,6 +93,7 @@ class BrickMathAdapter implements NumberInterface, Stringable
     public function __toString(): string
     {
         $str = (string) $this->number;
+        assert(is_numeric($str));
 
         return $str;
     }
