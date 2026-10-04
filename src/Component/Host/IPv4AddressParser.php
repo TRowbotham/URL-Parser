@@ -160,31 +160,28 @@ class IPv4AddressParser
 
     public static function endsInIPv4Number(USVStringInterface $input): bool
     {
-        // 1. Let parts be the result of strictly splitting input on U+002E (.).
+        // 1. Assert: input is not the empty string.
+        assert(!$input->isEmpty());
+
+        // 2. Let parts be the result of strictly splitting input on U+002E (.).
         $parts = $input->split('.');
 
-        // 2. If the last item in parts is the empty string, then:
+        // 3. If the last item in parts is the empty string, then remove the last item from parts.
         if ($parts->last()->isEmpty()) {
-            // 2.1. If parts’s size is 1, then return false.
-            if ($parts->count() === 1) {
-                return false;
-            }
-
-            // 3.1. Remove the last item from parts.
             $parts->pop();
         }
 
-        // 3. Let last be the last item in parts.
+        // 4. Let last be the last item in parts.
         $last = $parts->last();
 
-        // 4. If parsing last as an IPv4 number does not return failure, then return true.
-        if (self::parseIPv4Number($last) !== false) {
+        // 5. If last is not the empty string and contains only ASCII digits, then return true.
+        if (!$last->isEmpty() && strspn((string) $last, CodePoint::ASCII_DIGIT_MASK) === $last->length()) {
             return true;
         }
 
-        // 5. If last is non-empty and contains only ASCII digits, then return true.
-        // 6. Return false.
-        return !$last->isEmpty() && strspn((string) $last, CodePoint::ASCII_DIGIT_MASK) === $last->length();
+        // 6. If parsing last as an IPv4 number does not return failure, then return true.
+        // 7. Return false.
+        return self::parseIPv4Number($last) !== false;
     }
 
     /**
