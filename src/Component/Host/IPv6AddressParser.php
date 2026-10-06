@@ -162,6 +162,13 @@ class IPv6AddressParser
                 return false;
             }
 
+            if ($length > 1 && $value < 0x10 ** $length - 1) {
+                $context->logger?->warning('IPv6-piece-leading-zero', [
+                    'input'  => (string) $input,
+                    'column' => $iter->key() + 1,
+                ]);
+            }
+
             // 6.8. Set address[pieceIndex] to value.
             // 6.9. Increase pieceIndex by 1.
             $address[$pieceIndex++] = $value;

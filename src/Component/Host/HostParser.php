@@ -11,6 +11,7 @@ use Rowbot\URL\String\PercentEncoder;
 use Rowbot\URL\String\USVStringInterface;
 
 use function assert;
+use function mb_check_encoding;
 use function mb_strcut;
 use function mb_strlen;
 use function rawurldecode;
@@ -92,6 +93,15 @@ class HostParser
 
         // 8. If asciiDomain ends in a number:
         if (IPv4AddressParser::endsInIPv4Number($asciiDomain)) {
+            // 8.1. If domain is not an ASCII string, IPv4-non-ASCII-input validation error.
+            if (mb_check_encoding($domain, 'ASCII') === false) {
+                $context->logger?->warning('IPv4-non-ASCII-input', [
+                    'input'  => (string) $input,
+                    'column_range' => [1, mb_strlen((string) $input, 'utf-8')],
+                ]);
+            }
+
+            // 8.2. Return the result of IPv4 address parsing asciiDomain.
             return IPv4AddressParser::parse($context, $asciiDomain);
         }
 

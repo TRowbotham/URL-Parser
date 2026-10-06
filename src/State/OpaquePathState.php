@@ -38,8 +38,14 @@ class OpaquePathState implements State
 
             // 3. Otherwise, if c is U+0020 SPACE:
             if ($codePoint === "\x20") {
-                // 3.1. If remaining starts with U+003F (?) or U+003F (#), then append "%20" to url’s path.
-                // 3.2. Otherwise, append U+0020 SPACE to url’s path.
+                // 3.1. Invalid-URL-unit validation error.
+                $context->logger?->notice('invalid-URL-unit', [
+                    'input'  => (string) $context->input,
+                    'column' => $context->iter->key() + 1,
+                ]);
+
+                // 3.2. If remaining starts with U+003F (?) or U+003F (#), then append "%20" to url’s path.
+                // 3.3. Otherwise, append U+0020 SPACE to url’s path.
                 $remaining = $context->input->substr($context->iter->key() + 1);
                 $appendChar = "\x20";
 
