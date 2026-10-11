@@ -384,7 +384,7 @@ class URL implements JsonSerializable, LoggerAwareInterface, Stringable
 
             $this->url->query = '';
             $parser->parse($input, null, null, $this->url, ParserState::QUERY);
-            $this->queryObject->setList(QueryList::fromString((string) $input));
+            $this->queryObject->setList(QueryList::fromString($this->url->query));
         } elseif ($name === 'username') {
             if ($this->url->cannotHaveUsernamePasswordPort()) {
                 return;
