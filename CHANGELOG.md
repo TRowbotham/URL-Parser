@@ -7,6 +7,7 @@
 - Updated domain parsing per [whatwg/url#914](https://github.com/whatwg/url/pull/914) and [whatwg/url#915](https://github.com/whatwg/url/pull/915)
 - Make search setter keep searchParams in sync per [whatwg/url#931](https://github.com/whatwg/url/issues/931) and [whatwg/url#932](https://github.com/whatwg/url/pull/932)
 - Update IDNA to Unicode 18
+- URL serialization now makes including the scheme optional per [whatwg/url#385](https://github.com/whatwg/url/issues/385) and [whatwg/url#938](https://github.com/whatwg/url/pull/938)
 
 ## [4.2.1] - 2026-10-02
 

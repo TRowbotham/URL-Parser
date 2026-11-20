@@ -132,7 +132,7 @@ class URLRecord
      */
     public function isEqual(self $otherUrl, bool $excludeFragment = false): bool
     {
-        return $this->serializeURL($excludeFragment) === $otherUrl->serializeURL($excludeFragment);
+        return $this->serializeURL(false, $excludeFragment) === $otherUrl->serializeURL(false, $excludeFragment);
     }
 
     /**
@@ -140,11 +140,17 @@ class URLRecord
      *
      * @see https://url.spec.whatwg.org/#concept-url-serializer
      *
+     * @param bool $excludeScheme   (optional) When specified it will exclude the URL's schemes from being serialized.
      * @param bool $excludeFragment (optional) When specified it will exclude the URL's fragment from being serialized.
      */
-    public function serializeURL(bool $excludeFragment = false): string
+    public function serializeURL(bool $excludeScheme = false, bool $excludeFragment = false): string
     {
-        $output = $this->scheme . ':';
+        $output = '';
+
+        if (!$excludeScheme) {
+            $output .= $this->scheme . ':';
+        }
+
         $isNullHost = $this->host->isNull();
 
         if (!$isNullHost) {
