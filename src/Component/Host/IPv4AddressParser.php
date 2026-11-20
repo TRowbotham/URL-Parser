@@ -45,7 +45,7 @@ class IPv4AddressParser
             }
         }
 
-        if ($count < 3) {
+        if ($count < 4) {
             $context->logger?->warning('IPv4-too-few-parts', [
                 'input'  => (string) $input,
                 'column' => array_reduce(
