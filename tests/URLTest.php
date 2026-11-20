@@ -122,7 +122,7 @@ class URLTest extends TestCase
         new URL($url, $base);
     }
 
-    public function testFoo(): void
+    public function testChangingProtocolWithCredentials(): void
     {
         $url = new URL('https://user:pass@example.com/path');
         $url->protocol = 'http';
